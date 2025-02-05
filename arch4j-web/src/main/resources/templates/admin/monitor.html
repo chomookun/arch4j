@@ -7,6 +7,8 @@
         let cpuChart = null;
         let memoryChart = null;
         let diskChart = null;
+        let serverChart = null;
+        let datasourceChart = null;
 
         function getInfo() {
             let url = new URL(/*[[@{/admin/monitor/get-info}]]*/'', document.location.origin);
@@ -224,6 +226,63 @@
             });
         }
 
+        function getServer() {
+            let url = new URL(/*[[@{/admin/monitor/get-server}]]*/'', document.location.origin);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    initializeServerChart(data);
+                });
+        }
+
+        function initializeServerChart(cpu) {
+            let labels = [];
+            let max = [];
+            let current = [];
+            let busy = [];
+            cpu.forEach(element => {
+                labels.push(new Date(element.time));
+                max.push(element.max);
+                current.push(element.current);
+                busy.push(element.busy);
+            });
+            serverChart = new Chart(document.getElementById("serverChart"), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Usage',
+                        data: max,
+                        fill: true,
+                        borderColor: 'rgba(75,192,192,1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 1,
+                        pointStyle: 'crossRot'
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            display: false,
+                            title: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 10
+                                },
+                                callback: function(value, index, values) {
+                                    return value + ' %';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // DOM content loaded listener
         document.addEventListener('DOMContentLoaded',()=> {
             getInfo();
@@ -330,6 +389,25 @@
                 </div>
                 <div class="panel-content">
                     <canvas id="diskChart"></canvas>
+                </div>
+            </div>
+            <!-- ================================== -->
+            <!-- end: disk                          -->
+            <!-- ================================== -->
+        </div>
+        <div class="grid-column--span-1">
+            <!-- ================================== -->
+            <!-- start: disk                        -->
+            <!-- ================================== -->
+            <div class="panel">
+                <div id="server" class="panel-title">
+                    <h1>
+                        <img class="icon" th:src="@{/static/image/icon-server.svg}" alt="server"/>
+                        <span data-th-text="#{web.admin.monitor.server}"></span>
+                    </h1>
+                </div>
+                <div class="panel-content">
+                    <canvas id="serverChart"></canvas>
                 </div>
             </div>
             <!-- ================================== -->

@@ -268,25 +268,54 @@ const _openLink = function(linkUrl, linkTarget) {
     }
 }
 
+// /**
+//  * replace history state
+//  */
+// const _replaceHistoryState = function(data) {
+//     history.replaceState(JSON.stringify(data), null);
+// }
+//
+// /**
+//  * push history state
+//  */
+// const _pushHistoryState = function(data) {
+//     history.pushState(JSON.stringify(data), null, `#${new Date().getTime()}`);
+// }
+//
+// /**
+//  * get history state
+//  */
+// const _getHistoryState = function() {
+//     return JSON.parse(history.state);
+// }
+
 /**
- * replace history state
+ * load from url search params
  */
-const _replaceHistoryState = function(data) {
-    history.replaceState(JSON.stringify(data), null);
+const _loadUrlSearchParams = function(object, _properties) {
+    const url = new URL(location.href);
+    const properties = _properties || Object.keys(object);
+    properties.forEach(property => {
+        const value = url.searchParams.get(property);
+        if (value != null) {
+            object[property] = value;
+        }
+    });
 }
 
 /**
- * push history state
+ * push to url search params
  */
-const _pushHistoryState = function(data) {
-    history.pushState(JSON.stringify(data), null, `#${new Date().getTime()}`);
-}
-
-/**
- * get history state
- */
-const _getHistoryState = function() {
-    return JSON.parse(history.state);
+const _pushUrlSearchParams = function(object, _properties) {
+    const url = new URL(location.href);
+    const properties = _properties || Object.keys(object);
+    properties.forEach(property => {
+        const value = object[property];
+        if (value != null) {
+            url.searchParams.set(property, value);
+        }
+    });
+    history.pushState({ time: new Date().getTime() }, null, url);
 }
 
 /**
