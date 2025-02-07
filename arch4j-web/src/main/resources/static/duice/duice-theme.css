@@ -24,7 +24,7 @@
   --duice-table-border: solid 1px #ddd;
   --duice-table-thead-background: #f7f7f7;
   --duice-table-thead-border: solid 1px #ddd;
-  --duice-table-tbody-background: transparent;
+  --duice-table-tbody-background: white;
   --duice-table-tbody-border: solid 1px #eee;
   --duice-table-tbody-hover-background: #f9f9f9;
   --duice-table-tfoot-background: #f7f7f7;
@@ -51,7 +51,7 @@
   --duice-table-border: solid 1px #444444;
   --duice-table-thead-background: #2c2c2c;
   --duice-table-thead-border: solid 1px #444444;
-  --duice-table-tbody-background: transparent;
+  --duice-table-tbody-background: #1e1e1e;
   --duice-table-tbody-border: solid 1px #333333;
   --duice-table-tbody-hover-background: #222222;
   --duice-table-tfoot-background: #2c2c2c;
@@ -311,6 +311,10 @@ table > thead > tr > td {
 
 table > thead > tr > :last-child {
   border-right: none;
+}
+
+table > tbody {
+  background: var(--duice-table-tbody-background);
 }
 
 table > tbody > tr > th,

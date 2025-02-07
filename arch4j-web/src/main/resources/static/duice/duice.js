@@ -1,5 +1,5 @@
 /*!
- * duice - v0.2.57
+ * duice - v0.2.58
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -170,15 +170,6 @@ var duice = (function (exports) {
         }
     }
 
-    var __awaiter$5 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     class DataHandler extends Observable {
         constructor() {
             super();
@@ -245,15 +236,13 @@ var duice = (function (exports) {
             this.listenerEnabled = true;
         }
         checkListener(listener, event) {
-            return __awaiter$5(this, void 0, void 0, function* () {
-                if (this.listenerEnabled && listener) {
-                    let result = yield listener.call(this.getTarget(), event);
-                    if (result == false) {
-                        return false;
-                    }
+            if (this.listenerEnabled && listener) {
+                let result = listener.call(this.getTarget(), event);
+                if (result == false) {
+                    return false;
                 }
-                return true;
-            });
+            }
+            return true;
         }
     }
 
@@ -740,47 +729,44 @@ var duice = (function (exports) {
                 // push, unshift
                 if (['push', 'unshift'].includes(property)) {
                     return function () {
-                        var arguments_1 = arguments;
-                        return __awaiter$3(this, void 0, void 0, function* () {
-                            let index;
-                            if (property === 'push') {
-                                index = receiver['length'];
-                            }
-                            else if (property === 'unshift') {
-                                index = 0;
-                            }
-                            let rows = [];
-                            for (let i in arguments_1) {
-                                rows.push(arguments_1[i]);
-                            }
-                            yield _this.insertItem(target, index, ...rows);
-                            return target.length;
-                        });
+                        let index;
+                        if (property === 'push') {
+                            index = receiver['length'];
+                        }
+                        else if (property === 'unshift') {
+                            index = 0;
+                        }
+                        let rows = [];
+                        for (let i in arguments) {
+                            rows.push(arguments[i]);
+                        }
+                        _this.insertItem(target, index, ...rows);
+                        return target.length;
                     };
                 }
                 // splice
                 if (['splice'].includes(property)) {
                     return function () {
-                        var arguments_2 = arguments;
+                        var arguments_1 = arguments;
                         return __awaiter$3(this, void 0, void 0, function* () {
                             // parse arguments
-                            let start = arguments_2[0];
-                            let deleteCount = arguments_2[1];
+                            let start = arguments_1[0];
+                            let deleteCount = arguments_1[1];
                             let deleteRows = [];
                             for (let i = start; i < (start + deleteCount); i++) {
                                 deleteRows.push(target[i]);
                             }
                             let insertRows = [];
-                            for (let i = 2; i < arguments_2.length; i++) {
-                                insertRows.push(arguments_2[i]);
+                            for (let i = 2; i < arguments_1.length; i++) {
+                                insertRows.push(arguments_1[i]);
                             }
                             // delete rows
                             if (deleteCount > 0) {
-                                yield _this.deleteItem(target, start, deleteCount);
+                                _this.deleteItem(target, start, deleteCount);
                             }
                             // insert rows
                             if (insertRows.length > 0) {
-                                yield _this.insertItem(target, start, ...insertRows);
+                                _this.insertItem(target, start, ...insertRows);
                             }
                             // returns deleted rows
                             return deleteRows;
@@ -799,7 +785,7 @@ var duice = (function (exports) {
                                 index = 0;
                             }
                             let rows = [target[index]];
-                            yield _this.deleteItem(target, index);
+                            _this.deleteItem(target, index);
                             return rows;
                         });
                     };
@@ -818,66 +804,60 @@ var duice = (function (exports) {
             return true;
         }
         update(observable, event) {
-            return __awaiter$3(this, void 0, void 0, function* () {
-                console.debug("ArrayHandler.update", observable, event);
-                // instance is array component
-                if (observable instanceof ArrayElement) {
-                    // row select event
-                    if (event instanceof ItemSelectEvent) {
-                        this.selectedItemIndex = event.getIndex();
-                        return;
-                    }
-                    // row move event
-                    if (event instanceof ItemMoveEvent) {
-                        let object = this.getTarget().splice(event.getFromIndex(), 1)[0];
-                        this.getTarget().splice(event.getToIndex(), 0, object);
-                    }
+            console.debug("ArrayHandler.update", observable, event);
+            // instance is array component
+            if (observable instanceof ArrayElement) {
+                // row select event
+                if (event instanceof ItemSelectEvent) {
+                    this.selectedItemIndex = event.getIndex();
+                    return;
                 }
-                // notify observers
-                this.notifyObservers(event);
-            });
+                // row move event
+                if (event instanceof ItemMoveEvent) {
+                    let object = this.getTarget().splice(event.getFromIndex(), 1)[0];
+                    this.getTarget().splice(event.getToIndex(), 0, object);
+                }
+            }
+            // notify observers
+            this.notifyObservers(event);
         }
         insertItem(arrayProxy, index, ...rows) {
-            return __awaiter$3(this, void 0, void 0, function* () {
-                let arrayHandler = ArrayProxy.getHandler(arrayProxy);
-                let proxyTarget = ArrayProxy.getTarget(arrayProxy);
-                rows.forEach((object, index) => {
+            let arrayHandler = ArrayProxy.getHandler(arrayProxy);
+            let proxyTarget = ArrayProxy.getTarget(arrayProxy);
+            rows.forEach((object, index) => {
+                if (typeof object === 'object') {
                     let objectProxy = new ObjectProxy(object);
                     let objectHandler = ObjectProxy.getHandler(objectProxy);
                     objectHandler.propertyChangingListener = this.propertyChangingListener;
                     objectHandler.propertyChangedListener = this.propertyChangedListener;
                     rows[index] = objectProxy;
-                });
-                let event = new ItemInsertEvent(this, index, rows);
-                if (yield arrayHandler.checkListener(arrayHandler.rowInsertingListener, event)) {
-                    proxyTarget.splice(index, 0, ...rows);
-                    yield arrayHandler.checkListener(arrayHandler.rowInsertedListener, event);
-                    arrayHandler.notifyObservers(event);
                 }
             });
+            let event = new ItemInsertEvent(this, index, rows);
+            if (arrayHandler.checkListener(arrayHandler.rowInsertingListener, event)) {
+                proxyTarget.splice(index, 0, ...rows);
+                arrayHandler.checkListener(arrayHandler.rowInsertedListener, event);
+                arrayHandler.notifyObservers(event);
+            }
         }
         deleteItem(arrayProxy, index, size) {
-            return __awaiter$3(this, void 0, void 0, function* () {
-                let arrayHandler = ArrayProxy.getHandler(arrayProxy);
-                let proxyTarget = ArrayProxy.getTarget(arrayProxy);
-                let sliceBegin = index;
-                let sliceEnd = (size ? index + size : index + 1);
-                let rows = proxyTarget.slice(sliceBegin, sliceEnd);
-                let event = new ItemDeleteEvent(this, index, rows);
-                if (yield arrayHandler.checkListener(arrayHandler.rowDeletingListener, event)) {
-                    let spliceStart = index;
-                    let spliceDeleteCount = (size ? size : 1);
-                    proxyTarget.splice(spliceStart, spliceDeleteCount);
-                    yield arrayHandler.checkListener(arrayHandler.rowDeletedListener, event);
-                    arrayHandler.notifyObservers(event);
-                }
-            });
+            let arrayHandler = ArrayProxy.getHandler(arrayProxy);
+            let proxyTarget = ArrayProxy.getTarget(arrayProxy);
+            let sliceBegin = index;
+            let sliceEnd = (size ? index + size : index + 1);
+            let rows = proxyTarget.slice(sliceBegin, sliceEnd);
+            let event = new ItemDeleteEvent(this, index, rows);
+            if (arrayHandler.checkListener(arrayHandler.rowDeletingListener, event)) {
+                let spliceStart = index;
+                let spliceDeleteCount = (size ? size : 1);
+                proxyTarget.splice(spliceStart, spliceDeleteCount);
+                arrayHandler.checkListener(arrayHandler.rowDeletedListener, event);
+                arrayHandler.notifyObservers(event);
+            }
         }
         appendItem(arrayProxy, ...rows) {
-            return __awaiter$3(this, void 0, void 0, function* () {
-                let index = arrayProxy.length;
-                return this.insertItem(arrayProxy, index, ...rows);
-            });
+            let index = arrayProxy.length;
+            return this.insertItem(arrayProxy, index, ...rows);
         }
         selectItem(index) {
             this.selectedItemIndex = index;
@@ -906,7 +886,9 @@ var duice = (function (exports) {
             // copy array elements
             if (globalThis.Array.isArray(array)) {
                 for (let i = 0; i < array.length; i++) {
-                    array[i] = new ObjectProxy(array[i]);
+                    if (typeof array[i] === 'object') {
+                        array[i] = new ObjectProxy(array[i]);
+                    }
                 }
             }
             // create proxy
@@ -957,7 +939,12 @@ var duice = (function (exports) {
                 // clears elements
                 arrayProxy.length = 0;
                 // creates elements
-                array.forEach((object, index) => {
+                for (let index = 0; index < array.length; index++) {
+                    let object = array[index];
+                    // if not object, skip
+                    if (typeof object !== 'object') {
+                        continue;
+                    }
                     let objectProxy = new ObjectProxy(object);
                     arrayProxy[index] = objectProxy;
                     // readonly
@@ -973,7 +960,7 @@ var duice = (function (exports) {
                     // add listener
                     ObjectProxy.onPropertyChanging(objectProxy, arrayHandler.propertyChangingListener);
                     ObjectProxy.onPropertyChanged(objectProxy, arrayHandler.propertyChangedListener);
-                });
+                }
             }
             finally {
                 // resume

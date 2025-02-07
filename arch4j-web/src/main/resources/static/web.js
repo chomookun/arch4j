@@ -182,7 +182,6 @@ const _parseTotalCount = function(response){
  * @private
  */
 const _isDarkMode = function() {
-
     // checks cookie
     if(_getCookie('dark-mode') === 'true') {
         return true;
@@ -190,14 +189,12 @@ const _isDarkMode = function() {
     if(_getCookie('dark-mode') === 'false') {
         return false;
     }
-
     // checks media query
     if (window.matchMedia) {
         if(window.matchMedia('(prefers-color-scheme: dark)')?.matches){
             return true;
         }
     }
-
     // returns false
     return false;
 }
@@ -268,27 +265,6 @@ const _openLink = function(linkUrl, linkTarget) {
     }
 }
 
-// /**
-//  * replace history state
-//  */
-// const _replaceHistoryState = function(data) {
-//     history.replaceState(JSON.stringify(data), null);
-// }
-//
-// /**
-//  * push history state
-//  */
-// const _pushHistoryState = function(data) {
-//     history.pushState(JSON.stringify(data), null, `#${new Date().getTime()}`);
-// }
-//
-// /**
-//  * get history state
-//  */
-// const _getHistoryState = function() {
-//     return JSON.parse(history.state);
-// }
-
 /**
  * load from url search params
  */
@@ -298,7 +274,11 @@ const _loadUrlSearchParams = function(object, _properties) {
     properties.forEach(property => {
         const value = url.searchParams.get(property);
         if (value != null) {
-            object[property] = value;
+            if (Array.isArray(object[property])) {
+                url.searchParams.getAll(property).forEach(v => object[property].push(v));
+            } else {
+                object[property] = value;
+            }
         }
     });
 }
@@ -312,7 +292,11 @@ const _pushUrlSearchParams = function(object, _properties) {
     properties.forEach(property => {
         const value = object[property];
         if (value != null) {
-            url.searchParams.set(property, value);
+            if (Array.isArray(value)) {
+                value.forEach(v => url.searchParams.append(property, v));
+            } else {
+                url.searchParams.set(property, value);
+            }
         }
     });
     history.pushState({ time: new Date().getTime() }, null, url);
