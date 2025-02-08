@@ -266,43 +266,6 @@ const _openLink = function(linkUrl, linkTarget) {
 }
 
 /**
- * load from url search params
- */
-const _loadUrlSearchParams = function(object, _properties) {
-    const url = new URL(location.href);
-    const properties = _properties || Object.keys(object);
-    properties.forEach(property => {
-        const value = url.searchParams.get(property);
-        if (value != null) {
-            if (Array.isArray(object[property])) {
-                url.searchParams.getAll(property).forEach(v => object[property].push(v));
-            } else {
-                object[property] = value;
-            }
-        }
-    });
-}
-
-/**
- * push to url search params
- */
-const _pushUrlSearchParams = function(object, _properties) {
-    const url = new URL(location.href);
-    const properties = _properties || Object.keys(object);
-    properties.forEach(property => {
-        const value = object[property];
-        if (value != null) {
-            if (Array.isArray(value)) {
-                value.forEach(v => url.searchParams.append(property, v));
-            } else {
-                url.searchParams.set(property, value);
-            }
-        }
-    });
-    history.pushState({ time: new Date().getTime() }, null, url);
-}
-
-/**
  * checks is empty
  * @param value
  * @returns {boolean}
@@ -421,4 +384,66 @@ class WebSocketClient {
     }
 
 }
+
+/**
+ * load from url search params
+ */
+const _loadUrlSearchParams = function(object, _properties) {
+    const url = new URL(location.href);
+    const properties = _properties || Object.keys(object);
+    properties.forEach(property => {
+        const value = url.searchParams.get(property);
+        if (value != null) {
+            if (Array.isArray(object[property])) {
+                url.searchParams.getAll(property).forEach(v => object[property].push(v));
+            } else {
+                switch (typeof object[property]) {
+                    case 'boolean':
+                        object[property] = value === 'true';
+                        break;
+                    case 'number':
+                        object[property] = Number(value);
+                        break;
+                    default:
+                        object[property] = value;
+                        break;
+                }
+            }
+        }
+    });
+}
+
+/**
+ * push to url search params
+ */
+const _pushUrlSearchParams = function(object, _properties) {
+    const url = new URL(location.href);
+    const properties = _properties || Object.keys(object);
+    properties.forEach(property => {
+        const value = object[property];
+        if (value != null) {
+            if (Array.isArray(value)) {
+                url.searchParams.delete(property);
+                value.forEach(v => url.searchParams.append(property, v));
+            } else {
+                url.searchParams.set(property, value);
+            }
+        }
+    });
+    history.pushState({ time: new Date().getTime() }, null, url);
+};
+
+/**
+ * deletes url search params
+ * @param _properties
+ * @private
+ */
+const _deleteUrlSearchParams = function(_properties) {
+    const url = new URL(location.href);
+    const properties = _properties || [];
+    properties.forEach(property => {
+        url.searchParams.delete(property);
+    });
+    history.pushState({ time: new Date().getTime() }, null, url);
+};
 

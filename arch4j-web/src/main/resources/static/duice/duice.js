@@ -26,6 +26,52 @@ var duice = (function (exports) {
             setElementAttribute(element, 'id', '_');
         });
     }
+    function isObjectProxy(object) {
+        return object.hasOwnProperty('_target_');
+    }
+    function setObjectTarget(objectProxy, target) {
+        globalThis.Object.defineProperty(objectProxy, '_target_', {
+            value: target,
+            writable: true
+        });
+    }
+    function getObjectTarget(objectProxy) {
+        return globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_target_').value;
+    }
+    function setObjectHandler(objectProxy, objectHandler) {
+        globalThis.Object.defineProperty(objectProxy, '_handler_', {
+            value: objectHandler,
+            writable: true
+        });
+    }
+    function getObjectHandler(objectProxy) {
+        let handler = globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_handler_').value;
+        assert(handler, 'handler is not found');
+        return handler;
+    }
+    function isArrayProxy(array) {
+        return array.hasOwnProperty('_target_');
+    }
+    function setArrayTarget(arrayProxy, target) {
+        globalThis.Object.defineProperty(arrayProxy, '_target_', {
+            value: target,
+            writable: true
+        });
+    }
+    function getArrayTarget(arrayProxy) {
+        return globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_target_').value;
+    }
+    function setArrayHandler(arrayProxy, arrayHandler) {
+        globalThis.Object.defineProperty(arrayProxy, '_handler_', {
+            value: arrayHandler,
+            writable: true
+        });
+    }
+    function getArrayHandler(arrayProxy) {
+        let handler = globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_handler_').value;
+        assert(handler, 'handler is not found');
+        return handler;
+    }
     function findVariable(context, name) {
         // find in context
         try {
@@ -483,7 +529,7 @@ var duice = (function (exports) {
             // check if
             this.checkIf();
             if (this.property) {
-                let objectHandler = ObjectProxy.getHandler(this.getBindData());
+                let objectHandler = getObjectHandler(this.getBindData());
                 // set value
                 let value = objectHandler.getValue(this.property);
                 this.setValue(value);
@@ -594,15 +640,6 @@ var duice = (function (exports) {
         }
     }
 
-    var __awaiter$4 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     class ObjectHandler extends DataHandler {
         constructor() {
             super();
@@ -620,20 +657,18 @@ var duice = (function (exports) {
             return true;
         }
         update(observable, event) {
-            return __awaiter$4(this, void 0, void 0, function* () {
-                console.debug("ObjectHandler.update", observable, event);
-                // Element
-                if (observable instanceof ObjectElement) {
-                    let property = observable.getProperty();
-                    let value = observable.getValue();
-                    if (yield this.checkListener(this.propertyChangingListener, event)) {
-                        this.setValue(property, value);
-                        yield this.checkListener(this.propertyChangedListener, event);
-                    }
+            console.debug("ObjectHandler.update", observable, event);
+            // Element
+            if (observable instanceof ObjectElement) {
+                let property = observable.getProperty();
+                let value = observable.getValue();
+                if (this.checkListener(this.propertyChangingListener, event)) {
+                    this.setValue(property, value);
+                    this.checkListener(this.propertyChangedListener, event);
                 }
-                // notify
-                this.notifyObservers(event);
-            });
+            }
+            // notify
+            this.notifyObservers(event);
         }
         getValue(property) {
             property = property.replace('.', '?.');
@@ -822,12 +857,12 @@ var duice = (function (exports) {
             this.notifyObservers(event);
         }
         insertItem(arrayProxy, index, ...rows) {
-            let arrayHandler = ArrayProxy.getHandler(arrayProxy);
-            let proxyTarget = ArrayProxy.getTarget(arrayProxy);
+            let arrayHandler = getArrayHandler(arrayProxy);
+            let proxyTarget = getArrayTarget(arrayProxy);
             rows.forEach((object, index) => {
                 if (typeof object === 'object') {
                     let objectProxy = new ObjectProxy(object);
-                    let objectHandler = ObjectProxy.getHandler(objectProxy);
+                    let objectHandler = getObjectHandler(objectProxy);
                     objectHandler.propertyChangingListener = this.propertyChangingListener;
                     objectHandler.propertyChangedListener = this.propertyChangedListener;
                     rows[index] = objectProxy;
@@ -841,8 +876,8 @@ var duice = (function (exports) {
             }
         }
         deleteItem(arrayProxy, index, size) {
-            let arrayHandler = ArrayProxy.getHandler(arrayProxy);
-            let proxyTarget = ArrayProxy.getTarget(arrayProxy);
+            let arrayHandler = getArrayHandler(arrayProxy);
+            let proxyTarget = getArrayTarget(arrayProxy);
             let sliceBegin = index;
             let sliceEnd = (size ? index + size : index + 1);
             let rows = proxyTarget.slice(sliceBegin, sliceEnd);
@@ -878,7 +913,7 @@ var duice = (function (exports) {
         constructor(array) {
             super();
             // is already proxy
-            if (ArrayProxy.isProxy(array)) {
+            if (isArrayProxy(array)) {
                 return array;
             }
             // array handler
@@ -895,35 +930,12 @@ var duice = (function (exports) {
             let arrayProxy = new Proxy(array, arrayHandler);
             arrayHandler.setTarget(array);
             // set property
-            ArrayProxy.setHandler(arrayProxy, arrayHandler);
-            ArrayProxy.setTarget(arrayProxy, array);
+            setArrayHandler(arrayProxy, arrayHandler);
+            setArrayTarget(arrayProxy, array);
             // save
             ArrayProxy.save(arrayProxy);
             // returns
             return arrayProxy;
-        }
-        static isProxy(array) {
-            return array.hasOwnProperty('_target_');
-        }
-        static setTarget(arrayProxy, target) {
-            globalThis.Object.defineProperty(arrayProxy, '_target_', {
-                value: target,
-                writable: true
-            });
-        }
-        static getTarget(arrayProxy) {
-            return globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_target_').value;
-        }
-        static setHandler(arrayProxy, arrayHandler) {
-            globalThis.Object.defineProperty(arrayProxy, '_handler_', {
-                value: arrayHandler,
-                writable: true
-            });
-        }
-        static getHandler(arrayProxy) {
-            let handler = globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_handler_').value;
-            assert(handler, 'handler is not found');
-            return handler;
         }
         /**
          * Assigns array to array proxy
@@ -931,7 +943,7 @@ var duice = (function (exports) {
          * @param array
          */
         static assign(arrayProxy, array) {
-            let arrayHandler = this.getHandler(arrayProxy);
+            let arrayHandler = getArrayHandler(arrayProxy);
             try {
                 // suspend
                 arrayHandler.suspendListener();
@@ -975,7 +987,7 @@ var duice = (function (exports) {
          * @param arrayProxy
          */
         static clear(arrayProxy) {
-            let arrayHandler = this.getHandler(arrayProxy);
+            let arrayHandler = getArrayHandler(arrayProxy);
             try {
                 // suspend
                 arrayHandler.suspendListener();
@@ -1011,70 +1023,70 @@ var duice = (function (exports) {
             this.assign(arrayProxy, origin);
         }
         static setReadonly(arrayProxy, property, readonly) {
-            this.getHandler(arrayProxy).setReadonly(property, readonly);
+            getArrayHandler(arrayProxy).setReadonly(property, readonly);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setReadonly(objectProxy, property, readonly);
             });
         }
         static isReadonly(arrayProxy, property) {
-            return this.getHandler(arrayProxy).isReadonly(property);
+            return getArrayHandler(arrayProxy).isReadonly(property);
         }
         static setReadonlyAll(arrayProxy, readonly) {
-            this.getHandler(arrayProxy).setReadonlyAll(readonly);
+            getArrayHandler(arrayProxy).setReadonlyAll(readonly);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setReadonlyAll(objectProxy, readonly);
             });
         }
         static isReadonlyAll(arrayProxy) {
-            return this.getHandler(arrayProxy).isReadonlyAll();
+            return getArrayHandler(arrayProxy).isReadonlyAll();
         }
         static setDisable(arrayProxy, property, disable) {
-            this.getHandler(arrayProxy).setDisable(property, disable);
+            getArrayHandler(arrayProxy).setDisable(property, disable);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setDisable(objectProxy, property, disable);
             });
         }
         static isDisable(arrayProxy, property) {
-            return this.getHandler(arrayProxy).isDisable(property);
+            return getArrayHandler(arrayProxy).isDisable(property);
         }
         static setDisableAll(arrayProxy, disable) {
-            this.getHandler(arrayProxy).setDisableAll(disable);
+            getArrayHandler(arrayProxy).setDisableAll(disable);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setDisableAll(objectProxy, disable);
             });
         }
         static isDisableAll(arrayProxy) {
-            return this.getHandler(arrayProxy).isDisableAll();
+            return getArrayHandler(arrayProxy).isDisableAll();
         }
         static selectItem(arrayProxy, index) {
-            return this.getHandler(arrayProxy).selectItem(index);
+            return getArrayHandler(arrayProxy).selectItem(index);
         }
         static getSelectedItemIndex(arrayProxy) {
-            return this.getHandler(arrayProxy).getSelectedItemIndex();
+            return getArrayHandler(arrayProxy).getSelectedItemIndex();
         }
         static onPropertyChanging(arrayProxy, listener) {
-            this.getHandler(arrayProxy).propertyChangingListener = listener;
+            getArrayHandler(arrayProxy).propertyChangingListener = listener;
             arrayProxy.forEach(objectProxy => {
-                ObjectProxy.getHandler(objectProxy).propertyChangingListener = listener;
+                getObjectHandler(objectProxy).propertyChangingListener = listener;
             });
         }
         static onPropertyChanged(arrayProxy, listener) {
-            this.getHandler(arrayProxy).propertyChangedListener = listener;
+            getArrayHandler(arrayProxy).propertyChangedListener = listener;
             arrayProxy.forEach(objectProxy => {
-                ObjectProxy.getHandler(objectProxy).propertyChangedListener = listener;
+                getObjectHandler(objectProxy).propertyChangedListener = listener;
             });
         }
         static onRowInserting(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowInsertingListener = listener;
+            getArrayHandler(arrayProxy).rowInsertingListener = listener;
         }
         static onRowInserted(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowInsertedListener = listener;
+            getArrayHandler(arrayProxy).rowInsertedListener = listener;
         }
         static onRowDeleting(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowDeletingListener = listener;
+            getArrayHandler(arrayProxy).rowDeletingListener = listener;
         }
         static onRowDeleted(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowDeletedListener = listener;
+            getArrayHandler(arrayProxy).rowDeletedListener = listener;
         }
     }
 
@@ -1086,7 +1098,7 @@ var duice = (function (exports) {
         constructor(object) {
             super();
             // is already proxy
-            if (ObjectProxy.isProxy(object)) {
+            if (isObjectProxy(object)) {
                 return object;
             }
             // object handler
@@ -1097,14 +1109,14 @@ var duice = (function (exports) {
                 // value is array
                 if (Array.isArray(value)) {
                     let arrayProxy = new ArrayProxy(value);
-                    ArrayProxy.getHandler(arrayProxy).addObserver(objectHandler);
+                    getArrayHandler(arrayProxy).addObserver(objectHandler);
                     object[name] = arrayProxy;
                     continue;
                 }
                 // value is object
                 if (value != null && typeof value === 'object') {
                     let objectProxy = new ObjectProxy(value);
-                    ObjectProxy.getHandler(objectProxy).addObserver(objectHandler);
+                    getObjectHandler(objectProxy).addObserver(objectHandler);
                     object[name] = objectProxy;
                     continue;
                 }
@@ -1121,35 +1133,12 @@ var duice = (function (exports) {
             let objectProxy = new Proxy(object, objectHandler);
             objectHandler.setTarget(object);
             // set property
-            ObjectProxy.setHandler(objectProxy, objectHandler);
-            ObjectProxy.setTarget(objectProxy, object);
+            setObjectHandler(objectProxy, objectHandler);
+            setObjectTarget(objectProxy, object);
             // save
             ObjectProxy.save(objectProxy);
             // returns
             return objectProxy;
-        }
-        static isProxy(object) {
-            return object.hasOwnProperty('_target_');
-        }
-        static setTarget(objectProxy, target) {
-            globalThis.Object.defineProperty(objectProxy, '_target_', {
-                value: target,
-                writable: true
-            });
-        }
-        static getTarget(objectProxy) {
-            return globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_target_').value;
-        }
-        static setHandler(objectProxy, objectHandler) {
-            globalThis.Object.defineProperty(objectProxy, '_handler_', {
-                value: objectHandler,
-                writable: true
-            });
-        }
-        static getHandler(objectProxy) {
-            let handler = globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_handler_').value;
-            assert(handler, 'handler is not found');
-            return handler;
         }
         /**
          * Assign object to object proxy
@@ -1157,7 +1146,7 @@ var duice = (function (exports) {
          * @param object
          */
         static assign(objectProxy, object) {
-            let objectHandler = this.getHandler(objectProxy);
+            let objectHandler = getObjectHandler(objectProxy);
             try {
                 // suspend
                 objectHandler.suspendListener();
@@ -1182,7 +1171,7 @@ var duice = (function (exports) {
                         }
                         else {
                             let objectProxy = new ObjectProxy(value);
-                            ObjectProxy.getHandler(objectProxy).addObserver(objectHandler);
+                            getObjectHandler(objectProxy).addObserver(objectHandler);
                             objectProxy[name] = objectProxy;
                         }
                         continue;
@@ -1204,7 +1193,7 @@ var duice = (function (exports) {
          * @param objectProxy
          */
         static clear(objectProxy) {
-            let objectHandler = this.getHandler(objectProxy);
+            let objectHandler = getObjectHandler(objectProxy);
             try {
                 // suspend
                 objectHandler.suspendListener();
@@ -1257,7 +1246,7 @@ var duice = (function (exports) {
          * @param readonly
          */
         static setReadonly(objectProxy, property, readonly) {
-            this.getHandler(objectProxy).setReadonly(property, readonly);
+            getObjectHandler(objectProxy).setReadonly(property, readonly);
         }
         /**
          * Get whether property is readonly
@@ -1265,7 +1254,7 @@ var duice = (function (exports) {
          * @param property
          */
         static isReadonly(objectProxy, property) {
-            return this.getHandler(objectProxy).isReadonly(property);
+            return getObjectHandler(objectProxy).isReadonly(property);
         }
         /**
          * Set all properties to be readonly
@@ -1273,14 +1262,14 @@ var duice = (function (exports) {
          * @param readonly
          */
         static setReadonlyAll(objectProxy, readonly) {
-            this.getHandler(objectProxy).setReadonlyAll(readonly);
+            getObjectHandler(objectProxy).setReadonlyAll(readonly);
         }
         /**
          * Get whether all properties are readonly
          * @param objectProxy
          */
         static isReadonlyAll(objectProxy) {
-            return this.getHandler(objectProxy).isReadonlyAll();
+            return getObjectHandler(objectProxy).isReadonlyAll();
         }
         /**
          * Set object to be disabled
@@ -1289,7 +1278,7 @@ var duice = (function (exports) {
          * @param disable
          */
         static setDisable(objectProxy, property, disable) {
-            this.getHandler(objectProxy).setDisable(property, disable);
+            getObjectHandler(objectProxy).setDisable(property, disable);
         }
         /**
          * Get whether property is disabled
@@ -1297,7 +1286,7 @@ var duice = (function (exports) {
          * @param property
          */
         static isDisable(objectProxy, property) {
-            return this.getHandler(objectProxy).isDisable(property);
+            return getObjectHandler(objectProxy).isDisable(property);
         }
         /**
          * Set all properties to be disabled
@@ -1305,14 +1294,14 @@ var duice = (function (exports) {
          * @param disable
          */
         static setDisableAll(objectProxy, disable) {
-            this.getHandler(objectProxy).setDisableAll(disable);
+            getObjectHandler(objectProxy).setDisableAll(disable);
         }
         /**
          * Get whether all properties are disabled
          * @param objectProxy
          */
         static isDisableAll(objectProxy) {
-            return this.getHandler(objectProxy).isDisableAll();
+            return getObjectHandler(objectProxy).isDisableAll();
         }
         /**
          * Set property to be focused
@@ -1320,7 +1309,7 @@ var duice = (function (exports) {
          * @param property
          */
         static focus(objectProxy, property) {
-            this.getHandler(objectProxy).focus(property);
+            getObjectHandler(objectProxy).focus(property);
         }
         /**
          * Set readonly before changing event listener
@@ -1328,7 +1317,7 @@ var duice = (function (exports) {
          * @param listener
          */
         static onPropertyChanging(objectProxy, listener) {
-            this.getHandler(objectProxy).propertyChangingListener = listener;
+            getObjectHandler(objectProxy).propertyChangingListener = listener;
         }
         /**
          * Set property after changed event listener
@@ -1336,7 +1325,7 @@ var duice = (function (exports) {
          * @param listener
          */
         static onPropertyChanged(objectProxy, listener) {
-            this.getHandler(objectProxy).propertyChangedListener = listener;
+            getObjectHandler(objectProxy).propertyChangedListener = listener;
         }
     }
 
@@ -1992,7 +1981,7 @@ var duice = (function (exports) {
                 this.option = findVariable(this.getContext(), optionName);
                 this.optionValueProperty = getElementAttribute(this.getHtmlElement(), 'option-value-property');
                 this.optionTextProperty = getElementAttribute(this.getHtmlElement(), 'option-text-property');
-                ArrayProxy.getHandler(this.option).addObserver(this);
+                getArrayHandler(this.option).addObserver(this);
                 this.updateOptions();
             }
         }
@@ -2487,13 +2476,25 @@ var duice = (function (exports) {
         }
     }
 
-    //  listens DOMContentLoaded event
-    if (globalThis.document) {
-        // initialize elements
-        document.addEventListener("DOMContentLoaded", event => {
-            Initializer.initialize(document.documentElement, {});
-        });
-    }
+    // initializes
+    (function () {
+        // listen DOMContentLoaded
+        if (globalThis.document) {
+            document.addEventListener("DOMContentLoaded", event => {
+                Initializer.initialize(document.documentElement, {});
+            });
+        }
+        // listen history event and forward to DOMContentLoaded event
+        if (globalThis.window) {
+            ['popstate', 'pageshow'].forEach(event => {
+                window.addEventListener(event, (e) => {
+                    if (event === 'pageshow' && !e.persisted)
+                        return;
+                    document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+                });
+            });
+        }
+    })();
 
     exports.AlertDialog = AlertDialog;
     exports.ArrayElement = ArrayElement;
@@ -2518,14 +2519,24 @@ var duice = (function (exports) {
     exports.TextareaElementFactory = TextareaElementFactory;
     exports.assert = assert;
     exports.findVariable = findVariable;
+    exports.getArrayHandler = getArrayHandler;
+    exports.getArrayTarget = getArrayTarget;
     exports.getElementAttribute = getElementAttribute;
     exports.getElementQuerySelector = getElementQuerySelector;
+    exports.getObjectHandler = getObjectHandler;
+    exports.getObjectTarget = getObjectTarget;
     exports.hasElementAttribute = hasElementAttribute;
+    exports.isArrayProxy = isArrayProxy;
+    exports.isObjectProxy = isObjectProxy;
     exports.markInitialized = markInitialized;
     exports.runCode = runCode;
     exports.runExecuteCode = runExecuteCode;
     exports.runIfCode = runIfCode;
+    exports.setArrayHandler = setArrayHandler;
+    exports.setArrayTarget = setArrayTarget;
     exports.setElementAttribute = setElementAttribute;
+    exports.setObjectHandler = setObjectHandler;
+    exports.setObjectTarget = setObjectTarget;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
