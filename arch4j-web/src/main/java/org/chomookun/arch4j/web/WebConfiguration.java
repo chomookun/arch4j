@@ -154,7 +154,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
     @Slf4j
     @Configuration
     @EnableWebSecurity
-    @EnableMethodSecurity(securedEnabled = true, prePostEnabled = false)
+    @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
     @RequiredArgsConstructor
     static class SecurityConfiguration {
 
