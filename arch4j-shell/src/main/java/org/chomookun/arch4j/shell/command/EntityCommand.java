@@ -68,7 +68,8 @@ public class EntityCommand {
             put("sqlserver", org.hibernate.dialect.SQLServerDialect.class.getName());
             put("db2", org.hibernate.dialect.DB2Dialect.class.getName());
         }};
-        String dialectClassName = InteractiveUtil.askSelect("Select JPA Dialect", dialectOptions);
+        String dialectAnswer = InteractiveUtil.askSelect("Select JPA Dialect", dialectOptions);
+        String dialectClassName = dialectOptions.get(dialectAnswer);
 
         // creates metadata
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
