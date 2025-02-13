@@ -54,6 +54,7 @@ dependencies {
     // jackson
     api 'com.fasterxml.jackson.core:jackson-core'
     api 'com.fasterxml.jackson.core:jackson-databind'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // jasypt
     api 'com.github.ulisesbocchio:jasypt-spring-boot-starter'
@@ -115,7 +116,7 @@ test {
     useJUnitPlatform()
     testLogging {
         events 'failed'
-        exceptionFormat 'full'
+        exceptionFormat = 'full'
     }
 }
 

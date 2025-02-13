@@ -30,7 +30,6 @@ import jakarta.persistence.PersistenceContext;
 @TestPropertySource(properties = {
     "spring.h2.console.enabled=false"
 })
-@Import(CoreConfiguration.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Transactional

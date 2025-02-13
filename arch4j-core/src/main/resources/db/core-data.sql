@@ -33,6 +33,7 @@ values
     ('admin.codes.edit','Y','Admin Codes Edit Authority'),
     ('admin.alarms','Y','Admin Alarms Access Authority'),
     ('admin.alarms.edit','Y','Admins Alarm Edit Authority'),
+    ('admin.executions','Y','Admin Executions Access Authority'),
     ('actuator','Y','Actuator Access Authority'),
     ('h2-console','Y','Actuator Access Authority'),
     ('swagger-ui','Y','Swagger UI Access Authority');
@@ -61,6 +62,7 @@ values
     ('DEVELOPER','admin.variables'),
     ('DEVELOPER','admin.codes'),
     ('DEVELOPER','admin.alarms'),
+    ('DEVELOPER','admin.executions'),
     ('DEVELOPER','actuator'),
     ('DEVELOPER','h2-console'),
     ('DEVELOPER','swagger-ui');

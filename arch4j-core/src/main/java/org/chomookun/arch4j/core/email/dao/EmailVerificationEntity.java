@@ -7,7 +7,8 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "core_email_verification")
+@Entity
+@Table(name = "core_email_verification")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder

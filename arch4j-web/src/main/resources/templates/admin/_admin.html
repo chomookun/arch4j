@@ -15,6 +15,8 @@
     <script th:src="@{/static/nprogress/nprogress.js?version={version}(version=${_scriptVersion})}"></script>
     <!-- date-fns -->
     <script th:src="@{/static/date-fns/date-fns.js?version={version}(version=${_scriptVersion})}"></script>
+    <!-- luxon -->
+    <script th:src="@{/static/luxon/luxon.js?version={version}(version=${_scriptVersion})}"></script>
     <!-- chart-js -->
     <script th:src="@{/static/chartjs/chart.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:src="@{/static/chartjs/chartjs-adapter-date-fns.js?version={version}(version=${_scriptVersion})}"></script>
@@ -377,8 +379,14 @@
             </li>
             <li>
                 <a th:href="@{/admin/alarms}" th:classappend="!${#authorization.expression('hasAuthority(''admin.alarms'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-alarm.svg}" alt="code"/>
+                    <img class="icon" th:src="@{/static/image/icon-alarm.svg}" alt="alarm"/>
                     <span data-th-text="#{web.admin.alarm}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/executions}" th:classappend="!${#authorization.expression('hasAuthority(''admin.executions'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="execution"/>
+                    <span data-th-text="#{web.admin.execution}"></span>
                 </a>
             </li>
             <li>

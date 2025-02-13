@@ -11,7 +11,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "core_email")
+@Entity
+@Table(name = "core_email")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder

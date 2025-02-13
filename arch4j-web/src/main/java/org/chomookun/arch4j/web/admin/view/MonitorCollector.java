@@ -2,6 +2,7 @@ package org.chomookun.arch4j.web.admin.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Component
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public class MonitorCollector {
 
     private final MetricsEndpoint metricsEndpoint;
@@ -34,12 +36,14 @@ public class MonitorCollector {
      * @return metric value
      */
     private Double getMetricValue (String name) {
-        return metricsEndpoint.metric(name, null)
-                .getMeasurements()
-                .stream()
-                .findFirst()
-                .map(MetricsEndpoint.Sample::getValue)
-                .orElse(null);
+        try {
+            MetricsEndpoint.MetricDescriptor metricDescriptor = metricsEndpoint.metric(name, null);
+            List<MetricsEndpoint.Sample> samples = metricDescriptor.getMeasurements();
+            return samples.get(0).getValue();
+        } catch (Exception e) {
+            log.warn("Failed to get metric value[{}]:{}", name, e.getMessage());
+            return 0.0;
+        }
     }
 
     /**

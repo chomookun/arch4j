@@ -1,6 +1,8 @@
 package org.chomookun.arch4j.web;
 
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -132,7 +134,9 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return jacksonObjectMapperBuilder -> jacksonObjectMapperBuilder
-                .failOnEmptyBeans(false);
+                .failOnEmptyBeans(false)
+                .modules(new JavaTimeModule())
+                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);     // supports java.uti.* to ISO-8601
     }
 
     @Configuration

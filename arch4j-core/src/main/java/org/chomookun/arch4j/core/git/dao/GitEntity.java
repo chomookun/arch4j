@@ -6,7 +6,8 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import jakarta.persistence.*;
 
-@Entity(name = "core_git")
+@Entity
+@Table(name = "core_git")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder

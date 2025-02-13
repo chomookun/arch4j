@@ -13,7 +13,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "core_page")
+@Entity
+@Table(name = "core_page")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder

@@ -1,7 +1,19 @@
+logging:
+  level:
+    root: ERROR
+    com.zaxxer.hikari: ERROR
+    com.zaxxer.hikari.HikariConfig: DEBUG
 spring:
   shell:
+    logging:
+        level: ERROR
     interactive:
+      enabled: true
+    noninteractive:
       enabled: false
     script:
       enabled: false
+    jline:
+      terminal: jline.UnsupportedTerminal
+
 

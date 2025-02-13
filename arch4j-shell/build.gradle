@@ -17,8 +17,7 @@ dependencies {
     api project(":arch4j-core")
 
     // spring shell starter
-    api 'org.springframework.shell:spring-shell-starter:3.1.0'
-    api 'org.jline:jline:3.21.0'
+    api 'org.springframework.shell:spring-shell-starter:3.4.0'
 
 }
 
@@ -26,7 +25,7 @@ test {
     useJUnitPlatform()
     testLogging {
         events 'failed'
-        exceptionFormat 'full'
+        exceptionFormat = 'full'
     }
 }
 

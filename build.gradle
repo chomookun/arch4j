@@ -13,10 +13,10 @@ allprojects {
         if(project.mavenUrl) {
             maven {
                 allowInsecureProtocol = true
-                url project.mavenUrl
+                url = project.mavenUrl
                 credentials {
-                    username project.mavenUsername
-                    password project.mavenPassword
+                    username = project.mavenUsername
+                    password = project.mavenPassword
                 }
             }
         }
@@ -26,8 +26,11 @@ allprojects {
     afterEvaluate {
        // java
         if(it.plugins.hasPlugin("java")) {
-            it.sourceCompatibility = "17"
-            it.targetCompatibility = "17"
+            it.extensions.configure(JavaPluginExtension) { java ->
+                java.toolchain {
+                    languageVersion.set(JavaLanguageVersion.of(17))
+                }
+            }
             it.compileJava.options.encoding = "UTF-8"
             it.tasks.withType(JavaCompile){
                 options.encoding = 'UTF-8'
@@ -60,10 +63,10 @@ allprojects {
                 repositories {
                     maven {
                         allowInsecureProtocol = true
-                        url project.publishingMavenUrl
+                        url = project.publishingMavenUrl
                         credentials {
-                            username project.publishingMavenUsername
-                            password project.publishingMavenPassword
+                            username = project.publishingMavenUsername
+                            password = project.publishingMavenPassword
                         }
                     }
                 }

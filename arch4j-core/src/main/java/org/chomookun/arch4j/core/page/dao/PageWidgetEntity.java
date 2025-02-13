@@ -7,7 +7,8 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
-@Entity(name = "core_page_widget")
+@Entity
+@Table(name = "core_page_widget")
 @IdClass(PageWidgetEntity.Pk.class)
 @Data
 @EqualsAndHashCode(callSuper = true)

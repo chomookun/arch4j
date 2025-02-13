@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "user_mfa")
+@Table(name = "core_user_mfa")
 @IdClass(UserMfaEntity.Pk.class)
 @Data
 @EqualsAndHashCode(callSuper = true)
