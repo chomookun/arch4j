@@ -13,16 +13,6 @@ import java.util.Map;
 
 public class SpringApplicationInstaller {
 
-//    public static enum InstallMode {
-//        I("(Re)Install (Caution: all data will be removed."),
-//        U("Update");
-//        private String message;
-//        InstallMode(String message) {
-//            this.message = message;
-//        }
-//    }
-//    static enum InstallMode { I, U }
-
     public static void install(Class<?> applicationClass, String[] args) {
         // check install mode
         Map<String,String> installModes = new LinkedHashMap<>() {{

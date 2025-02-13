@@ -25,10 +25,11 @@ public class VariableEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "value", length = 1024)
+    @Column(name = "value", length = Integer.MAX_VALUE)
+    @Lob
     private String value;
 
-    @Column(name = "note")
+    @Column(name = "note", length = Integer.MAX_VALUE)
     @Lob
     private String note;
 

@@ -43,14 +43,14 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
     @Column(name = "target", length = 8)
     private Menu.Target target;
 
-    @Column(name = "icon")
+    @Column(name = "icon", length = 4000)
     @Lob
     private String icon;
 
     @Column(name = "sort")
     private Integer sort;
 
-    @Column(name = "note")
+    @Column(name = "note", length = 4000)
     @Lob
     private String note;
 

@@ -38,7 +38,7 @@ public class EmailI18nEntity extends BaseEntity implements I18nEntity {
     @Column(name = "subject")
     private String subject;
 
-    @Column(name = "content")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
 

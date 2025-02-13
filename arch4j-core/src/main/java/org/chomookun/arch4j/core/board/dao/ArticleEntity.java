@@ -44,7 +44,7 @@ public class ArticleEntity extends BaseEntity {
     private Article.ContentFormat contentFormat;
 
     @NotBlank
-    @Column(name = "content")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
 

@@ -52,7 +52,7 @@ public class ArticleCommentEntity extends BaseEntity {
     private ArticleComment.ContentFormat contentFormat;
 
     @NotBlank
-    @Column(name = "content")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
 

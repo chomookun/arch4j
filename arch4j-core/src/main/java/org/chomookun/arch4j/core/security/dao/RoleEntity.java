@@ -34,7 +34,7 @@ public class RoleEntity extends BaseEntity {
     @Convert(converter = BooleanConverter.class)
     private boolean authenticated;
 
-    @Column(name = "note")
+    @Column(name = "note", length = 4000)
     @Lob
     private String note;
 

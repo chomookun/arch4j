@@ -32,7 +32,7 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     @Column(name = "content_format", length = 16)
     private Page.ContentFormat contentFormat;
 
-    @Column(name = "content")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
 

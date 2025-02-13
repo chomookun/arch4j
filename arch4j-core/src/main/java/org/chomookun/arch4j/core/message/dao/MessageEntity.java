@@ -27,11 +27,11 @@ public class MessageEntity extends BaseEntity implements I18nSupportEntity<Messa
     @Column(name = "name")
     private String name;
 
-    @Column(name = "value")
+    @Column(name = "value", length = 4000)
     @Lob
     private String value;
 
-    @Column(name = "note")
+    @Column(name = "note", length = 4000)
     @Lob
     private String note;
 

@@ -31,14 +31,14 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
     @Column(name = "name")
     private String name;
 
-    @Column(name = "icon")
+    @Column(name = "icon", length = 4000)
     @Lob
     private String icon;
 
     @Column(name = "message_format", length = 16)
     private Board.MessageFormat messageFormat;
 
-    @Column(name = "message")
+    @Column(name = "message", length = 4000)
     @Lob
     private String message;
 

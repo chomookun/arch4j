@@ -30,7 +30,7 @@ public class EmailEntity extends BaseEntity implements I18nSupportEntity<EmailI1
     @Column(name = "subject", length = 1024)
     private String subject;
 
-    @Column(name = "content")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
 

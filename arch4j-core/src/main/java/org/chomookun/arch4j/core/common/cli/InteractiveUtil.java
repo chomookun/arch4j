@@ -34,7 +34,7 @@ public class InteractiveUtil {
             String answer = scanner.nextLine();
             if(answer != null && !answer.isBlank()) {
                 if (options.containsKey(answer)) {
-                    return options.get(answer);
+                    return answer;
                 }
             }
         }

@@ -35,7 +35,7 @@ public class PageI18nEntity extends BaseEntity implements I18nEntity {
     @Column(name = "language", length = 8)
     private String language;
 
-    @Column(name = "content")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
 

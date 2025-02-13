@@ -28,7 +28,7 @@ public class CodeEntity extends BaseEntity implements I18nSupportEntity<CodeI18n
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "note")
+	@Column(name = "note", length = 4000)
 	@Lob
 	private String note;
 	

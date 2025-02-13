@@ -28,7 +28,7 @@ public class GitEntity extends BaseEntity {
     @Column(name = "branch", length = 32)
     private String branch;
 
-    @Column(name = "note")
+    @Column(name = "note", length = 4000)
     private String note;
 
 }

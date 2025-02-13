@@ -35,8 +35,8 @@ public class UserEntity extends BaseEntity {
 
     @Id
     @Column(name = "user_id", length = 32)
-    @Comment("User ID")
     @Setter(AccessLevel.PRIVATE)
+    @Comment("User ID")
     private String userId;
 
     @Column(name = "username", unique = true, length = 128)
@@ -44,8 +44,8 @@ public class UserEntity extends BaseEntity {
     private String username;
 
     @Column(name = "password", length = 256)
-    @Comment("Password")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Comment("Password")
     private String password;
 
     @Column(name = "name", length = 128)
@@ -53,8 +53,8 @@ public class UserEntity extends BaseEntity {
     private String name;
 
     @Column(name = "admin", length = 1)
-    @Comment("Whether admin or not")
     @Convert(converter = BooleanConverter.class)
+    @Comment("Whether admin or not")
     private boolean admin;
 
     @Column(name = "status", length = 16)
@@ -62,23 +62,23 @@ public class UserEntity extends BaseEntity {
     private User.Status status;
 
     @Column(name = "email", unique = true, length = 128)
-    @Comment("Email")
     @Convert(converter = CryptoConverter.class)
+    @Comment("Email")
     private String email;
 
     @Column(name = "mobile", unique = true, length = 64)
-    @Comment("Mobile number")
     @Convert(converter = CryptoConverter.class)
+    @Comment("Mobile number")
     private String mobile;
 
-    @Column(name = "photo")
-    @Comment("Photo")
+    @Column(name = "photo", length = 4000)
     @Lob
+    @Comment("Photo")
     private String photo;
 
-    @Column(name = "profile")
-    @Comment("profile")
+    @Column(name = "profile", length = 4000)
     @Lob
+    @Comment("profile")
     private String profile;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

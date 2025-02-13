@@ -17,7 +17,7 @@ public class WebApplication {
 
         // install
         if(Arrays.asList(args).contains("install")) {
-            SpringApplicationInstaller.install(WebApplication.class, args);
+            SpringApplicationInstaller.install(WebConfiguration.class, args);
             System.exit(0);
         }
 

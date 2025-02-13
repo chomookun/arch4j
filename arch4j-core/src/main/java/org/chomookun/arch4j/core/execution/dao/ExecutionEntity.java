@@ -25,7 +25,7 @@ public class ExecutionEntity extends BaseEntity {
     @Column(name = "execution_id", length = 32)
     private String executionId;
 
-    @Column(name = "task_name", length = 128)
+    @Column(name = "task_name")
     private String taskName;
 
     @Column(name = "status", length = 16)
@@ -50,7 +50,7 @@ public class ExecutionEntity extends BaseEntity {
     @Column(name = "fail_count")
     private Long failCount;
 
-    @Column(name = "message")
+    @Column(name = "message", length = Integer.MAX_VALUE)
     @Lob
     private String message;
 
