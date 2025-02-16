@@ -53,9 +53,8 @@ dependencies {
     // log4jdbc
     api 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1'
 
-    // embedded redis
-    // https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
-    api 'com.github.codemonstur:embedded-redis:0.13.0'
+    // embedded redis mock
+    api 'com.github.fppt:jedis-mock'
 
     // jackson
     api 'com.fasterxml.jackson.core:jackson-core'

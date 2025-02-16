@@ -1,5 +1,6 @@
 package org.chomookun.arch4j.core;
 
+import com.github.fppt.jedismock.RedisServer;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManager;
-import redis.embedded.RedisServer;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -194,9 +194,8 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
                 log.info("redisServer - Port {} is already in use.", port);
                 return null;
             }
-            return RedisServer.newRedisServer()
-                    .port(port)
-                    .build();
+            // settings
+            return new RedisServer(port);
         }
         return null;
     }
