@@ -34,7 +34,7 @@
       "name": "core.git.location",
       "type": "java.lang.String",
       "description": "The location for the git.",
-      "sourceType": "org.chomookun.arch4j.core.git.service.GitProperties"
+      "sourceType": "org.chomookun.arch4j.core.git.GitProperties"
     }
   ]
 }

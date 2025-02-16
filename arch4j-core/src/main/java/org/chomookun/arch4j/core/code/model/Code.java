@@ -2,12 +2,11 @@ package org.chomookun.arch4j.core.code.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.code.dao.CodeEntity;
+import org.chomookun.arch4j.core.code.entity.CodeEntity;
 import org.chomookun.arch4j.core.common.data.BaseModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.security.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.security.dao.AuthorityEntity;
+import org.chomookun.arch4j.core.security.entity.AuthorityEntity;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

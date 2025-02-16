@@ -52,12 +52,12 @@ public class BatchConfiguration implements EnvironmentPostProcessor {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Resource resource = new DefaultResourceLoader().getResource("classpath:batch-config.yml");
+        Resource resource = new DefaultResourceLoader().getResource("classpath:batch.yml");
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(resource);
         factory.afterPropertiesSet();
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
-        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("batch-config", properties);
+        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("batch", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
     }
 

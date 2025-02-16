@@ -2,7 +2,7 @@ package org.chomookun.arch4j.core.alarm.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.alarm.dao.AlarmEntity;
+import org.chomookun.arch4j.core.alarm.entity.AlarmEntity;
 import org.chomookun.arch4j.core.common.data.BaseModel;
 
 @Data

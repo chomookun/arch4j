@@ -14,10 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.CoreConfiguration;
 import org.chomookun.arch4j.core.CoreProperties;
-import org.chomookun.arch4j.core.security.service.RoleService;
-import org.chomookun.arch4j.web.security.filter.SecurityFilter;
-import org.chomookun.arch4j.web.security.service.SecurityTokenService;
-import org.chomookun.arch4j.web.security.model.SecurityPolicy;
+import org.chomookun.arch4j.core.security.RoleService;
+import org.chomookun.arch4j.core.security.SecurityProperties;
+import org.chomookun.arch4j.core.security.filter.SecurityFilter;
+import org.chomookun.arch4j.core.security.SecurityTokenService;
+import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -87,9 +88,7 @@ import java.util.Properties;
 
 @Configuration
 @Import(CoreConfiguration.class)
-@ComponentScan(
-        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
-)
+@ComponentScan(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 @EnableAutoConfiguration
 @EnableConfigurationProperties(WebProperties.class)
 @EnableScheduling
@@ -98,12 +97,12 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Resource resource = new DefaultResourceLoader().getResource("classpath:web-config.yml");
+        Resource resource = new DefaultResourceLoader().getResource("classpath:web.yml");
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(resource);
         factory.afterPropertiesSet();
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
-        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("web-config", properties);
+        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("web", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
     }
 
@@ -161,6 +160,8 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
     @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
     @RequiredArgsConstructor
     static class SecurityConfiguration {
+
+        private final SecurityProperties securityProperties;
 
         private final WebProperties webProperties;
 
@@ -223,7 +224,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
         @Bean
         public RememberMeServices rememberMeServices(PersistentTokenRepository persistentTokenRepository, UserDetailsService userDetailsService) {
-            return new PersistentTokenBasedRememberMeServices(webProperties.getSecuritySigningKey(), userDetailsService, persistentTokenRepository);
+            return new PersistentTokenBasedRememberMeServices(securityProperties.getSigningKey(), userDetailsService, persistentTokenRepository);
         }
 
         @Bean
@@ -384,7 +385,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests -> {
                 authorizeHttpRequests.requestMatchers("/api/*/login**", "/api/*/join**").permitAll();
-                if(webProperties.getSecurityPolicy() == SecurityPolicy.ANONYMOUS) {
+                if(securityProperties.getSecurityPolicy() == SecurityPolicy.ANONYMOUS) {
                     authorizeHttpRequests.anyRequest().permitAll();
                 }else{
                     authorizeHttpRequests.anyRequest().authenticated();
@@ -431,7 +432,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.authorizeHttpRequests(authorizeHttpRequests -> {
                 authorizeHttpRequests.requestMatchers("/login**", "/join**").permitAll();
                 authorizeHttpRequests.requestMatchers("/user**").authenticated();
-                if(webProperties.getSecurityPolicy() == SecurityPolicy.ANONYMOUS) {
+                if(securityProperties.getSecurityPolicy() == SecurityPolicy.ANONYMOUS) {
                     authorizeHttpRequests.anyRequest().permitAll();
                 }else{
                     authorizeHttpRequests.anyRequest().authenticated();

@@ -41,7 +41,6 @@ jar {
 bootJar {
     enabled = true
     archiveClassifier = 'boot'
-    mainClass = 'org.oopscraft.arch4j.batch.BatchApplication'
 }
 
 springBoot {

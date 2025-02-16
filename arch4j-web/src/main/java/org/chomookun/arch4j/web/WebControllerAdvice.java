@@ -2,7 +2,8 @@ package org.chomookun.arch4j.web;
 
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.CoreProperties;
-import org.chomookun.arch4j.web.security.support.SecurityUtils;
+import org.chomookun.arch4j.core.security.SecurityProperties;
+import org.chomookun.arch4j.core.security.support.SecurityUtils;
 import org.chomookun.arch4j.core.security.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,8 @@ public class WebControllerAdvice {
 
     private final WebProperties webProperties;
 
+    private final SecurityProperties securityProperties;
+
     private final HttpSession httpSession;
 
     @GetMapping
@@ -42,7 +45,7 @@ public class WebControllerAdvice {
 
     @ModelAttribute("_securityPolicy")
     public String securityPolicy() {
-        return Optional.ofNullable(webProperties.getSecurityPolicy())
+        return Optional.ofNullable(securityProperties.getSecurityPolicy())
                 .map(Enum::name)
                 .orElse(null);
     }

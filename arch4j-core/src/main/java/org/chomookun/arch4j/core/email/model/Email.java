@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.email.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.email.dao.EmailEntity;
+import org.chomookun.arch4j.core.email.entity.EmailEntity;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

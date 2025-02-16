@@ -8,20 +8,14 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
 
 import java.util.Arrays;
 
-@SpringBootApplication(
-        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
-)
+@SpringBootApplication(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 public class WebApplication {
 
+    /**
+     * Runs web application
+     * @param args arguments
+     */
     public static void main(String[] args) {
-
-        // install
-        if(Arrays.asList(args).contains("install")) {
-            SpringApplicationInstaller.install(WebConfiguration.class, args);
-            System.exit(0);
-        }
-
-        // run application
         new SpringApplicationBuilder(WebApplication.class)
                 .web(WebApplicationType.SERVLET)
                 .registerShutdownHook(true)

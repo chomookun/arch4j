@@ -3,8 +3,8 @@ package org.chomookun.arch4j.core.security.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.security.dao.RoleAuthorityEntity;
-import org.chomookun.arch4j.core.security.dao.RoleEntity;
+import org.chomookun.arch4j.core.security.entity.RoleAuthorityEntity;
+import org.chomookun.arch4j.core.security.entity.RoleEntity;
 
 import java.util.ArrayList;
 import java.util.List;

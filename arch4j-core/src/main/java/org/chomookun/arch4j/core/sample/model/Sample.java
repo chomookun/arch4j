@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.core.sample.model;
 
 import lombok.*;
-import org.chomookun.arch4j.core.sample.dao.SampleEntity;
+import org.chomookun.arch4j.core.sample.entity.SampleEntity;
 import org.chomookun.arch4j.core.common.support.ModelMapperFactory;
 
 import java.math.BigDecimal;

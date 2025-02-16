@@ -3,8 +3,7 @@ package org.chomookun.arch4j.core.page.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.page.widget.PageWidget;
-import org.chomookun.arch4j.core.page.dao.PageEntity;
+import org.chomookun.arch4j.core.page.entity.PageEntity;
 
 import java.util.ArrayList;
 import java.util.List;

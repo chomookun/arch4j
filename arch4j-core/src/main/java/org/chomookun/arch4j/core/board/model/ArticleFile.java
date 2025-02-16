@@ -2,7 +2,7 @@ package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.board.dao.ArticleFileEntity;
+import org.chomookun.arch4j.core.board.entity.ArticleFileEntity;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import java.util.List;

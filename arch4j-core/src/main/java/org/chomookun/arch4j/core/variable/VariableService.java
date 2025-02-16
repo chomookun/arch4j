@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.core.variable;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.variable.dao.VariableEntity;
-import org.chomookun.arch4j.core.variable.dao.VariableRepository;
+import org.chomookun.arch4j.core.variable.entity.VariableEntity;
+import org.chomookun.arch4j.core.variable.repository.VariableRepository;
 import org.chomookun.arch4j.core.variable.model.Variable;
 import org.chomookun.arch4j.core.variable.model.VariableSearch;
 import org.springframework.data.domain.Page;

@@ -9,12 +9,9 @@ plugins {
 }
 
 dependencies {
-
-    // platform
+    // subproject
     implementation platform(project(":arch4j-dependencies"))
     annotationProcessor platform(project(":arch4j-dependencies"))
-
-    // subproject
     api project(":arch4j-core")
 
     // spring boot starter
@@ -58,7 +55,6 @@ jar {
 bootJar {
     enabled = true
     archiveClassifier = 'boot'
-    mainClass = 'org.oopscraft.arch4j.web.WebApplication'
 }
 
 springBoot {

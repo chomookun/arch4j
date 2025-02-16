@@ -17,11 +17,13 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-test'
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
     api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-websocket'
     api 'org.springframework.boot:spring-boot-starter-security'
     api 'org.springframework.boot:spring-boot-starter-validation'
     api 'org.springframework.boot:spring-boot-starter-mail'
     api 'org.springframework.boot:spring-boot-starter-thymeleaf'
     api 'org.springframework.boot:spring-boot-starter-cache'
+    api 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // spring boot configuration processor
     api 'org.springframework.boot:spring-boot-configuration-processor'
@@ -50,6 +52,10 @@ dependencies {
 
     // log4jdbc
     api 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1'
+
+    // embedded redis
+    // https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
+    api 'com.github.codemonstur:embedded-redis:1.4.3'
 
     // jackson
     api 'com.fasterxml.jackson.core:jackson-core'

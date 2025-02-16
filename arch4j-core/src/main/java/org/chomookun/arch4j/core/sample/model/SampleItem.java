@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.core.sample.model;
 
 import lombok.*;
-import org.chomookun.arch4j.core.sample.dao.SampleItemEntity;
+import org.chomookun.arch4j.core.sample.entity.SampleItemEntity;
 import org.chomookun.arch4j.core.common.support.ModelMapperFactory;
 
 @Data

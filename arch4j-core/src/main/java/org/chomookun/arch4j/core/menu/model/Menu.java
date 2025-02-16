@@ -3,8 +3,8 @@ package org.chomookun.arch4j.core.menu.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.menu.dao.MenuEntity;
-import org.chomookun.arch4j.core.menu.dao.MenuRoleEntity;
+import org.chomookun.arch4j.core.menu.entity.MenuEntity;
+import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
 import org.chomookun.arch4j.core.security.model.Role;
 
 import java.util.ArrayList;

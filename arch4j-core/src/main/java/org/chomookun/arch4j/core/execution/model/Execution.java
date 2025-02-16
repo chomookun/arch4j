@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.execution.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.chomookun.arch4j.core.execution.dao.ExecutionEntity;
+import org.chomookun.arch4j.core.execution.entity.ExecutionEntity;
 
 import java.time.Duration;
 import java.time.Instant;

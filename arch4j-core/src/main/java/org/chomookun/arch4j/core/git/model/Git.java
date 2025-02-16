@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.git.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.git.dao.GitEntity;
+import org.chomookun.arch4j.core.git.entity.GitEntity;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

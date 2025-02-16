@@ -2,7 +2,7 @@ package org.chomookun.arch4j.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.chomookun.arch4j.web.security.model.SecurityPolicy;
+import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "web")
@@ -19,11 +19,5 @@ public final class WebProperties {
     private final String title;
 
     private final String index;
-
-    private final SecurityPolicy securityPolicy;
-
-    private final String securitySigningKey;
-
-    private final Integer securityExpireMinutes;
 
 }

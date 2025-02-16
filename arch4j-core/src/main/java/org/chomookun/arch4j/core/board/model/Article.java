@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
-import org.chomookun.arch4j.core.board.dao.ArticleEntity;
-import org.chomookun.arch4j.core.security.dao.UserEntity;
+import org.chomookun.arch4j.core.board.entity.ArticleEntity;
+import org.chomookun.arch4j.core.security.entity.UserEntity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

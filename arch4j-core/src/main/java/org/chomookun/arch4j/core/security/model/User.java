@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.security.dao.UserEntity;
-import org.chomookun.arch4j.core.security.dao.UserRoleEntity;
+import org.chomookun.arch4j.core.security.entity.UserEntity;
+import org.chomookun.arch4j.core.security.entity.UserRoleEntity;
 
 import java.time.Instant;
 import java.util.ArrayList;

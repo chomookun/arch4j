@@ -24,12 +24,12 @@ public class ShellConfiguration implements EnvironmentPostProcessor {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Resource resource = new DefaultResourceLoader().getResource("classpath:shell-config.yml");
+        Resource resource = new DefaultResourceLoader().getResource("classpath:shell.yml");
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(resource);
         factory.afterPropertiesSet();
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
-        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("shell-config", properties);
+        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("shell", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
     }
 

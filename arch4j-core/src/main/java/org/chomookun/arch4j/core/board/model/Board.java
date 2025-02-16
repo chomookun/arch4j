@@ -2,8 +2,8 @@ package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.board.dao.BoardEntity;
-import org.chomookun.arch4j.core.board.dao.BoardRoleEntity;
+import org.chomookun.arch4j.core.board.entity.BoardEntity;
+import org.chomookun.arch4j.core.board.entity.BoardRoleEntity;
 import org.chomookun.arch4j.core.common.data.BaseModel;
 import org.chomookun.arch4j.core.security.model.Role;
 

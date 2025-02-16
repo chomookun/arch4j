@@ -9,8 +9,8 @@ import org.h2.tools.Server;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 import org.mybatis.spring.annotation.MapperScan;
-import org.chomookun.arch4j.core.message.service.MessageService;
-import org.chomookun.arch4j.core.message.service.MessageSource;
+import org.chomookun.arch4j.core.message.MessageService;
+import org.chomookun.arch4j.core.message.MessageSource;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,6 +35,8 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -52,7 +54,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManager;
+import redis.embedded.RedisServer;
+
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.net.Socket;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
@@ -81,14 +87,13 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-
         // load default core config
-        Resource resource = new DefaultResourceLoader().getResource("classpath:core-config.yml");
+        Resource resource = new DefaultResourceLoader().getResource("classpath:core.yml");
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(resource);
         factory.afterPropertiesSet();
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
-        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("core-config", properties);
+        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("core", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
 
         // overrides debug log level
@@ -174,6 +179,35 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
         return null;
     }
 
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public RedisServer redisServer(ConfigurableEnvironment environment) throws IOException {
+        String host = environment.getProperty("spring.redis.host");
+        if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
+            int port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("spring.redis.port")));
+            boolean portInUse = false;
+            try (Socket socket = new Socket(host, port)) {
+                portInUse = true;
+            } catch (IOException e) {
+                portInUse = false;
+            }
+            if (portInUse) {
+                log.info("redisServer - Port {} is already in use.", port);
+                return null;
+            }
+            return RedisServer.newRedisServer()
+                    .port(port)
+                    .build();
+        }
+        return null;
+    }
+
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory connectionFactory) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        return container;
+    }
+
     @Configuration
     @RequiredArgsConstructor
     public static class SchedulerConfiguration implements SchedulingConfigurer {
@@ -184,11 +218,9 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContext taskSecurityContext = new SecurityContextImpl();
             taskSecurityContext.setAuthentication(authentication);
-
             ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
             threadPoolTaskScheduler.setPoolSize(10);
             threadPoolTaskScheduler.initialize();
-
             DelegatingSecurityContextScheduledExecutorService executorService =  new DelegatingSecurityContextScheduledExecutorService(threadPoolTaskScheduler.getScheduledExecutor(), taskSecurityContext);
             taskRegistrar.setScheduler(executorService);
         }

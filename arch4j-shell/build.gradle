@@ -37,7 +37,6 @@ jar {
 bootJar {
     enabled = true
     archiveClassifier = 'boot'
-    mainClass = 'org.oopscraft.arch4j.shell.ShellApplication'
 }
 
 springBoot {

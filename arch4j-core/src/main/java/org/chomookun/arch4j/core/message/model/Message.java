@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.message.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.message.dao.MessageEntity;
+import org.chomookun.arch4j.core.message.entity.MessageEntity;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

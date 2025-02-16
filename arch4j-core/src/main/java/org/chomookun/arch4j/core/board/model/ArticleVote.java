@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
-import org.chomookun.arch4j.core.board.dao.ArticleVoteEntity;
+import org.chomookun.arch4j.core.board.entity.ArticleVoteEntity;
 
 @Data
 @Builder

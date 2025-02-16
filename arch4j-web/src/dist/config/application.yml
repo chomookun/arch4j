@@ -44,6 +44,3 @@ core:
     storage-client:
       properties:
         location: /data/arch4j/storage/
-  git:
-    location: /.tmp/arch4j/git/
-

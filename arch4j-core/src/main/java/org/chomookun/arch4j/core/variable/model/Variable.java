@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.variable.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.variable.dao.VariableEntity;
+import org.chomookun.arch4j.core.variable.entity.VariableEntity;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
