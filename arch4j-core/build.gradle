@@ -55,7 +55,7 @@ dependencies {
 
     // embedded redis
     // https://mvnrepository.com/artifact/com.github.codemonstur/embedded-redis
-    api 'com.github.codemonstur:embedded-redis:1.2.0'
+    api 'com.github.codemonstur:embedded-redis:0.13.0'
 
     // jackson
     api 'com.fasterxml.jackson.core:jackson-core'
