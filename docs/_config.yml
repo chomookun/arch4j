@@ -1,0 +1,3 @@
+remote_theme: chomookun/jekyll-plain
+plugins:
+  - jekyll-remote-theme

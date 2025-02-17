@@ -1,22 +1,21 @@
 # ARCH4J (Application Archetype for Java) 
 
-웹 애플리케이션, 배치 애플리케이션, CLI(Command Line Interface) 애플리케이션을 위한 spring-boot 기반 아키타입 입니다.
+spring-boot-based archetype for web application, batch application, CLI(Command Line Interface) application.
 
-이 아키타입은 기본적인 CMS(Content Management System) 기능을 가지고 있습니다.
+This archetype has Basic CMS(Content Management System) functionality.
 
+## Git and Website
 
-## Git 저장소 및 웹사이트
-
-* Git Repository: [https://github.com/chomookun/arch4j](https://github.com/chomookun/arch4j)
+* Git Repository: [https://github.com/chomookun/arch4j](https://github.com/oopscraft/arch4j)
 * Website: [https://arch4j.chomookun.org](https://arch4j.chomookun.org)
 
-## 데모 사이트
+## Demo Site
 
 * Service Page: [https://arch4j-web.chomookun.org](https://arch4j-web.chomookun.org)
 * Admin Console: [https://arch4j-web.chomookun.org/admin](https://arch4j-web.chomookun.org/admin)
-* Test Account: **dev/dev**
+* Test Account: **developer/developer**
 
-## 주요 기능
+## Main Features
 
 | Functionality                                                                      | Description                                                                                                  |
 |------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
@@ -31,7 +30,7 @@
 | **Message, Variable, and Common Code Management for Additional Development Needs** | Common functionality for managing messages, variables, and common codes for additional business development. |
 
 
-## 로컬 테스트
+## Quick Local Test
 
 ```shell
 # download source
@@ -46,9 +45,9 @@ connect to http://localhost:8080
 
 ## Documentation
 
-[1.Installation](doc/01.installation/index.md)
+[1.Installation](docs/01.installation/index.md)
 
-[2.Configuration](doc/02.configuration/index.md)
+[2.Configuration](docs/02.configuration/index.md)
 
 
 ## License

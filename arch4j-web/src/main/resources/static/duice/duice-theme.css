@@ -395,4 +395,11 @@ dialog:focus {
   outline: none;
 }
 
+/* code */
+code {
+  display: block;
+  padding: 1rem;
+  font-family: monospace;
+}
+
 /*# sourceMappingURL=duice-theme.css.map */

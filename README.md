@@ -45,9 +45,9 @@ connect to http://localhost:8080
 
 ## Documentation
 
-[1.Installation](doc/01.installation/index.md)
+[1.Installation](docs/01.installation/index.md)
 
-[2.Configuration](doc/02.configuration/index.md)
+[2.Configuration](docs/02.configuration/index.md)
 
 
 ## License

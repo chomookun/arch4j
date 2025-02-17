@@ -2222,6 +2222,39 @@
   text-align: right;
 }
 
+/* vertical-align */
+.vertical-align--baseline {
+  vertical-align: baseline;
+}
+
+.vertical-align--top {
+  vertical-align: top;
+}
+
+.vertical-align--middle {
+  vertical-align: middle;
+}
+
+.vertical-align--bottom {
+  vertical-align: bottom;
+}
+
+.vertical-align--text-top {
+  vertical-align: text-top;
+}
+
+.vertical-align--text-bottom {
+  vertical-align: text-bottom;
+}
+
+.vertical-align--sub {
+  vertical-align: sub;
+}
+
+.vertical-align--super {
+  vertical-align: super;
+}
+
 /* cursor */
 .cursor--pointer {
   cursor: pointer;
@@ -3907,6 +3940,31 @@
   }
   .s__text-align--right {
     text-align: right;
+  }
+  /* vertical-align */
+  .s__vertical-align--baseline {
+    vertical-align: baseline;
+  }
+  .s__vertical-align--top {
+    vertical-align: top;
+  }
+  .s__vertical-align--middle {
+    vertical-align: middle;
+  }
+  .s__vertical-align--bottom {
+    vertical-align: bottom;
+  }
+  .s__vertical-align--text-top {
+    vertical-align: text-top;
+  }
+  .s__vertical-align--text-bottom {
+    vertical-align: text-bottom;
+  }
+  .s__vertical-align--sub {
+    vertical-align: sub;
+  }
+  .s__vertical-align--super {
+    vertical-align: super;
   }
   /* cursor */
   .s__cursor--pointer {
