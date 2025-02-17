@@ -1,3 +1,7 @@
 remote_theme: chomookun/jekyll-plain
 plugins:
   - jekyll-remote-theme
+
+# theme configuration
+brand-icon: <img src="/assets/image/arch4j-icon.svg" class="icon"/>
+brand-name: <img src="/assets/image/arch4j-name.svg"/>
