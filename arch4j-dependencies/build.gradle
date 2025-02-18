@@ -36,8 +36,8 @@ dependencies {
         // mybatis
         api 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
 
-        // embedded redis mock
-        api 'com.github.fppt:jedis-mock:1.0.3'
+        // embedded redis
+        api 'com.github.codemonstur:embedded-redis:1.4.3'
 
         // apache commons
         api 'commons-io:commons-io:2.11.0'

@@ -1,6 +1,6 @@
 package org.chomookun.arch4j.core;
 
-import com.github.fppt.jedismock.RedisServer;
+//import com.github.fppt.jedismock.RedisServer;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +55,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManager;
+import redis.embedded.RedisServer;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -102,6 +103,9 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
             environment.getSystemProperties().put("logging.level.org.hibernate.type.descriptor.sql.BasicBinder", "TRACE");
             environment.getSystemProperties().put("logging.level.jdbc.resultsettable", "DEBUG");
         }
+
+        // exchanges jdbc-url to cluster if embedded
+        exchangeJdbcUrlToClusterIfEmbedded(environment);
     }
 
     @Bean
@@ -167,14 +171,25 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
         return new SimpleKeyGenerator();
     }
 
+    /**
+     * exchanges h2 jdbc-url to cluster if embedded
+     * @param environment environment
+     */
+    void exchangeJdbcUrlToClusterIfEmbedded(ConfigurableEnvironment environment) {
+        String jdbcUrl = environment.getProperty("spring.datasource.hikari.jdbc-url");
+        String jdbcUrlCluster = environment.getProperty("spring.datasource.hikari.jdbc-url-cluster");
+        if (Objects.requireNonNull(jdbcUrl).contains(":h2:mem")) {
+            try (Socket socket = new Socket("127.0.0.1", 9092)) {
+                // exchanges jdbc-url to cluster
+                environment.getSystemProperties().put("spring.datasource.hikari.jdbc-url", jdbcUrlCluster);
+            } catch (IOException ignore) {}
+        }
+    }
+
     @Bean(initMethod = "start", destroyMethod = "stop")
     public Server inMemoryH2DatabaseServer(DataSource dataSource, ConfigurableEnvironment environment) throws SQLException {
         if (EmbeddedDatabaseConnection.isEmbedded(dataSource)) {
-            boolean h2ConsoleEnabled = Optional.ofNullable(environment.getProperty("spring.h2.console.enabled"))
-                    .map(Boolean::parseBoolean)
-                    .orElse(false);
-            String tcpPort = h2ConsoleEnabled ? "9092" : "0";
-            return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", tcpPort);
+            return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
         }
         return null;
     }
