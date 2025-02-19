@@ -86,8 +86,7 @@ pipeline {
             steps {
                 sh '''
                     kubectl \
-                    rollout restart deployment/arch4j-daemon \
-                    -o yaml
+                    rollout restart deployment/arch4j-daemon 
                 '''.stripIndent()
                 sh '''
                     kubectl \
