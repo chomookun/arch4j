@@ -85,12 +85,12 @@ pipeline {
         stage("deploy") {
             steps {
                 sh '''
-                    kubectl \
-                    rollout restart deployment/arch4j-daemon 
+                    kubectl delete pod -l app=arch4j-daemon 
+                    kubectl wait --for=condition=Ready pod -l app=arch4j-daemon --timeout=60s
                 '''.stripIndent()
                 sh '''
-                    kubectl \
-                    rollout status deployment/arch4j-web
+                    kubectl rollout restart deployment/arch4j-web
+                    kubectl rollout status deployment/arch4j-web
                 '''.stripIndent()
             }
         }
