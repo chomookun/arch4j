@@ -15,6 +15,10 @@ spring:
       password: ENC(iqTD9xHUch57rODDJr163Q==)
       minimum-idle: 10
       maximum-pool-size: 20
+  redis:
+    host: 192.168.0.2
+    port: 6379
+    password: ~
   mail:
     host: smtp.gmail.com
     port: 587
