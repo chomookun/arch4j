@@ -1,10 +1,10 @@
-package org.chomookun.arch4j.core.security.handler;
+package org.chomookun.arch4j.web.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.error.ErrorResponse;
-import org.chomookun.arch4j.core.error.ErrorResponseHandler;
+import org.chomookun.arch4j.web.common.error.ErrorResponse;
+import org.chomookun.arch4j.web.common.error.ErrorResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;

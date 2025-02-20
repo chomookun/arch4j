@@ -2,7 +2,7 @@ package org.chomookun.arch4j.web.api.v1.user;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.error.ErrorResponse;
+import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.security.model.User;
 import org.chomookun.arch4j.core.security.UserService;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;

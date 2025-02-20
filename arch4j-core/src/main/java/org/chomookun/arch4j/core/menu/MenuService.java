@@ -35,7 +35,6 @@ public class MenuService {
         menuEntity.setIcon(menu.getIcon());
         menuEntity.setSort(menu.getSort());
         menuEntity.setNote(menu.getNote());
-
         // view role
         menuEntity.getViewMenuRoles().clear();
         menu.getViewRoles().forEach(viewRole -> {
@@ -46,7 +45,6 @@ public class MenuService {
                     .build();
             menuEntity.getViewMenuRoles().add(menuRoleEntity);
         });
-
         // link role
         menuEntity.getLinkMenuRoles().clear();
         menu.getLinkRoles().forEach(linkRole -> {
@@ -57,7 +55,7 @@ public class MenuService {
                     .build();
             menuEntity.getLinkMenuRoles().add(menuRoleEntity);
         });
-
+        // saves
         MenuEntity savedMenu = menuRepository.saveAndFlush(menuEntity);
         return Menu.from(savedMenu);
     }

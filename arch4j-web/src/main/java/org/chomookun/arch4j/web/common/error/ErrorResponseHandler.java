@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.error;
+package org.chomookun.arch4j.web.common.error;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

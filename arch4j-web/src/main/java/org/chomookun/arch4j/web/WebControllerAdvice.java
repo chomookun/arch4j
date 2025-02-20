@@ -5,16 +5,14 @@ import org.chomookun.arch4j.core.CoreProperties;
 import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
 import org.chomookun.arch4j.core.security.model.User;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.*;
@@ -35,6 +33,20 @@ public class WebControllerAdvice {
     private final SecurityProperties securityProperties;
 
     private final HttpSession httpSession;
+
+    /**
+     * check if the request is rest controller
+     * ps. @ControllerAdvice is not working for annotationTypes because of @RestController extends from @Controller
+     * @param request http servlet request
+     * @return true if the request is rest controller
+     */
+    private boolean isRestControllerBeanType(HttpServletRequest request) {
+        Object handler = request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
+        if (handler instanceof HandlerMethod handlerMethod) {
+            return AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), RestController.class) != null;
+        }
+        return false;
+    }
 
     @GetMapping
     public ModelAndView index() {
@@ -83,14 +95,12 @@ public class WebControllerAdvice {
     @ModelAttribute("_locales")
     public List<Map<String,String>> locales() {
         return coreProperties.getSupportedLocales().stream()
-                .map(locale -> {
-                    return new LinkedHashMap<String,String>(){{
-                        put("language", locale.getLanguage());
-                        put("displayLanguage", locale.getDisplayLanguage(locale));
-                        put("country", locale.getCountry());
-                        put("displayCountry", locale.getDisplayCountry(locale));
-                    }};
-                })
+                .map(locale -> new LinkedHashMap<String,String>(){{
+                    put("language", locale.getLanguage());
+                    put("displayLanguage", locale.getDisplayLanguage(locale));
+                    put("country", locale.getCountry());
+                    put("displayCountry", locale.getDisplayCountry(locale));
+                }})
                 .collect(Collectors.toList());
     }
 
@@ -100,8 +110,10 @@ public class WebControllerAdvice {
     }
 
     @ModelAttribute("_user")
-    @Transactional(readOnly = true)
-    public User getUser() {
+    public User getUser(HttpServletRequest request) {
+        if (isRestControllerBeanType(request)) {
+            return null;
+        }
         return SecurityUtils.getCurrentUser()
                 .orElse(new User());
     }

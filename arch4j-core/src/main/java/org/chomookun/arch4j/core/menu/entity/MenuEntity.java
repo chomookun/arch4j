@@ -54,23 +54,23 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
     @Lob
     private String note;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_menu_id", referencedColumnName = "menu_id", insertable = false, updatable = false)
     private MenuEntity parentMenu;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "menu_id", updatable = false)
     @Where(clause = "type = 'VIEW'")
     @Builder.Default
     private List<MenuRoleEntity> viewMenuRoles = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "menu_id", updatable = false)
     @Where(clause = "type = 'LINK'")
     @Builder.Default
     private List<MenuRoleEntity> linkMenuRoles = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "menu_id", updatable = false)
     @Builder.Default
     private List<MenuI18nEntity> menuI18ns = new ArrayList<>();

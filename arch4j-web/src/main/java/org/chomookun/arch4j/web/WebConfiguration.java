@@ -16,7 +16,7 @@ import org.chomookun.arch4j.core.CoreConfiguration;
 import org.chomookun.arch4j.core.CoreProperties;
 import org.chomookun.arch4j.core.security.RoleService;
 import org.chomookun.arch4j.core.security.SecurityProperties;
-import org.chomookun.arch4j.core.security.filter.SecurityFilter;
+import org.chomookun.arch4j.web.common.security.SecurityFilter;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -163,8 +163,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
         private final SecurityProperties securityProperties;
 
-        private final WebProperties webProperties;
-
         private final ApplicationContext applicationContext;
 
         private final AuthenticationEntryPoint authenticationEntryPoint;
@@ -233,7 +231,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             // security matcher
             MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, "/admin/**");
             http.securityMatcher(securityMatcher);
-
             // sets authorize
             http.authorizeHttpRequests(authorizeHttpRequests ->
                     authorizeHttpRequests.requestMatchers("/admin/login**")
@@ -241,7 +238,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                             .anyRequest()
                             .hasAuthority("admin")
             );
-
             // csrf
             CsrfTokenRequestAttributeHandler csrfTokenRequestHandler = new CsrfTokenRequestAttributeHandler();
             csrfTokenRequestHandler.setCsrfRequestAttributeName(null);
@@ -249,13 +245,11 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 csrf.csrfTokenRequestHandler(csrfTokenRequestHandler);
             });
-
             // exception
             http.exceptionHandling(exceptionHandling -> {
                 exceptionHandling.authenticationEntryPoint(authenticationEntryPoint);
                 exceptionHandling.accessDeniedHandler(accessDeniedHandler);
             });
-
             // login
             http.formLogin(formLogin -> {
                 formLogin.loginPage("/admin/login")
@@ -264,7 +258,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                         .failureHandler(authenticationFailureHandler)
                         .permitAll();
             });
-
             // logout
             http.logout(logout -> {
                 logout.logoutRequestMatcher(new AntPathRequestMatcher("/admin/logout"));
@@ -272,7 +265,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                 logout.invalidateHttpSession(true);
                 logout.permitAll();
             });
-
             // additional security filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
@@ -286,21 +278,17 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             String actuatorMatcherPattern = String.format("%s/**", actuatorBasePath);
             MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, actuatorMatcherPattern);
             http.securityMatcher(securityMatcher);
-
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests ->
                     authorizeHttpRequests.anyRequest()
                             .hasAuthority("actuator")
             );
-
             // csrf
             http.csrf(AbstractHttpConfigurer::disable);
-
             // headers
             http.headers(headers -> {
                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
             });
-
             // custom filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
@@ -315,19 +303,15 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             String swaggerMatcherPattern = String.format("%s/**", swaggerBasePath);
             MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, swaggerMatcherPattern);
             http.securityMatcher(securityMatcher);
-
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests -> {
                 authorizeHttpRequests.anyRequest().hasAuthority("swagger-ui");
             });
-
             // csrf
             http.csrf(AbstractHttpConfigurer::disable);
-
             // headers
             http.headers(headers ->
                     headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-
             // login
             http.formLogin(formLogin -> {
                 formLogin.loginPage("/admin/login")
@@ -336,7 +320,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                         .failureHandler(authenticationFailureHandler)
                         .permitAll();
             });
-
             // custom filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
@@ -348,19 +331,15 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
         public SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
             // security matcher
             http.securityMatcher(PathRequest.toH2Console());
-
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests -> {
                 authorizeHttpRequests.anyRequest().hasAuthority("h2-console");
             });
-
             // csrf
             http.csrf(AbstractHttpConfigurer::disable);
-
             // headers
             http.headers(headers ->
                     headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-
             // login
             http.formLogin(formLogin -> {
                 formLogin.loginPage("/admin/login")
@@ -369,7 +348,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                         .failureHandler(authenticationFailureHandler)
                         .permitAll();
             });
-
             // custom filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
@@ -381,7 +359,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             // security matcher
             MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, "/api/**");
             http.securityMatcher(securityMatcher);
-
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests -> {
                 authorizeHttpRequests.requestMatchers("/api/*/login**", "/api/*/join**").permitAll();
@@ -391,15 +368,12 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                     authorizeHttpRequests.anyRequest().authenticated();
                 }
             });
-
             // csrf
             http.csrf(AbstractHttpConfigurer::disable);
-
             // headers
             http.headers(headers -> {
                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
             });
-
             // session
             http.sessionManagement(sessionManagement -> {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
@@ -409,13 +383,11 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.exceptionHandling(exceptionHandling -> {
                 exceptionHandling.accessDeniedHandler(accessDeniedHandler);
             });
-
             // remember-me
             http.rememberMe(rememberMe -> {
                 rememberMe.rememberMeServices(rememberMeServices);
                 rememberMe.tokenValiditySeconds(1209600);
             });
-
             // custom filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
@@ -427,7 +399,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             // security matcher
             MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, "/**");
             http.securityMatcher(securityMatcher);
-
             // authorize http requests
             http.authorizeHttpRequests(authorizeHttpRequests -> {
                 authorizeHttpRequests.requestMatchers("/login**", "/join**").permitAll();
@@ -438,7 +409,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                     authorizeHttpRequests.anyRequest().authenticated();
                 }
             });
-
             // csrf
             CsrfTokenRequestAttributeHandler csrfTokenRequestHandler = new CsrfTokenRequestAttributeHandler();
             csrfTokenRequestHandler.setCsrfRequestAttributeName(null);
@@ -446,23 +416,19 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 csrf.csrfTokenRequestHandler(csrfTokenRequestHandler);
             });
-
             // headers
             http.headers(headers -> {
                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
             });
-
             // session
             http.sessionManagement(it -> {
                     it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
             });
-
             // exception handling
             http.exceptionHandling(exceptonHandling -> {
                 exceptonHandling.authenticationEntryPoint(authenticationEntryPoint);
                 exceptonHandling.accessDeniedHandler(accessDeniedHandler);
             });
-
             // login
             http.formLogin(formLogin -> {
                 formLogin.loginPage("/login")
@@ -471,7 +437,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                         .failureHandler(authenticationFailureHandler)
                         .permitAll();
             });
-
             // logout
             http.logout(logout -> {
                 logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
@@ -479,13 +444,11 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                 logout.invalidateHttpSession(true);
                 logout.permitAll();
             });
-
             // remember me
             http.rememberMe(rememberMe -> {
                 rememberMe.rememberMeServices(rememberMeServices);
                 rememberMe.tokenValiditySeconds(1209600); // default 2 weeks
             });
-
             // custom filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();

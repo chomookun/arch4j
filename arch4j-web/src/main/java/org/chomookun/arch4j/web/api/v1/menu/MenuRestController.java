@@ -35,7 +35,6 @@ public class MenuRestController {
                 })
                 .map(MenuResponse::from)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_RANGE, PageableUtils.toContentRange("menu",  null, menuResponses.size()))
                 .body(menuResponses);

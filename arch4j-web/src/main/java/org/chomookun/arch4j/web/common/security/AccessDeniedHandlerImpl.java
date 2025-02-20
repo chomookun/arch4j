@@ -1,7 +1,7 @@
-package org.chomookun.arch4j.core.security.handler;
+package org.chomookun.arch4j.web.common.security;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.error.ErrorResponseHandler;
+import org.chomookun.arch4j.web.common.error.ErrorResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

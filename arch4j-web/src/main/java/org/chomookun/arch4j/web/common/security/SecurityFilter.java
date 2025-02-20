@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.security.filter;
+package org.chomookun.arch4j.web.common.security;
 
 import lombok.Builder;
 import org.chomookun.arch4j.core.security.model.Role;

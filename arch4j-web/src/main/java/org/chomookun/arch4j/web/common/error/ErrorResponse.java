@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.error;
+package org.chomookun.arch4j.web.common.error;
 
 import lombok.Builder;
 import lombok.Getter;

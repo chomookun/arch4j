@@ -62,7 +62,6 @@ public class Menu extends BaseModel {
                 .sort(menuEntity.getSort())
                 .note(menuEntity.getNote())
                 .build();
-
         // view role
         List<Role> viewRoles = menuEntity.getViewMenuRoles().stream()
                 .map(MenuRoleEntity::getRoleEntity)
@@ -70,7 +69,6 @@ public class Menu extends BaseModel {
                 .map(Role::from)
                 .collect(Collectors.toList());
         menu.setViewRoles(viewRoles);
-
         // link role
         List<Role> linkRoles = menuEntity.getLinkMenuRoles().stream()
                 .map(MenuRoleEntity::getRoleEntity)
@@ -78,7 +76,6 @@ public class Menu extends BaseModel {
                 .map(Role::from)
                 .collect(Collectors.toList());
         menu.setLinkRoles(linkRoles);
-
         // return
         return menu;
     }

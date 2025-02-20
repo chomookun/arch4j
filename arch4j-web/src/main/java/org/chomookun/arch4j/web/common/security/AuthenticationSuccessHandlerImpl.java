@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.security.handler;
+package org.chomookun.arch4j.web.common.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
