@@ -9,8 +9,8 @@
             menuId: null,
             name: null,
             parentMenu: {},
-            viewRoles: [],
-            linkRoles: []
+            viewMenuRoles: [],
+            linkMenuRoles: []
         });
         duice.ObjectProxy.setDisableAll(menu, true);
 
@@ -154,49 +154,49 @@
         }
 
         /**
-         * adds menu view role
+         * adds view menu role
          * @returns {Promise<void>}
          */
-        async function addMenuViewRole() {
+        async function addViewMenuRole() {
             let disabledRoleIds = [];
-            menu.viewRoles.forEach(role=>{
+            menu.viewMenuRoles.forEach(role=>{
                 disabledRoleIds.push(role.roleId);
             });
             let selectedRoles = await roleSelectDialog.open(disabledRoleIds);
             selectedRoles.forEach(role => {
-                menu.viewRoles.push(role);
+                menu.viewMenuRoles.push(role);
             });
         }
 
         /**
-         * removes menu view role
+         * removes view menu role
          * @param index row index
          */
-        function removeMenuViewRole(index) {
-            menu.viewRoles.splice(index, 1);
+        function removeViewMenuRole(index) {
+            menu.viewMenuRoles.splice(index, 1);
         }
 
         /**
-         * adds menu link role
+         * adds link menu role
          * @returns {Promise<void>}
          */
         async function addMenuLinkRole() {
             let disabledRoleIds = [];
-            menu.linkRoles.forEach(role=>{
+            menu.linkMenuRoles.forEach(role=>{
                 disabledRoleIds.push(role.roleId);
             });
             let selectedRoles = await roleSelectDialog.open(disabledRoleIds);
             selectedRoles.forEach(role => {
-                menu.linkRoles.push(role);
+                menu.linkMenuRoles.push(role);
             });
         }
 
         /**
-         * removes menu link role
+         * removes link menu role
          * @param index row index
          */
-        function removeMenuLinkRole(index) {
-            menu.linkRoles.splice(index, 1);
+        function removeLinkMenuRole(index) {
+            menu.linkMenuRoles.splice(index, 1);
         }
 
         /**
@@ -365,7 +365,7 @@
                             </label>
                         </div>
                         <div class="grid-column--span-12">
-                            <span data-th-text="#{core.menu.Menu.viewRoles}" class="font-weight--bold"></span>
+                            <span data-th-text="#{core.menu.Menu.viewMenuRoles}" class="font-weight--bold"></span>
                             <table class="width--100">
                                 <colgroup>
                                     <col style="width:3em;"/>
@@ -377,7 +377,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addMenuViewRole();">
+                                        <button class="button small" type="button" onclick="addViewMenuRole();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -388,43 +388,43 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="menu.viewRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="menu.viewMenuRoles" data-duice-loop="menuRole,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
-                                                data-duice-bind="role"
+                                                data-duice-bind="menuRole"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeMenuViewRole(this.dataset.index);">
+                                                onclick="removeViewMenuRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}"/>
                                         </button>
                                     </td>
                                     <td>
-                                    <span data-duice-bind="role" data-duice-property="roleId"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
+                                    <span data-duice-bind="menuRole" data-duice-property="roleId"
+                                          data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
                                           class="font-weight--bold"></span>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleName"></span>
+                                        <span data-duice-bind="menuRole" data-duice-property="name"></span>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="anonymous" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="anonymous" onclick="return false;"/>
                                         </label>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="authenticated" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="authenticated" onclick="return false;"/>
                                         </label>
                                     </td>
                                 </tr>
-                                <tr data-duice-bind="menu.viewRoles"
-                                    data-duice-if="return (menu.viewRoles.length < 1);">
+                                <tr data-duice-bind="menu.viewMenuRoles"
+                                    data-duice-if="return (menu.viewMenuRoles.length < 1);">
                                     <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="grid-column--span-12">
-                            <span data-th-text="#{core.menu.Menu.linkRoles}" class="font-weight--bold"></span>
+                            <span data-th-text="#{core.menu.Menu.linkMenuRoles}" class="font-weight--bold"></span>
                             <table class="width--100">
                                 <colgroup>
                                     <col style="width:3em;"/>
@@ -447,36 +447,36 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="menu.linkRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="menu.linkMenuRoles" data-duice-loop="menuRole,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
-                                                data-duice-bind="role"
+                                                data-duice-bind="menuRole"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeMenuLinkRole(this.dataset.index);">
+                                                onclick="removeLinkMenuRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                         </button>
                                     </td>
                                     <td>
-                                    <span data-duice-bind="role" data-duice-property="roleId"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
+                                    <span data-duice-bind="menuRole" data-duice-property="roleId"
+                                          data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
                                           class="font-weight--bold"></span>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleName"></span>
+                                        <span data-duice-bind="menuRole" data-duice-property="name"></span>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="anonymous" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="anonymous" onclick="return false;"/>
                                         </label>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="authenticated" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="authenticated" onclick="return false;"/>
                                         </label>
                                     </td>
                                 </tr>
-                                <tr data-duice-bind="menu.linkRoles"
-                                    data-duice-if="return (menu.linkRoles.length < 1);">
+                                <tr data-duice-bind="menu.linkMenuRoles"
+                                    data-duice-if="return (menu.linkMenuRoles.length < 1);">
                                     <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
                                 </tr>
                                 </tbody>

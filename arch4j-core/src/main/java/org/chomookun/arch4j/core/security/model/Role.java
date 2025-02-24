@@ -37,7 +37,14 @@ public class Role extends BaseModel {
      * @return role
      */
     public static Role from(RoleEntity roleEntity) {
-        Role role = Role.builder()
+        // authorities
+        List<Authority> authorities = roleEntity.getRoleAuthorities().stream()
+                .map(RoleAuthorityEntity::getAuthorityEntity)
+                .filter(Objects::nonNull)
+                .map(Authority::from)
+                .toList();
+        // returns
+        return Role.builder()
                 .systemRequired(roleEntity.isSystemRequired())
                 .systemUpdatedAt(roleEntity.getSystemUpdatedAt())
                 .systemUpdatedBy(roleEntity.getSystemUpdatedBy())
@@ -46,18 +53,8 @@ public class Role extends BaseModel {
                 .anonymous(roleEntity.isAnonymous())
                 .authenticated(roleEntity.isAuthenticated())
                 .note(roleEntity.getNote())
+                .authorities(authorities)
                 .build();
-
-        // authorities
-        List<Authority> authorities = roleEntity.getRoleAuthorities().stream()
-                .map(RoleAuthorityEntity::getAuthorityEntity)
-                .filter(Objects::nonNull)
-                .map(Authority::from)
-                .collect(Collectors.toList());
-        role.setAuthorities(authorities);
-
-        // return
-        return role;
     }
 
 }

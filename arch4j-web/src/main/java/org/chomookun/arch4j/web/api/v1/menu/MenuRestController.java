@@ -26,9 +26,9 @@ public class MenuRestController {
     @GetMapping
     public ResponseEntity<List<MenuResponse>> getMenus() {
         List<MenuResponse> menuResponses = menuService.getMenus().stream()
-                .filter(menu -> SecurityUtils.hasPermission(menu.getViewRoles()))
+                .filter(menu -> SecurityUtils.hasPermission(menu.getViewMenuRoles()))
                 .peek(menu -> {
-                    if (!SecurityUtils.hasPermission(menu.getLinkRoles())) {
+                    if (!SecurityUtils.hasPermission(menu.getLinkMenuRoles())) {
                         menu.setLink(null);
                         menu.setTarget(null);
                     }

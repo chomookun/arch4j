@@ -20,7 +20,7 @@ class MenuServiceTest extends CoreTestSupport {
                 .parentMenuId(null)
                 .name("test_name")
                 .link("test_link")
-                .target(Menu.Target._self)
+                .target(Menu.Target.SELF)
                 .build();
         return testMenu;
     }

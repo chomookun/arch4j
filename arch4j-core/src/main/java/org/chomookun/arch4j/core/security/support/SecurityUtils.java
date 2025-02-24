@@ -79,7 +79,7 @@ public class SecurityUtils {
         return userDetails != null && userDetails.isAdmin();
     }
 
-    public static boolean hasAnyRole(List<Role> roles) {
+    public static boolean hasAnyRole(List<? extends Role> roles) {
         UserDetailsImpl userDetails = getUserDetails().orElse(null);
         if(userDetails == null) {
             return false;
@@ -87,7 +87,7 @@ public class SecurityUtils {
         return roles.stream().anyMatch(userDetails::hasRole);
     }
 
-    public static boolean hasPermission(List<Role> requiredRoles) {
+    public static boolean hasPermission(List<? extends Role> requiredRoles) {
         if(isAdmin()) {
             return true;
         }
@@ -98,7 +98,7 @@ public class SecurityUtils {
         }
     }
 
-    public static void checkPermission(List<Role> requiredRoles) {
+    public static void checkPermission(List<? extends Role> requiredRoles) {
         if(!hasPermission(requiredRoles)) {
             throw new InsufficientAuthenticationException("has no permission");
         }
