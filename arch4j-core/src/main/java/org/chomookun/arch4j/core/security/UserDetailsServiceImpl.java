@@ -1,8 +1,11 @@
 package org.chomookun.arch4j.core.security;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.security.model.Role;
-import org.chomookun.arch4j.core.security.model.User;
+import org.chomookun.arch4j.core.role.AuthorityService;
+import org.chomookun.arch4j.core.role.RoleService;
+import org.chomookun.arch4j.core.role.model.Role;
+import org.chomookun.arch4j.core.user.UserService;
+import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,11 +30,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         // retrieves by username
-        User user = userService.getUserByUsername(username).orElseThrow(()->{
-            throw new UsernameNotFoundException(username);
-        });
+        User user = userService.getUserByUsername(username).orElseThrow(()-> new UsernameNotFoundException(username));
 
         // user details
         UserDetailsImpl userDetails =  UserDetailsImpl.builder()
@@ -81,6 +81,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userDetails.addAuthorities(authorityService.getAuthorities());
         }
 
+        // returns
         return userDetails;
     }
 

@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.board.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.security.entity.RoleEntity;
+import org.chomookun.arch4j.core.role.entity.RoleEntity;
 
 import jakarta.persistence.*;
 import java.io.Serializable;

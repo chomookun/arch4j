@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
 import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
-import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.role.model.Role;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

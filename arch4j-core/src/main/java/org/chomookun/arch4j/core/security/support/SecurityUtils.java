@@ -1,9 +1,9 @@
 package org.chomookun.arch4j.core.security.support;
 
 import org.chomookun.arch4j.core.security.SecurityProperties;
-import org.chomookun.arch4j.core.security.model.Role;
-import org.chomookun.arch4j.core.security.model.User;
-import org.chomookun.arch4j.core.security.UserService;
+import org.chomookun.arch4j.core.role.model.Role;
+import org.chomookun.arch4j.core.user.model.User;
+import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.shell.entity;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.security.entity.UserEntity;
+import org.chomookun.arch4j.core.user.entity.UserEntity;
 import org.chomookun.arch4j.shell.common.test.ShellTestSupport;
 import org.junit.jupiter.api.Test;
 

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.CoreConfiguration;
 import org.chomookun.arch4j.core.CoreProperties;
-import org.chomookun.arch4j.core.security.RoleService;
+import org.chomookun.arch4j.core.role.RoleService;
 import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.web.common.security.SecurityFilter;
 import org.chomookun.arch4j.core.security.SecurityTokenService;

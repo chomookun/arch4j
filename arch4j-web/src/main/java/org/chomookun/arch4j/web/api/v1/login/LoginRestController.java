@@ -2,8 +2,8 @@ package org.chomookun.arch4j.web.api.v1.login;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.security.model.User;
-import org.chomookun.arch4j.core.security.UserService;
+import org.chomookun.arch4j.core.user.model.User;
+import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.web.api.v1.login.dto.LoginRequest;
 import org.chomookun.arch4j.web.api.v1.login.dto.LoginResponse;
 import org.chomookun.arch4j.core.security.SecurityTokenService;

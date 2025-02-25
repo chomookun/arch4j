@@ -3,6 +3,8 @@ package org.chomookun.arch4j.core.security.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.chomookun.arch4j.core.role.model.Authority;
+import org.chomookun.arch4j.core.role.model.Role;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

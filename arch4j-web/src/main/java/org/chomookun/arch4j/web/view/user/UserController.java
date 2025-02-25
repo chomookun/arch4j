@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.web.view.user;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.security.model.User;
+import org.chomookun.arch4j.core.user.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1197,72 +1197,60 @@
 }
 
 /* border-radius */
-.border-radius--0 {
-  border-radius: 0;
-}
-
-.border-radius--0 {
-  border-radius: 0;
-}
-
-.border-radius--0 {
-  border-radius: 0;
-}
-
 .border-radius--1px {
-  border-radius: 1px;
+  border-radius: 1px !important;
 }
 
 .border-radius--1rem {
-  border-radius: 1rem;
+  border-radius: 1rem !important;
 }
 
 .border-radius--1em {
-  border-radius: 1em;
+  border-radius: 1em !important;
 }
 
 .border-radius--2px {
-  border-radius: 2px;
+  border-radius: 2px !important;
 }
 
 .border-radius--2rem {
-  border-radius: 2rem;
+  border-radius: 2rem !important;
 }
 
 .border-radius--2em {
-  border-radius: 2em;
+  border-radius: 2em !important;
 }
 
 .border-radius--3px {
-  border-radius: 3px;
+  border-radius: 3px !important;
 }
 
 .border-radius--3rem {
-  border-radius: 3rem;
+  border-radius: 3rem !important;
 }
 
 .border-radius--3em {
-  border-radius: 3em;
+  border-radius: 3em !important;
 }
 
 .border-radius--10 {
-  border-radius: 10%;
+  border-radius: 10% !important;
 }
 
 .border-radius--20 {
-  border-radius: 20%;
+  border-radius: 20% !important;
 }
 
 .border-radius--30 {
-  border-radius: 30%;
+  border-radius: 30% !important;
 }
 
 .border-radius--40 {
-  border-radius: 40%;
+  border-radius: 40% !important;
 }
 
 .border-radius--50 {
-  border-radius: 50%;
+  border-radius: 50% !important;
 }
 
 /* font-size */
@@ -3171,56 +3159,47 @@
     border-left-width: 3em;
   }
   /* border-radius */
-  .s__border-radius--0 {
-    border-radius: 0;
-  }
-  .s__border-radius--0 {
-    border-radius: 0;
-  }
-  .s__border-radius--0 {
-    border-radius: 0;
-  }
   .s__border-radius--1px {
-    border-radius: 1px;
+    border-radius: 1px !important;
   }
   .s__border-radius--1rem {
-    border-radius: 1rem;
+    border-radius: 1rem !important;
   }
   .s__border-radius--1em {
-    border-radius: 1em;
+    border-radius: 1em !important;
   }
   .s__border-radius--2px {
-    border-radius: 2px;
+    border-radius: 2px !important;
   }
   .s__border-radius--2rem {
-    border-radius: 2rem;
+    border-radius: 2rem !important;
   }
   .s__border-radius--2em {
-    border-radius: 2em;
+    border-radius: 2em !important;
   }
   .s__border-radius--3px {
-    border-radius: 3px;
+    border-radius: 3px !important;
   }
   .s__border-radius--3rem {
-    border-radius: 3rem;
+    border-radius: 3rem !important;
   }
   .s__border-radius--3em {
-    border-radius: 3em;
+    border-radius: 3em !important;
   }
   .s__border-radius--10 {
-    border-radius: 10%;
+    border-radius: 10% !important;
   }
   .s__border-radius--20 {
-    border-radius: 20%;
+    border-radius: 20% !important;
   }
   .s__border-radius--30 {
-    border-radius: 30%;
+    border-radius: 30% !important;
   }
   .s__border-radius--40 {
-    border-radius: 40%;
+    border-radius: 40% !important;
   }
   .s__border-radius--50 {
-    border-radius: 50%;
+    border-radius: 50% !important;
   }
   /* font-size */
   .s__font-size--1rem {

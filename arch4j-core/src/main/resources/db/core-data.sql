@@ -2,9 +2,9 @@
 insert into `core_user`
     (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`)
 values
-    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','{noop}admin@oopscraft.org','{noop}010-1234-5678'),
-    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', '{noop}apple@oopscraft.org', null),
-    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', '{noop}orange@oopscraft.org', '{noop}010-1111-2222');
+    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678'),
+    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null),
+    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222');
 
 -- authority
 insert into `core_authority`
@@ -13,8 +13,10 @@ values
     ('admin','Y','Admin Access Authority'),
     ('admin.common','Y','Admin Common Access Authority'),
     ('admin.monitor','Y','Admin Monitor Access Authority'),
-    ('admin.security','Y','Admin Security Access Authority'),
-    ('admin.security.edit','Y','Admin Security Edit Authority'),
+    ('admin.users','Y','Admin Users Access Authority'),
+    ('admin.users.edit','Y','Admin Users Edit Authority'),
+    ('admin.roles','Y','Admin Roles Access Authority'),
+    ('admin.roles.edit','Y','Admin Roles Edit Authority'),
     ('admin.menus','Y','Admin Menus Access Authority'),
     ('admin.menus.edit','Y','Admin Menus Edit Authority'),
     ('admin.boards','Y','Admin Boards Access Authority'),

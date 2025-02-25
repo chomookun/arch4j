@@ -71,7 +71,8 @@
                     '_header _header _header'
                     '_nav _main _aside'
                     '_footer _footer _footer';
-            grid-template-columns: 18rem calc(100% - 18rem - 5rem) 5rem;
+            /*grid-template-columns: 18rem calc(100% - 18rem - 5rem) 5rem;*/
+            grid-template-columns: 1.5fr 10fr 0.75fr;
             grid-template-rows: auto 1fr 3rem;
         }
         @media screen and (max-width: 1023px) {
@@ -324,9 +325,15 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/security}" th:classappend="!${#authorization.expression('hasAuthority(''admin.security'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-security.svg}" alt="security"/>
-                    <span data-th-text="#{web.admin.security}"></span>
+                <a th:href="@{/admin/users}" th:classappend="!${#authorization.expression('hasAuthority(''admin.users'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-user.svg}" alt="user"/>
+                    <span data-th-text="#{web.admin.user}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/roles}" th:classappend="!${#authorization.expression('hasAuthority(''admin.roles'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
+                    <span data-th-text="#{web.admin.role}"></span>
                 </a>
             </li>
             <li>
