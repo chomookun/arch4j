@@ -1331,6 +1331,19 @@
   font-weight: bold;
 }
 
+/* font-style */
+.font-style--normal {
+  font-style: normal !important;
+}
+
+.font-style--italic {
+  font-style: italic !important;
+}
+
+.font-style--oblique {
+  font-style: oblique !important;
+}
+
 /* width */
 .width--5 {
   width: 5%;
@@ -3259,6 +3272,16 @@
   }
   .s__font-weight--bold {
     font-weight: bold;
+  }
+  /* font-style */
+  .s__font-style--normal {
+    font-style: normal !important;
+  }
+  .s__font-style--italic {
+    font-style: italic !important;
+  }
+  .s__font-style--oblique {
+    font-style: oblique !important;
   }
   /* width */
   .s__width--5 {

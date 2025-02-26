@@ -58,6 +58,7 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "menu_id", updatable = false)
+    @Builder.Default
     private List<MenuRoleEntity> menuRoles = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)

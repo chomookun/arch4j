@@ -27,6 +27,11 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
+    /**
+     * Saves menu
+     * @param menu menu
+     * @return saved menu
+     */
     @Transactional
     public Menu saveMenu(Menu menu) {
         final MenuEntity menuEntity = menuRepository.findById(menu.getMenuId()).orElse(
@@ -66,11 +71,20 @@ public class MenuService {
         return Menu.from(savedMenu);
     }
 
+    /**
+     * Gets menu
+     * @param menuId menu id
+     * @return menu
+     */
     public Optional<Menu> getMenu(String menuId) {
         return menuRepository.findById(menuId)
                 .map(Menu::from);
     }
 
+    /**
+     * Gets menus
+     * @return menus
+     */
     public List<Menu> getMenus() {
         Sort sort = Sort.by(Sort.Order.asc(MenuEntity_.SORT)); // bug: nullsLast not work
         List<MenuEntity> menuEntities = menuRepository.findAll(sort);
@@ -79,6 +93,10 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Deletes menu
+     * @param menuId menu id
+     */
     @Transactional
     public void deleteMenu(String menuId) {
         menuRepository.deleteById(menuId);

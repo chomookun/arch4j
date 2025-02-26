@@ -21,6 +21,10 @@ public class MenusController {
 
     private final MenuService menuService;
 
+    /**
+     * Returns menus model and view
+     * @return model and view
+     */
     @GetMapping
     public ModelAndView menus() {
         ModelAndView modelAndView = new ModelAndView("admin/menus.html");
@@ -28,12 +32,21 @@ public class MenusController {
         return modelAndView;
     }
 
+    /**
+     * Returns all menus
+     * @return all pages
+     */
     @GetMapping("get-menus")
     @ResponseBody
     public List<Menu> getMenus() {
         return menuService.getMenus();
     }
 
+    /**
+     * Returns specified menu
+     * @param menuId menu id
+     * @return menu
+     */
     @GetMapping("get-menu")
     @ResponseBody
     public Menu getMenu(@RequestParam("menuId")String menuId) {
@@ -41,6 +54,11 @@ public class MenusController {
                 .orElseThrow();
     }
 
+    /**
+     * Saves menu
+     * @param menu menu
+     * @return saved menu
+     */
     @PostMapping("save-menu")
     @ResponseBody
     @Transactional
@@ -52,6 +70,10 @@ public class MenusController {
         return menuService.saveMenu(menu);
     }
 
+    /**
+     * Deletes specified menu
+     * @param menuId menu id
+     */
     @GetMapping("delete-menu")
     @ResponseBody
     @Transactional

@@ -19,7 +19,7 @@ import jakarta.persistence.*;
 public class VariableEntity extends BaseEntity {
 
     @Id
-    @Column(name = "variable_id", length = 32)
+    @Column(name = "variable_id", length = 128)
     private String variableId;
 
     @Column(name = "name")

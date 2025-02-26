@@ -5,6 +5,7 @@
       layout:decorate="admin/_admin.html">
 <th:block layout:fragment="_content">
     <script th:inline="javascript">
+        // messages
         const messageSearch = new duice.ObjectProxy({
             key: 'messageId',
             value: null,
@@ -12,10 +13,9 @@
             _size: 20,
             _count: 0
         });
-
         const messages = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(messages, true);
-
+        // message
         const message = new duice.ObjectProxy({
             messageId: null,
             name: null
@@ -32,14 +32,14 @@
         });
 
         /**
-         * gets messages
+         * Gets messages
          * @param page page number
          */
         function getMessages(page) {
             if(page) {
                 messageSearch._page = page;
             }
-            let url = new URL(/*[[@{/admin/messages/get-messages}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-messages`, document.location.origin);
             if (messageSearch.key && messageSearch.value) {
                 url.searchParams.append(messageSearch.key, messageSearch.value);
             }
@@ -51,14 +51,13 @@
                     duice.ArrayProxy.clear(messages);
                     duice.ArrayProxy.assign(messages, data.content);
                     messageSearch._count = data['totalElements'];
-
                     // select current item
                     duice.ArrayProxy.selectItem(messages, messages.findIndex(item => item.messageId === message.messageId));
                 });
         }
 
         /**
-         * resets messages
+         * Resets messages
          */
         function resetMessages() {
             duice.ObjectProxy.reset(messageSearch);
@@ -66,11 +65,11 @@
         }
 
         /**
-         * gets message
+         * Gets message
          * @param messageId message id
          */
         function getMessage(messageId) {
-            let url = new URL(/*[[@{/admin/messages/get-message}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-message`, document.location.origin);
             url.searchParams.append('messageId', messageId);
             _fetch(url)
                 .then(response => response.json())
@@ -83,7 +82,7 @@
         }
 
         /**
-         * creates message
+         * Creates message
          */
         function createMessage() {
             duice.ObjectProxy.clear(message);
@@ -96,7 +95,7 @@
         }
 
         /**
-         * validates message id
+         * Validates message id
          * @param messageId message id
          * @returns {Promise<boolean>}
          */
@@ -107,9 +106,8 @@
                 duice.ObjectProxy.focus(message, 'messageId');
                 return false;
             }
-
             // check duplicated id
-            let url = new URL(/*[[@{/admin/messages/get-message}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-message`, document.location.origin);
             url.searchParams.append('messageId', messageId);
             let response = await _fetch(url, {}, true);
             if (response.ok) {
@@ -119,13 +117,12 @@
                     return false;
                 }
             }
-
             // return true
             return true;
         }
 
         /**
-         * saves message
+         * Saves message
          * @returns {Promise<boolean>}
          */
         async function saveMessage() {
@@ -135,23 +132,19 @@
                     return false;
                 }
             }
-
             // checks message name
             if(_isEmpty(message.name)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.message.Message.name})}]]*/'');
                 duice.ObjectProxy.focus(message, 'name');
                 return false;
             }
-
             // call save
             _confirm(/*[[#{web.global.saveItemConfirm(#{core.message.Message})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(/*[[@{/admin/messages/save-message}]]*/'', document.location.origin);
+                    let url = new URL(`${window.location.pathname}/save-message`, document.location.origin);
                     _fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(message)
                     }).then(response => {
                         if (response.ok) {
@@ -166,12 +159,12 @@
         }
 
         /**
-         * deletes message
+         * Deletes message
          */
         function deleteMessage() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.message.Message})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(/*[[@{/admin/messages/delete-message}]]*/'', document.location.origin);
+                    let url = new URL(`${window.location.pathname}/delete-message`, document.location.origin);
                     url.searchParams.append('messageId', message.messageId);
                     _fetch(url).then(response => {
                         if (response.ok) {
@@ -185,6 +178,7 @@
             });
         }
 
+        // Initializes
         document.addEventListener('DOMContentLoaded',()=> {
             getMessages();
         });
@@ -205,7 +199,7 @@
     <!-- start: message content             -->
     <!-- ================================== -->
     <div class="display--grid grid-template-columns--12fr gap--1rem">
-        <div id="messageList" class="grid-column--span-5 s__grid-column--span-12">
+        <div id="messageList" class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
             <!-- start: message list                -->
             <!-- ================================== -->
@@ -217,8 +211,8 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1rem">
-                        <div>
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                        <div class="display--flex flex-wrap--nowrap gap--1px">
                             <label>
                                 <select data-duice-bind="messageSearch" data-duice-property="key">
                                     <option value="messageId" th:text="#{core.message.Message.messageId}"></option>
@@ -230,7 +224,7 @@
                                        th:placeholder="#{web.global.keyword}"/>
                             </label>
                         </div>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button" type="submit" onclick="getMessages();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -261,10 +255,15 @@
                             data-duice-execute="this.dataset.id=message.messageId;"
                             onclick="getMessage(this.dataset.id);"
                             class="cursor--pointer">
-                            <td data-duice-bind="status" data-duice-property="count"
-                                class="text-align--center"></td>
-                            <td data-duice-bind="message" data-duice-property="messageId"></td>
-                            <td data-duice-bind="message" data-duice-property="name"></td>
+                            <td class="text-align--center">
+                                <span class="number" data-duice-bind="status" data-duice-property="count"></span>
+                            </td>
+                            <td>
+                                <span class="code font-weight--bold" data-duice-bind="message" data-duice-property="messageId"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="message" data-duice-property="name"></span>
+                            </td>
                         </tr>
                         <tr data-duice-bind="messages" data-duice-execute="if(messages.length === 0) this.hidden=false;" hidden>
                             <td colspan="100%" class="text-align--center">No Data</td>
@@ -274,8 +273,7 @@
                     <div class="display--flex justify-content--space-between">
                         <div>
                             <span data-th-text="#{web.global.total}"></span>
-                            <span data-duice-bind="messageSearch" data-duice-property="_count"
-                                  data-duice-format="number(0)"></span>
+                            <span data-duice-bind="messageSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
                         <duice-pagination
@@ -285,7 +283,7 @@
                                 data-duice-count-property="_count"
                                 data-duice-onclick="getMessages(this.dataset.page);">
                         </duice-pagination>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button" type="button" onclick="createMessage();">
                                 <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                                 <span data-th-text="#{web.global.create}"></span>
@@ -298,7 +296,7 @@
             <!-- end: message list                  -->
             <!-- ================================== -->
         </div>
-        <div class="grid-column--span-7 s__grid-column--span-12">
+        <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
             <!-- start: message detail              -->
             <!-- ================================== -->
@@ -311,26 +309,28 @@
                 </div>
                 <div class="panel-content">
                     <form class="display--grid grid-template-columns--12fr gap--1rem">
-                        <label class="grid-column--span-6 s__grid-column--span-12">
-                        <span data-th-text="#{core.message.Message.messageId}"
-                              class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="message" data-duice-property="messageId"
-                                   class="width--100"/>
-                        </label>
-                        <label class="grid-column--span-6 s__grid-column--span-12">
-                            <span data-th-text="#{core.message.Message.name}" class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="message" data-duice-property="name"
-                                   class="width--100"/>
-                        </label>
-                        <label class="grid-column--span-12">
-                            <span data-th-text="#{core.message.Message.value}" class="font-weight--bold"></span>
-                            <textarea data-duice-bind="message" data-duice-property="value" rows="4"
-                                      class="width--100"></textarea>
-                        </label>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.message.Message.messageId}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="message" data-duice-property="messageId" class="width--100 code font-weight--bold"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.message.Message.name}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="message" data-duice-property="name" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.message.Message.value}" class="font-weight--bold"></span>
+                                <textarea data-duice-bind="message" data-duice-property="value" rows="4" class="width--100"></textarea>
+                            </label>
+                        </div>
                     </form>
                     <div class="display--flex justify-content--space-between">
                         <div></div>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button" type="button" onclick="deleteMessage();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.messages.edit'')')}?'locked'"
                                     data-duice-bind="message"
@@ -347,7 +347,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="text-align--right font-size--smaller font-style--italic">
+                    <div class="text-align--right font-size--xx-small font-style--italic">
                         Last Updated At
                         <span data-duice-bind="message" data-duice-property="systemUpdatedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
                         By

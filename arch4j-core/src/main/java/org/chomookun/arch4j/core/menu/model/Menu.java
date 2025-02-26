@@ -1,6 +1,7 @@
 package org.chomookun.arch4j.core.menu.model;
 
 import jakarta.persistence.Converter;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
@@ -19,6 +20,7 @@ public class Menu extends BaseModel {
 
     private String menuId;
 
+    @NotBlank
     private String name;
 
     private String parentMenuId;

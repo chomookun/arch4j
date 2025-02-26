@@ -8,22 +8,13 @@ import org.chomookun.arch4j.core.role.model.Authority;
 import org.chomookun.arch4j.core.role.model.AuthoritySearch;
 import org.chomookun.arch4j.core.role.model.Role;
 import org.chomookun.arch4j.core.role.model.RoleSearch;
-import org.chomookun.arch4j.core.security.SecurityTokenService;
-import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
-import org.chomookun.arch4j.core.user.model.UserSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("admin/roles")
@@ -31,16 +22,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoleController {
 
-    private final UserService userService;
-
-    private final UserDetailsService userDetailsService;
-
-    private final SecurityTokenService securityTokenService;
-
     private final RoleService roleService;
 
     private final AuthorityService authorityService;
 
+    /**
+     * Returns roles model and view
+     * @return model and view
+     */
     @GetMapping
     public ModelAndView roles() {
         ModelAndView modelAndView = new ModelAndView("admin/roles.html");
@@ -48,19 +37,34 @@ public class RoleController {
         return modelAndView;
     }
 
+    /**
+     * Returns page of roles
+     * @param roleSearch role search
+     * @param pageable pageable
+     * @return page of roles
+     */
     @GetMapping("get-roles")
     @ResponseBody
     public Page<Role> getRoles(RoleSearch roleSearch, Pageable pageable) {
         return roleService.getRoles(roleSearch, pageable);
     }
 
+    /**
+     * Returns specified role
+     * @param roleId role id
+     * @return role
+     */
     @GetMapping("get-role")
     @ResponseBody
     public Role getRole(@RequestParam("roleId")String roleId) {
-        return roleService.getRole(roleId)
-                .orElseThrow();
+        return roleService.getRole(roleId).orElseThrow();
     }
 
+    /**
+     * Saves role
+     * @param role role
+     * @return saved role
+     */
     @PostMapping("save-role")
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.roles.edit')")
@@ -68,6 +72,10 @@ public class RoleController {
         return roleService.saveRole(role);
     }
 
+    /**
+     * Deletes role
+     * @param roleId role id
+     */
     @GetMapping("delete-role")
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.roles.edit')")
@@ -75,12 +83,23 @@ public class RoleController {
         roleService.deleteRole(roleId);
     }
 
+    /**
+     * Returns page of authorities
+     * @param authoritySearch authority search
+     * @param pageable pageable
+     * @return page of authorities
+     */
     @GetMapping("get-authorities")
     @ResponseBody
     public Page<Authority> getAuthorities(AuthoritySearch authoritySearch, Pageable pageable) {
         return authorityService.getAuthorities(authoritySearch, pageable);
     }
 
+    /**
+     * Returns specified authority
+     * @param authorityId authority id
+     * @return authority
+     */
     @GetMapping("get-authority")
     @ResponseBody
     public Authority getAuthority(@RequestParam("authorityId") String authorityId) {
@@ -88,6 +107,11 @@ public class RoleController {
                 .orElseThrow();
     }
 
+    /**
+     * Saves authority
+     * @param authority authority
+     * @return saved authority
+     */
     @PostMapping("save-authority")
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.roles.edit')")
@@ -95,6 +119,10 @@ public class RoleController {
         return authorityService.saveAuthority(authority);
     }
 
+    /**
+     * Deletes authority
+     * @param authorityId authority id
+     */
     @GetMapping("delete-authority")
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.roles.edit')")

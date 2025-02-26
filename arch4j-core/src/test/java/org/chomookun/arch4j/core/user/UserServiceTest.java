@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor
 class UserServiceTest extends CoreTestSupport {
 
-    private final UserService userService;
+    final UserService userService;
 
     @Test
     void saveUserForPersist() {
@@ -42,9 +42,11 @@ class UserServiceTest extends CoreTestSupport {
         entityManager.persist(userEntity);
         entityManager.flush();
         // when
-        User savedUser = userService.getUser(userEntity.getUserId()).orElseThrow();
+        User user = userService.getUser(userEntity.getUserId()).orElseThrow();
+        user.setName("changed");
+        User savedUser = userService.saveUser(user);
         // then
-        assertNotNull(entityManager.find(UserEntity.class, savedUser.getUserId()));
+        assertEquals("changed", entityManager.find(UserEntity.class, savedUser.getUserId()).getName());
     }
 
     @Test

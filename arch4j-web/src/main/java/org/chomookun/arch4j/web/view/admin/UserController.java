@@ -2,12 +2,6 @@ package org.chomookun.arch4j.web.view.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.role.AuthorityService;
-import org.chomookun.arch4j.core.role.RoleService;
-import org.chomookun.arch4j.core.role.model.Authority;
-import org.chomookun.arch4j.core.role.model.AuthoritySearch;
-import org.chomookun.arch4j.core.role.model.Role;
-import org.chomookun.arch4j.core.role.model.RoleSearch;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
@@ -37,10 +31,10 @@ public class UserController {
 
     private final SecurityTokenService securityTokenService;
 
-    private final RoleService roleService;
-
-    private final AuthorityService authorityService;
-
+    /**
+     * Return users model and view
+     * @return model and view
+     */
     @GetMapping
     public ModelAndView users() {
         ModelAndView modelAndView = new ModelAndView("admin/users.html");
@@ -48,18 +42,34 @@ public class UserController {
         return modelAndView;
     }
 
+    /**
+     * Returns page of users
+     * @param userSearch user search
+     * @param pageable pageable
+     * @return page of users
+     */
     @GetMapping("get-users")
     @ResponseBody
     public Page<User> getUsers(UserSearch userSearch, Pageable pageable) {
         return userService.getUsers(userSearch, pageable);
     }
 
+    /**
+     * Returns specified user
+     * @param userId user id
+     * @return user
+     */
     @GetMapping("get-user")
     @ResponseBody
     public User getUser(@RequestParam("userId") String userId) {
         return userService.getUser(userId).orElseThrow();
     }
 
+    /**
+     * Saves user
+     * @param user user
+     * @return saved user
+     */
     @PostMapping("save-user")
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.users.edit')")
@@ -67,6 +77,10 @@ public class UserController {
         return userService.saveUser(user);
     }
 
+    /**
+     * Deletes user
+     * @param userId user id
+     */
     @GetMapping("delete-user")
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.users.edit')")
@@ -74,12 +88,21 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
+    /**
+     * Changes user password
+     * @param payload payload for changing user password
+     */
     @PostMapping("change-user-password")
     @ResponseBody
     public void changeUserPassword(@RequestBody Map<String,String> payload) {
         userService.changePassword(payload.get("userId"), payload.get("password"));
     }
 
+    /**
+     * Generates security token
+     * @param payload payload for generating security token
+     * @return security token
+     */
     @PostMapping(value = "generate-security-token", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.users.edit')")

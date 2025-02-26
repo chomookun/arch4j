@@ -19,6 +19,12 @@ values
     ('admin.roles.edit','Y','Admin Roles Edit Authority'),
     ('admin.menus','Y','Admin Menus Access Authority'),
     ('admin.menus.edit','Y','Admin Menus Edit Authority'),
+    ('admin.messages','Y','Admin Messages Access Authority'),
+    ('admin.messages.edit','Y','Admin Messages Edit Authority'),
+    ('admin.variables','Y','Admin Variables Access Authority'),
+    ('admin.variables.edit','Y','Admin Variables Edit Authority'),
+    ('admin.codes','Y','Admin Codes Access Authority'),
+    ('admin.codes.edit','Y','Admin Codes Edit Authority'),
     ('admin.boards','Y','Admin Boards Access Authority'),
     ('admin.boards.edit','Y','Admin Boards Edit Authority'),
     ('admin.pages','Y','Admin Pages Access Authority'),
@@ -27,12 +33,6 @@ values
     ('admin.gits.edit','Y','Admin Gits Edit Authority'),
     ('admin.emails','Y','Admin Emails Access Authority'),
     ('admin.emails.edit','Y','Admin Emails Edit Authority'),
-    ('admin.messages','Y','Admin Messages Access Authority'),
-    ('admin.messages.edit','Y','Admin Messages Edit Authority'),
-    ('admin.variables','Y','Admin Variables Access Authority'),
-    ('admin.variables.edit','Y','Admin Variables Edit Authority'),
-    ('admin.codes','Y','Admin Codes Access Authority'),
-    ('admin.codes.edit','Y','Admin Codes Edit Authority'),
     ('admin.alarms','Y','Admin Alarms Access Authority'),
     ('admin.alarms.edit','Y','Admins Alarm Edit Authority'),
     ('admin.executions','Y','Admin Executions Access Authority'),
@@ -56,13 +56,13 @@ values
     ('DEVELOPER','admin.common'),
     ('DEVELOPER','admin.monitor'),
     ('DEVELOPER','admin.menus'),
+    ('DEVELOPER','admin.messages'),
+    ('DEVELOPER','admin.variables'),
+    ('DEVELOPER','admin.codes'),
     ('DEVELOPER','admin.boards'),
     ('DEVELOPER','admin.pages'),
     ('DEVELOPER','admin.gits'),
     ('DEVELOPER','admin.emails'),
-    ('DEVELOPER','admin.messages'),
-    ('DEVELOPER','admin.variables'),
-    ('DEVELOPER','admin.codes'),
     ('DEVELOPER','admin.alarms'),
     ('DEVELOPER','admin.executions'),
     ('DEVELOPER','actuator'),
@@ -92,6 +92,34 @@ values
     ('01f9240a225f4b5c821e00a5fe1b9353', 'ko', '익명 게시판'),
     ('188de70ba71e4d23bafa4a232379efff', 'ko', '회원 게시판'),
     ('408f6d1824e143d18d3e4ef24ffedabc', 'ko', '공지 게시판');
+
+
+
+-- message
+insert into `core_message`
+    (`message_id`,`name`,`value`)
+values
+    ('core.sample.Sample','Sample','Model Sample'),
+    ('core.sample.Sample.sampleId','Sample ID','Sample id');
+
+-- variable
+insert into `core_variable`
+    (`variable_id`,`name`,`value`)
+values
+    ('test','Test Variable', 'test_value');
+
+-- code
+insert into `core_code`
+    (`code_id`,`name`)
+values
+    ('core.sample.Sample.type','Sample type');
+
+-- code_item
+insert into `core_code_item`
+    (`code_id`,`item_id`,`name`,`sort`)
+values
+    ('core.sample.Sample.type','TYPE_A','Type A',1),
+    ('core.sample.Sample.type','TYPE_B','Type B',2);
 
 -- board
 insert into `core_board` (
@@ -511,23 +539,6 @@ insert into `core_git` (`git_id`,`name`,`note`,`url`,`branch`) values
 -- email
 insert into `core_email` (`email_id`,`name`,`subject`,`content`) values
     ('verification','Verification Email', 'Verification Answer: [[${answer}]]', 'Verification Answer: [[${answer}]]');
-
--- message
-insert into `core_message` (`message_id`,`name`,`value`) values
-    ('test','test message','This is test message');
-
--- variable
-insert into `core_variable` (`variable_id`,`name`,`value`) values
-    ('test','Test Variable', 'test_value');
-
--- code
-insert into `core_code` (`code_id`,`name`) values
-    ('test','Test Code');
-
--- code_item
-insert into `core_code_item` (`code_id`,`item_id`,`name`,`sort`) values
-                                                                     ('test','item_1','Item 1',1),
-                                                                     ('test','item_2','Item 2',2);
 
 -- alarm
 insert into `core_alarm` (`alarm_id`,`name`) values
