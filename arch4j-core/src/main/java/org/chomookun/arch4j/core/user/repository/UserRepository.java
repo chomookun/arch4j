@@ -1,7 +1,5 @@
 package org.chomookun.arch4j.core.user.repository;
 
-import org.chomookun.arch4j.core.role.entity.RoleEntity;
-import org.chomookun.arch4j.core.role.entity.RoleEntity_;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
 import org.chomookun.arch4j.core.user.entity.UserEntity_;
 import org.chomookun.arch4j.core.user.model.UserSearch;

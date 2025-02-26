@@ -1,6 +1,5 @@
 package org.chomookun.arch4j.core;
 
-//import com.github.fppt.jedismock.RedisServer;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.RequiredArgsConstructor;
@@ -66,11 +65,11 @@ import java.util.*;
 
 @Slf4j
 @Configuration
-@ComponentScan(
-        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
-)
+@ComponentScan(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 @EnableAutoConfiguration(
-        exclude = {MessageSourceAutoConfiguration.class}
+        exclude = {
+                MessageSourceAutoConfiguration.class
+        }
 )
 @ConfigurationPropertiesScan
 @EnableEncryptableProperties
@@ -96,14 +95,12 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
         PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("core", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
-
         // overrides debug log level
         if("debug".equalsIgnoreCase(environment.getProperty("logging.level.root"))) {
             environment.getSystemProperties().put("logging.level.org.hibernate.SQL", "DEBUG");
             environment.getSystemProperties().put("logging.level.org.hibernate.type.descriptor.sql.BasicBinder", "TRACE");
             environment.getSystemProperties().put("logging.level.jdbc.resultsettable", "DEBUG");
         }
-
         // exchanges jdbc-url to cluster if embedded
         exchangeJdbcUrlToClusterIfEmbedded(environment);
     }
@@ -127,7 +124,6 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
     @Bean
     public MessageSource messageSource(MessageSourceProperties messageProperties, MessageService messageService) {
         MessageSource messageSource = new MessageSource(messageService);
-
         // basename
         List<String> basenames = messageProperties.getBasename();
         if (basenames != null && !basenames.isEmpty()) {
@@ -136,7 +132,6 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
                     .toArray(String[]::new);
             messageSource.setBasenames(basenameArray);
         }
-
         // encoding
         if (messageProperties.getEncoding() != null) {
             messageSource.setDefaultEncoding(messageProperties.getEncoding().name());

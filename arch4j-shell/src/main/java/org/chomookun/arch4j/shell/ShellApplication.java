@@ -10,8 +10,11 @@ import java.util.Arrays;
 @SpringBootApplication
 public class ShellApplication {
 
+    /**
+     * runs application
+     * @param args arguments
+     */
     public static void main(String[] args) {
-
         // install
         if(Arrays.asList(args).contains("install")) {
             SpringApplicationInstaller.install(ShellApplication.class, args);
