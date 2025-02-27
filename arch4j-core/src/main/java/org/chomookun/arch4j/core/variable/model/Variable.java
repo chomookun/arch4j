@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
+import org.chomookun.arch4j.core.common.pbe.PbeStringUtil;
 import org.chomookun.arch4j.core.variable.entity.VariableEntity;
 
 @Data

@@ -1,7 +1,6 @@
 package org.chomookun.arch4j.core.code;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.code.entity.CodeEntity;
 import org.chomookun.arch4j.core.code.model.Code;
@@ -17,60 +16,86 @@ class CodeServiceTest extends CoreTestSupport {
 
     final CodeService codeService;
 
-    Code testCode = Code.builder()
-            .codeId("code_id")
-            .name("role_name")
-            .build();
-
     @Test
-    @Order(1)
-    void saveCode() {
+    void saveCodeForPersist() {
+        // given
+        Code code = Code.builder()
+                .codeId("test")
+                .name("test code")
+                .build();
         // when
-        Code savedCode = codeService.saveCode(testCode);
-
+        Code savedCode = codeService.saveCode(code);
         // then
-        assertNotNull(savedCode);
+        entityManager.clear();
         assertNotNull(entityManager.find(CodeEntity.class, savedCode.getCodeId()));
     }
 
     @Test
-    @Order(2)
+    void saveCodeForMerge() {
+        // given
+        CodeEntity codeEntity = CodeEntity.builder()
+                .codeId("test")
+                .name("test code")
+                .build();
+        entityManager.persist(codeEntity);
+        entityManager.flush();
+        entityManager.clear();
+        // when
+        Code code = Code.from(codeEntity);
+        code.setName("changed");
+        Code savedCode = codeService.saveCode(code);
+        // then
+        entityManager.clear();
+        assertEquals("changed", entityManager.find(CodeEntity.class, code.getCodeId()).getName());
+    }
+
+    @Test
     void getCode() {
         // given
-        Code savedCode = codeService.saveCode(testCode);
-
+        CodeEntity codeEntity = CodeEntity.builder()
+                .codeId("test")
+                .name("name")
+                .build();
+        entityManager.persist(codeEntity);
+        entityManager.flush();
+        entityManager.clear();
         // when
-        Code code = codeService.getCode(savedCode.getCodeId()).orElse(null);
-
+        Code code = codeService.getCode(codeEntity.getCodeId()).orElse(null);
         // then
         assertNotNull(code);
     }
 
     @Test
-    @Order(3)
     void deleteCode() {
         // given
-        Code savedCode = codeService.saveCode(testCode);
-
+        CodeEntity codeEntity = CodeEntity.builder()
+                .codeId("test")
+                .name("name")
+                .build();
+        entityManager.persist(codeEntity);
+        entityManager.flush();
+        entityManager.clear();
         // when
-        codeService.deleteCode(savedCode.getCodeId());
-
+        codeService.deleteCode(codeEntity.getCodeId());
         // then
-        assertNull(entityManager.find(CodeEntity.class, testCode.getCodeId()));
+        assertNull(entityManager.find(CodeEntity.class, codeEntity.getCodeId()));
     }
 
     @Test
-    @Order(4)
-    void getRoles() {
+    void getCodes() {
         // given
-        Code savedCode = codeService.saveCode(testCode);
-
+        CodeEntity codeEntity = CodeEntity.builder()
+                .codeId("test")
+                .name("name")
+                .build();
+        entityManager.persist(codeEntity);
+        entityManager.flush();
+        entityManager.clear();
         // when
         CodeSearch codeSearch = CodeSearch.builder()
-                .name(savedCode.getName())
+                .name(codeEntity.getName())
                 .build();
         Page<Code> codePage = codeService.getCodes(codeSearch, PageRequest.of(0,10));
-
         // then
         assertTrue(codePage.getContent().stream()
                 .anyMatch(e -> e.getName().contains(codeSearch.getName())));

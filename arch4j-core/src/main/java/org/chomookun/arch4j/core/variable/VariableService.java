@@ -3,6 +3,7 @@ package org.chomookun.arch4j.core.variable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.common.pbe.PbeStringUtil;
 import org.chomookun.arch4j.core.variable.entity.VariableEntity;
 import org.chomookun.arch4j.core.variable.repository.VariableRepository;
 import org.chomookun.arch4j.core.variable.model.Variable;
@@ -39,7 +40,7 @@ public class VariableService {
                     .variableId(variable.getVariableId())
                     .build());
         variableEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
-        variableEntity.setValue(variable.getValue());
+        variableEntity.setValue(PbeStringUtil.encode(variable.getValue()));
         variableEntity.setName(variable.getName());
         variableEntity.setNote(variable.getNote());
         // saves
