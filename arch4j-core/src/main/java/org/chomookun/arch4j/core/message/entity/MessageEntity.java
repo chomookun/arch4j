@@ -8,6 +8,8 @@ import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,17 +24,21 @@ public class MessageEntity extends BaseEntity implements I18nSupportEntity<Messa
 
     @Id
     @Column(name = "message_id", length = 128)
+    @Comment("Message ID")
     private String messageId;
 
     @Column(name = "name")
+    @Comment("Name")
     private String name;
 
     @Column(name = "value", length = 4000)
     @Lob
+    @Comment("Value")
     private String value;
 
     @Column(name = "note", length = 4000)
     @Lob
+    @Comment("Note")
     private String note;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

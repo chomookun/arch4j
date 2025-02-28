@@ -95,5 +95,4 @@ public class User extends BaseModel {
         return user;
     }
 
-
 }

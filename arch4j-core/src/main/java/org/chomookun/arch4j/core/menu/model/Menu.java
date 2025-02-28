@@ -43,9 +43,6 @@ public class Menu extends BaseModel {
 
     public enum Target { SELF, BLANK }
 
-    @Converter(autoApply = true)
-    public static class TargetConverter extends AbstractEnumConverter<Target> {}
-
     /**
      * menu factory method
      * @param menuEntity menu entity
@@ -66,11 +63,11 @@ public class Menu extends BaseModel {
                 .note(menuEntity.getNote())
                 .build();
         menu.setViewMenuRoles(menuEntity.getMenuRoles().stream()
-                .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.VIEW)
+                .filter(menuRoleEntity -> menuRoleEntity.getId().getType() == MenuRole.Type.VIEW)
                 .map(MenuRole::from)
                 .toList());
         menu.setLinkMenuRoles(menuEntity.getMenuRoles().stream()
-                .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.LINK)
+                .filter(menuRoleEntity -> menuRoleEntity.getId().getType() == MenuRole.Type.LINK)
                 .map(MenuRole::from)
                 .toList());
         return menu;

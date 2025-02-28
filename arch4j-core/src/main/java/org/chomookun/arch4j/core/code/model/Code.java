@@ -24,6 +24,11 @@ public class Code extends BaseModel {
     @Builder.Default
 	private List<CodeItem> codeItems = new ArrayList<>();
 
+    /**
+     * Convert code entity to code model
+     * @param codeEntity code entity
+     * @return code model
+     */
     public static Code from(CodeEntity codeEntity) {
         Code code = Code.builder()
                 .systemRequired(codeEntity.isSystemRequired())
@@ -33,7 +38,6 @@ public class Code extends BaseModel {
                 .name(codeEntity.getName())
                 .note(codeEntity.getNote())
                 .build();
-
         codeEntity.getCodeItems().forEach(codeItemEntity -> {
             CodeItem codeItem = CodeItem.builder()
                     .codeId(codeItemEntity.getCodeId())

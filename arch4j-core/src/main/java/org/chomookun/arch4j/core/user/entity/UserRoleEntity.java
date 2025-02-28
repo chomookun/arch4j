@@ -6,6 +6,7 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import jakarta.persistence.*;
 import org.chomookun.arch4j.core.role.entity.RoleEntity;
+import org.hibernate.annotations.Comment;
 
 import java.io.Serializable;
 
@@ -30,10 +31,12 @@ public class UserRoleEntity extends BaseEntity {
 
     @Id
     @Column(name = "user_id", length = 32)
+    @Comment("User ID")
     private String userId;
 
     @Id
     @Column(name = "role_id", length = 32)
+    @Comment("Role ID")
     private String roleId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

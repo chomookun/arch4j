@@ -9,6 +9,8 @@ import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +26,16 @@ public class CodeEntity extends BaseEntity implements I18nSupportEntity<CodeI18n
 	
 	@Id
 	@Column(name = "code_id", length = 32)
+    @Comment("Code ID")
 	private String codeId;
 	
 	@Column(name = "name")
+    @Comment("Name")
 	private String name;
 	
 	@Column(name = "note", length = 4000)
 	@Lob
+    @Comment("Note")
 	private String note;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

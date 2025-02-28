@@ -20,9 +20,6 @@ public class MenuRole extends Role {
 
     public enum Type { VIEW, LINK }
 
-    @Converter(autoApply = true)
-    public static class TypeConverter extends AbstractEnumConverter<Type> {}
-
     /**
      * menu role factory method
      * @param menuRoleEntity menu role entity
@@ -33,12 +30,12 @@ public class MenuRole extends Role {
         Role role = Role.from(menuRoleEntity.getRoleEntity());
         // returns
         return MenuRole.builder()
+                .menuId(menuRoleEntity.getId().getMenuId())
+                .roleId(menuRoleEntity.getId().getRoleId())
+                .type(menuRoleEntity.getId().getType())
                 .systemRequired(menuRoleEntity.isSystemRequired())
                 .systemUpdatedAt(menuRoleEntity.getSystemUpdatedAt())
                 .systemUpdatedBy(menuRoleEntity.getSystemUpdatedBy())
-                .menuId(menuRoleEntity.getMenuId())
-                .roleId(menuRoleEntity.getRoleId())
-                .type(menuRoleEntity.getType())
                 .name(role.getName())
                 .anonymous(role.isAnonymous())
                 .authenticated(role.isAuthenticated())

@@ -8,6 +8,8 @@ import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,16 +24,20 @@ public class EmailEntity extends BaseEntity implements I18nSupportEntity<EmailI1
 
     @Id
     @Column(name = "email_id", length = 32)
+    @Comment("Email ID")
     private String emailId;
 
     @Column(name = "name")
+    @Comment("Name")
     private String name;
 
     @Column(name = "subject", length = 1024)
+    @Comment("Subject")
     private String subject;
 
     @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
+    @Comment("Content")
     private String content;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

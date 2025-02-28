@@ -51,12 +51,13 @@ public class Execution {
         return Duration.between(startedAt, endedAt);
     }
 
-    public enum Status {
-        RUNNING,
-        SUCCESS,
-        FAILED
-    }
+    public enum Status { RUNNING, SUCCESS, FAILED }
 
+    /**
+     * Convert from ExecutionEntity to Execution
+     * @param executionEntity execution entity
+     * @return execution model
+     */
     public static Execution from(ExecutionEntity executionEntity) {
         return Execution.builder()
                 .executionId(executionEntity.getExecutionId())

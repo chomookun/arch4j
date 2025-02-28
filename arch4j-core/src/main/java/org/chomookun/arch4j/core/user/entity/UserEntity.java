@@ -54,6 +54,7 @@ public class UserEntity extends BaseEntity {
     private String name;
 
     @Column(name = "status", length = 16)
+    @Convert(converter = StatusConverter.class)
     @Comment("Status")
     private User.Status status;
 
@@ -81,15 +82,19 @@ public class UserEntity extends BaseEntity {
     private String profile;
 
     @Column(name = "join_at")
+    @Comment("Join at")
     private Instant joinAt;
 
     @Column(name = "close_at")
+    @Comment("Close at")
     private Instant closeAt;
 
     @Column(name = "password_at")
+    @Comment("Password at")
     private Instant passwordAt;
 
     @Column(name = "expire_at")
+    @Comment("Expire at")
     private Instant expireAt;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -97,7 +102,7 @@ public class UserEntity extends BaseEntity {
     @Builder.Default
     private List<UserRoleEntity> userRoles = new ArrayList<>();
 
-    @Converter(autoApply = true)
+    @Converter
     public static class StatusConverter extends AbstractEnumConverter<User.Status> {}
 
 }

@@ -7,6 +7,7 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
+import org.hibernate.annotations.Comment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,16 +35,20 @@ public class CodeItemEntity extends BaseEntity implements I18nSupportEntity<Code
 
 	@Id
 	@Column(name = "code_id", length = 32)
+    @Comment("Code ID")
 	private String codeId;
 	
 	@Id
 	@Column(name = "item_id", length = 32)
+    @Comment("Item ID")
 	private String itemId;
 
     @Column(name = "name")
+    @Comment("Name")
     private String name;
 
     @Column(name = "sort")
+    @Comment("Sort")
 	private Integer sort;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

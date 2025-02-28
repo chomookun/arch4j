@@ -94,8 +94,6 @@ values
     ('188de70ba71e4d23bafa4a232379efff', 'ko', '회원 게시판'),
     ('408f6d1824e143d18d3e4ef24ffedabc', 'ko', '공지 게시판');
 
-
-
 -- message
 insert into `core_message`
     (`message_id`,`name`,`value`)

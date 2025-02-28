@@ -50,18 +50,28 @@ public class MenuService {
         // view roles
         menu.getViewMenuRoles().forEach(viewRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
-                    .menuId(menuEntity.getMenuId())
-                    .roleId(viewRole.getRoleId())
-                    .type(MenuRole.Type.VIEW)
+//                    .menuId(menuEntity.getMenuId())
+//                    .roleId(viewRole.getRoleId())
+//                    .type(MenuRole.Type.VIEW)
+                    .id(MenuRoleEntity.Id.builder()
+                            .menuId(menuEntity.getMenuId())
+                            .roleId(viewRole.getRoleId())
+                            .type(MenuRole.Type.VIEW)
+                            .build())
                     .build();
             menuEntity.getMenuRoles().add(menuRoleEntity);
         });
         // link roles
         menu.getLinkMenuRoles().forEach(linkRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
-                    .menuId(menuEntity.getMenuId())
-                    .roleId(linkRole.getRoleId())
-                    .type(MenuRole.Type.LINK)
+//                    .menuId(menuEntity.getMenuId())
+//                    .roleId(linkRole.getRoleId())
+//                    .type(MenuRole.Type.LINK)
+                    .id(MenuRoleEntity.Id.builder()
+                            .menuId(menuEntity.getMenuId())
+                            .roleId(linkRole.getRoleId())
+                            .type(MenuRole.Type.LINK)
+                            .build())
                     .build();
             menuEntity.getMenuRoles().add(menuRoleEntity);
         });

@@ -5,6 +5,8 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
+
 import java.io.Serializable;
 
 @Entity
@@ -28,10 +30,12 @@ public class RoleAuthorityEntity extends BaseEntity {
 
     @Id
     @Column(name = "role_id")
+    @Comment("Role ID")
     private String roleId;
 
     @Id
     @Column(name = "authority_id")
+    @Comment("Authority ID")
     private String authorityId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
