@@ -3,10 +3,13 @@ package org.chomookun.arch4j.core.menu.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
 import org.chomookun.arch4j.core.menu.model.MenuRole;
 import org.chomookun.arch4j.core.role.entity.RoleEntity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
+
 import java.io.Serializable;
 
 @Entity
@@ -30,15 +33,17 @@ public class MenuRoleEntity extends BaseEntity {
     }
 
     @Id
-    @Column(name = "menu_id")
+    @Column(name = "menu_id", length = 32)
     private String menuId;
 
     @Id
-    @Column(name = "role_id")
+    @Column(name = "role_id", length = 32)
     private String roleId;
 
     @Id
-    @Column(name = "type")
+    @Column(name = "type", length = 16)
+    @Enumerated(EnumType.STRING)    // @Convert is not working at @Id field
+    @Type(TypeConverter.class)      // force to sql type to string
     private MenuRole.Type type;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -49,5 +54,6 @@ public class MenuRoleEntity extends BaseEntity {
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private RoleEntity roleEntity;
 
+    public static class TypeConverter extends AbstractEnumConverter<MenuRole.Type> {}
 
 }

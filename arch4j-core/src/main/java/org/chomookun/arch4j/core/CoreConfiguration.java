@@ -191,9 +191,9 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RedisServer redisServer(ConfigurableEnvironment environment) throws IOException {
-        String host = environment.getProperty("spring.redis.host");
+        String host = environment.getProperty("spring.data.redis.host");
         if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
-            int port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("spring.redis.port")));
+            int port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("spring.data.redis.port")));
             boolean portInUse = false;
             try (Socket socket = new Socket(host, port)) {
                 portInUse = true;
