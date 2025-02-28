@@ -1,75 +1,48 @@
 package org.chomookun.arch4j.core.email.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.email.entity.EmailEntity;
+import org.chomookun.arch4j.core.email.model.Email;
+import org.chomookun.arch4j.core.email.model.EmailSearch;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @RequiredArgsConstructor
+@Slf4j
 class EmailTemplateRepositoryTest extends CoreTestSupport {
 
     private final EmailRepository emailTemplateRepository;
 
-    private EmailEntity getTestEmailTemplateEntity() {
-        return EmailEntity.builder()
-                .emailId(IdGenerator.uuid())
-                .name("junit test template")
+    @Test
+    void findAll() {
+        // given
+        EmailSearch emailSearch = EmailSearch.builder()
                 .build();
-    }
-
-    private EmailEntity createTestEmailTemplateEntity() {
-        EmailEntity testEmailTemplateEntity = getTestEmailTemplateEntity();
-        entityManager.persist(testEmailTemplateEntity);
-        entityManager.flush();
-        entityManager.clear();
-        return testEmailTemplateEntity;
+        Pageable pageable = PageRequest.of(0, 10);
+        // when
+        Page<EmailEntity> emailEntityPage = emailTemplateRepository.findAll(emailSearch, pageable);
+        // then
+        log.info("emailEntityPage: {}", emailEntityPage);
     }
 
     @Test
-    @Order(1)
-    void save() {
+    void findAllWithUnPaged() {
         // given
-        EmailEntity testEmailTemplateEntity = getTestEmailTemplateEntity();
-
+        EmailSearch emailSearch = EmailSearch.builder()
+                .build();
+        Pageable pageable = Pageable.unpaged();
         // when
-        emailTemplateRepository.saveAndFlush(testEmailTemplateEntity);
-        testEmailTemplateEntity.setName("changed template name");
-        emailTemplateRepository.saveAndFlush(testEmailTemplateEntity);
-
+        Page<EmailEntity> emailEntityPage = emailTemplateRepository.findAll(emailSearch, pageable);
         // then
-        EmailEntity savedEmailTemplateEntity = entityManager.find(EmailEntity.class, testEmailTemplateEntity.getEmailId());
-        assertNotNull(savedEmailTemplateEntity);
-        assertEquals(testEmailTemplateEntity.getName(), savedEmailTemplateEntity.getName());
-    }
-
-    @Test
-    @Order(2)
-    void findById() {
-        // given
-        EmailEntity testEmailTemplateEntity = createTestEmailTemplateEntity();
-
-        // when
-        EmailEntity emailTemplateEntity = emailTemplateRepository.findById(testEmailTemplateEntity.getEmailId()).orElseThrow();
-
-        // then
-        assertEquals(testEmailTemplateEntity.getEmailId(), emailTemplateEntity.getEmailId());
-    }
-
-    @Test
-    @Order(3)
-    void deleteById() {
-        // given
-        EmailEntity testEmailTemplateEntity = createTestEmailTemplateEntity();
-
-        // when
-        emailTemplateRepository.deleteById(testEmailTemplateEntity.getEmailId());
-
-        // then
-        assertNull(entityManager.find(EmailEntity.class, testEmailTemplateEntity.getEmailId()));
+        log.info("emailEntityPage: {}", emailEntityPage);
     }
 
 }

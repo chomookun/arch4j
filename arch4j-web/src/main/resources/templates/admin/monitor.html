@@ -4,14 +4,21 @@
       layout:decorate="admin/_admin.html">
 <th:block layout:fragment="_content">
     <script th:inline="javascript">
+        // charts
+        Chart.defaults.font.size = 8;
+        Chart.defaults.animation = false;
         let cpuChart = null;
         let memoryChart = null;
         let diskChart = null;
         let serverChart = null;
         let datasourceChart = null;
+        const requests = new duice.ArrayProxy([]);
 
+        /**
+         * Gets info
+         */
         function getInfo() {
-            let url = new URL(/*[[@{/admin/monitor/get-info}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-info`, document.location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -21,6 +28,12 @@
                 });
         }
 
+        /**
+         * Converts json to text
+         * @param json json string
+         * @param indent indent
+         * @returns {string} plain text
+         */
         function convertJsonToText(json, indent = 0) {
             const indentation = ' '.repeat(indent * 2);
             let plainText = '';
@@ -42,8 +55,11 @@
             return plainText;
         }
 
+        /**
+         * Gets cpu
+         */
         function getCpu() {
-            let url = new URL(/*[[@{/admin/monitor/get-cpu}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-cpu`, document.location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -51,6 +67,10 @@
                 });
         }
 
+        /**
+         * Initializes cpu chart
+         * @param cpu cpu data
+         */
         function initializeCpuChart(cpu) {
             let labels = [];
             let usage = [];
@@ -83,10 +103,10 @@
                         y: {
                             ticks: {
                                 font: {
-                                    size: 10
+                                    size: 8
                                 },
                                 callback: function(value, index, values) {
-                                    return value + ' %';
+                                    return value + '%';
                                 }
                             }
                         }
@@ -95,8 +115,11 @@
             });
         }
 
+        /**
+         * Gets memory metrics
+         */
         function getMemory() {
-            let url = new URL(/*[[@{/admin/monitor/get-memory}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-memory`, document.location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -104,6 +127,10 @@
                 });
         }
 
+        /**
+         * Initializes memory chart
+         * @param memory memory metrics
+         */
         function initializeMemoryChart(memory) {
             let labels = [];
             let used = [];
@@ -148,10 +175,10 @@
                         y: {
                             ticks: {
                                 font: {
-                                    size: 10
+                                    size: 8
                                 },
                                 callback: function(value, index, values) {
-                                    return value + ' m';
+                                    return value + 'M';
                                 }
                             }
                         }
@@ -160,8 +187,11 @@
             });
         }
 
+        /**
+         * Gets disk metrics
+         */
         function getDisk() {
-            let url = new URL(/*[[@{/admin/monitor/get-disk}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-disk`, document.location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -169,6 +199,10 @@
                 });
         }
 
+        /**
+         * Initializes disk chart
+         * @param disk disk metrics
+         */
         function initializeDiskChart(disk) {
             let labels = [];
             let used = [];
@@ -214,10 +248,7 @@
                             min: 0,
                             ticks: {
                                 font: {
-                                    size: 10
-                                },
-                                callback: function (value, index, values) {
-                                    return value + ' g';
+                                    size: 8
                                 }
                             }
                         }
@@ -226,8 +257,11 @@
             });
         }
 
+        /**
+         * Gets server metrics
+         */
         function getServer() {
-            let url = new URL(/*[[@{/admin/monitor/get-server}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-server`, document.location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -235,26 +269,33 @@
                 });
         }
 
+        /**
+         * Initializes server chart
+         * @param cpu cpu data
+         */
         function initializeServerChart(cpu) {
             let labels = [];
             let max = [];
             let current = [];
-            let busy = [];
             cpu.forEach(element => {
                 labels.push(new Date(element.time));
                 max.push(element.max);
                 current.push(element.current);
-                busy.push(element.busy);
             });
             serverChart = new Chart(document.getElementById("serverChart"), {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Usage',
+                        label: 'Max',
                         data: max,
+                        borderWidth: 1,
+                        pointStyle: 'dash'
+                    },{
+                        label: 'Current',
+                        data: current,
                         fill: true,
-                        borderColor: 'rgba(75,192,192,1)',
+                        borderColor: 'rgba(75, 192, 192, 0.5)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderWidth: 1,
                         pointStyle: 'crossRot'
@@ -271,10 +312,7 @@
                         y: {
                             ticks: {
                                 font: {
-                                    size: 10
-                                },
-                                callback: function(value, index, values) {
-                                    return value + ' %';
+                                    size: 8
                                 }
                             }
                         }
@@ -283,22 +321,101 @@
             });
         }
 
+        /**
+         * Gets datasource metrics
+         */
+        function getDatasource() {
+            let url = new URL(`${window.location.pathname}/get-datasource`, document.location.origin);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    initializeDatasourceChart(data);
+                });
+        }
+
+        /**
+         * Initializes datasource chart
+         * @param cpu cpu data
+         */
+        function initializeDatasourceChart(cpu) {
+            let labels = [];
+            let max = [];
+            let active = [];
+            cpu.forEach(element => {
+                labels.push(new Date(element.time));
+                max.push(element.max);
+                active.push(element.active);
+            });
+            datasourceChart = new Chart(document.getElementById("datasourceChart"), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Max',
+                        data: max,
+                        borderWidth: 1,
+                        pointStyle: 'dash'
+                    },{
+                        label: 'Active',
+                        data: active,
+                        fill: true,
+                        borderColor: 'rgba(75, 192, 192, 0.5)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 1,
+                        pointStyle: 'crossRot'
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            display: false,
+                            title: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 8
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Gets requests
+         */
+        function getRequests() {
+            let url = new URL(`${window.location.pathname}/get-requests`, document.location.origin);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.assign(requests, data);
+                });
+        }
+
         // DOM content loaded listener
         document.addEventListener('DOMContentLoaded',()=> {
             getInfo();
             getCpu();
             getMemory();
             getDisk();
+            getServer();
+            getDatasource();
+            getRequests();
         });
 
     </script>
     <style th:inline="css">
         #infoText {
-            padding-top: 0.5em;
             min-height: 15rem;
-            line-height: 1.2em;
-            background-color: black;
-            color: white;
+            padding-top: 0.5rem;
+            line-height: 1.0rem;
+            background-color: #222;
+            color: #efefef;
         }
     </style>
 
@@ -316,7 +433,7 @@
     <!-- ================================== -->
     <!-- start: monitorContent              -->
     <!-- ================================== -->
-    <div id="monitorContent" class="display--grid grid-template-columns--2fr s__grid-template-columns--1fr gap--1em">
+    <div id="monitorContent" class="display--grid grid-template-columns--3fr s__grid-template-columns--1fr gap--1rem">
         <div class="grid-column--span-1">
             <!-- ================================== -->
             <!-- start: info                        -->
@@ -330,7 +447,7 @@
                 </div>
                 <div class="panel-content height--100">
                     <label class="height--100">
-                        <textarea id="infoText" readonly="readonly" class="width--100 height--100"></textarea>
+                        <textarea id="infoText" readonly="readonly" class="width--100 height--100 code font-size--smaller"></textarea>
                     </label>
                 </div>
             </div>
@@ -382,10 +499,10 @@
             <!-- ================================== -->
             <div class="panel">
                 <div id="disk" class="panel-title">
-                    <h1>
+                    <h2>
                         <img class="icon" th:src="@{/static/image/icon-disk.svg}" alt="disk"/>
                         <span data-th-text="#{web.admin.monitor.disk}"></span>
-                    </h1>
+                    </h2>
                 </div>
                 <div class="panel-content">
                     <canvas id="diskChart"></canvas>
@@ -397,21 +514,102 @@
         </div>
         <div class="grid-column--span-1">
             <!-- ================================== -->
-            <!-- start: disk                        -->
+            <!-- start: server                      -->
             <!-- ================================== -->
             <div class="panel">
                 <div id="server" class="panel-title">
-                    <h1>
+                    <h2>
                         <img class="icon" th:src="@{/static/image/icon-server.svg}" alt="server"/>
                         <span data-th-text="#{web.admin.monitor.server}"></span>
-                    </h1>
+                    </h2>
                 </div>
                 <div class="panel-content">
                     <canvas id="serverChart"></canvas>
                 </div>
             </div>
             <!-- ================================== -->
-            <!-- end: disk                          -->
+            <!-- end: server                        -->
+            <!-- ================================== -->
+        </div>
+        <div class="grid-column--span-1">
+            <!-- ================================== -->
+            <!-- start: datasource                  -->
+            <!-- ================================== -->
+            <div class="panel">
+                <div id="server" class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-datasource.svg}" alt="server"/>
+                        <span data-th-text="#{web.admin.monitor.datasource}"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <canvas id="datasourceChart"></canvas>
+                </div>
+            </div>
+            <!-- ================================== -->
+            <!-- end: datasource                    -->
+            <!-- ================================== -->
+        </div>
+        <div class="grid-column--span-3">
+            <!-- ================================== -->
+            <!-- start: requests                    -->
+            <!-- ================================== -->
+            <div class="panel">
+                <div id="server" class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="request"/>
+                        <span data-th-text="#{web.admin.monitor.request}"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <div class="width--100 overflow--scroll box" style="max-height:40rem;">
+                        <table class="table width--100 border--none font-size--smaller">
+                            <thead>
+                            <tr>
+                                <th>URL</th>
+                                <th>Method</th>
+                                <th>Total Count</th>
+                                <th>Success Count (2xx)</th>
+                                <th>Client Error Count (4xx)</th>
+                                <th>Server Error Count (5xx)</th>
+                                <th>Average Time (s)</th>
+                                <th>Max Time (s)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr data-duice-bind="requests" data-duice-loop="request">
+                                <td>
+                                    <span data-duice-bind="request" data-duice-property="uri" class="code font-weight--bold"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="request" data-duice-property="method" class="code badge"></span>
+                                </td>
+                                <td class="text-align--right">
+                                    <span data-duice-bind="request" data-duice-property="totalCount" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                                <td class="text-align--right">
+                                    <span data-duice-bind="request" data-duice-property="successCount" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                                <td class="text-align--right">
+                                    <span data-duice-bind="request" data-duice-property="clientErrorCount" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                                <td class="text-align--right">
+                                    <span data-duice-bind="request" data-duice-property="serverErrorCount" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                                <td class="text-align--right">
+                                    <span data-duice-bind="request" data-duice-property="averageTime" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                                <td class="text-align--right">
+                                    <span data-duice-bind="request" data-duice-property="maxTime" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- ================================== -->
+            <!-- end: requests                      -->
             <!-- ================================== -->
         </div>
     </div>

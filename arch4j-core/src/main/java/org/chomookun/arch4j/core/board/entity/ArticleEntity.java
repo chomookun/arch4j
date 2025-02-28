@@ -5,7 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.board.model.Article;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
-import org.chomookun.arch4j.core.security.entity.UserEntity;
+import org.chomookun.arch4j.core.user.entity.UserEntity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

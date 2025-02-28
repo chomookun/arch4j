@@ -1,16 +1,15 @@
 package org.chomookun.arch4j.core.menu.model;
 
+import jakarta.persistence.Converter;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
+import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
-import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
-import org.chomookun.arch4j.core.security.model.Role;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -21,6 +20,7 @@ public class Menu extends BaseModel {
 
     private String menuId;
 
+    @NotBlank
     private String name;
 
     private String parentMenuId;
@@ -36,12 +36,15 @@ public class Menu extends BaseModel {
     private String note;
 
     @Builder.Default
-    private List<Role> viewRoles = new ArrayList<>();
+    private List<MenuRole> viewMenuRoles = new ArrayList<>();
 
     @Builder.Default
-    private List<Role> linkRoles = new ArrayList<>();
+    private List<MenuRole> linkMenuRoles = new ArrayList<>();
 
-    public enum Target { _self, _blank }
+    public enum Target { SELF, BLANK }
+
+    @Converter(autoApply = true)
+    public static class TargetConverter extends AbstractEnumConverter<Target> {}
 
     /**
      * menu factory method
@@ -62,21 +65,14 @@ public class Menu extends BaseModel {
                 .sort(menuEntity.getSort())
                 .note(menuEntity.getNote())
                 .build();
-        // view role
-        List<Role> viewRoles = menuEntity.getViewMenuRoles().stream()
-                .map(MenuRoleEntity::getRoleEntity)
-                .filter(Objects::nonNull)
-                .map(Role::from)
-                .collect(Collectors.toList());
-        menu.setViewRoles(viewRoles);
-        // link role
-        List<Role> linkRoles = menuEntity.getLinkMenuRoles().stream()
-                .map(MenuRoleEntity::getRoleEntity)
-                .filter(Objects::nonNull)
-                .map(Role::from)
-                .collect(Collectors.toList());
-        menu.setLinkRoles(linkRoles);
-        // return
+        menu.setViewMenuRoles(menuEntity.getMenuRoles().stream()
+                .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.VIEW)
+                .map(MenuRole::from)
+                .toList());
+        menu.setLinkMenuRoles(menuEntity.getMenuRoles().stream()
+                .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.LINK)
+                .map(MenuRole::from)
+                .toList());
         return menu;
     }
 

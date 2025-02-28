@@ -3,7 +3,8 @@ package org.chomookun.arch4j.core.menu.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.security.entity.RoleEntity;
+import org.chomookun.arch4j.core.menu.model.MenuRole;
+import org.chomookun.arch4j.core.role.entity.RoleEntity;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -25,7 +26,7 @@ public class MenuRoleEntity extends BaseEntity {
     public static class Pk implements Serializable {
         private String menuId;
         private String roleId;
-        private String type;
+        private MenuRole.Type type;
     }
 
     @Id
@@ -38,22 +39,15 @@ public class MenuRoleEntity extends BaseEntity {
 
     @Id
     @Column(name = "type")
-    private String type;
+    private MenuRole.Type type;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(
-            name = "menu_id",
-            insertable = false,
-            updatable = false
-    )
+    @JoinColumn(name = "menu_id", insertable = false, updatable = false)
     private MenuEntity menuEntity;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(
-            name = "role_id",
-            insertable = false,
-            updatable = false
-    )
+    @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private RoleEntity roleEntity;
+
 
 }

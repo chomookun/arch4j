@@ -3,10 +3,14 @@ package org.chomookun.arch4j.core.security.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.chomookun.arch4j.core.role.model.Authority;
+import org.chomookun.arch4j.core.role.model.Role;
+import org.chomookun.arch4j.core.user.model.User;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.*;
 
 @Getter
@@ -25,6 +29,10 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
 
     @Builder.Default
     @Setter
+    private boolean enabled = true;
+
+    @Builder.Default
+    @Setter
     private Boolean accountNonLocked = true;
 
     @Builder.Default
@@ -32,11 +40,8 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
     private Boolean accountNonExpired = true;
 
     @Builder.Default
-    private Boolean credentialNonExpired = true;
-
-    @Builder.Default
     @Setter
-    private boolean enabled = true;
+    private Boolean credentialNonExpired = true;
 
     @Builder.Default
     private Set<GrantedAuthority> authorities = new HashSet<>();
@@ -52,8 +57,13 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
     }
 
     @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
     public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
+        return accountNonLocked;
     }
 
     @Override
@@ -63,17 +73,12 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.credentialNonExpired;
+        return credentialNonExpired;
     }
 
     @Override
     public Set<GrantedAuthority> getAuthorities() {
         return this.authorities;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
     }
 
     @Override

@@ -24,6 +24,7 @@ public class ShellConfiguration implements EnvironmentPostProcessor {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        // loads default shell application properties
         Resource resource = new DefaultResourceLoader().getResource("classpath:shell.yml");
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(resource);

@@ -2,7 +2,7 @@ package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
 import org.chomookun.arch4j.core.board.entity.ArticleCommentEntity;
-import org.chomookun.arch4j.core.security.entity.UserEntity;
+import org.chomookun.arch4j.core.user.entity.UserEntity;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

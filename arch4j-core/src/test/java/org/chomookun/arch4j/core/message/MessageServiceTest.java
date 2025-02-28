@@ -1,12 +1,17 @@
 package org.chomookun.arch4j.core.message;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.message.model.MessageSearch;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.message.entity.MessageEntity;
 import org.chomookun.arch4j.core.message.model.Message;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,49 +19,86 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor
 class MessageServiceTest extends CoreTestSupport {
 
-    final MessageService messageService;
-
-    Message testMessage = Message.builder()
-            .messageId("test_menu")
-            .name("test_name")
-            .build();
+    private final MessageService messageService;
 
     @Test
-    @Order(1)
-    void saveMessage() {
-        // when
-        Message savedMessage = messageService.saveMessage(testMessage);
-
-        // then
-        assertNotNull(savedMessage);
-        assertNotNull(entityManager.find(MessageEntity.class, testMessage.getMessageId()));
-    }
-
-    @Test
-    @Order(2)
-    void getMessage() {
+    void saveMessageForPersist() {
         // given
-        Message savedMessage = messageService.saveMessage(testMessage);
-
+        Message message = Message.builder()
+                .messageId("test.name")
+                .name("test message")
+                .build();
         // when
-        Optional<Message> optionalMessage = messageService.getMessage(savedMessage.getMessageId());
-
+        Message savedMessage = messageService.saveMessage(message);
         // then
-        assertTrue(optionalMessage.isPresent());
-        assertEquals(savedMessage.getMessageId(), optionalMessage.get().getMessageId());
+        assertNotNull(entityManager.find(MessageEntity.class, savedMessage.getMessageId()));
     }
 
     @Test
-    @Order(3)
+    void saveMessageForMerge() {
+        // given
+        MessageEntity messageEntity = MessageEntity.builder()
+                .messageId("test.name")
+                .name("test message")
+                .build();
+        entityManager.persist(messageEntity);
+        entityManager.flush();
+        // when
+        entityManager.refresh(messageEntity);
+        Message message = Message.from(messageEntity);
+        message.setName("changed");
+        Message savedMessage = messageService.saveMessage(message);
+        // then
+        assertEquals("changed", entityManager.find(MessageEntity.class, savedMessage.getMessageId()).getName());
+    }
+
+    @Test
+    void getMenu() {
+        // given
+        MessageEntity messageEntity = MessageEntity.builder()
+                .messageId("test.name")
+                .name("test message")
+                .build();
+        entityManager.persist(messageEntity);
+        entityManager.flush();
+        // when
+        Message message = messageService.getMessage(messageEntity.getMessageId()).orElse(null);
+        // then
+        assertNotNull(message);
+    }
+
+    @Test
     void deleteMessage() {
         // given
-        Message savedMessage = messageService.saveMessage(testMessage);
-
+        MessageEntity messageEntity = MessageEntity.builder()
+                .messageId("test.name")
+                .name("test message")
+                .build();
+        entityManager.persist(messageEntity);
+        entityManager.flush();
         // when
-        messageService.deleteMessage(testMessage.getMessageId());
-
+        messageService.deleteMessage(messageEntity.getMessageId());
         // then
-        assertNull(entityManager.find(MessageEntity.class, testMessage.getMessageId()));
+        assertNull(entityManager.find(MessageEntity.class, messageEntity.getMessageId()));
+    }
+
+    @Test
+    void getMessages() {
+        // given
+        MessageEntity messageEntity = MessageEntity.builder()
+                .messageId("test.name")
+                .name("test message")
+                .build();
+        entityManager.persist(messageEntity);
+        entityManager.flush();
+        MessageSearch messageSearch = MessageSearch.builder()
+                .messageId("test.name")
+                .build();
+        Pageable pageable = PageRequest.of(0, 10);
+        // when
+        List<Message> messages = messageService.getMessages(messageSearch, pageable).getContent();
+        // then
+        assertTrue(messages.stream().allMatch(e -> e.getMessageId().contains(messageSearch.getMessageId())));
     }
 
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.CoreProperties;
 import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
-import org.chomookun.arch4j.core.security.model.User;
+import org.chomookun.arch4j.core.user.model.User;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.web.api.v1.user.dto;
 
 import lombok.*;
-import org.chomookun.arch4j.core.security.model.User;
+import org.chomookun.arch4j.core.user.model.User;
 
 @Data
 @Builder

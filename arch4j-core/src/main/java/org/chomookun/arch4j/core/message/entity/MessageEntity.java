@@ -21,7 +21,7 @@ import java.util.List;
 public class MessageEntity extends BaseEntity implements I18nSupportEntity<MessageI18nEntity> {
 
     @Id
-    @Column(name = "message_id", length = 64)
+    @Column(name = "message_id", length = 128)
     private String messageId;
 
     @Column(name = "name")

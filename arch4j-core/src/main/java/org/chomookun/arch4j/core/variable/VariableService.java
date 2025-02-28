@@ -1,6 +1,9 @@
 package org.chomookun.arch4j.core.variable;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.common.pbe.PbeStringUtil;
 import org.chomookun.arch4j.core.variable.entity.VariableEntity;
 import org.chomookun.arch4j.core.variable.repository.VariableRepository;
 import org.chomookun.arch4j.core.variable.model.Variable;
@@ -20,34 +23,57 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VariableService {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     private final VariableRepository variableRepository;
 
+    /**
+     * Saves variable
+     * @param variable variable
+     * @return saved variable
+     */
     @Transactional
     public Variable saveVariable(Variable variable) {
         VariableEntity variableEntity = variableRepository.findById(variable.getVariableId())
                 .orElse(VariableEntity.builder()
                     .variableId(variable.getVariableId())
                     .build());
-
         variableEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
-        variableEntity.setValue(variable.getValue());
+        variableEntity.setValue(PbeStringUtil.encode(variable.getValue()));
         variableEntity.setName(variable.getName());
         variableEntity.setNote(variable.getNote());
-
+        // saves
         VariableEntity savedVariableEntity = variableRepository.saveAndFlush(variableEntity);
+        entityManager.refresh(savedVariableEntity);
         return Variable.from(savedVariableEntity);
     }
 
+    /**
+     * Gets variable
+     * @param variableId variable id
+     * @return variable
+     */
     public Optional<Variable> getVariable(String variableId) {
         return variableRepository.findById(variableId).map(Variable::from);
     }
 
+    /**
+     * Deletes variable
+     * @param variableId variable id
+     */
     @Transactional
     public void deleteVariable(String variableId) {
         variableRepository.deleteById(variableId);
         variableRepository.flush();
     }
 
+    /**
+     * Gets variables
+     * @param variableSearch variable search
+     * @param pageable pageable
+     * @return page of variable
+     */
     public Page<Variable> getVariables(VariableSearch variableSearch, Pageable pageable) {
         Page<VariableEntity> variableEntityPage = variableRepository.findAll(variableSearch, pageable);
         List<Variable> properties = variableEntityPage.getContent().stream()

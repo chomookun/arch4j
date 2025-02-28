@@ -2,6 +2,8 @@ package org.chomookun.arch4j.core.security.model;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import org.chomookun.arch4j.core.role.model.Authority;
+import org.chomookun.arch4j.core.role.model.Role;
 import org.springframework.security.core.GrantedAuthority;
 
 @Builder

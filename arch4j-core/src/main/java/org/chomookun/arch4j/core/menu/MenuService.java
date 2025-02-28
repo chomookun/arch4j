@@ -1,8 +1,11 @@
 package org.chomookun.arch4j.core.menu;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity_;
+import org.chomookun.arch4j.core.menu.model.MenuRole;
 import org.chomookun.arch4j.core.menu.repository.MenuRepository;
 import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
 import org.chomookun.arch4j.core.menu.model.Menu;
@@ -19,8 +22,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     private final MenuRepository menuRepository;
 
+    /**
+     * Saves menu
+     * @param menu menu
+     * @return saved menu
+     */
     @Transactional
     public Menu saveMenu(Menu menu) {
         final MenuEntity menuEntity = menuRepository.findById(menu.getMenuId()).orElse(
@@ -35,36 +46,45 @@ public class MenuService {
         menuEntity.setIcon(menu.getIcon());
         menuEntity.setSort(menu.getSort());
         menuEntity.setNote(menu.getNote());
-        // view role
-        menuEntity.getViewMenuRoles().clear();
-        menu.getViewRoles().forEach(viewRole -> {
+        menuEntity.getMenuRoles().clear();
+        // view roles
+        menu.getViewMenuRoles().forEach(viewRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
                     .menuId(menuEntity.getMenuId())
                     .roleId(viewRole.getRoleId())
-                    .type("VIEW")
+                    .type(MenuRole.Type.VIEW)
                     .build();
-            menuEntity.getViewMenuRoles().add(menuRoleEntity);
+            menuEntity.getMenuRoles().add(menuRoleEntity);
         });
-        // link role
-        menuEntity.getLinkMenuRoles().clear();
-        menu.getLinkRoles().forEach(linkRole -> {
+        // link roles
+        menu.getLinkMenuRoles().forEach(linkRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
                     .menuId(menuEntity.getMenuId())
                     .roleId(linkRole.getRoleId())
-                    .type("LINK")
+                    .type(MenuRole.Type.LINK)
                     .build();
-            menuEntity.getLinkMenuRoles().add(menuRoleEntity);
+            menuEntity.getMenuRoles().add(menuRoleEntity);
         });
-        // saves
+        // saves and returns
         MenuEntity savedMenu = menuRepository.saveAndFlush(menuEntity);
+        entityManager.refresh(savedMenu);
         return Menu.from(savedMenu);
     }
 
+    /**
+     * Gets menu
+     * @param menuId menu id
+     * @return menu
+     */
     public Optional<Menu> getMenu(String menuId) {
         return menuRepository.findById(menuId)
                 .map(Menu::from);
     }
 
+    /**
+     * Gets menus
+     * @return menus
+     */
     public List<Menu> getMenus() {
         Sort sort = Sort.by(Sort.Order.asc(MenuEntity_.SORT)); // bug: nullsLast not work
         List<MenuEntity> menuEntities = menuRepository.findAll(sort);
@@ -73,6 +93,10 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Deletes menu
+     * @param menuId menu id
+     */
     @Transactional
     public void deleteMenu(String menuId) {
         menuRepository.deleteById(menuId);

@@ -71,7 +71,8 @@
                     '_header _header _header'
                     '_nav _main _aside'
                     '_footer _footer _footer';
-            grid-template-columns: 18rem calc(100% - 18rem - 5rem) 5rem;
+            /*grid-template-columns: 18rem calc(100% - 18rem - 5rem) 5rem;*/
+            grid-template-columns: 1.5fr 10fr 0.75fr;
             grid-template-rows: auto 1fr 3rem;
         }
         @media screen and (max-width: 1023px) {
@@ -94,7 +95,7 @@
             grid-template-areas:
                         '_header-logo _header-menu';
             grid-template-columns: auto auto;
-            border-bottom: groove 3px lightgray;
+            border-bottom: groove 2px lightgray;
             background-color: #fafafa;
             padding: 1rem;
         }
@@ -324,39 +325,21 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/security}" th:classappend="!${#authorization.expression('hasAuthority(''admin.security'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-security.svg}" alt="security"/>
-                    <span data-th-text="#{web.admin.security}"></span>
+                <a th:href="@{/admin/users}" th:classappend="!${#authorization.expression('hasAuthority(''admin.users'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-user.svg}" alt="user"/>
+                    <span data-th-text="#{web.admin.user}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/roles}" th:classappend="!${#authorization.expression('hasAuthority(''admin.roles'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
+                    <span data-th-text="#{web.admin.role}"></span>
                 </a>
             </li>
             <li>
                 <a th:href="@{/admin/menus}" th:classappend="!${#authorization.expression('hasAuthority(''admin.menus'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-menu.svg}" alt="menu"/>
                     <span data-th-text="#{web.admin.menu}"></span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/admin/boards}" th:classappend="!${#authorization.expression('hasAuthority(''admin.boards'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-board.svg}" alt="board"/>
-                    <span data-th-text="#{web.admin.board}"></span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/admin/pages}" th:classappend="!${#authorization.expression('hasAuthority(''admin.pages'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-page.svg}" alt="page"/>
-                    <span data-th-text="#{web.admin.page}"></span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/admin/gits}" th:classappend="!${#authorization.expression('hasAuthority(''admin.gits'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-git.svg}" alt="git"/>
-                    <span data-th-text="#{web.admin.git}"></span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/admin/emails}" th:classappend="!${#authorization.expression('hasAuthority(''admin.emails'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-email.svg}" alt="email"/>
-                    <span data-th-text="#{web.admin.email}"></span>
                 </a>
             </li>
             <li>
@@ -378,6 +361,12 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/admin/emails}" th:classappend="!${#authorization.expression('hasAuthority(''admin.emails'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-email.svg}" alt="email"/>
+                    <span data-th-text="#{web.admin.email}"></span>
+                </a>
+            </li>
+            <li>
                 <a th:href="@{/admin/alarms}" th:classappend="!${#authorization.expression('hasAuthority(''admin.alarms'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-alarm.svg}" alt="alarm"/>
                     <span data-th-text="#{web.admin.alarm}"></span>
@@ -387,6 +376,24 @@
                 <a th:href="@{/admin/executions}" th:classappend="!${#authorization.expression('hasAuthority(''admin.executions'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="execution"/>
                     <span data-th-text="#{web.admin.execution}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/boards}" th:classappend="!${#authorization.expression('hasAuthority(''admin.boards'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-board.svg}" alt="board"/>
+                    <span data-th-text="#{web.admin.board}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/pages}" th:classappend="!${#authorization.expression('hasAuthority(''admin.pages'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-page.svg}" alt="page"/>
+                    <span data-th-text="#{web.admin.page}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/gits}" th:classappend="!${#authorization.expression('hasAuthority(''admin.gits'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-git.svg}" alt="git"/>
+                    <span data-th-text="#{web.admin.git}"></span>
                 </a>
             </li>
             <li>

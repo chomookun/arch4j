@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.board.entity.BoardEntity;
 import org.chomookun.arch4j.core.board.model.Board;
-import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.role.model.Role;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 
 import java.util.Arrays;

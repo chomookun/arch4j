@@ -36,6 +36,7 @@ public class MessageI18nEntity extends BaseEntity implements I18nEntity {
     private String language;
 
     @Column(name = "value", length = 4000)
+    @Lob
     private String value;
 
 }

@@ -1,11 +1,13 @@
 package org.chomookun.arch4j.core.menu;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Order;
+import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
 import org.chomookun.arch4j.core.menu.model.Menu;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,79 +16,82 @@ class MenuServiceTest extends CoreTestSupport {
 
     private final MenuService menuService;
 
-    private Menu getTestMenu() {
-        Menu testMenu = Menu.builder()
-                .menuId("test_menu")
-                .parentMenuId(null)
-                .name("test_name")
-                .link("test_link")
-                .target(Menu.Target._self)
+    @Test
+    void saveMenuForPersist() {
+        // given
+        Menu menu = Menu.builder()
+                .menuId(IdGenerator.uuid())
+                .name("test menu")
+                .link("test/link")
+                .target(Menu.Target.SELF)
                 .build();
-        return testMenu;
-    }
-
-    private Menu saveTestMenu() {
-        Menu testMenu = getTestMenu();
-        menuService.saveMenu(testMenu);
-        return testMenu;
-    }
-
-    @Test
-    @Order(1)
-    void saveMenuToPersist() {
-        // given
-        Menu testMenu = getTestMenu();
-
         // when
-        menuService.saveMenu(testMenu);
-
+        Menu savedMenu = menuService.saveMenu(menu);
         // then
-        MenuEntity menuEntity = entityManager.find(MenuEntity.class, testMenu.getMenuId());
-        assertNotNull(menuEntity);
+        assertNotNull(entityManager.find(MenuEntity.class, savedMenu.getMenuId()));
     }
 
     @Test
-    @Order(2)
-    void saveMenuToMerge() {
+    void saveMenuForMerge() {
         // given
-        Menu testMenu = saveTestMenu();
-
+        MenuEntity menuEntity = MenuEntity. builder()
+                .menuId(IdGenerator.uuid())
+                .name("test menu")
+                .build();
+        entityManager.persist(menuEntity);
+        entityManager.flush();
         // when
-        testMenu.setName("changed");
-        Menu menu = menuService.saveMenu(testMenu);
-
+        Menu menu = menuService.getMenu(menuEntity.getMenuId()).orElseThrow();
+        menu.setName("changed");
+        Menu savedMenu = menuService.saveMenu(menu);
         // then
-        assertEquals(
-                "changed",
-                entityManager.find(MenuEntity.class, menu.getMenuId()).getName()
-        );
+        assertEquals("changed", entityManager.find(MenuEntity.class, savedMenu.getMenuId()).getName());
     }
 
     @Test
-    @Order(3)
     void getMenu() {
         // given
-        Menu testMenu = saveTestMenu();
-
+        MenuEntity menuEntity = MenuEntity.builder()
+                .menuId(IdGenerator.uuid())
+                .name("test menu")
+                .build();
+        entityManager.persist(menuEntity);
+        entityManager.flush();
         // when
-        Menu menu = menuService.getMenu(testMenu.getMenuId()).orElseThrow();
-
+        Menu menu = menuService.getMenu(menuEntity.getMenuId()).orElseThrow();
         // then
-        assertEquals(testMenu.getMenuId(), menu.getMenuId());
+        assertEquals(menuEntity.getMenuId(), menu.getMenuId());
     }
 
     @Test
-    @Order(4)
     void deleteMenu() {
         // given
-        Menu testMenu = saveTestMenu();
-
+        MenuEntity menuEntity = MenuEntity.builder()
+                .menuId(IdGenerator.uuid())
+                .name("test menu")
+                .build();
+        entityManager.persist(menuEntity);
+        entityManager.flush();
         // when
-        menuService.deleteMenu(testMenu.getMenuId());
-
+        menuService.deleteMenu(menuEntity.getMenuId());
         // then
-        MenuEntity menuEntity = entityManager.find(MenuEntity.class, testMenu.getMenuId());
-        assertNull(menuEntity);
+        MenuEntity deletedMenu = entityManager.find(MenuEntity.class, menuEntity.getMenuId());
+        assertNull(deletedMenu);
+    }
+
+    @Test
+    void getMenus() {
+        // given
+        MenuEntity menuEntity = MenuEntity.builder()
+                .menuId(IdGenerator.uuid())
+                .name("test menu")
+                .build();
+        entityManager.persist(menuEntity);
+        entityManager.flush();
+        // when
+        List<Menu> menus = menuService.getMenus();
+        // then
+        assertFalse(menus.isEmpty());
     }
 
 }

@@ -17,10 +17,16 @@ public class SecurityTokenService {
 
     private final SecurityProperties securityProperties;
 
+    /**
+     * Encodes the security token
+     * @param userDetails user details
+     * @param expirationMinutes expiration minutes
+     * @return security token
+     */
     public String encodeSecurityToken(UserDetails userDetails, int expirationMinutes) {
         JwtBuilder jwtBuilder = Jwts.builder();
         jwtBuilder.claim("username", userDetails.getUsername());
-        if(securityProperties.getExpireMinutes() > 0) {
+        if(securityProperties.getSessionExpireMinutes() > 0) {
             jwtBuilder.setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationMinutes).toInstant()));
         }
         jwtBuilder.signWith(SignatureAlgorithm.HS256, securityProperties.getSigningKey());
@@ -28,6 +34,11 @@ public class SecurityTokenService {
         return jwtBuilder.compact();
     }
 
+    /**
+     * Decodes the security token
+     * @param securityToken security token
+     * @return user details
+     */
     public UserDetails decodeSecurityToken(String securityToken) {
         Claims claims = Jwts.parser()
                 .setSigningKey(securityProperties.getSigningKey())

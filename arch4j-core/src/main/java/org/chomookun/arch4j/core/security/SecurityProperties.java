@@ -1,6 +1,5 @@
 package org.chomookun.arch4j.core.security;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
@@ -17,6 +16,8 @@ public class SecurityProperties {
 
     private final String signingKey;
 
-    private final Integer expireMinutes;
+    private final Integer sessionExpireMinutes;
+
+    private final Integer passwordExpireDays;
 
 }

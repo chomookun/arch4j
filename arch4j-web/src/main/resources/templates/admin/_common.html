@@ -5,7 +5,7 @@
 <dialog id="roleSelectDialog" class="dialog">
     <style th:inline="css">
         #roleSelectDialog {
-            width: 600px;
+            width: 800px;
         }
     </style>
     <script th:inline="javascript">
@@ -116,7 +116,7 @@
     <div class="dialog-title">
         <h2>
             <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
-            <span data-th-text="#{core.security.Role}"></span>
+            <span data-th-text="#{core.role.Role}"></span>
         </h2>
     </div>
     <div class="dialog-content">
@@ -125,8 +125,8 @@
                 <div class="white-space--nowrap">
                     <label>
                         <select data-duice-bind="roleSelectDialog.roleSearch" data-duice-property="key">
-                            <option value="roleId" th:text="#{core.security.Role.roleId}"></option>
-                            <option value="name" th:text="#{core.security.Role.name}"></option>
+                            <option value="roleId" th:text="#{core.role.Role.roleId}"></option>
+                            <option value="name" th:text="#{core.role.Role.name}"></option>
                         </select>
                     </label>
                     <label>
@@ -157,10 +157,10 @@
                 <thead>
                 <tr>
                     <th class="text-align--center">-</th>
-                    <th data-th-text="#{core.security.Role.roleId}"></th>
-                    <th data-th-text="#{core.security.Role.name}"></th>
-                    <th data-th-text="#{core.security.Role.anonymous}" class="text-align--center"></th>
-                    <th data-th-text="#{core.security.Role.authenticated}" class="text-align--center"></th>
+                    <th data-th-text="#{core.role.Role.roleId}"></th>
+                    <th data-th-text="#{core.role.Role.name}"></th>
+                    <th data-th-text="#{core.role.Role.anonymous}" class="text-align--center"></th>
+                    <th data-th-text="#{core.role.Role.authenticated}" class="text-align--center"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -233,10 +233,10 @@
                 <thead>
                 <tr>
                     <th class="text-align--center">-</th>
-                    <th data-th-text="#{core.security.Role.roleId}"></th>
-                    <th data-th-text="#{core.security.Role.name}"></th>
-                    <th data-th-text="#{core.security.Role.anonymous}" class="text-align--center"></th>
-                    <th data-th-text="#{core.security.Role.authenticated}" class="text-align--center"></th>
+                    <th data-th-text="#{core.role.Role.roleId}"></th>
+                    <th data-th-text="#{core.role.Role.name}"></th>
+                    <th data-th-text="#{core.role.Role.anonymous}" class="text-align--center"></th>
+                    <th data-th-text="#{core.role.Role.authenticated}" class="text-align--center"></th>
                 </tr>
                 </thead>
                 <tbody>

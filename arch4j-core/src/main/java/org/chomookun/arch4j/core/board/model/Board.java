@@ -5,7 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.board.entity.BoardEntity;
 import org.chomookun.arch4j.core.board.entity.BoardRoleEntity;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.role.model.Role;
 
 import java.util.ArrayList;
 import java.util.List;

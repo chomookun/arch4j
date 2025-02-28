@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.shell.pbe;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.common.cli.InteractiveUtil;
+import org.chomookun.arch4j.shell.common.InteractiveUtil;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 import org.springframework.shell.standard.ShellComponent;

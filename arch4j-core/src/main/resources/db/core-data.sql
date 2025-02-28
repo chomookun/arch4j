@@ -1,10 +1,11 @@
 -- user
 insert into `core_user`
-    (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`)
+    (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`, `join_at`, `password_at`)
 values
-    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','{noop}admin@oopscraft.org','{noop}010-1234-5678'),
-    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', '{noop}apple@oopscraft.org', null),
-    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', '{noop}orange@oopscraft.org', '{noop}010-1111-2222');
+    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678', current_timestamp, current_timestamp),
+    ('f3b3f3b3b3b34b3b3b3b3b3b3b3b3b3','user','{noop}user','User','N','ACTIVE', null, null, current_timestamp, current_timestamp),
+    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null, current_timestamp, current_timestamp),
+    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222', current_timestamp, current_timestamp);
 
 -- authority
 insert into `core_authority`
@@ -13,10 +14,18 @@ values
     ('admin','Y','Admin Access Authority'),
     ('admin.common','Y','Admin Common Access Authority'),
     ('admin.monitor','Y','Admin Monitor Access Authority'),
-    ('admin.security','Y','Admin Security Access Authority'),
-    ('admin.security.edit','Y','Admin Security Edit Authority'),
+    ('admin.users','Y','Admin Users Access Authority'),
+    ('admin.users.edit','Y','Admin Users Edit Authority'),
+    ('admin.roles','Y','Admin Roles Access Authority'),
+    ('admin.roles.edit','Y','Admin Roles Edit Authority'),
     ('admin.menus','Y','Admin Menus Access Authority'),
     ('admin.menus.edit','Y','Admin Menus Edit Authority'),
+    ('admin.messages','Y','Admin Messages Access Authority'),
+    ('admin.messages.edit','Y','Admin Messages Edit Authority'),
+    ('admin.variables','Y','Admin Variables Access Authority'),
+    ('admin.variables.edit','Y','Admin Variables Edit Authority'),
+    ('admin.codes','Y','Admin Codes Access Authority'),
+    ('admin.codes.edit','Y','Admin Codes Edit Authority'),
     ('admin.boards','Y','Admin Boards Access Authority'),
     ('admin.boards.edit','Y','Admin Boards Edit Authority'),
     ('admin.pages','Y','Admin Pages Access Authority'),
@@ -25,12 +34,6 @@ values
     ('admin.gits.edit','Y','Admin Gits Edit Authority'),
     ('admin.emails','Y','Admin Emails Access Authority'),
     ('admin.emails.edit','Y','Admin Emails Edit Authority'),
-    ('admin.messages','Y','Admin Messages Access Authority'),
-    ('admin.messages.edit','Y','Admin Messages Edit Authority'),
-    ('admin.variables','Y','Admin Variables Access Authority'),
-    ('admin.variables.edit','Y','Admin Variables Edit Authority'),
-    ('admin.codes','Y','Admin Codes Access Authority'),
-    ('admin.codes.edit','Y','Admin Codes Edit Authority'),
     ('admin.alarms','Y','Admin Alarms Access Authority'),
     ('admin.alarms.edit','Y','Admins Alarm Edit Authority'),
     ('admin.executions','Y','Admin Executions Access Authority'),
@@ -54,13 +57,13 @@ values
     ('DEVELOPER','admin.common'),
     ('DEVELOPER','admin.monitor'),
     ('DEVELOPER','admin.menus'),
+    ('DEVELOPER','admin.messages'),
+    ('DEVELOPER','admin.variables'),
+    ('DEVELOPER','admin.codes'),
     ('DEVELOPER','admin.boards'),
     ('DEVELOPER','admin.pages'),
     ('DEVELOPER','admin.gits'),
     ('DEVELOPER','admin.emails'),
-    ('DEVELOPER','admin.messages'),
-    ('DEVELOPER','admin.variables'),
-    ('DEVELOPER','admin.codes'),
     ('DEVELOPER','admin.alarms'),
     ('DEVELOPER','admin.executions'),
     ('DEVELOPER','actuator'),
@@ -90,6 +93,34 @@ values
     ('01f9240a225f4b5c821e00a5fe1b9353', 'ko', '익명 게시판'),
     ('188de70ba71e4d23bafa4a232379efff', 'ko', '회원 게시판'),
     ('408f6d1824e143d18d3e4ef24ffedabc', 'ko', '공지 게시판');
+
+
+
+-- message
+insert into `core_message`
+    (`message_id`,`name`,`value`)
+values
+    ('core.sample.Sample','Sample','Model Sample'),
+    ('core.sample.Sample.sampleId','Sample ID','Sample id');
+
+-- variable
+insert into `core_variable`
+    (`variable_id`,`name`,`value`)
+values
+    ('core.test','Test Variable', 'test_value');
+
+-- code
+insert into `core_code`
+    (`code_id`,`name`)
+values
+    ('core.sample.Sample.type','Sample type');
+
+-- code_item
+insert into `core_code_item`
+    (`code_id`,`item_id`,`name`,`sort`)
+values
+    ('core.sample.Sample.type','TYPE_A','Type A',1),
+    ('core.sample.Sample.type','TYPE_B','Type B',2);
 
 -- board
 insert into `core_board` (
@@ -509,23 +540,6 @@ insert into `core_git` (`git_id`,`name`,`note`,`url`,`branch`) values
 -- email
 insert into `core_email` (`email_id`,`name`,`subject`,`content`) values
     ('verification','Verification Email', 'Verification Answer: [[${answer}]]', 'Verification Answer: [[${answer}]]');
-
--- message
-insert into `core_message` (`message_id`,`name`,`value`) values
-    ('test','test message','This is test message');
-
--- variable
-insert into `core_variable` (`variable_id`,`name`,`value`) values
-    ('test','Test Variable', 'test_value');
-
--- code
-insert into `core_code` (`code_id`,`name`) values
-    ('test','Test Code');
-
--- code_item
-insert into `core_code_item` (`code_id`,`item_id`,`name`,`sort`) values
-                                                                     ('test','item_1','Item 1',1),
-                                                                     ('test','item_2','Item 2',2);
 
 -- alarm
 insert into `core_alarm` (`alarm_id`,`name`) values

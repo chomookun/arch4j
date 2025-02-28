@@ -2,9 +2,7 @@ package org.chomookun.arch4j.core.menu.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Where;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
@@ -60,15 +58,8 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "menu_id", updatable = false)
-    @Where(clause = "type = 'VIEW'")
     @Builder.Default
-    private List<MenuRoleEntity> viewMenuRoles = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "menu_id", updatable = false)
-    @Where(clause = "type = 'LINK'")
-    @Builder.Default
-    private List<MenuRoleEntity> linkMenuRoles = new ArrayList<>();
+    private List<MenuRoleEntity> menuRoles = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "menu_id", updatable = false)
@@ -102,7 +93,5 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
                 .get();
     }
 
-    @Converter(autoApply = true)
-    public static class TargetConverter extends AbstractEnumConverter<Menu.Target> {}
 
 }
