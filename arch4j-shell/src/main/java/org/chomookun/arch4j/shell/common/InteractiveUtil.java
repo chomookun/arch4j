@@ -1,6 +1,5 @@
-package org.chomookun.arch4j.core.common.cli;
+package org.chomookun.arch4j.shell.common;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -23,6 +22,12 @@ public class InteractiveUtil {
         return null;
     }
 
+    /**
+     * Asks select question
+     * @param question question
+     * @param options options
+     * @return selected value
+     */
     public static String askSelect(String question, Map<String,String> options) {
         Scanner scanner = new Scanner(System.in);
         while (!Thread.currentThread().isInterrupted()) {

@@ -1,10 +1,11 @@
 -- user
 insert into `core_user`
-    (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`)
+    (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`, `join_at`, `password_at`)
 values
-    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678'),
-    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null),
-    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222');
+    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678', current_timestamp, current_timestamp),
+    ('f3b3f3b3b3b34b3b3b3b3b3b3b3b3b3','user','{noop}user','User','N','ACTIVE', null, null, current_timestamp, current_timestamp),
+    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null, current_timestamp, current_timestamp),
+    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222', current_timestamp, current_timestamp);
 
 -- authority
 insert into `core_authority`
@@ -106,7 +107,7 @@ values
 insert into `core_variable`
     (`variable_id`,`name`,`value`)
 values
-    ('test','Test Variable', 'test_value');
+    ('core.test','Test Variable', 'test_value');
 
 -- code
 insert into `core_code`

@@ -12,6 +12,7 @@ import org.chomookun.arch4j.core.user.model.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Comment;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,14 +53,14 @@ public class UserEntity extends BaseEntity {
     @Comment("Name")
     private String name;
 
+    @Column(name = "status", length = 16)
+    @Comment("Status")
+    private User.Status status;
+
     @Column(name = "admin", length = 1)
     @Convert(converter = BooleanConverter.class)
     @Comment("Whether admin or not")
     private boolean admin;
-
-    @Column(name = "status", length = 16)
-    @Comment("Status")
-    private User.Status status;
 
     @Column(name = "email", unique = true)
     @Comment("Email")
@@ -78,6 +79,18 @@ public class UserEntity extends BaseEntity {
     @Lob
     @Comment("profile")
     private String profile;
+
+    @Column(name = "join_at")
+    private Instant joinAt;
+
+    @Column(name = "close_at")
+    private Instant closeAt;
+
+    @Column(name = "password_at")
+    private Instant passwordAt;
+
+    @Column(name = "expire_at")
+    private Instant expireAt;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", updatable = false)

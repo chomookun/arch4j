@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.email;
+package org.chomookun.arch4j.core.email.mock;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;

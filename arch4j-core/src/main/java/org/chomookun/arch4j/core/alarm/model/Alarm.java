@@ -20,6 +20,11 @@ public class Alarm extends BaseModel {
 
     private String alarmClientConfig;
 
+    /**
+     * Alarm factory method
+     * @param alarmEntity alarm entity
+     * @return alarm
+     */
     public static Alarm from(AlarmEntity alarmEntity) {
         return Alarm.builder()
                 .systemRequired(alarmEntity.isSystemRequired())

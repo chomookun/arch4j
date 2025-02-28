@@ -209,6 +209,11 @@
                             </label>
                         </td>
                     </tr>
+                    <tr data-duice-bind="executions" data-duice-if="return executions.length < 1;" hidden>
+                        <td colspan="100%" class="text-align--center">
+                            <span data-th-text="#{web.global.itemNotFound(#{core.execution.Execution})}"></span>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

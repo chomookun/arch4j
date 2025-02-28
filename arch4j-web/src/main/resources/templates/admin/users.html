@@ -105,7 +105,7 @@
                 _new: true,
                 status: 'ACTIVE'
             });
-            duice.ObjectProxy.setDisableAll(users, false);
+            duice.ObjectProxy.setDisableAll(user, false);
             duice.ObjectProxy.setReadonly(user, 'userId', false);
             duice.ObjectProxy.focus(user, 'userId');
         }
@@ -509,6 +509,30 @@
                             <label>
                                 <span data-th-text="#{core.user.User.profile}" class="font-weight--bold"></span>
                                 <textarea data-duice-bind="user" data-duice-property="profile" rows="3" class="width--100"></textarea>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.user.User.joinAt}" class="font-weight--bold"></span><br>
+                                <input type="datetime-local" data-duice-bind="user" data-duice-property="joinAt" class="width--100 date"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.user.User.closeAt}" class="font-weight--bold"></span><br>
+                                <input type="datetime-local" data-duice-bind="user" data-duice-property="closeAt" class="width--100 date"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.user.User.passwordAt}" class="font-weight--bold"></span><br>
+                                <input type="datetime-local" data-duice-bind="user" data-duice-property="passwordAt" class="width--100 date"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.user.User.expireAt}" class="font-weight--bold"></span><br>
+                                <input type="datetime-local" data-duice-bind="user" data-duice-property="expireAt" class="width--100 date"/>
                             </label>
                         </div>
                         <div class="grid-column--span-12">

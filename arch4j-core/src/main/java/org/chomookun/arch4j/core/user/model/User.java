@@ -2,6 +2,7 @@ package org.chomookun.arch4j.core.user.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
@@ -33,9 +34,9 @@ public class User extends BaseModel {
     @NotBlank
     private String name;
 
-    private boolean admin;
-
     private Status status;
+
+    private boolean admin;
 
     private String email;
 
@@ -78,8 +79,11 @@ public class User extends BaseModel {
                 .mobile(userEntity.getMobile())
                 .photo(userEntity.getPhoto())
                 .profile(userEntity.getProfile())
+                .joinAt(userEntity.getJoinAt())
+                .closeAt(userEntity.getCloseAt())
+                .passwordAt(userEntity.getPasswordAt())
+                .expireAt(userEntity.getExpireAt())
                 .build();
-
         // roles
         List<Role> roles = userEntity.getUserRoles().stream()
                 .map(UserRoleEntity::getRole)
@@ -87,7 +91,6 @@ public class User extends BaseModel {
                 .map(Role::from)
                 .collect(Collectors.toList());
         user.setRoles(roles);
-
         // return
         return user;
     }

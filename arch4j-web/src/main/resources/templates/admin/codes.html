@@ -298,8 +298,10 @@
                                 <span data-duice-bind="code" data-duice-property="codeItems.length" class="number badge border-radius--50"></span>
                             </td>
                         </tr>
-                        <tr data-duice-bind="codes" data-duice-execute="if(codes.length === 0) this.hidden=false;" hidden>
-                            <td colspan="100%" class="text-align--center">No Data</td>
+                        <tr data-duice-bind="codes" data-duice-if="return codes.length < 1" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.code.Code})}"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -400,8 +402,10 @@
                                         </label>
                                     </td>
                                 </tr>
-                                <tr data-duice-bind="code.codeItems" data-duice-if="return (code.codeItems.length < 1);" hidden>
-                                    <td colspan="100%" class="text-align--center">No Data</td>
+                                <tr data-duice-bind="code.codeItems" data-duice-if="return code.codeItems.length < 1;" hidden>
+                                    <td colspan="100%" class="text-align--center">
+                                        <span data-th-text="#{web.global.itemNotFound(#{core.code.CodeItem})}"></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

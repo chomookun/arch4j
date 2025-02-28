@@ -26,10 +26,20 @@ public class Email extends BaseModel {
     @Builder.Default
     private Map<String,Object> variables = new LinkedHashMap<>();
 
+    /**
+     * Adds variable to the email template
+     * @param key key
+     * @param value value
+     */
     public void addVariable(String key, Object value) {
         variables.put(key, value);
     }
 
+    /**
+     * Email factory method
+     * @param emailTemplateEntity email template entity
+     * @return email
+     */
     public static Email from(EmailEntity emailTemplateEntity) {
         return Email.builder()
                 .systemRequired(emailTemplateEntity.isSystemRequired())

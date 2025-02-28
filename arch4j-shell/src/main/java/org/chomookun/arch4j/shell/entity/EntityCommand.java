@@ -7,7 +7,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.common.cli.InteractiveUtil;
+import org.chomookun.arch4j.shell.common.InteractiveUtil;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.model.relational.SqlStringGenerationContext;

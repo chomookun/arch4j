@@ -1,5 +1,7 @@
 package org.chomookun.arch4j.core.alarm;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.alarm.client.AlarmClient;
 import org.chomookun.arch4j.core.alarm.client.AlarmClientFactory;
@@ -22,8 +24,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AlarmService {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     private final AlarmRepository alarmRepository;
 
+    /**
+     * Saves alarm
+     * @param alarm alarm
+     * @return saved alarm
+     */
     @Transactional
     public Alarm saveAlarm(Alarm alarm) {
         AlarmEntity alarmEntity = Optional.ofNullable(alarm.getAlarmId())
@@ -31,27 +41,42 @@ public class AlarmService {
                 .orElse(AlarmEntity.builder()
                         .alarmId(alarm.getAlarmId())
                         .build());
-
         alarmEntity.setSystemUpdatedAt(LocalDateTime.now());
         alarmEntity.setName(alarm.getName());
         alarmEntity.setAlarmClientId(alarm.getAlarmClientId());
         alarmEntity.setAlarmClientConfig(alarm.getAlarmClientConfig());
-
+        // saves
         AlarmEntity savedAlarmEntity = alarmRepository.saveAndFlush(alarmEntity);
+        entityManager.refresh(savedAlarmEntity);
         return Alarm.from(savedAlarmEntity);
     }
 
+    /**
+     * Gets alarm
+     * @param alarmId alarm id
+     * @return alarm
+     */
     public Optional<Alarm> getAlarm(String alarmId) {
         return alarmRepository.findById(alarmId)
                 .map(Alarm::from);
     }
 
+    /**
+     * Deletes alarm
+     * @param alarmId alarm id
+     */
     @Transactional
     public void deleteAlarm(String alarmId) {
         alarmRepository.deleteById(alarmId);
         alarmRepository.flush();
     }
 
+    /**
+     * Gets alarms
+     * @param alarmSearch alarm search
+     * @param pageable pageable
+     * @return page of alarms
+     */
     public Page<Alarm> getAlarms(AlarmSearch alarmSearch, Pageable pageable) {
         Page<AlarmEntity> page = alarmRepository.findAll(alarmSearch, pageable);
         List<Alarm> alarms = page.getContent().stream()
@@ -60,11 +85,23 @@ public class AlarmService {
         return new PageImpl<>(alarms, pageable, page.getTotalElements());
     }
 
+    /**
+     * Sends alarm
+     * @param alarm alarm
+     * @param subject subject
+     * @param content content
+     */
     public void sendAlarm(Alarm alarm, String subject, String content) {
         AlarmClient alarmClient = AlarmClientFactory.getAlarmClient(alarm);
         alarmClient.sendMessage(subject, content);
     }
 
+    /**
+     * Sends alarm by alarm id
+     * @param alarmId alarm id
+     * @param subject subject
+     * @param content content
+     */
     public void sendAlarm(String alarmId, String subject, String content) {
         Alarm alarm = getAlarm(alarmId).orElseThrow();
         sendAlarm(alarm, subject, content);

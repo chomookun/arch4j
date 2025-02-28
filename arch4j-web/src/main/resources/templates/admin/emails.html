@@ -13,11 +13,9 @@
             _size: 20,
             _count: 0
         });
-
         // email list
         const emails = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(emails, true);
-
         // email
         const email = new duice.ObjectProxy({
             emailId: null,
@@ -35,14 +33,14 @@
         });
 
         /**
-         * gets emails
+         * Gets emails
          * @param page page number
          */
         function getEmails(page) {
             if(page) {
                 emailSearch._page = page;
             }
-            let url = new URL(/*[[@{/admin/emails/get-emails}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-emails`, document.location.origin);
             if (emailSearch.key && emailSearch.value) {
                 url.searchParams.append(emailSearch.key, emailSearch.value);
             }
@@ -61,7 +59,7 @@
         }
 
         /**
-         * resets emails
+         * Resets emails
          */
         function resetEmails() {
             duice.ObjectProxy.reset(emailSearch);
@@ -69,11 +67,11 @@
         }
 
         /**
-         * gets email
+         * Gets email
          * @param emailId email id
          */
         function getEmail(emailId) {
-            let url = new URL(/*[[@{/admin/emails/get-email}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-email`, document.location.origin);
             url.searchParams.append('emailId', emailId);
             _fetch(url)
                 .then(response => response.json())
@@ -86,7 +84,7 @@
         }
 
         /**
-         * creates email
+         * Creates email
          */
         function createEmail() {
             duice.ObjectProxy.clear(email);
@@ -99,7 +97,7 @@
         }
 
         /**
-         * validates email id
+         * Validates email id
          * @param emailId email id
          * @returns {Promise<boolean>}
          */
@@ -110,9 +108,8 @@
                 duice.ObjectProxy.focus(email, 'emailId');
                 return false;
             }
-
             // check duplicated id
-            let url = new URL(/*[[@{/admin/emails/get-email}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-email`, document.location.origin);
             url.searchParams.append('emailId', emailId);
             let response = await _fetch(url, {}, true);
             if (response.ok) {
@@ -122,13 +119,12 @@
                     return false;
                 }
             }
-
             // return true
             return true;
         }
 
         /**
-         * saves email
+         * Saves email
          * @returns {Promise<boolean>}
          */
         async function saveEmail() {
@@ -138,18 +134,16 @@
                     return false;
                 }
             }
-
             // checks name
             if (!email.name || email.name.trim().length < 1) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.email.Email.name})}]]*/'');
                 duice.ObjectProxy.focus(email, 'name');
                 return false;
             }
-
             // call save
             _confirm(/*[[#{web.global.saveItemConfirm(#{core.email.Email})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(/*[[@{/admin/emails/save-email}]]*/'', document.location.origin);
+                    let url = new URL(`${window.location.pathname}/save-email`, document.location.origin);
                     _fetch(url, {
                         method: 'POST',
                         headers: {
@@ -169,12 +163,12 @@
         }
 
         /**
-         * deletes email
+         * Deletes email
          */
         function deleteEmail() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.email.Email})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(/*[[@{/admin/email/delete-email}]]*/'', document.location.origin);
+                    let url = new URL(`${window.location.pathname}/delete-email`, document.location.origin);
                     url.searchParams.append('emailId', email.emailId);
                     _fetch(url).then(response => {
                         if (response.ok) {
@@ -188,7 +182,7 @@
             });
         }
 
-        // DOM content loaded listener
+        // Initializes
         document.addEventListener('DOMContentLoaded',()=> {
             getEmails();
         });
@@ -209,7 +203,7 @@
     <!-- start: email content                   -->
     <!-- ====================================== -->
     <div id="emailContent" class="display--grid grid-template-columns--12fr gap--1rem">
-        <div class="grid-column--span-5 s__grid-column--span-12">
+        <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
             <!-- start: email list                      -->
             <!-- ====================================== -->
@@ -222,19 +216,20 @@
                 </div>
                 <div class="panel-content">
                     <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1rem">
-                        <div>
-                            <label>
-                                <select data-duice-bind="emailSearch" data-duice-property="key">
-                                    <option value="emailId" th:text="#{core.email.Email.emailId}"></option>
-                                    <option value="name" th:text="#{core.email.Email.name}"></option>
-                                </select>
-                            </label>
-                            <label>
-                                <input type="text" data-duice-bind="emailSearch" data-duice-property="value"
-                                       th:placeholder="#{web.global.keyword}"/>
-                            </label>
+                        <div class="display--flex gap--1px">
+                            <div class="display--flex flex-wrap--nowrap gap--1px">
+                                <label>
+                                    <select data-duice-bind="emailSearch" data-duice-property="key">
+                                        <option value="emailId" th:text="#{core.email.Email.emailId}"></option>
+                                        <option value="name" th:text="#{core.email.Email.name}"></option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <input type="text" data-duice-bind="emailSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                </label>
+                            </div>
                         </div>
-                        <div class="flex--1 text-align--right">
+                        <div class="flex--1 display--flex justify-content--end gap--1px">
                             <button class="button" type="submit" onclick="getEmails();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -265,22 +260,27 @@
                             data-duice-execute="this.dataset.emailId=email.emailId;"
                             onclick="getEmail(this.dataset.emailId);"
                             class="cursor--pointer">
-                            <td data-duice-bind="status" data-duice-property="count"
-                                class="text-align--center"></td>
-                            <td data-duice-bind="email" data-duice-property="emailId" class="font-weight--bold"></td>
-                            <td data-duice-bind="email" data-duice-property="name"></td>
+                            <td class="text-align--center">
+                                <span data-duice-bind="status" data-duice-property="count" class="number"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="email" data-duice-property="emailId" class="code font-weight--bold"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="email" data-duice-property="name"></span>
+                            </td>
                         </tr>
-                        <tr data-duice-bind="emails"
-                            data-duice-execute="if(emails.length === 0) this.hidden=false;" hidden>
-                            <td colspan="100%" class="text-align--center">No Data</td>
+                        <tr data-duice-bind="emails" data-duice-if="return emails.length < 1;" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.email.Email})}"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
                     <div class="display--flex justify-content--space-between gap--1rem">
                         <div>
                             <span data-th-text="#{web.global.total}"></span>
-                            <span data-duice-bind="emailSearch" data-duice-property="_count"
-                                  data-duice-format="number(0)"></span>
+                            <span data-duice-bind="emailSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
                         <duice-pagination
@@ -303,7 +303,7 @@
             <!-- end: email list                        -->
             <!-- ====================================== -->
         </div>
-        <div class="grid-column--span-7 s__grid-column--span-12">
+        <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
             <!-- start: email detail                    -->
             <!-- ====================================== -->
@@ -316,31 +316,34 @@
                 </div>
                 <div class="panel-content">
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
-                        <label class="grid-column--span-6 s__grid-column--span-12">
-                        <span data-th-text="#{core.email.Email.emailId}"
-                              class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="email" data-duice-property="emailId"
-                                   class="width--100 font-weight--bold"/>
-                        </label>
-                        <label class="grid-column--span-6 s__grid-column--span-12">
-                        <span data-th-text="#{core.email.Email.name}"
-                              class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="email" data-duice-property="name"
-                                   class="width--100"/>
-                        </label>
-                        <label class="grid-column--span-12">
-                            <span class="font-weight--bold" data-th-text="#{core.email.Email.subject}"></span>
-                            <input type="text" data-duice-bind="email" data-duice-property="subject" class="width--100"/>
-                        </label>
-                        <label class="grid-column--span-12">
-                            <span data-th-text="#{core.email.Email.content}" class="font-weight--bold"></span>
-                            <textarea data-duice-bind="email" data-duice-property="content" rows="5"
-                                      class="width--100"></textarea>
-                        </label>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                            <span data-th-text="#{core.email.Email.emailId}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="email" data-duice-property="emailId" class="width--100 code font-weight--bold"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.email.Email.name}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="email" data-duice-property="name" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span class="font-weight--bold" data-th-text="#{core.email.Email.subject}"></span>
+                                <input type="text" data-duice-bind="email" data-duice-property="subject" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.email.Email.content}" class="font-weight--bold"></span>
+                                <textarea data-duice-bind="email" data-duice-property="content" rows="5" class="width--100"></textarea>
+                            </label>
+                        </div>
                     </form>
                     <div class="display--flex justify-content--space-between gap--1rem">
                         <div></div>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button" type="button" onclick="deleteEmail();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.emails.edit'')')}?'locked'"
                                     data-duice-bind="email"
@@ -357,7 +360,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="text-align--right font-size--smaller font-style--italic">
+                    <div class="text-align--right font-size--xx-small font-style--italic">
                         Last Updated At
                         <span data-duice-bind="email" data-duice-property="systemUpdatedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
                         By

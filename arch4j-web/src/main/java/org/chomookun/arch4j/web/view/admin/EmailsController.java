@@ -22,17 +22,32 @@ public class EmailsController {
 
     private final EmailService emailService;
 
+    /**
+     * Emails page
+     * @return model and view
+     */
     @GetMapping
     public ModelAndView emails() {
         return new ModelAndView("admin/emails.html");
     }
 
+    /**
+     * Gets email
+     * @param emailSearch email search
+     * @param pageable pageable
+     * @return page of emails
+     */
     @GetMapping("get-emails")
     @ResponseBody
     public Page<Email> getEmailTemplates(EmailSearch emailSearch, Pageable pageable) {
         return emailService.getEmails(emailSearch, pageable);
     }
 
+    /**
+     * Gets email
+     * @param emailId email id
+     * @return email
+     */
     @GetMapping("get-email")
     @ResponseBody
     public Email getEmail(@RequestParam("emailId")String emailId) {
@@ -40,6 +55,11 @@ public class EmailsController {
                 .orElseThrow();
     }
 
+    /**
+     * Saves email
+     * @param email email
+     * @return saved email
+     */
     @PostMapping("save-email")
     @ResponseBody
     @Transactional
@@ -48,6 +68,10 @@ public class EmailsController {
         return emailService.saveEmail(email);
     }
 
+    /**
+     * Deletes email
+     * @param emailId email id
+     */
     @GetMapping("delete-email")
     @ResponseBody
     @Transactional

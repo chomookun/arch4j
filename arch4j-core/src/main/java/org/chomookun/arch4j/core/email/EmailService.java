@@ -1,5 +1,7 @@
 package org.chomookun.arch4j.core.email;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.email.entity.EmailEntity;
@@ -38,6 +40,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EmailService implements InitializingBean {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     private final EmailRepository emailRepository;
 
     private final EmailVerificationRepository emailVerificationRepository;
@@ -50,6 +55,10 @@ public class EmailService implements InitializingBean {
 
     private static final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
+    /**
+     * Initialize template engine
+     * @throws Exception exception
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         templateEngine = new SpringTemplateEngine();
@@ -61,6 +70,11 @@ public class EmailService implements InitializingBean {
         templateEngine.setTemplateResolver(templateResolver);
     }
 
+    /**
+     * Saves email
+     * @param email email
+     * @return email
+     */
     @Transactional
     public Email saveEmail(Email email) {
         EmailEntity emailEntity = Optional.ofNullable(email.getEmailId())
@@ -68,35 +82,54 @@ public class EmailService implements InitializingBean {
                 .orElse(EmailEntity.builder()
                     .emailId(email.getEmailId())
                     .build());
-
         emailEntity.setSystemUpdatedAt(LocalDateTime.now());    // disable dirty checking
         emailEntity.setName(email.getName());
         emailEntity.setSubject(email.getSubject());
         emailEntity.setContent(email.getContent());
-
         EmailEntity savedEmailEntity = emailRepository.saveAndFlush(emailEntity);
+        entityManager.refresh(savedEmailEntity);
         return Email.from(savedEmailEntity);
     }
 
-    public Page<Email> getEmails(EmailSearch emailSearch, Pageable pageable) {
-        Page<EmailEntity> emailPage = emailRepository.findAll(emailSearch, pageable);
-        List<Email> emails = emailPage.getContent().stream()
-                        .map(Email::from)
-                        .collect(Collectors.toList());
-        return new PageImpl<>(emails, pageable, emailPage.getTotalElements());
-    }
-
+    /**
+     * Gets email
+     * @param emailId email id
+     * @return email
+     */
     public Optional<Email> getEmail(String emailId) {
         return emailRepository.findById(emailId)
                 .map(Email::from);
     }
 
+    /**
+     * Deletes email
+     * @param emailId email id
+     */
     @Transactional
     public void deleteEmail(String emailId) {
         emailRepository.deleteById(emailId);
         emailRepository.flush();
     }
 
+    /**
+     * Gets emails
+     * @param emailSearch email search
+     * @param pageable pageable
+     * @return page of emails
+     */
+    public Page<Email> getEmails(EmailSearch emailSearch, Pageable pageable) {
+        Page<EmailEntity> emailPage = emailRepository.findAll(emailSearch, pageable);
+        List<Email> emails = emailPage.getContent().stream()
+                .map(Email::from)
+                .collect(Collectors.toList());
+        return new PageImpl<>(emails, pageable, emailPage.getTotalElements());
+    }
+
+    /**
+     * Sends email with template
+     * @param to email address
+     * @param emailTemplate email template
+     */
     @Transactional
     public void sendEmailWidthTemplate(String to, Email emailTemplate) throws EmailException {
         Context context = new Context();
@@ -106,6 +139,12 @@ public class EmailService implements InitializingBean {
         sendEmail(to, subject, content);
     }
 
+    /**
+     * Sends email
+     * @param to email address
+     * @param subject subject
+     * @param content content
+     */
     @Transactional
     public void sendEmail(String to, String subject, String content) throws EmailException {
         executorService.submit(() -> {
@@ -123,13 +162,15 @@ public class EmailService implements InitializingBean {
         });
     }
 
+    /**
+     * Issues email verification
+     * @param email email address
+     */
     @Transactional
     public void issueEmailVerification(String email) {
-
         // answer
         SecureRandom random = new SecureRandom();
         String answer = String.valueOf(100000 + random.nextInt(89999));
-
         // send email
         Email emailTemplate = getEmail("VERIFICATION").orElseThrow();
         emailTemplate.addVariable("answer", answer);
@@ -142,7 +183,6 @@ public class EmailService implements InitializingBean {
                 throw new RuntimeException(e);
             }
         }
-
         // save entity
         EmailVerificationEntity emailVerificationEntity = EmailVerificationEntity.builder()
                 .email(email)
@@ -152,6 +192,11 @@ public class EmailService implements InitializingBean {
         emailVerificationRepository.saveAndFlush(emailVerificationEntity);
     }
 
+    /**
+     * Validates email verification
+     * @param email email address
+     * @param answer answer
+     */
     public void validateEmailVerification(String email, String answer) {
         EmailVerificationEntity emailVerificationEntity = emailVerificationRepository.findById(email)
                 .orElseThrow(() -> new RuntimeException("email verification request is not found."));

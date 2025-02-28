@@ -25,7 +25,7 @@ public class AlarmEntity extends BaseEntity {
     @Column(name = "alarm_client_id", length = 32)
     private String alarmClientId;
 
-    @Column(name = "alarm_client_config", length = 4000)
+    @Column(name = "alarm_client_config", length = Integer.MAX_VALUE)
     @Lob
     private String alarmClientConfig;
 
