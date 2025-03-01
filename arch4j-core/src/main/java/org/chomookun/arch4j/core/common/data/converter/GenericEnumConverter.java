@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 
 @Converter
 @Slf4j
-public abstract class AbstractEnumConverter<E extends Enum<E>> extends BaseUserTypeSupport<E> implements AttributeConverter<E,String>, TypeConfigurationAware {
+public abstract class GenericEnumConverter<E extends Enum<E>> extends BaseUserTypeSupport<E> implements AttributeConverter<E,String>, TypeConfigurationAware {
 
     private final Class<E> enumType;
 
@@ -29,7 +29,7 @@ public abstract class AbstractEnumConverter<E extends Enum<E>> extends BaseUserT
 
     private TypeConfiguration typeConfiguration;
 
-    public AbstractEnumConverter() {
+    public GenericEnumConverter() {
         this.enumType = detectEnumType();
     }
 

@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
-import org.chomookun.arch4j.core.common.data.converter.CryptoConverter;
 import org.chomookun.arch4j.core.user.model.User;
 
 import jakarta.persistence.*;
@@ -98,6 +97,6 @@ public class UserEntity extends BaseEntity {
     private List<UserRoleEntity> userRoles = new ArrayList<>();
 
     @Converter(autoApply = true)
-    public static class StatusConverter extends AbstractEnumConverter<User.Status> {}
+    public static class StatusConverter extends GenericEnumConverter<User.Status> {}
 
 }

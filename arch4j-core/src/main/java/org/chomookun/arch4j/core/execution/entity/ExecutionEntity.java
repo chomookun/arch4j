@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.execution.model.Execution;
 
 import java.time.Instant;
@@ -54,6 +54,6 @@ public class ExecutionEntity extends BaseEntity {
     private String message;
 
     @Converter(autoApply = true)
-    public static class StatusConverter extends AbstractEnumConverter<Execution.Status> {}
+    public static class StatusConverter extends GenericEnumConverter<Execution.Status> {}
 
 }

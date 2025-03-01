@@ -35,7 +35,7 @@ public class EmailEntity extends BaseEntity implements I18nSupportEntity<EmailI1
     private String content;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "template_id", updatable = false)
+    @JoinColumn(name = "email_id", updatable = false)
     @Builder.Default
     private List<EmailI18nEntity> emailI18ns = new ArrayList<>();
 

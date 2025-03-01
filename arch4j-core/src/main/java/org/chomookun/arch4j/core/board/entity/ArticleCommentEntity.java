@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.board.model.ArticleComment;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
 
 import jakarta.persistence.*;
@@ -74,6 +74,6 @@ public class ArticleCommentEntity extends BaseEntity {
     private UserEntity user;
 
     @Converter(autoApply = true)
-    public static class ContentFormatConverter extends AbstractEnumConverter<ArticleComment.ContentFormat> { }
+    public static class ContentFormatConverter extends GenericEnumConverter<ArticleComment.ContentFormat> { }
 
 }

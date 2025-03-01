@@ -12,20 +12,23 @@
         message: null
     });
 
-    const requestLogin = async function() {
+    /**
+     * Process login
+     * @returns {Promise<boolean>}
+     */
+    const processLogin = async function() {
         if(_isEmpty(login.username)){
-            await _alert([[#{web.global.itemEmpty(#{core.security.User.username})}]]);
+            await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.username})}]]*/'');
             duice.ObjectProxy.focus(login, 'username');
             return false;
         }
         if(_isEmpty(login.password)){
-            await _alert([[#{web.global.itemEmpty(#{core.security.User.password})}]]);
+            await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
             duice.ObjectProxy.focus(login, 'password');
             return false;
         }
-
         // request login
-        let url = new URL([[@{/login/process}]], document.location.origin);
+        let url = new URL(`${window.location.pathname}/process`, document.location.origin);
         let payload = new URLSearchParams();
         payload.append('username', login.username);
         payload.append('password', login.password);
@@ -35,7 +38,7 @@
             body: payload
         }, true).then(async function (response) {
             if (response.ok) {
-                document.location.href = [[@{/}]];
+                document.location.href = document.location.origin;
             } else {
                 let json = await response.json();
                 login.message = json.message;
@@ -44,14 +47,23 @@
         });
     }
 
+    /**
+     * Go to join page
+     */
     const gotoJoin = function() {
         _gotoJoin();
     }
 
+    /**
+     * Go to reset password page
+     */
     const gotoResetPassword = function() {
-        document.location.href = [[@{/login/reset-password}]];
+        document.location.href = /*[[@{/login/reset-password}]]*/'';
     }
 
+    /**
+     * Login with Google
+     */
     const loginWithGoogle = function() {
         alert("not ready yet");
     }

@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.security.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.security.model.UserMfa;
 
 import jakarta.persistence.*;
@@ -43,7 +43,7 @@ public class UserMfaEntity extends BaseEntity {
     private String secret;
 
     @Converter(autoApply = true)
-    public static class TypeConverter extends AbstractEnumConverter<UserMfa.Type> {}
+    public static class TypeConverter extends GenericEnumConverter<UserMfa.Type> {}
 
 
 }

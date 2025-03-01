@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.menu.model;
 import jakarta.persistence.Converter;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
 import org.chomookun.arch4j.core.role.model.Role;
 
@@ -21,7 +21,7 @@ public class MenuRole extends Role {
     public enum Type { VIEW, LINK }
 
     @Converter(autoApply = true)
-    public static class TypeConverter extends AbstractEnumConverter<Type> {}
+    public static class TypeConverter extends GenericEnumConverter<Type> {}
 
     /**
      * menu role factory method

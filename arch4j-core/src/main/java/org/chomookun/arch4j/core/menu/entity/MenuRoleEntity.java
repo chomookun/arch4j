@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.menu.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.menu.model.MenuRole;
 import org.chomookun.arch4j.core.role.entity.RoleEntity;
 
@@ -54,6 +54,6 @@ public class MenuRoleEntity extends BaseEntity {
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private RoleEntity roleEntity;
 
-    public static class TypeConverter extends AbstractEnumConverter<MenuRole.Type> {}
+    public static class TypeConverter extends GenericEnumConverter<MenuRole.Type> {}
 
 }

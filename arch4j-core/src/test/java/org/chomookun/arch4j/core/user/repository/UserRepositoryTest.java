@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class UserRepositoryTest extends CoreTestSupport {
 
-    private final UserRepository userRepository;
+    final UserRepository userRepository;
 
     @Test
     void findAll() {

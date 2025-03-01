@@ -8,7 +8,7 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 
 import jakarta.persistence.*;
@@ -136,6 +136,6 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
     }
 
     @Converter(autoApply = true)
-    public static class MessageFormatConverter extends AbstractEnumConverter<Board.MessageFormat> {}
+    public static class MessageFormatConverter extends GenericEnumConverter<Board.MessageFormat> {}
 
 }

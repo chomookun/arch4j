@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class Menu extends BaseModel {
     public enum Target { SELF, BLANK }
 
     @Converter(autoApply = true)
-    public static class TargetConverter extends AbstractEnumConverter<Target> {}
+    public static class TargetConverter extends GenericEnumConverter<Target> {}
 
     /**
      * menu factory method

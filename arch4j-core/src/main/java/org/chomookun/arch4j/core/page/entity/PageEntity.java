@@ -6,8 +6,7 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
-import org.chomookun.arch4j.core.page.entity.PageWidgetEntity_;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.page.model.Page;
 
 import jakarta.persistence.*;
@@ -76,6 +75,6 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     }
 
     @Converter(autoApply = true)
-    public static class ContentFormatConverter extends AbstractEnumConverter<Page.ContentFormat> {}
+    public static class ContentFormatConverter extends GenericEnumConverter<Page.ContentFormat> {}
 
 }
