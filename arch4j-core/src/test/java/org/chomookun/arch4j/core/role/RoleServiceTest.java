@@ -42,8 +42,8 @@ class RoleServiceTest extends CoreTestSupport {
         entityManager.persist(roleEntity);
         entityManager.flush();
         entityManager.clear();
-        // when
-        Role role = Role.from(roleEntity);
+        // when;
+        Role role = Role.from(entityManager.find(RoleEntity.class, roleEntity.getRoleId()));
         role.setName("changed");
         Role savedRole = roleService.saveRole(role);
         // then
