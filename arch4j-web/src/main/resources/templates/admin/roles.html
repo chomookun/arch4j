@@ -11,7 +11,7 @@
             value: null,
             _page: 0,
             _size: 20,
-            _count: 0
+            _total: 0
         });
 
         // role list
@@ -41,7 +41,7 @@
             value: null,
             _page: 0,
             _size: 20,
-            _count: 0
+            _total: 0
         });
 
         // authority list
@@ -79,8 +79,7 @@
                 .then(data => {
                     duice.ArrayProxy.clear(roles);
                     duice.ArrayProxy.assign(roles, data.content);
-                    roleSearch._count = data['totalElements'];
-
+                    roleSearch._total= data['totalElements'];
                     // select current item
                     duice.ArrayProxy.selectItem(roles, roles.findIndex(item => item.roleId === role.roleId));
                 });
@@ -252,8 +251,7 @@
                 .then(data => {
                     duice.ArrayProxy.clear(authorities);
                     duice.ArrayProxy.assign(authorities, data.content);
-                    authoritySearch._count = data['totalElements'];
-
+                    authoritySearch._total = data['totalElements'];
                     // select current item
                     duice.ArrayProxy.selectItem(authorities, authorities.findIndex(item => item.authorityId === authority.authorityId));
                 });
@@ -502,7 +500,7 @@
                                 data-duice-execute="this.dataset.id=role.roleId;"
                                 onclick="getRole(this.dataset.id);">
                                 <td class="text-align--center">
-                                    <span class="number" data-duice-bind="status" data-duice-property="count"></span>
+                                    <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (roleSearch._page * roleSearch._size) + status.count;"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="role" data-duice-property="roleId"
@@ -535,14 +533,14 @@
                     <div class="display--flex justify-content--space-between">
                         <div>
                             <span data-th-text="#{web.global.total}"></span>
-                            <span class="number" data-duice-bind="roleSearch" data-duice-property="_count" data-duice-format="number(0)"></span>
+                            <span class="number" data-duice-bind="roleSearch" data-duice-property="_total" data-duice-format="number(0)"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
                         <duice-pagination
                                 data-duice-bind="roleSearch"
                                 data-duice-size-property="_size"
                                 data-duice-page-property="_page"
-                                data-duice-count-property="_count"
+                                data-duice-total-property="_total"
                                 data-duice-onclick="getRoles(this.dataset.page);">
                         </duice-pagination>
                         <div class="display--flex justify-content--end">
@@ -759,7 +757,7 @@
                                 data-duice-execute="this.dataset.id=authority.authorityId;"
                                 onclick="getAuthority(this.dataset.id);">
                                 <td class="text-align--center">
-                                    <span class="number" data-duice-bind="status" data-duice-property="count"></span>
+                                    <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (authoritySearch._page * authoritySearch._size) + status.count"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="authority" data-duice-property="authorityId"
@@ -779,14 +777,14 @@
                     <div class="display--flex justify-content--space-between">
                         <div>
                             <span data-th-text="#{web.global.total}"></span>
-                            <span class="number" data-duice-bind="authoritySearch" data-duice-property="_count" data-duice-format="number(0)"></span>
+                            <span class="number" data-duice-bind="authoritySearch" data-duice-property="_total" data-duice-format="number(0)"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
                         <duice-pagination
                                 data-duice-bind="authoritySearch"
                                 data-duice-size-property="_size"
                                 data-duice-page-property="_page"
-                                data-duice-count-property="_count"
+                                data-duice-total-property="_total"
                                 data-duice-onclick="getAuthorities(this.dataset.page);">
                         </duice-pagination>
                         <div class="display--flex justify-content--end gap--1px">

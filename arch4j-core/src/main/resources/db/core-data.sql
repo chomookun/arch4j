@@ -26,6 +26,10 @@ values
     ('admin.variables.edit','Y','Admin Variables Edit Authority'),
     ('admin.codes','Y','Admin Codes Access Authority'),
     ('admin.codes.edit','Y','Admin Codes Edit Authority'),
+    ('admin.executions','Y','Admin Executions Access Authority'),
+    ('admin.executions.edit','Y','Admin Executions Edit Authority'),
+    ('admin.batch','Y','Admin Batch Access Authority'),
+    ('admin.batch.edit','Y','Admin Batch Edit Authority'),
     ('admin.boards','Y','Admin Boards Access Authority'),
     ('admin.boards.edit','Y','Admin Boards Edit Authority'),
     ('admin.pages','Y','Admin Pages Access Authority'),
@@ -36,7 +40,6 @@ values
     ('admin.emails.edit','Y','Admin Emails Edit Authority'),
     ('admin.alarms','Y','Admin Alarms Access Authority'),
     ('admin.alarms.edit','Y','Admins Alarm Edit Authority'),
-    ('admin.executions','Y','Admin Executions Access Authority'),
     ('actuator','Y','Actuator Access Authority'),
     ('h2-console','Y','Actuator Access Authority'),
     ('swagger-ui','Y','Swagger UI Access Authority');
@@ -66,6 +69,7 @@ values
     ('DEVELOPER','admin.emails'),
     ('DEVELOPER','admin.alarms'),
     ('DEVELOPER','admin.executions'),
+    ('DEVELOPER', 'admin.batch'),
     ('DEVELOPER','actuator'),
     ('DEVELOPER','h2-console'),
     ('DEVELOPER','swagger-ui');

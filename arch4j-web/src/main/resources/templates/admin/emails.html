@@ -11,7 +11,7 @@
             value: null,
             _page: 0,
             _size: 20,
-            _count: 0
+            _total: 0
         });
         // email list
         const emails = new duice.ArrayProxy([]);
@@ -51,8 +51,7 @@
                 .then(data => {
                     duice.ArrayProxy.clear(emails);
                     duice.ArrayProxy.assign(emails, data.content);
-                    emailSearch._count = data['totalElements'];
-
+                    emailSearch._total = data['totalElements'];
                     // select current item
                     duice.ArrayProxy.selectItem(emails, emails.findIndex(item => item.emailId === email.emailId));
                 });
@@ -261,7 +260,7 @@
                             onclick="getEmail(this.dataset.emailId);"
                             class="cursor--pointer">
                             <td class="text-align--center">
-                                <span data-duice-bind="status" data-duice-property="count" class="number"></span>
+                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (emailSearch._page * emailSearch._size) + status.count;" class="number"></span>
                             </td>
                             <td>
                                 <span data-duice-bind="email" data-duice-property="emailId" class="code font-weight--bold"></span>
@@ -280,14 +279,14 @@
                     <div class="display--flex justify-content--space-between gap--1rem">
                         <div>
                             <span data-th-text="#{web.global.total}"></span>
-                            <span data-duice-bind="emailSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                            <span data-duice-bind="emailSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
                         <duice-pagination
                                 data-duice-bind="emailSearch"
                                 data-duice-size-property="_size"
                                 data-duice-page-property="_page"
-                                data-duice-count-property="_count"
+                                data-duice-total-property="_total"
                                 data-duice-onclick="getEmails(this.dataset.page);">
                         </duice-pagination>
                         <div class="text-align--right">

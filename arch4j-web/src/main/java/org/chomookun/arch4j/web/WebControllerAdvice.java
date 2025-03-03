@@ -28,8 +28,6 @@ public class WebControllerAdvice {
 
     private final CoreProperties coreProperties;
 
-    private final WebProperties webProperties;
-
     private final SecurityProperties securityProperties;
 
     private final HttpSession httpSession;
@@ -51,7 +49,7 @@ public class WebControllerAdvice {
     @GetMapping
     public ModelAndView index() {
         // redirect index
-        RedirectView redirectView = new RedirectView(webProperties.getIndex());
+        RedirectView redirectView = new RedirectView(coreProperties.getIndex());
         return new ModelAndView(redirectView);
     }
 
@@ -74,22 +72,22 @@ public class WebControllerAdvice {
 
     @ModelAttribute("_theme")
     public String theme() {
-        return webProperties.getTheme();
+        return coreProperties.getTheme();
     }
 
     @ModelAttribute("_brand")
     public String brand() {
-        return webProperties.getBrand();
+        return coreProperties.getBrand();
     }
 
     @ModelAttribute("_favicon")
     public String favicon() {
-        return webProperties.getFavicon();
+        return coreProperties.getFavicon();
     }
 
     @ModelAttribute("_title")
     public String title() {
-        return webProperties.getTitle();
+        return coreProperties.getTitle();
     }
 
     @ModelAttribute("_locales")

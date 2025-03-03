@@ -14,9 +14,7 @@ import org.springframework.test.context.TestConstructor;
 import java.io.File;
 
 @Slf4j
-@SpringBootTest(
-        classes = BatchConfiguration.class
-)
+@SpringBootTest(classes = BatchConfiguration.class)
 @SpringBatchTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class BatchTestSupport {

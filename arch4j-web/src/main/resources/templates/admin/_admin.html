@@ -378,6 +378,12 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/admin/batch}" th:classappend="!${#authorization.expression('hasAuthority(''admin.batch'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-batch.svg}" alt="batch"/>
+                    <span data-th-text="#{web.admin.batch}"></span>
+                </a>
+            </li>
+            <li>
                 <a th:href="@{/admin/boards}" th:classappend="!${#authorization.expression('hasAuthority(''admin.boards'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-board.svg}" alt="board"/>
                     <span data-th-text="#{web.admin.board}"></span>

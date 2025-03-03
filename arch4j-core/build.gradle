@@ -24,6 +24,7 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-thymeleaf'
     api 'org.springframework.boot:spring-boot-starter-cache'
     api 'org.springframework.boot:spring-boot-starter-data-redis'
+    api 'org.springframework.boot:spring-boot-starter-batch'
 
     // spring boot configuration processor
     api 'org.springframework.boot:spring-boot-configuration-processor'
@@ -46,6 +47,12 @@ dependencies {
 
     // h2database
     api 'com.h2database:h2'
+
+    // hsqldb
+    api 'org.hsqldb:hsqldb:2.7.2'
+
+
+
 
     // mariadb
     api 'org.mariadb.jdbc:mariadb-java-client'

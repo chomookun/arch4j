@@ -2,6 +2,7 @@ package org.chomookun.arch4j.batch.sample;
 
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.batch.common.support.BatchTestSupport;
+import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +18,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
     @Qualifier("fileDsvToFileFldJob")
     Job fileDsvToFileFldJob;
 
-//    @Test
+    @Test
     void fileDsvToFileFldJob() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("size", 1234L)
@@ -29,7 +30,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
         assertEquals(BatchStatus.COMPLETED.name(), jobExecution.getStatus().name());
     }
 
-//    @Test
+    @Test
     void fileDsvToFileFldJobWithEncoding() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("size", 1234L)
@@ -43,7 +44,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
         assertEquals(BatchStatus.COMPLETED.name(), jobExecution.getStatus().name());
     }
 
-//    @Test
+    @Test
     void fileDsvToFileFldJobWithLineSeparator() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("size", 1234L)
@@ -57,7 +58,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
         assertEquals(BatchStatus.COMPLETED.name(), jobExecution.getStatus().name());
     }
 
-//    @Test
+    @Test
     void fileDsvToFileFldJobWithDelimiter() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("size", 1234L)

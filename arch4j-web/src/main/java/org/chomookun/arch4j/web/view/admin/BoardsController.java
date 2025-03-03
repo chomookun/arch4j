@@ -1,10 +1,10 @@
 package org.chomookun.arch4j.web.view.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.CoreProperties;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.board.model.BoardSearch;
 import org.chomookun.arch4j.core.board.BoardService;
-import org.chomookun.arch4j.web.WebProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -29,7 +29,7 @@ public class BoardsController {
 
     private final BoardService boardService;
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     /**
      * boards
@@ -48,7 +48,7 @@ public class BoardsController {
      */
     protected Set<String> getSkinNames() throws IOException {
         Set<String> skinNames = new HashSet<>();
-        String resourcePattern = String.format("classpath*:templates/_theme/%s/board/*", webProperties.getTheme());
+        String resourcePattern = String.format("classpath*:templates/_theme/%s/board/*", coreProperties.getTheme());
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resolver.getResources(resourcePattern);
         for (Resource resource : resources) {

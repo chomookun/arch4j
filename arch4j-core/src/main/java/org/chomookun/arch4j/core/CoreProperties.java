@@ -12,6 +12,16 @@ import java.util.Locale;
 @Getter
 public class CoreProperties {
 
+    private final String brand;
+
+    private final String favicon;
+
+    private final String title;
+
+    private final String index;
+
+    private final String theme;
+
     private final Locale defaultLocale;
 
     private final List<Locale> supportedLocales;

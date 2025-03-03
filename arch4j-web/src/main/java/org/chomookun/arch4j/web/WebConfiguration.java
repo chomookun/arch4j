@@ -90,7 +90,6 @@ import java.util.Properties;
 @Import(CoreConfiguration.class)
 @ComponentScan(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 @EnableAutoConfiguration
-@EnableConfigurationProperties(WebProperties.class)
 @EnableScheduling
 @EnableCaching
 public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigurer {

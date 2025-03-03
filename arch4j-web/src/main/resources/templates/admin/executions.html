@@ -10,7 +10,7 @@
             value: null,
             _page: 0,
             _size: 10,
-            _count: 0
+            _total: 0
         });
         const executions = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(executions, true);
@@ -23,7 +23,7 @@
             if(Number.isFinite(parseInt(page))) {
                 executionSearch._page = page;
             }
-            let url = new URL(/*[[@{/admin/executions/get-executions}]]*/'', document.location.origin);
+            let url = new URL(`${window.location.pathname}/get-executions`, document.location.origin);
             if (executionSearch.key && executionSearch.value) {
                 url.searchParams.append(executionSearch.key, executionSearch.value);
             }
@@ -34,7 +34,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ArrayProxy.assign(executions, data.content);
-                    executionSearch._count = data['totalElements'];
+                    executionSearch._total = data['totalElements'];
                 });
         }
 
@@ -157,7 +157,7 @@
                     <tr data-duice-bind="executions" data-duice-loop="execution,status" class="text-align--center">
                         <td>
                             <span data-duice-bind="status"
-                                  data-duice-execute="this.innerHTML=executionSearch._size*executionSearch._page + status.count;"
+                                  data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"
                                   class="number">
                             </span>
                         </td>
@@ -220,7 +220,7 @@
             <div class="display--flex justify-content--space-between">
                 <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
-                    <span data-duice-bind="executionSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                    <span data-duice-bind="executionSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
                 <div class="flex--1 display--flex justify-content--center">
@@ -228,7 +228,7 @@
                             data-duice-bind="executionSearch"
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
-                            data-duice-count-property="_count"
+                            data-duice-total-property="_total"
                             data-duice-onclick="getExecutions(this.dataset.page);"
                             class="number">
                     </duice-pagination>

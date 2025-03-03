@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -36,13 +37,7 @@ import java.util.Properties;
                 type = FilterType.ANNOTATION, classes=Configuration.class
         )
 )
-@EnableAutoConfiguration(
-        exclude = {
-                DataSourceAutoConfiguration.class
-        }
-)
-@EnableConfigurationProperties(BatchProperties.class)
-@EnableBatchProcessing
+@EnableAutoConfiguration
 @MapperScan(
         annotationClass = Mapper.class,
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
@@ -59,32 +54,6 @@ public class BatchConfiguration implements EnvironmentPostProcessor {
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
         PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("batch", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
-    }
-
-    @Bean
-    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
-        JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
-        jobRegistryBeanPostProcessor.setJobRegistry(jobRegistry);
-        return jobRegistryBeanPostProcessor;
-    }
-
-    @Bean
-    @Primary
-    @ConfigurationProperties(prefix = "spring.datasource.hikari")
-    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
-        HikariDataSource dataSource = (HikariDataSource) dataSourceProperties.initializeDataSourceBuilder()
-                .type(dataSourceProperties.getType())
-                .build();
-        if (StringUtils.hasText(dataSourceProperties.getName())) {
-            dataSource.setPoolName(dataSourceProperties.getName());
-        }
-        return dataSource;
-    }
-
-    @Bean
-    @BatchDataSource
-    public DataSource batchDataSource(BatchProperties batchProperties) {
-        return new HikariDataSource(batchProperties.getDatasource());
     }
 
 }

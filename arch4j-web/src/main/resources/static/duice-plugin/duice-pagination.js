@@ -1,5 +1,5 @@
 /*!
- * duice-pagination - v0.2.3
+ * duice-pagination - v0.2.4
  * git: https://gitbub.com/chomookun/duice-plugin
  * website: https://duice-plugin.chomookun.org
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -10,13 +10,13 @@ var duicePagination = (function (exports, duice) {
     class Pagination extends duice.CustomElement {
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
-            this.prevContent = '&#9664;';
-            this.nextContent = '&#9654;';
+            this.prevContent = '<';
+            this.nextContent = '>';
             this.pageNumberSize = 10;
             // attributes
             this.pageProperty = duice.getElementAttribute(htmlElement, 'page-property');
             this.sizeProperty = duice.getElementAttribute(htmlElement, 'size-property');
-            this.countProperty = duice.getElementAttribute(htmlElement, 'count-property');
+            this.totalProperty = duice.getElementAttribute(htmlElement, 'total-property');
             this.onclick = new Function(duice.getElementAttribute(htmlElement, 'onclick'));
             // optional
             this.pageNumberSize = Number(duice.getElementAttribute(htmlElement, 'page-number-size') || this.pageNumberSize);
@@ -27,9 +27,9 @@ var duicePagination = (function (exports, duice) {
             // page,size,count
             let page = Number(object[this.pageProperty]);
             let size = Number(object[this.sizeProperty]);
-            let count = Number(object[this.countProperty]);
+            let total = Number(object[this.totalProperty]);
             // calculate page
-            let totalPage = Math.ceil(count / size);
+            let totalPage = Math.ceil(total / size);
             let startPageIndex = Math.floor(page / this.pageNumberSize) * this.pageNumberSize;
             let endPageIndex = Math.min(startPageIndex + (this.pageNumberSize - 1), totalPage - 1);
             endPageIndex = Math.max(endPageIndex, 0);

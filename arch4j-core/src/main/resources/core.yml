@@ -28,7 +28,7 @@ spring:
     hikari:
       driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
       jdbc-url: jdbc:log4jdbc:h2:mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE;DB_CLOSE_ON_EXIT=FALSE;
-      jdbc-url-cluster: jdbc:log4jdbc:h2:tcp://localhost:9092/mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE;
+      jdbc-url-cluster: jdbc:log4jdbc:h2:tcp://127.0.0.1:9092/mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE;
       username: sa
       password: sa
       transaction-isolation: TRANSACTION_READ_COMMITTED
@@ -75,6 +75,19 @@ spring:
     properties:
       mail.smtp.auth: false
       mail.smtp.starttls.enable: true
+  batch:
+    job:
+      enabled: false
+      names: ~
+    jdbc:
+      initialize-schema: embedded
+    datasource:
+      hikari:
+        driver-class-name: org.hsqldb.jdbc.JDBCDriver
+        jdbc-url: jdbc:hsqldb:mem:test;sql.syntax_mys=true
+        jdbc-url-cluster: jdbc:hsqldb:hsql://127.0.0.1:9001/test
+        username: sa
+        password: sa
 
 # mybatis
 mybatis:
@@ -92,8 +105,13 @@ jasypt:
 
 # core
 core:
+  brand: <img src="/static/image/arch4j-icon.svg"/><img src="/static/image/arch4j-title.svg"/>
+  favicon: /static/image/arch4j-icon.svg
+  title: ARCH4J (Application Archetype for Java)
+  index: git/arch4j/README.md
+  theme: _default
   default-locale: en
-  supported-Locales:
+  supported-locales:
     - en
     - ko
   data:
@@ -115,7 +133,3 @@ core:
         location: ${user.home}/.arch4j/storage/
   git:
     location: ${user.home}/.arch4j/git/
-
-
-
-

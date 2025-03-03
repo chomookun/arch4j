@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<th:block layout:fragment="_content">
+    <script th:inline="javascript">
+        // jobs
+        const jobSearch = new duice.ObjectProxy({
+            key: 'jobName',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _total: 0
+        });
+        const jobs = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(jobs, true);
+        // job instances
+        const jobInstanceSearch = new duice.ObjectProxy({
+            jobName: null,
+            _page: 0,
+            _size: 10,
+            _total: 0
+        });
+        const jobInstances = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(jobInstances, true);
+
+        /**
+         * Gets jobs
+         * @param page page number
+         */
+        function getJobs(page) {
+            if(page) {
+                jobSearch._page = page;
+            }
+            let url = new URL(`${window.location.pathname}/get-jobs`, document.location.origin);
+            if (jobSearch.key && jobSearch.value) {
+                url.searchParams.append(jobSearch.key, jobSearch.value);
+            }
+            url.searchParams.append('_page', jobSearch._page);
+            url.searchParams.append('_size', jobSearch._size);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.clear(jobs);
+                    duice.ArrayProxy.assign(jobs, data.content);
+                    jobSearch._total = data['totalElements'];
+                });
+        }
+
+        /**
+         * Resets jobs
+         */
+        function resetJobs() {
+            duice.ObjectProxy.reset(jobSearch);
+            getJobs();
+        }
+
+        /**
+         * Gets job instances
+         * @param jobName job name
+         * @param page page number
+         */
+        function getJobInstances(jobName, page) {
+            jobInstanceSearch.jobName = jobName;
+            if (page != null) {
+                jobInstanceSearch._page = parseInt(page);
+            }
+            let url = new URL(`${window.location.pathname}/get-job-instances`, document.location.origin);
+            url.searchParams.set('jobName', jobInstanceSearch.jobName);
+            url.searchParams.set('_page', jobInstanceSearch._page);
+            url.searchParams.set('_size', jobInstanceSearch._size);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.clear(jobInstances);
+                    jobInstanceSearch._total = data['totalElements'];
+                    duice.ArrayProxy.assign(jobInstances, data.content);
+                });
+        }
+
+        /**
+         * Marks batch status
+         * @param element element
+         * @param jobStatus job status
+         */
+        function markBatchStatus(element, jobStatus) {
+            element.classList.toggle('blink', jobStatus === 'STARTING' || jobStatus === 'STARTED' || jobStatus === 'STOPPING');
+            element.classList.toggle('background-color--blue', jobStatus === 'STARTING' || jobStatus === 'STARTED');
+            element.classList.toggle('background-color--green', jobStatus === 'COMPLETED');
+            element.classList.toggle('background-color--red', jobStatus === 'FAILED');
+        }
+
+        /**
+         * Marks exit status
+         * @param element element
+         * @param exitStatus exit status
+         */
+        function markExitStatus(element, exitStatus) {
+            element.classList.toggle('background-color--green', exitStatus.exitCode === 'COMPLETED');
+            element.classList.toggle('background-color--red', exitStatus.exitCode === 'FAILED');
+        }
+
+        // Initializes
+        document.addEventListener('DOMContentLoaded',()=> {
+            getJobs();
+        });
+    </script>
+
+    <!-- ================================== -->
+    <!-- start: title                       -->
+    <!-- ================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-batch.svg}" alt="batch"/>
+        <span data-th-text="#{web.admin.batch}"></span>
+    </h1>
+    <!-- ================================== -->
+    <!-- end: title                         -->
+    <!-- ================================== -->
+
+    <!-- ================================== -->
+    <!-- start: batch content               -->
+    <!-- ================================== -->
+    <div class="display--grid grid-template-columns--12fr gap--1rem">
+        <div id="messageList" class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ================================== -->
+            <!-- start: job list                    -->
+            <!-- ================================== -->
+            <div class="panel">
+                <div class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                        <span data-th-text="#{core.batch.Job}+' '+#{web.global.list}"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                        <div class="display--flex flex-wrap--nowrap gap--1px">
+                            <label>
+                                <select data-duice-bind="jobSearch" data-duice-property="key">
+                                    <option value="jobName" th:text="#{core.batch.Job.jobName}"></option>
+                                </select>
+                            </label>
+                            <label>
+                                <input type="text" data-duice-bind="jobSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                            </label>
+                        </div>
+                        <div class="display--flex justify-content--end gap--1px">
+                            <button class="button" type="submit" onclick="getJobs();">
+                                <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                                <span data-th-text="#{web.global.search}">Search</span>
+                            </button>
+                            <button class="button" type="button" onclick="resetJobs();">
+                                <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                                <span data-th-text="#{web.global.reset}">Reset</span>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="overflow--auto box width--100">
+                        <table class="table width--100 border--none">
+                            <colgroup>
+                                <col style="width:5rem;"/>
+                                <col/>
+                                <col/>
+                                <col/>
+                                <col/>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                                <th data-th-text="#{core.batch.Job.jobName}"></th>
+                                <th data-th-text="#{core.batch.Job.lastBatchStatus}"></th>
+                                <th data-th-text="#{core.batch.Job.lastExitStatus}"></th>
+                                <th data-th-text="#{core.batch.Job.instanceCount}"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr data-duice-bind="jobs"
+                                data-duice-loop="job,status"
+                                data-duice-selected-item-class="selected"
+                                data-duice-execute="this.dataset.jobName=job.jobName;"
+                                onclick="getJobInstances(this.dataset.jobName, 0);"
+                                class="cursor--pointer">
+                                <td class="text-align--center">
+                                    <span data-duice-bind="status" data-duice-execute="this.innerHTML = (jobSearch._page * jobSearch._size) + status.count" class="number"></span>
+                                </td>
+                                <td>
+                                    <span data-duice-bind="job" data-duice-property="jobName" class="code font-weight--bold"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="job" data-duice-property="lastBatchStatus" class="code badge"
+                                        data-duice-execute="markBatchStatus(this, job.lastBatchStatus);"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="job" data-duice-property="lastExitStatus.exitCode" class="code badge"
+                                        data-duice-execute="markExitStatus(this, job.lastExitStatus);"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="job" data-duice-property="instanceCount" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="jobs" data-duice-if="return jobs.length < 1;" hidden>
+                                <td colspan="100%" class="text-align--center">No Data</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="display--flex justify-content--space-between">
+                        <div>
+                            <span data-th-text="#{web.global.total}"></span>
+                            <span data-duice-bind="jobSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                            <span data-th-text="#{web.global.rows}"></span>
+                        </div>
+                        <duice-pagination
+                                data-duice-bind="jobSearch"
+                                data-duice-size-property="_size"
+                                data-duice-page-property="_page"
+                                data-duice-total-property="_total"
+                                data-duice-onclick="getJobs(this.dataset.page);">
+                        </duice-pagination>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <!-- ================================== -->
+            <!-- end: job list                      -->
+            <!-- ================================== -->
+        </div>
+        <div class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ================================== -->
+            <!-- start: job instance list           -->
+            <!-- ================================== -->
+            <div class="panel">
+                <div class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                        <span data-th-text="#{core.batch.JobInstance}+' '+#{web.global.list}"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <div class="width--100 overflow--auto box">
+                        <table class="table width--100 border--none">
+                            <colgroup>
+                                <col style="width:5rem;"/>
+                                <col/>
+                                <col/>
+                                <col/>
+                                <col/>
+                                <col/>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                                <th data-th-text="#{core.batch.JobInstance.startTime}"></th>
+                                <th data-th-text="#{core.batch.JobInstance.endTime}"></th>
+                                <th data-th-text="#{core.batch.JobInstance.batchStatus}"></th>
+                                <th data-th-text="#{core.batch.JobInstance.exitStatus}"></th>
+                                <th data-th-text="#{core.batch.JobInstance.executionCount}"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr data-duice-bind="jobInstances" data-duice-loop="jobInstance,status">
+                                <td class="text-align--center">
+                                    <span data-duice-bind="status" data-duice-execute="this.innerHTML = jobInstanceSearch._total - (jobInstanceSearch._page * jobInstanceSearch._size + status.index);" class="number"></span>
+                                </td>
+                                <td>
+                                    <span data-duice-bind="jobInstance" data-duice-property="startTime" data-duice-format="date('yyyy-MM-dd HH:mm:ss')" class="date"></span>
+                                </td>
+                                <td>
+                                    <span data-duice-bind="jobInstance" data-duice-property="endTime" data-duice-format="date('yyyy-MM-dd HH:mm:ss')" class="date"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="jobInstance" data-duice-property="batchStatus" class="code badge"
+                                        data-duice-execute="markBatchStatus(this, jobInstance.batchStatus);"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="jobInstance" data-duice-property="exitStatus.exitCode" class="code badge"
+                                        data-duice-execute="markExitStatus(this, jobInstance.exitStatus);"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="jobInstance" data-duice-property="executionCount" data-duice-format="number(0)" class="number"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="jobInstances" data-duice-if="return jobInstances.length < 1;" hidden>
+                                <td colspan="100%" class="text-align--center">No Data</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="display--flex justify-content--space-between">
+                        <div>
+                            <span data-th-text="#{web.global.total}"></span>
+                            <span data-duice-bind="jobInstanceSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                            <span data-th-text="#{web.global.rows}"></span>
+                        </div>
+                        <duice-pagination
+                                data-duice-bind="jobInstanceSearch"
+                                data-duice-size-property="_size"
+                                data-duice-page-property="_page"
+                                data-duice-count-property="_total"
+                                data-duice-onclick="getJobInstances(jobInstanceSearch.jobName, this.dataset.page);">
+                        </duice-pagination>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <!-- ================================== -->
+            <!-- end: job instance list             -->
+            <!-- ================================== -->
+        </div>
+    </div>
+    <!-- ================================== -->
+    <!-- end: batch content                 -->
+    <!-- ================================== -->
+
+</th:block>

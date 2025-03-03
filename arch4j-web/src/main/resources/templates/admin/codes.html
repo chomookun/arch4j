@@ -11,7 +11,7 @@
             value: null,
             _page: 0,
             _size: 20,
-            _count: 0
+            _total: 0
         });
         // code list
         const codes = new duice.ArrayProxy([]);
@@ -52,7 +52,7 @@
                 .then(data => {
                     duice.ArrayProxy.clear(codes);
                     duice.ArrayProxy.assign(codes, data.content);
-                    codeSearch._count = data['totalElements'];
+                    codeSearch._total = data['totalElements'];
                     // select current item
                     duice.ArrayProxy.selectItem(codes, codes.findIndex(item => item.codeId === code.codeId));
                 });
@@ -286,7 +286,7 @@
                             onclick="getCode(this.dataset.id);"
                             class="cursor--pointer">
                             <td class="text-align--center">
-                                <span data-duice-bind="status" data-duice-property="count" class="number"></span>
+                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (codeSearch._page * codeSearch._size) + status.count" class="number"></span>
                             </td>
                             <td>
                                 <span data-duice-bind="code" data-duice-property="codeId" class="code font-weight--bold"></span>
@@ -308,14 +308,14 @@
                     <div class="display--flex justify-content--space-between">
                         <div>
                             <span data-th-text="#{web.global.total}"></span>
-                            <span data-duice-bind="codeSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                            <span data-duice-bind="codeSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
                         <duice-pagination
                                 data-duice-bind="codeSearch"
                                 data-duice-size-property="_size"
                                 data-duice-page-property="_page"
-                                data-duice-count-property="_count"
+                                data-duice-total-property="_total"
                                 data-duice-onclick="getCodes(this.dataset.page);">
                         </duice-pagination>
                         <div class="text-align--right">

@@ -29,7 +29,6 @@ import java.util.Properties;
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 @EnableAutoConfiguration
-@EnableConfigurationProperties(DaemonProperties.class)
 @EnableScheduling
 @EnableCaching
 public class DaemonConfiguration implements EnvironmentPostProcessor, WebMvcConfigurer {
