@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core;
+package org.chomookun.arch4j.shell;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 @RequiredArgsConstructor
-public class CorePropertiesHolder {
+public class ShellPropertiesHolder {
 
-    private final CoreProperties coreProperties;
+    private final ShellProperties shellProperties;
 
     @Getter
-    private static CoreProperties instance;
+    private static ShellProperties instance;
 
     @PostConstruct
     public void init() {
-        instance = coreProperties;
+        instance = shellProperties;
     }
 
 }

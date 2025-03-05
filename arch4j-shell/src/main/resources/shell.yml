@@ -1,8 +1,11 @@
+# logging
 logging:
   level:
     root: ERROR
     com.zaxxer.hikari: ERROR
     com.zaxxer.hikari.HikariConfig: DEBUG
+
+# spring
 spring:
   shell:
     logging:

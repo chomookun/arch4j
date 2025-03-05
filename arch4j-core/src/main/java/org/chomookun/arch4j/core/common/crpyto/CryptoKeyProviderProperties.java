@@ -10,9 +10,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Properties;
 
 @ConfigurationProperties(prefix="core.data.crypto.crypto-key-provider")
+@Validated
 @AllArgsConstructor
 @Getter
-@Validated
 public class CryptoKeyProviderProperties {
 
     @NotBlank

@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core;
+package org.chomookun.arch4j.daemon;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 @RequiredArgsConstructor
-public class CorePropertiesHolder {
+public class DaemonPropertiesHolder {
 
-    private final CoreProperties coreProperties;
+    private final DaemonProperties daemonProperties;
 
     @Getter
-    private static CoreProperties instance;
+    private static DaemonProperties instance;
 
     @PostConstruct
     public void init() {
-        instance = coreProperties;
+        instance = daemonProperties;
     }
 
 }

@@ -4,6 +4,7 @@ import org.chomookun.arch4j.core.CoreConfiguration;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -16,6 +17,7 @@ import java.util.Properties;
 
 @Configuration
 @Import(CoreConfiguration.class)
+@ConfigurationPropertiesScan
 @ComponentScan(
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )

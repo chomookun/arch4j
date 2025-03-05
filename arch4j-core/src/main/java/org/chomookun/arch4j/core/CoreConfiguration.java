@@ -72,15 +72,13 @@ import java.util.*;
 
 @Slf4j
 @Configuration
+@ConfigurationPropertiesScan
 @ComponentScan(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 @EnableAutoConfiguration(
         exclude = {
                 MessageSourceAutoConfiguration.class
         }
 )
-@ConfigurationPropertiesScan
-@EnableEncryptableProperties
-@EnableConfigurationProperties
 @EnableJpaRepositories
 @EntityScan
 @EnableTransactionManagement

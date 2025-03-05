@@ -1,5 +1,5 @@
 /*!
- * duice - v0.2.61
+ * duice - v0.2.62
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -698,15 +698,6 @@ var duice = (function (exports) {
         }
     }
 
-    var __awaiter$3 = (window && window.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     class ArrayHandler extends DataHandler {
         constructor() {
             super();
@@ -736,47 +727,42 @@ var duice = (function (exports) {
                 // splice
                 if (['splice'].includes(property)) {
                     return function () {
-                        var arguments_1 = arguments;
-                        return __awaiter$3(this, void 0, void 0, function* () {
-                            // parse arguments
-                            let start = arguments_1[0];
-                            let deleteCount = arguments_1[1];
-                            let deleteRows = [];
-                            for (let i = start; i < (start + deleteCount); i++) {
-                                deleteRows.push(target[i]);
-                            }
-                            let insertRows = [];
-                            for (let i = 2; i < arguments_1.length; i++) {
-                                insertRows.push(arguments_1[i]);
-                            }
-                            // delete rows
-                            if (deleteCount > 0) {
-                                _this.deleteItem(target, start, deleteCount);
-                            }
-                            // insert rows
-                            if (insertRows.length > 0) {
-                                _this.insertItem(target, start, ...insertRows);
-                            }
-                            // returns deleted rows
-                            return deleteRows;
-                        });
+                        // parse arguments
+                        let start = arguments[0];
+                        let deleteCount = arguments[1];
+                        let deleteRows = [];
+                        for (let i = start; i < (start + deleteCount); i++) {
+                            deleteRows.push(target[i]);
+                        }
+                        let insertRows = [];
+                        for (let i = 2; i < arguments.length; i++) {
+                            insertRows.push(arguments[i]);
+                        }
+                        // delete rows
+                        if (deleteCount > 0) {
+                            _this.deleteItem(target, start, deleteCount);
+                        }
+                        // insert rows
+                        if (insertRows.length > 0) {
+                            _this.insertItem(target, start, ...insertRows);
+                        }
+                        // returns deleted rows
+                        return deleteRows;
                     };
                 }
                 // pop, shift
                 if (['pop', 'shift'].includes(property)) {
                     return function () {
-                        return __awaiter$3(this, void 0, void 0, function* () {
-                            let index;
-                            if (property === 'pop') {
-                                index = receiver['length'] - 1;
-                            }
-                            else if (property === 'shift') {
-                                index = 0;
-                            }
-                            let rows = [target[index]];
-                            _this.deleteItem(target, index);
-                            return rows;
-                        });
+                        let index;
+                        if (property === 'pop') {
+                            index = receiver['length'] - 1;
+                        }
+                        else if (property === 'shift') {
+                            index = 0;
+                        }
+                        let rows = [target[index]];
+                        _this.deleteItem(target, index);
+                        return rows;
                     };
                 }
                 // bind

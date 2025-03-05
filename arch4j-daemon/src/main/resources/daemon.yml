@@ -9,3 +9,6 @@ logging:
 # server
 server:
   port: 8081
+
+# daemon
+daemon:

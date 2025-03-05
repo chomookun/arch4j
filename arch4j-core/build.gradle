@@ -49,10 +49,7 @@ dependencies {
     api 'com.h2database:h2'
 
     // hsqldb
-    api 'org.hsqldb:hsqldb:2.7.2'
-
-
-
+    api 'org.hsqldb:hsqldb'
 
     // mariadb
     api 'org.mariadb.jdbc:mariadb-java-client'

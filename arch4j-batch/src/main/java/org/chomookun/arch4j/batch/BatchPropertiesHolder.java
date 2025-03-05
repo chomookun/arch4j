@@ -1,24 +1,25 @@
-package org.chomookun.arch4j.core;
+package org.chomookun.arch4j.batch;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 @Lazy(false)
 @RequiredArgsConstructor
-public class CorePropertiesHolder {
+public class BatchPropertiesHolder {
 
-    private final CoreProperties coreProperties;
+    private final BatchProperties batchProperties;
 
     @Getter
-    private static CoreProperties instance;
+    private static BatchProperties instance;
 
     @PostConstruct
     public void init() {
-        instance = coreProperties;
+        instance = batchProperties;
     }
 
 }

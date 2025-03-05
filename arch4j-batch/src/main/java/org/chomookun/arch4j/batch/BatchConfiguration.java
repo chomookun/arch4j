@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.batch.BatchDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -31,12 +32,14 @@ import java.util.Properties;
 
 @Configuration
 @Import(CoreConfiguration.class)
+@ConfigurationPropertiesScan
 @ComponentScan(
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class,
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ANNOTATION, classes=Configuration.class
         )
 )
+@EnableConfigurationProperties
 @EnableAutoConfiguration
 @MapperScan(
         annotationClass = Mapper.class,

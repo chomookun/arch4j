@@ -22,3 +22,4 @@ spring:
         minimum-idle: 1
         maximum-pool-size: 3
 
+# batch

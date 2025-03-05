@@ -54,7 +54,8 @@ public class Execution {
     public enum Status {
         RUNNING,
         SUCCESS,
-        FAILED
+        FAILED,
+        STOPPED
     }
 
     public static Execution from(ExecutionEntity executionEntity) {

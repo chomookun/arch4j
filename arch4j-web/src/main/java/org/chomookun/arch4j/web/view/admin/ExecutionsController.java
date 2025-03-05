@@ -32,4 +32,10 @@ public class ExecutionsController {
         return executionService.getExecutions(executionSearch, pageable);
     }
 
+    @GetMapping("get-execution")
+    @ResponseBody
+    public Execution getExecution(@RequestParam("executionId") String executionId) {
+        return executionService.getExecution(executionId).orElseThrow();
+    }
+
 }
