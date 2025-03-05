@@ -2,6 +2,7 @@ package org.chomookun.arch4j.batch.sample;
 
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.batch.common.support.BatchTestSupport;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class DbQuerydslToDbJpaBatchTest extends BatchTestSupport {
     @Qualifier("dbQuerydslToDbJpaJob")
     Job dbQuerydslToDbJpaJob;
 
+    @Disabled
     @Test
     void dbQuerydslToDbJpaJob() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()

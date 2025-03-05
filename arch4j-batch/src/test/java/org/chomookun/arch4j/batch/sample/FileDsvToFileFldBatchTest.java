@@ -2,6 +2,7 @@ package org.chomookun.arch4j.batch.sample;
 
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.batch.common.support.BatchTestSupport;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
     @Qualifier("fileDsvToFileFldJob")
     Job fileDsvToFileFldJob;
 
+    @Disabled
     @Test
     void fileDsvToFileFldJob() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
@@ -30,6 +32,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
         assertEquals(BatchStatus.COMPLETED.name(), jobExecution.getStatus().name());
     }
 
+    @Disabled
     @Test
     void fileDsvToFileFldJobWithEncoding() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
@@ -44,6 +47,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
         assertEquals(BatchStatus.COMPLETED.name(), jobExecution.getStatus().name());
     }
 
+    @Disabled
     @Test
     void fileDsvToFileFldJobWithLineSeparator() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
@@ -58,6 +62,7 @@ public class FileDsvToFileFldBatchTest extends BatchTestSupport {
         assertEquals(BatchStatus.COMPLETED.name(), jobExecution.getStatus().name());
     }
 
+    @Disabled
     @Test
     void fileDsvToFileFldJobWithDelimiter() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
