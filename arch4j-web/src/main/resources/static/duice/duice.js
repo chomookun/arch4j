@@ -1,5 +1,5 @@
 /*!
- * duice - v0.2.62
+ * duice - v0.2.63
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -72,13 +72,16 @@ var duice = (function (exports) {
             else {
                 htmlElement.hidden = false;
             }
+            return result;
         }
+        return true;
     }
     function runExecuteCode(htmlElement, context) {
         let script = getElementAttribute(htmlElement, 'execute');
         if (script) {
-            runCode(script, htmlElement, context);
+            return runCode(script, htmlElement, context);
         }
+        return null;
     }
     function hasElementAttribute(htmlElement, name) {
         let namespace = Configuration.getNamespace();
@@ -481,7 +484,9 @@ var duice = (function (exports) {
         }
         render() {
             // check if
-            this.checkIf();
+            if (!this.checkIf()) {
+                return;
+            }
             if (this.property) {
                 let objectHandler = ObjectProxy.getHandler(this.getBindData());
                 // set value
@@ -507,7 +512,7 @@ var duice = (function (exports) {
             else {
                 context[bind] = this.getBindData();
             }
-            runIfCode(this.htmlElement, context);
+            return runIfCode(this.htmlElement, context);
         }
         executeScript() {
             let context = Object.assign({}, this.getContext());
@@ -519,14 +524,17 @@ var duice = (function (exports) {
             else {
                 context[bind] = this.getBindData();
             }
-            runExecuteCode(this.htmlElement, context);
+            return runExecuteCode(this.htmlElement, context);
         }
         update(observable, event) {
             console.debug('ObjectElement.update', observable, event);
             // ObjectHandler
             if (observable instanceof ObjectHandler) {
                 // check if
-                this.checkIf();
+                if (!this.checkIf()) {
+                    return;
+                }
+                // property
                 if (this.property) {
                     // set value
                     this.setValue(observable.getValue(this.property));
@@ -1060,8 +1068,8 @@ var duice = (function (exports) {
          */
         constructor(object) {
             super();
-            // is already proxy
-            if (ObjectProxy.isProxy(object)) {
+            // is already object proxy
+            if (object instanceof ObjectProxy) {
                 return object;
             }
             // object handler
@@ -1952,6 +1960,10 @@ var duice = (function (exports) {
         constructor(element, bindData, context) {
             super(element, bindData, context);
             this.defaultOptions = [];
+            // checks if
+            if (!this.checkIf()) {
+                return;
+            }
             // adds event listener
             this.getHtmlElement().addEventListener('change', () => {
                 let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
@@ -1987,6 +1999,10 @@ var duice = (function (exports) {
         }
         update(observable, dataEvent) {
             super.update(observable, dataEvent);
+            // checks if
+            if (!this.checkIf()) {
+                return;
+            }
             if (this.option) {
                 this.updateOptions();
             }
