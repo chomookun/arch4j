@@ -42,7 +42,7 @@ values
     ('admin.alarms.edit','Y','Admins Alarm Edit Authority'),
     ('actuator','Y','Actuator Access Authority'),
     ('h2-console','Y','Actuator Access Authority'),
-    ('swagger-ui','Y','Swagger UI Access Authority');
+    ('api-docs','Y','API Docs Access Authority');
 
 -- role
 insert into `core_role`
@@ -72,7 +72,7 @@ values
     ('DEVELOPER', 'admin.batch'),
     ('DEVELOPER','actuator'),
     ('DEVELOPER','h2-console'),
-    ('DEVELOPER','swagger-ui');
+    ('DEVELOPER','api-docs');
 
 -- menu
 insert into `core_menu`

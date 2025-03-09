@@ -29,7 +29,7 @@ dependencies {
     api 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
     // spring doc
-    api 'org.springdoc:springdoc-openapi-ui'
+    api 'org.springdoc:springdoc-openapi-starter-webmvc-api'
 
     // spring security test
     api 'org.springframework.security:spring-security-test'

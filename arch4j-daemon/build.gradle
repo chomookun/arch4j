@@ -29,9 +29,6 @@ dependencies {
     api 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     api 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
-    // spring doc
-    api 'org.springdoc:springdoc-openapi-ui'
-
     // spring security test
     api 'org.springframework.security:spring-security-test'
 

@@ -19,6 +19,7 @@ import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.web.common.security.SecurityFilter;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -297,16 +298,16 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
         @Bean
         @Order(3)
-        @ConditionalOnProperty(name = "springdoc.swagger-ui.enabled", havingValue = "true", matchIfMissing = true)
-        public SecurityFilterChain swaggerUiSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector, Environment environment) throws Exception {
+        @ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true", matchIfMissing = true)
+        public SecurityFilterChain apiDocsSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector, Environment environment) throws Exception {
             // security matcher
-            String swaggerBasePath = environment.getProperty("springdoc.swagger-ui.path", "/swagger-ui");
-            String swaggerMatcherPattern = String.format("%s/**", swaggerBasePath);
-            MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, swaggerMatcherPattern);
+            String apiDocsBasePath = environment.getProperty("springdoc.api-docs.path", "/v3/api-docs");
+            String apiDocsMatcherPattern = String.format("%s/**", apiDocsBasePath);
+            MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, apiDocsMatcherPattern);
             http.securityMatcher(securityMatcher);
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests -> {
-                authorizeHttpRequests.anyRequest().hasAuthority("swagger-ui");
+                authorizeHttpRequests.anyRequest().hasAuthority("api-docs");
             });
             // csrf
             http.csrf(AbstractHttpConfigurer::disable);
@@ -454,22 +455,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
         }
-    }
-
-    @Configuration
-    @OpenAPIDefinition(
-            info = @Info(title = "REST API"),
-            security = { @SecurityRequirement(name = "Authorization") },
-            servers = {
-                    @Server(url = "/", description = "Default Server URL")
-            }
-    )
-    @SecurityScheme(
-            name = "Authorization",
-            type = SecuritySchemeType.APIKEY,
-            in = SecuritySchemeIn.HEADER
-    )
-    public static class OpenApiConfiguration {
     }
 
 }

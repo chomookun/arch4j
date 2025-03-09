@@ -82,13 +82,17 @@ spring:
 springdoc:
   version: '@springdoc.version@'
   swagger-ui:
-    disable-swagger-default-url: true
-    operations-sorter: alpha
+    enabled: false
   api-docs:
-    path: /v3/api-docs
+    enabled: true
+    path: /api-docs.json
+    format: json
+    yaml:
+      enabled: true
+      path: /api-docs.yaml
   group-configs:
-    - group: version 1.0
-      paths-to-match: /api/v1/**
+    - group: public
+      paths-to-match: /api/**
 
 # web
 web:

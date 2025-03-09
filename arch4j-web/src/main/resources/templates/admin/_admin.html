@@ -402,7 +402,7 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/swagger-ui.html}" target="_blank" th:classappend="!${#authorization.expression('hasAuthority(''swagger-ui'')')}?'locked'">
+                <a th:href="@{/api-docs}" target="_blank" th:classappend="!${#authorization.expression('hasAuthority(''api-docs'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-api.svg}" alt="api"/>
                     <span data-th-text="#{web.admin.api}"></span>
                 </a>
