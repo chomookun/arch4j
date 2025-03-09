@@ -22,7 +22,8 @@ pipeline {
                 name: 'JIB_TO_AUTH_CREDENTIALS',
                 defaultValue: params.JIB_TO_AUTH_CREDENTIALS,
                 description: 'target image repository credentials')
-        string(name: 'SEND_MESSAGE_TO', defaultValue: params.SEND_MESSAGE_TO ?: '___', description: 'Message platform(SLACK|...)')
+        string(name: 'MESSAGE_PLATFORM', defaultValue: params.MESSAGE_PLATFORM ?: '___', description: 'Message platform(SLACK|...)')
+        text(name: 'MESSAGE_PLATFORM_CONFIG', defaultValue: params.MESSAGE_PLATFORM_CONFIG ?: '___', description: 'name1=value1\nname2=value2')
     }
     options {
         disableConcurrentBuilds()
@@ -97,15 +98,16 @@ pipeline {
     }
     post {
         always {
-
             // junit
             junit allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
-
             // send message
             script {
-                if(params.SEND_MESSAGE_TO != null && params.SEND_MESSAGE_TO.contains('SLACK')) {
+                def messagePlatformConfig = new Properties()
+                messagePlatformConfig.load(new StringReader(params.MESSAGE_PLATFORM_CONFIG))
+                // slack
+                if(params.MESSAGE_PLATFORM != null && params.MESSAGE_PLATFORM.contains('SLACK')) {
                     slackSend (
-                        channel: '#oopscraftorg',
+                        channel: "${messagePlatformConfig.channel}",
                         message: "Build [${currentBuild.currentResult}] ${env.JOB_NAME} (${env.BUILD_NUMBER}) - ${env.BUILD_URL}"
                     )
                 }
