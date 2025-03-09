@@ -103,7 +103,7 @@ pipeline {
             // send message
             script {
                 def messagePlatformConfig = [:] // Map 사용
-                if (params.MESSAGE_PLATFORM_CONFIG?.trim()?length() > 0) {
+                if (params.MESSAGE_PLATFORM_CONFIG?.trim()?.length() > 0) {
                     params.MESSAGE_PLATFORM_CONFIG.split('\n').each { line ->
                         def parts = line.split('=')
                         if (parts.length == 2) {
