@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.StringReader
+
 pipeline {
     agent any
     parameters {
@@ -103,7 +106,9 @@ pipeline {
             // send message
             script {
                 def messagePlatformConfig = new Properties()
-                messagePlatformConfig.load(new StringReader(params.MESSAGE_PLATFORM_CONFIG))
+                if (params.MESSAGE_PLATFORM_CONFIG?.trim()) {
+                    messagePlatformConfig.load(new StringReader(params.MESSAGE_PLATFORM_CONFIG))
+                }
                 // slack
                 if(params.MESSAGE_PLATFORM != null && params.MESSAGE_PLATFORM.contains('SLACK')) {
                     slackSend (
