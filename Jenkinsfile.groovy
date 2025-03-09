@@ -106,11 +106,11 @@ pipeline {
             // send message
             script {
                 def messagePlatformConfig = new Properties()
-                if (params.MESSAGE_PLATFORM_CONFIG?.trim()) {
+                if (params.MESSAGE_PLATFORM_CONFIG?.trim()?.length() > 0) {
                     messagePlatformConfig.load(new StringReader(params.MESSAGE_PLATFORM_CONFIG))
                 }
                 // slack
-                if(params.MESSAGE_PLATFORM != null && params.MESSAGE_PLATFORM.contains('SLACK')) {
+                if(params.MESSAGE_PLATFORM?.contains('SLACK')) {
                     slackSend (
                         channel: "${messagePlatformConfig.channel}",
                         message: "Build [${currentBuild.currentResult}] ${env.JOB_NAME} (${env.BUILD_NUMBER}) - ${env.BUILD_URL}"
