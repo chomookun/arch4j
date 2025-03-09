@@ -787,7 +787,6 @@ var duice = (function (exports) {
             return true;
         }
         update(observable, event) {
-            console.debug("ArrayHandler.update", observable, event);
             // instance is array component
             if (observable instanceof ArrayElement) {
                 // row select event
@@ -797,8 +796,11 @@ var duice = (function (exports) {
                 }
                 // row move event
                 if (event instanceof ItemMoveEvent) {
-                    let object = this.getTarget().splice(event.getFromIndex(), 1)[0];
-                    this.getTarget().splice(event.getToIndex(), 0, object);
+                    if (this.checkListener(this.itemMovingListener, event)) {
+                        let object = this.getTarget().splice(event.getFromIndex(), 1)[0];
+                        this.getTarget().splice(event.getToIndex(), 0, object);
+                        this.checkListener(this.itemMovedListener, event);
+                    }
                 }
             }
             // notify observers
@@ -817,9 +819,9 @@ var duice = (function (exports) {
                 }
             });
             let event = new ItemInsertEvent(this, index, rows);
-            if (arrayHandler.checkListener(arrayHandler.rowInsertingListener, event)) {
+            if (arrayHandler.checkListener(arrayHandler.itemInsertingListener, event)) {
                 proxyTarget.splice(index, 0, ...rows);
-                arrayHandler.checkListener(arrayHandler.rowInsertedListener, event);
+                arrayHandler.checkListener(arrayHandler.itemInsertedListener, event);
                 arrayHandler.notifyObservers(event);
             }
         }
@@ -830,17 +832,13 @@ var duice = (function (exports) {
             let sliceEnd = (size ? index + size : index + 1);
             let rows = proxyTarget.slice(sliceBegin, sliceEnd);
             let event = new ItemDeleteEvent(this, index, rows);
-            if (arrayHandler.checkListener(arrayHandler.rowDeletingListener, event)) {
+            if (arrayHandler.checkListener(arrayHandler.itemDeletingListener, event)) {
                 let spliceStart = index;
                 let spliceDeleteCount = (size ? size : 1);
                 proxyTarget.splice(spliceStart, spliceDeleteCount);
-                arrayHandler.checkListener(arrayHandler.rowDeletedListener, event);
+                arrayHandler.checkListener(arrayHandler.itemDeletedListener, event);
                 arrayHandler.notifyObservers(event);
             }
-        }
-        appendItem(arrayProxy, ...rows) {
-            let index = arrayProxy.length;
-            return this.insertItem(arrayProxy, index, ...rows);
         }
         selectItem(index) {
             this.selectedItemIndex = index;
@@ -1047,17 +1045,23 @@ var duice = (function (exports) {
                 ObjectProxy.getHandler(objectProxy).propertyChangedListener = listener;
             });
         }
-        static onRowInserting(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowInsertingListener = listener;
+        static onItemInserting(arrayProxy, listener) {
+            this.getHandler(arrayProxy).itemInsertingListener = listener;
         }
-        static onRowInserted(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowInsertedListener = listener;
+        static onItemInserted(arrayProxy, listener) {
+            this.getHandler(arrayProxy).itemInsertedListener = listener;
         }
-        static onRowDeleting(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowDeletingListener = listener;
+        static onItemDeleting(arrayProxy, listener) {
+            this.getHandler(arrayProxy).itemDeletingListener = listener;
         }
-        static onRowDeleted(arrayProxy, listener) {
-            this.getHandler(arrayProxy).rowDeletedListener = listener;
+        static onItemDeleted(arrayProxy, listener) {
+            this.getHandler(arrayProxy).itemDeletedListener = listener;
+        }
+        static onItemMoving(arrayProxy, listener) {
+            this.getHandler(arrayProxy).itemMovingListener = listener;
+        }
+        static onItemMoved(arrayProxy, listener) {
+            this.getHandler(arrayProxy).itemMovedListener = listener;
         }
     }
 
