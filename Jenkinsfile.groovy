@@ -1,6 +1,3 @@
-import java.util.Properties
-import java.io.StringReader
-
 pipeline {
     agent any
     parameters {
@@ -105,9 +102,14 @@ pipeline {
             junit allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
             // send message
             script {
-                def messagePlatformConfig = new Properties()
-                if (params.MESSAGE_PLATFORM_CONFIG?.trim()?.length() > 0) {
-                    messagePlatformConfig.load(new StringReader(params.MESSAGE_PLATFORM_CONFIG))
+                def messagePlatformConfig = [:] // Map 사용
+                if (params.MESSAGE_PLATFORM_CONFIG?.trim()?length() > 0) {
+                    params.MESSAGE_PLATFORM_CONFIG.split('\n').each { line ->
+                        def parts = line.split('=')
+                        if (parts.length == 2) {
+                            messagePlatformConfig[parts[0].trim()] = parts[1].trim()
+                        }
+                    }
                 }
                 // slack
                 if(params.MESSAGE_PLATFORM?.contains('SLACK')) {
