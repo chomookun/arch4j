@@ -64,6 +64,8 @@ spring:
     cache-duration: 10
   data:
     redis:
+      repository:
+        enabled: false
       host: localhost
       port: 6379
       password: ~
