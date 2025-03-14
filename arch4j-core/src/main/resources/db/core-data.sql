@@ -539,7 +539,7 @@ insert into `core_page_widget` (
 
 -- git
 insert into `core_git` (`git_id`,`name`,`note`,`url`,`branch`) values
-    ('arch4j', 'arch4j repository', 'Arch4j Github Repository','https://github.com/oopscraft/arch4j.git', null);
+    ('arch4j', 'arch4j repository', 'Arch4j Github Repository','https://github.com/chomookun/arch4j.git', null);
 
 -- email
 insert into `core_email` (`email_id`,`name`,`subject`,`content`) values
