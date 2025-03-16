@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.core.execution.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.chomookun.arch4j.core.common.data.BaseModel;
 import org.chomookun.arch4j.core.execution.entity.ExecutionEntity;
 
 import java.time.Duration;
@@ -10,9 +10,12 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Builder
-@Getter
-public class Execution {
+@Data
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Execution extends BaseModel {
 
     private String executionId;
 

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -179,6 +180,44 @@ public class ExecutionService implements ApplicationListener<ContextClosedEvent>
     public Optional<Execution> getExecution(String executionId) {
         return executionRepository.findById(executionId)
                 .map(Execution::from);
+    }
+
+    /**
+     * Saves execution
+     * @param execution execution
+     * @return saved execution
+     */
+    @Transactional
+    public Execution saveExecution(Execution execution) {
+        ExecutionEntity executionEntity = null;
+        if (execution.getExecutionId() == null) {
+            executionEntity = ExecutionEntity.builder()
+                    .executionId(IdGenerator.uuid())
+                    .build();
+        } else {
+            executionEntity = executionRepository.findById(execution.getExecutionId())
+                    .orElseThrow();
+        }
+        executionEntity.setTaskName(execution.getTaskName());
+        executionEntity.setStatus(execution.getStatus());
+        executionEntity.setStartedAt(execution.getStartedAt());
+        executionEntity.setUpdatedAt(execution.getUpdatedAt());
+        executionEntity.setEndedAt(execution.getEndedAt());
+        executionEntity.setTotalCount(execution.getTotalCount().get());
+        executionEntity.setSuccessCount(execution.getSuccessCount().get());
+        executionEntity.setFailCount(execution.getFailCount().get());
+        executionEntity.setMessage(execution.getMessage());
+        ExecutionEntity savedExecutionEntity = executionRepository.saveAndFlush(executionEntity);
+        return Execution.from(savedExecutionEntity);
+    }
+
+    /**
+     * Deletes execution
+     * @param executionId execution id
+     */
+    @Transactional
+    public void deleteExecution(String executionId) {
+        executionRepository.deleteById(executionId);
     }
 
 }

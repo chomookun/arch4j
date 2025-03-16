@@ -12,6 +12,7 @@
             _size: 10,
             _total: 0
         });
+        const executionStatuses = new duice.ArrayProxy(/*[[${executionStatuses}]]*/[]);
         const executions = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(executions, true);
 
@@ -65,7 +66,7 @@
         function openExecutionDialog(executionId) {
             executionDialog.open(executionId).then(result => {
                 if (result) {
-                    alert(result);
+                    getExecutions();
                 }
             });
         }
@@ -291,9 +292,38 @@
                     return this.dialog.open();
                 },
                 save: function() {
+                    _confirm(/*[[#{web.global.saveItemConfirm(#{core.execution.Execution})}]]*/'').then(result => {
+                        if (result) {
+                            let url = new URL(`${window.location.pathname}/save-execution`, document.location.origin);
+                            _fetch(url, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(this.execution)
+                            }).then(response => {
+                                if (response.ok) {
+                                    _alert(/*[[#{web.global.saveItemComplete(#{core.execution.Execution})}]]*/'').then(() => {
+                                        this.dialog.close(true);
+                                    });
+                                }
+                            });
+                        }
+                    });
                 },
                 delete: function() {
-
+                    _confirm(/*[[#{web.global.saveItemConfirm(#{core.execution.Execution})}]]*/'').then(result => {
+                        if (result) {
+                            let url = new URL(`${window.location.pathname}/delete-execution?executionId=${this.execution.executionId}`, document.location.origin);
+                            _fetch(url,{
+                                method: 'DELETE'
+                            }).then(response => {
+                                if (response.ok) {
+                                    _alert(/*[[#{web.global.deleteItemComplete(#{core.execution.Execution})}]]*/'').then(() => {
+                                        this.dialog.close(true);
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
             }
         </script>
@@ -316,7 +346,9 @@
                         <span data-th-text="#{core.execution.Execution.status}" class="font-weight--bold"></span>
                         <select data-duice-bind="executionDialog.execution"
                                 data-duice-property="status" class="code">
-                            <option value="SUCCESS">SUCCESS</option>
+                            <option th:each="executionStatus : ${executionStatuses}"
+                                    th:value="${executionStatus}"
+                                    th:text="${executionStatus}"></option>
                         </select>
                     </label>
                 </div>
