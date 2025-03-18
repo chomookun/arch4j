@@ -3,13 +3,6 @@ package org.chomookun.arch4j.web;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.CoreConfiguration;
@@ -19,7 +12,6 @@ import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.web.common.security.SecurityFilter;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -28,7 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
@@ -112,7 +103,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
     public LocaleResolver localeResolver(CoreProperties coreProperties) {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(coreProperties.getDefaultLocale());
-        localeResolver.setCookieName("X-Accept-Language");
         localeResolver.setCookieHttpOnly(true);
         localeResolver.setLanguageTagCompliant(false);
         return localeResolver;
@@ -209,6 +199,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
         protected PersistentTokenRepository persistentTokenRepository(DataSource dataSource, Environment environment) {
             JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
             tokenRepository.setDataSource(dataSource);
+            // if session store type is jdbc, checks persistent_logins table exists
             if ("jdbc".equalsIgnoreCase(environment.getProperty("spring.session.store-type"))) {
                 try (Connection connection = dataSource.getConnection()) {
                     ResultSet resultSet = connection.getMetaData().getTables(null, null, "persistent_logins", null);
@@ -356,7 +347,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
         }
 
         @Bean
-        @Order(98)
+        @Order(97)
         public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http,  HandlerMappingIntrospector introspector, RememberMeServices rememberMeServices) throws Exception {
             // security matcher
             MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, "/api/**");
@@ -380,7 +371,6 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.sessionManagement(sessionManagement -> {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
             });
-
             // exception handling
             http.exceptionHandling(exceptionHandling -> {
                 exceptionHandling.accessDeniedHandler(accessDeniedHandler);
@@ -389,6 +379,35 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.rememberMe(rememberMe -> {
                 rememberMe.rememberMeServices(rememberMeServices);
                 rememberMe.tokenValiditySeconds(1209600);
+            });
+            // custom filter
+            http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
+            return http.build();
+        }
+
+        @Bean
+        @Order(98)
+        public SecurityFilterChain wsSecurityFilterChain(HttpSecurity http,  HandlerMappingIntrospector introspector) throws Exception {
+            // security matcher
+            MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, "/ws/**");
+            http.securityMatcher(securityMatcher);
+            // authorize
+            http.authorizeHttpRequests(authorizeHttpRequests -> {
+                if(securityProperties.getSecurityPolicy() == SecurityPolicy.ANONYMOUS) {
+                    authorizeHttpRequests.anyRequest().permitAll();
+                }else{
+                    authorizeHttpRequests.anyRequest().authenticated();
+                }
+            });
+            // csrf
+            http.csrf(AbstractHttpConfigurer::disable);
+            // headers
+            http.headers(headers -> {
+                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
+            });
+            // session
+            http.sessionManagement(sessionManagement -> {
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
             });
             // custom filter
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
@@ -427,9 +446,9 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
                     it.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
             });
             // exception handling
-            http.exceptionHandling(exceptonHandling -> {
-                exceptonHandling.authenticationEntryPoint(authenticationEntryPoint);
-                exceptonHandling.accessDeniedHandler(accessDeniedHandler);
+            http.exceptionHandling(exceptionHandling -> {
+                exceptionHandling.authenticationEntryPoint(authenticationEntryPoint);
+                exceptionHandling.accessDeniedHandler(accessDeniedHandler);
             });
             // login
             http.formLogin(formLogin -> {
