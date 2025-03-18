@@ -43,7 +43,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         // check security token
         String securityToken = null;
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -52,7 +51,6 @@ public class SecurityFilter extends OncePerRequestFilter {
             if(authorizationArray.length >= 2) {
                 securityToken = authorizationArray[1];
             }
-
             // if security token exist
             if(securityToken != null) {
                 UserDetails userDetails = authenticationTokenService.decodeSecurityToken(securityToken);
@@ -61,11 +59,9 @@ public class SecurityFilter extends OncePerRequestFilter {
                 securityContext.setAuthentication(authentication);
             }
         }
-
         // checks authentication
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-
         // creates and updates anonymous security token with anonymous authorities
         if(authentication instanceof AnonymousAuthenticationToken anonymousAuthenticationToken) {
             List<GrantedAuthority> anonymousAuthorities = new ArrayList<>(anonymousAuthenticationToken.getAuthorities());
@@ -75,14 +71,12 @@ public class SecurityFilter extends OncePerRequestFilter {
                     anonymousAuthenticationToken.getPrincipal(),
                     anonymousAuthorities));
         }
-
         // creates and updates user details
         if(authentication instanceof UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
             UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
             userDetails = userDetailsService.loadUserByUsername(userDetails.getUsername());
             usernamePasswordAuthenticationToken.setDetails(userDetails);
         }
-
         // forward
         filterChain.doFilter(request, response);
     }
