@@ -298,16 +298,13 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
         @Bean
         @Order(3)
-        @ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true", matchIfMissing = true)
-        public SecurityFilterChain apiDocsSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector, Environment environment) throws Exception {
+        public SecurityFilterChain springdocSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector, Environment environment) throws Exception {
             // security matcher
-            String apiDocsBasePath = environment.getProperty("springdoc.api-docs.path", "/v3/api-docs");
-            String apiDocsMatcherPattern = String.format("%s/**", apiDocsBasePath);
-            MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, apiDocsMatcherPattern);
+            MvcRequestMatcher securityMatcher = new MvcRequestMatcher(introspector, "/springdoc/**");
             http.securityMatcher(securityMatcher);
             // authorize
             http.authorizeHttpRequests(authorizeHttpRequests -> {
-                authorizeHttpRequests.anyRequest().hasAuthority("api-docs");
+                authorizeHttpRequests.anyRequest().hasAuthority("springdoc");
             });
             // csrf
             http.csrf(AbstractHttpConfigurer::disable);

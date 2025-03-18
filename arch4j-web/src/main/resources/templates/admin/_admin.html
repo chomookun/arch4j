@@ -402,9 +402,9 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/api-docs}" target="_blank" th:classappend="!${#authorization.expression('hasAuthority(''api-docs'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-api.svg}" alt="api"/>
-                    <span data-th-text="#{web.admin.api}"></span>
+                <a th:href="@{/springdoc/swagger-ui}" target="_blank" th:classappend="!${#authorization.expression('hasAuthority(''springdoc'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-springdoc.svg}" alt="springdoc"/>
+                    <span data-th-text="#{web.admin.springdoc}"></span>
                 </a>
             </li>
         </ul>

@@ -42,7 +42,7 @@ values
     ('admin.alarms.edit','Y','Admins Alarm Edit Authority'),
     ('actuator','Y','Actuator Access Authority'),
     ('h2-console','Y','Actuator Access Authority'),
-    ('api-docs','Y','API Docs Access Authority');
+    ('springdoc','Y','API Docs Docs Access Authority');
 
 -- role
 insert into `core_role`
@@ -72,7 +72,7 @@ values
     ('DEVELOPER', 'admin.batch'),
     ('DEVELOPER','actuator'),
     ('DEVELOPER','h2-console'),
-    ('DEVELOPER','api-docs');
+    ('DEVELOPER','springdoc');
 
 -- menu
 insert into `core_menu`
@@ -97,8 +97,6 @@ values
     ('01f9240a225f4b5c821e00a5fe1b9353', 'ko', '익명 게시판'),
     ('188de70ba71e4d23bafa4a232379efff', 'ko', '회원 게시판'),
     ('408f6d1824e143d18d3e4ef24ffedabc', 'ko', '공지 게시판');
-
-
 
 -- message
 insert into `core_message`
