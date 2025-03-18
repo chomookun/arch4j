@@ -56,7 +56,7 @@ dependencies {
         api "org.modelmapper:modelmapper:2.4.4"
 
         // spring doc
-        api 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.5'
+        api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 
         // log4jdbc
         api 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'

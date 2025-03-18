@@ -82,7 +82,8 @@ spring:
 springdoc:
   version: '@springdoc.version@'
   swagger-ui:
-    enabled: false
+    enabled: true
+    path: /api-docs
   api-docs:
     enabled: true
     path: /api-docs.json
@@ -91,8 +92,8 @@ springdoc:
       enabled: true
       path: /api-docs.yaml
   group-configs:
-    - group: public
-      paths-to-match: /api/**
+    - group: v1
+      paths-to-match: /api/v1/**
 
 # web
 web:

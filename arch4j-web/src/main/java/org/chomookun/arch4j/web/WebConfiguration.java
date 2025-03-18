@@ -3,6 +3,15 @@ package org.chomookun.arch4j.web;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.CoreConfiguration;
@@ -474,6 +483,31 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.addFilterAfter(securityFilter(), AnonymousAuthenticationFilter.class);
             return http.build();
         }
+    }
+
+    @Configuration
+    @OpenAPIDefinition(
+            security = { @SecurityRequirement(name = "Authorization") },
+            servers = {
+                    @Server(url = "/", description = "Default Server URL")
+            }
+    )
+    @SecurityScheme(
+            name = "Authorization",
+            type = SecuritySchemeType.APIKEY,
+            in = SecuritySchemeIn.HEADER
+    )
+    public static class OpenApiConfiguration {
+
+        @Bean
+        public OpenAPI openApi(WebProperties webProperties) {
+            OpenAPI openApi = new OpenAPI();
+            Info info = new Info();
+            info.setTitle(webProperties.getTitle());
+            openApi.setInfo(info);
+            return openApi;
+        }
+
     }
 
 }
