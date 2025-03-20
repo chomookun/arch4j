@@ -1,39 +1,32 @@
-var duiceCodemirror = (function (exports, duice) {
+/*!
+ * duice-codemirror - v0.2.6
+ * git: https://gitbub.com/chomookun/duice-plugin
+ * website: https://duice-plugin.chomookun.org
+ * Released under the LGPL(GNU Lesser General Public License version 3) License
+ */
+this.duice = this.duice || {};
+this.duice.plugin = this.duice.plugin || {};
+this.duice.plugin.Codemirror = (function (exports, duice) {
     'use strict';
 
-    class DataEvent {
-        constructor(source) {
-            this.source = source;
-        }
-    }
-
-    class PropertyChangeEvent extends DataEvent {
-        constructor(source, property, value, index) {
-            super(source);
-            this.property = property;
-            this.value = value;
-            this.index = index;
-        }
-        getProperty() {
-            return this.property;
-        }
-        getValue() {
-            return this.value;
-        }
-        getIndex() {
-            return this.index;
-        }
-    }
-
-    class Codemirror extends duice.ObjectElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+    /**
+     * Codemirror Element
+     */
+    class CodemirrorElement extends duice.ObjectElement {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             this.mode = 'text/x-markdown';
             this.theme = 'default';
             this.getHtmlElement().style.display = 'block';
             // option
-            this.mode = duice.getElementAttribute(element, 'mode') || this.mode;
-            this.theme = duice.getElementAttribute(element, 'theme') || this.theme;
+            this.mode = duice.getElementAttribute(htmlElement, 'mode') || this.mode;
+            this.theme = duice.getElementAttribute(htmlElement, 'theme') || this.theme;
             // config
             let config = {
                 mode: this.mode,
@@ -54,10 +47,14 @@ var duiceCodemirror = (function (exports, duice) {
             }, 1);
             // add change event listener
             this.codeMirror.on("blur", () => {
-                let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
+                let event = new duice.PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
                 this.notifyObservers(event);
             });
         }
+        /**
+         * Sets value
+         * @param value property value
+         */
         setValue(value) {
             if (!value) {
                 value = '';
@@ -66,6 +63,9 @@ var duiceCodemirror = (function (exports, duice) {
             this.codeMirror.doc.setValue(value);
             this.codeMirror.scrollTo(scrollInfo.left, scrollInfo.top);
         }
+        /**
+         * Gets value
+         */
         getValue() {
             let value = this.codeMirror.doc.getValue();
             if (!value) {
@@ -73,22 +73,39 @@ var duiceCodemirror = (function (exports, duice) {
             }
             return value;
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             this.codeMirror.setOption('readOnly', readonly);
         }
     }
 
-    class CodemirrorFactory extends duice.ObjectElementFactory {
+    /**
+     * Codemirror Factory
+     */
+    class CodemirrorElementFactory extends duice.ObjectElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         createElement(htmlElement, bindData, context) {
-            return new Codemirror(htmlElement, bindData, context);
+            return new CodemirrorElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register
-        duice.DataElementRegistry.register(`${duice.Configuration.getNamespace()}-codemirror`, new CodemirrorFactory());
+        duice.ElementRegistry.register(`${duice.Configuration.getNamespace()}-codemirror`, new CodemirrorElementFactory());
     })();
 
-    exports.CodemirrorFactory = CodemirrorFactory;
+    exports.CodemirrorElement = CodemirrorElement;
+    exports.CodemirrorElementFactory = CodemirrorElementFactory;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

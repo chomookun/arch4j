@@ -1,7 +1,24 @@
-var duiceJsplumb = (function (exports, duice) {
+/*!
+ * duice-jsplumb - v0.2.3
+ * git: https://gitbub.com/chomookun/duice-plugin
+ * website: https://duice-plugin.chomookun.org
+ * Released under the LGPL(GNU Lesser General Public License version 3) License
+ */
+this.duice = this.duice || {};
+this.duice.plugin = this.duice.plugin || {};
+this.duice.plugin.Jsplumb = (function (exports, duice) {
     'use strict';
 
-    class Jsplumb extends duice.CustomElement {
+    /**
+     * Jsplumb Element
+     */
+    class JsplumbElement extends duice.CustomElement {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
             this.elementItems = new Map();
@@ -75,6 +92,9 @@ var duiceJsplumb = (function (exports, duice) {
                 this.removeConnectorData(connectorSourceId, connectorTargetId);
             });
         }
+        /**
+         * Creates style
+         */
         createStyle() {
             let style = document.createElement('style');
             style.innerHTML = `
@@ -112,6 +132,10 @@ var duiceJsplumb = (function (exports, duice) {
         `;
             return style;
         }
+        /**
+         * Do render
+         * @param object object
+         */
         doRender(object) {
             var _a;
             console.debug("doRender:", object);
@@ -141,10 +165,17 @@ var duiceJsplumb = (function (exports, duice) {
             this.jsPlumbInstance.setSuspendDrawing(false, true);
             this.fitContainerToContent();
         }
+        /**
+         * Do update
+         * @param object object
+         */
         doUpdate(object) {
             console.debug("doUpdate:", object);
             this.doRender(object);
         }
+        /**
+         * Clears container
+         */
         clearContainer() {
             this.container.innerHTML = '';
             this.elementItems.clear();
@@ -152,6 +183,9 @@ var duiceJsplumb = (function (exports, duice) {
             this.targetEndpoints.clear();
             this.connectorItems.length = 0;
         }
+        /**
+         * Fits container to content
+         */
         fitContainerToContent() {
             let maxWidth = 0;
             let maxHeight = 0;
@@ -179,6 +213,12 @@ var duiceJsplumb = (function (exports, duice) {
                 this.container.style.height = rect.height + 'px';
             }
         }
+        /**
+         * Creates element item
+         * @param elementObject element object
+         * @param context context
+         * @param index index
+         */
         createElementItem(elementObject, context, index) {
             console.debug("createElementItem", elementObject, context, index);
             let elementId = elementObject[this.elementIdProperty];
@@ -203,6 +243,7 @@ var duiceJsplumb = (function (exports, duice) {
                     }
                 });
             }
+            // source end point
             let sourceEndpoint = this.jsPlumbInstance.addEndpoint(elementItem, {
                 isSource: this.isEditable(),
                 isTarget: false,
@@ -213,6 +254,7 @@ var duiceJsplumb = (function (exports, duice) {
                 connector: 'Straight',
             });
             this.sourceEndpoints.set(elementId, sourceEndpoint);
+            // target end point
             let targetEndpoint = this.jsPlumbInstance.addEndpoint(elementItem, {
                 isTarget: this.isEditable(),
                 isSource: false,
@@ -223,6 +265,10 @@ var duiceJsplumb = (function (exports, duice) {
             });
             this.targetEndpoints.set(elementId, targetEndpoint);
         }
+        /**
+         * Creates connector item
+         * @param connectorObject connector object
+         */
         createConnectorItem(connectorObject) {
             let connectorSourceId = connectorObject[this.connectorSourceProperty];
             let connectorTargetId = connectorObject[this.connectorTargetProperty];
@@ -253,6 +299,11 @@ var duiceJsplumb = (function (exports, duice) {
             });
             this.connectorItems.push(connectorItem);
         }
+        /**
+         * Adds connector data
+         * @param connectorSourceId connector source id
+         * @param connectorTargetId connector target id
+         */
         addConnectorData(connectorSourceId, connectorTargetId) {
             console.debug("addConnectorData", connectorSourceId, connectorTargetId);
             let connectorArray = this.bindData[this.connectorProperty];
@@ -267,6 +318,11 @@ var duiceJsplumb = (function (exports, duice) {
                 connectorArray.push(connectorData);
             }
         }
+        /**
+         * Removes connector data
+         * @param connectorSourceId connector source id
+         * @param connectorTargetId connector target id
+         */
         removeConnectorData(connectorSourceId, connectorTargetId) {
             console.debug("removeConnectorData", connectorSourceId, connectorTargetId);
             let linkArray = this.bindData[this.connectorProperty];
@@ -279,23 +335,36 @@ var duiceJsplumb = (function (exports, duice) {
                 linkArray.splice(indexToRemove, 1);
             }
         }
+        /**
+         * Returns if editable
+         */
         isEditable() {
             return !duice.ObjectProxy.isReadonlyAll(this.bindData)
                 && !duice.ObjectProxy.isDisableAll(this.bindData);
         }
     }
 
-    class DiagramFactory extends duice.CustomElementFactory {
+    class JsplumbElementFactory extends duice.CustomElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         doCreateElement(htmlElement, bindData, context) {
-            return new Jsplumb(htmlElement, bindData, context);
+            return new JsplumbElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register
-        duice.DataElementRegistry.register(`${duice.Configuration.getNamespace()}-jsplumb`, new DiagramFactory());
+        duice.ElementRegistry.register(`${duice.Configuration.getNamespace()}-jsplumb`, new JsplumbElementFactory());
     })();
 
-    exports.DiagramFactory = DiagramFactory;
+    exports.JsplumbElement = JsplumbElement;
+    exports.JsplumbElementFactory = JsplumbElementFactory;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

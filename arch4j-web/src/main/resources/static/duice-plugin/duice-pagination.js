@@ -1,13 +1,24 @@
 /*!
- * duice-pagination - v0.2.4
+ * duice-pagination - v0.2.5
  * git: https://gitbub.com/chomookun/duice-plugin
  * website: https://duice-plugin.chomookun.org
  * Released under the LGPL(GNU Lesser General Public License version 3) License
  */
-var duicePagination = (function (exports, duice) {
+this.duice = this.duice || {};
+this.duice.plugin = this.duice.plugin || {};
+this.duice.plugin.Pagination = (function (exports, duice) {
     'use strict';
 
-    class Pagination extends duice.CustomElement {
+    /**
+     * Pagination Element
+     */
+    class PaginationElement extends duice.CustomElement {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
             this.prevContent = '<';
@@ -23,6 +34,10 @@ var duicePagination = (function (exports, duice) {
             this.prevContent = duice.getElementAttribute(htmlElement, 'prev-content') || this.prevContent;
             this.nextContent = duice.getElementAttribute(htmlElement, 'next-content') || this.nextContent;
         }
+        /**
+         * Do render
+         * @param object
+         */
         doRender(object) {
             // page,size,count
             let page = Number(object[this.pageProperty]);
@@ -79,9 +94,16 @@ var duicePagination = (function (exports, duice) {
             this.getHtmlElement().appendChild(this.createStyle());
             this.getHtmlElement().appendChild(pagination);
         }
+        /**
+         * Updates element
+         * @param object
+         */
         doUpdate(object) {
             this.render();
         }
+        /**
+         * Creates style
+         */
         createStyle() {
             let style = document.createElement('style');
             style.innerHTML = `
@@ -119,17 +141,30 @@ var duicePagination = (function (exports, duice) {
         }
     }
 
-    class PaginationFactory extends duice.CustomElementFactory {
+    /**
+     * Pagination Element Factory
+     */
+    class PaginationElementFactory extends duice.CustomElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         doCreateElement(htmlElement, bindData, context) {
-            return new Pagination(htmlElement, bindData, context);
+            return new PaginationElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register
-        duice.DataElementRegistry.register(`${duice.Configuration.getNamespace()}-pagination`, new PaginationFactory());
+        duice.ElementRegistry.register(`${duice.Configuration.getNamespace()}-pagination`, new PaginationElementFactory());
     })();
 
-    exports.PaginationFactory = PaginationFactory;
+    exports.PaginationElement = PaginationElement;
+    exports.PaginationElementFactory = PaginationElementFactory;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -1,15 +1,26 @@
 /*!
- * duice-marked - v0.2.2
+ * duice-marked - v0.2.3
  * git: https://gitbub.com/chomookun/duice-plugin
  * website: https://duice-plugin.chomookun.org
  * Released under the LGPL(GNU Lesser General Public License version 3) License
  */
-var duiceMarked = (function (exports, duice) {
+this.duice = this.duice || {};
+this.duice.plugin = this.duice.plugin || {};
+this.duice.plugin.Marked = (function (exports, duice) {
     'use strict';
 
-    class Marked extends duice.ObjectElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+    /**
+     * Marked Element
+     */
+    class MarkedElement extends duice.ObjectElement {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             // creates child div
             this.div = document.createElement('div');
             this.getHtmlElement().appendChild(this.div);
@@ -27,6 +38,10 @@ var duiceMarked = (function (exports, duice) {
                 renderer: renderer
             };
         }
+        /**
+         * Sets value
+         * @param value value
+         */
         setValue(value) {
             value = value ? value : '';
             value = marked.parse(value, this.config);
@@ -39,17 +54,30 @@ var duiceMarked = (function (exports, duice) {
         }
     }
 
-    class MarkedFactory extends duice.ObjectElementFactory {
+    /**
+     * Marked Element Factory
+     */
+    class MarkedElementFactory extends duice.ObjectElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         createElement(htmlElement, bindData, context) {
-            return new Marked(htmlElement, bindData, context);
+            return new MarkedElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register
-        duice.DataElementRegistry.register(`${duice.Configuration.getNamespace()}-marked`, new MarkedFactory());
+        duice.ElementRegistry.register(`${duice.Configuration.getNamespace()}-marked`, new MarkedElementFactory());
     })();
 
-    exports.MarkedFactory = MarkedFactory;
+    exports.MarkedElement = MarkedElement;
+    exports.MarkedElementFactory = MarkedElementFactory;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -1,5 +1,5 @@
 /*!
- * duice - v0.2.63
+ * duice - v0.2.64
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -7,25 +7,47 @@
 var duice = (function (exports) {
     'use strict';
 
+    /**
+     * Configuration
+     */
     class Configuration {
+        /**
+         * Sets namespace
+         * @param value namespace value
+         */
         static setNamespace(value) {
             this.namespace = value;
         }
+        /**
+         * Gets namespace
+         */
         static getNamespace() {
             return this.namespace;
         }
     }
     Configuration.namespace = 'duice';
 
+    /**
+     * Gets element query selector
+     */
     function getElementQuerySelector() {
         let namespace = Configuration.getNamespace();
         return `*[data-${namespace}-bind]:not([data-${namespace}-id])`;
     }
+    /**
+     * Marks element as initialized
+     * @param container container
+     */
     function markInitialized(container) {
         container.querySelectorAll(getElementQuerySelector()).forEach(element => {
             setElementAttribute(element, 'id', '_');
         });
     }
+    /**
+     * Finds variable in current scope
+     * @param context current context
+     * @param name variable name
+     */
     function findVariable(context, name) {
         // find in context
         try {
@@ -47,6 +69,12 @@ var duice = (function (exports) {
         console.warn(`Object[${name}] is not found`);
         return undefined;
     }
+    /**
+     * Runs code
+     * @param code
+     * @param htmlElement
+     * @param context
+     */
     function runCode(code, htmlElement, context) {
         try {
             let args = [];
@@ -62,6 +90,11 @@ var duice = (function (exports) {
             throw e;
         }
     }
+    /**
+     * Runs if code
+     * @param htmlElement html element
+     * @param context current context
+     */
     function runIfCode(htmlElement, context) {
         let ifClause = getElementAttribute(htmlElement, 'if');
         if (ifClause) {
@@ -76,6 +109,11 @@ var duice = (function (exports) {
         }
         return true;
     }
+    /**
+     * Runs execute code
+     * @param htmlElement html element
+     * @param context current context
+     */
     function runExecuteCode(htmlElement, context) {
         let script = getElementAttribute(htmlElement, 'execute');
         if (script) {
@@ -83,18 +121,39 @@ var duice = (function (exports) {
         }
         return null;
     }
+    /**
+     * Checks if element has attribute
+     * @param htmlElement html element
+     * @param name attribute name
+     */
     function hasElementAttribute(htmlElement, name) {
         let namespace = Configuration.getNamespace();
         return htmlElement.hasAttribute(`data-${namespace}-${name}`);
     }
+    /**
+     * Gets element attribute
+     * @param htmlElement html element
+     * @param name attribute name
+     */
     function getElementAttribute(htmlElement, name) {
         let namespace = Configuration.getNamespace();
         return htmlElement.getAttribute(`data-${namespace}-${name}`);
     }
+    /**
+     * Sets element attribute
+     * @param htmlElement html element
+     * @param name attribute name
+     * @param value attribute value
+     */
     function setElementAttribute(htmlElement, name, value) {
         let namespace = Configuration.getNamespace();
         htmlElement.setAttribute(`data-${namespace}-${name}`, value);
     }
+    /**
+     * Asserts condition
+     * @param condition condition
+     * @param message assertion message
+     */
     function assert(condition, message) {
         console.assert(condition, message);
         if (!condition) {
@@ -102,17 +161,31 @@ var duice = (function (exports) {
         }
     }
 
-    class DataElementFactory {
+    /**
+     * Element factory
+     */
+    class ElementFactory {
     }
 
+    /**
+     * Observable
+     */
     class Observable {
         constructor() {
             this.observers = [];
             this.notifyEnabled = true;
         }
+        /**
+         * Adds observer
+         * @param observer observer
+         */
         addObserver(observer) {
             this.observers.push(observer);
         }
+        /**
+         * Removes observer
+         * @param observer observer
+         */
         removeObserver(observer) {
             for (let i = 0, size = this.observers.length; i < size; i++) {
                 if (this.observers[i] === observer) {
@@ -121,22 +194,42 @@ var duice = (function (exports) {
                 }
             }
         }
+        /**
+         * Suspends notify
+         */
         suspendNotify() {
             this.notifyEnabled = false;
         }
+        /**
+         * Resumes notify
+         */
         resumeNotify() {
             this.notifyEnabled = true;
         }
-        notifyObservers(dataEvent) {
+        /**
+         * Notifies to observers
+         * @param event event
+         */
+        notifyObservers(event) {
             if (this.notifyEnabled) {
                 this.observers.forEach(observer => {
-                    observer.update(this, dataEvent);
+                    observer.update(this, event);
                 });
             }
         }
     }
 
-    class DataElement extends Observable {
+    /**
+     * Element
+     */
+    class Element extends Observable {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         * @protected
+         */
         constructor(htmlElement, bindData, context) {
             var _a;
             super();
@@ -145,35 +238,62 @@ var duice = (function (exports) {
             this.context = context;
             setElementAttribute(this.htmlElement, 'id', this.generateId());
             // bind data
-            let dataHandler = (_a = globalThis.Object.getOwnPropertyDescriptor(this.bindData, '_handler_')) === null || _a === void 0 ? void 0 : _a.value;
+            let dataHandler = (_a = globalThis.Object.getOwnPropertyDescriptor(this.bindData, '_proxy_handler_')) === null || _a === void 0 ? void 0 : _a.value;
             assert(dataHandler, 'DataHandler is not found');
             this.addObserver(dataHandler);
             dataHandler.addObserver(this);
         }
+        /**
+         * Generate id
+         * @private
+         */
         generateId() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
         }
+        /**
+         * Gets html element
+         */
         getHtmlElement() {
             return this.htmlElement;
         }
+        /**
+         * Gets context
+         */
         getContext() {
             return this.context;
         }
+        /**
+         * Gets bind data
+         */
         getBindData() {
             return this.bindData;
         }
     }
 
-    class DataEvent {
+    /**
+     * Event
+     */
+    class Event {
+        /**
+         * Constructor
+         * @param source source
+         */
         constructor(source) {
             this.source = source;
         }
     }
 
-    class DataHandler extends Observable {
+    /**
+     * Proxy Handler
+     */
+    class ProxyHandler extends Observable {
+        /**
+         * Constructor
+         * @protected
+         */
         constructor() {
             super();
             this.readonlyAll = false;
@@ -182,22 +302,41 @@ var duice = (function (exports) {
             this.disable = new Set();
             this.listenerEnabled = true;
         }
+        /**
+         * Sets target
+         * @param target
+         */
         setTarget(target) {
             this.target = target;
         }
+        /**
+         * Gets target
+         */
         getTarget() {
             return this.target;
         }
+        /**
+         * Sets readonly all
+         * @param readonly readonly all
+         */
         setReadonlyAll(readonly) {
             this.readonlyAll = readonly;
             if (!readonly) {
                 this.readonly.clear();
             }
-            this.notifyObservers(new DataEvent(this));
+            this.notifyObservers(new Event(this));
         }
+        /**
+         * Returns readonly all
+         */
         isReadonlyAll() {
             return this.readonlyAll;
         }
+        /**
+         * Sets readonly
+         * @param property property
+         * @param readonly readonly or not
+         */
         setReadonly(property, readonly) {
             if (readonly) {
                 this.readonly.add(property);
@@ -205,21 +344,37 @@ var duice = (function (exports) {
             else {
                 this.readonly.delete(property);
             }
-            this.notifyObservers(new DataEvent(this));
+            this.notifyObservers(new Event(this));
         }
+        /**
+         * Returns whether property is readonly
+         * @param property property
+         */
         isReadonly(property) {
             return this.readonlyAll || this.readonly.has(property);
         }
+        /**
+         * Sets disable all
+         * @param disable
+         */
         setDisableAll(disable) {
             this.disableAll = disable;
             if (!disable) {
                 this.disable.clear();
             }
-            this.notifyObservers(new DataEvent(this));
+            this.notifyObservers(new Event(this));
         }
+        /**
+         * Returns whether all properties are disabled
+         */
         isDisableAll() {
             return this.disableAll;
         }
+        /**
+         * Sets disable
+         * @param property property
+         * @param disable disable or not
+         */
         setDisable(property, disable) {
             if (disable) {
                 this.disable.add(property);
@@ -227,17 +382,32 @@ var duice = (function (exports) {
             else {
                 this.disable.delete(property);
             }
-            this.notifyObservers(new DataEvent(this));
+            this.notifyObservers(new Event(this));
         }
+        /**
+         * Returns whether property is disabled
+         * @param property property
+         */
         isDisable(property) {
             return this.disableAll || this.disable.has(property);
         }
+        /**
+         * Subscribes to property changing
+         */
         suspendListener() {
             this.listenerEnabled = false;
         }
+        /**
+         * Resumes to property changing
+         */
         resumeListener() {
             this.listenerEnabled = true;
         }
+        /**
+         * Checks listener
+         * @param listener listener
+         * @param event event
+         */
         checkListener(listener, event) {
             if (this.listenerEnabled && listener) {
                 let result = listener.call(this.getTarget(), event);
@@ -250,9 +420,17 @@ var duice = (function (exports) {
     }
 
     class StringFormat {
+        /**
+         * Constructor
+         * @param pattern pattern
+         */
         constructor(pattern) {
             this.pattern = pattern;
         }
+        /**
+         * Implements format
+         * @param value origin value
+         */
         format(value) {
             if (!value) {
                 return value;
@@ -275,6 +453,10 @@ var duice = (function (exports) {
             }
             return encodedValue;
         }
+        /**
+         * Implements parse
+         * @param value formatted value
+         */
         parse(value) {
             if (!value) {
                 return value;
@@ -297,10 +479,18 @@ var duice = (function (exports) {
     }
 
     class NumberFormat {
+        /**
+         * Constructor
+         * @param scale scale
+         */
         constructor(scale) {
             this.scale = 0;
             this.scale = scale;
         }
+        /**
+         * Implements format
+         * @param number number
+         */
         format(number) {
             if (isNaN(Number(number))) {
                 return '';
@@ -319,6 +509,10 @@ var duice = (function (exports) {
             }
             return string;
         }
+        /**
+         * Implements parse
+         * @param string string
+         */
         parse(string) {
             if (!string) {
                 return null;
@@ -339,10 +533,18 @@ var duice = (function (exports) {
     }
 
     class DateFormat {
+        /**
+         * Constructor
+         * @param pattern pattern
+         */
         constructor(pattern) {
             this.patternRex = /yyyy|yy|MM|dd|HH|hh|mm|ss/gi;
             this.pattern = pattern;
         }
+        /**
+         * Implements format
+         * @param string origin value
+         */
         format(string) {
             if (!string) {
                 return '';
@@ -372,6 +574,10 @@ var duice = (function (exports) {
             });
             return string;
         }
+        /**
+         * Implements parse
+         * @param string formatted value
+         */
         parse(string) {
             if (!string) {
                 return null;
@@ -445,28 +651,48 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Format Factory
+     */
     class FormatFactory {
+        /**
+         * Gets format instance
+         * @param format format
+         */
         static getFormat(format) {
+            let name;
             let args;
             const match = format.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\((.*)\)$/);
             if (match) {
-                match[1];
+                name = match[1];
                 args = match[2].split(',').map(arg => arg.trim().replace(/^['"]|['"]$/g, ''));
             }
-            if (format.startsWith('string')) {
-                return new StringFormat(args[0]);
+            else {
+                throw new Error(`Invalid format: ${format}`);
             }
-            if (format.startsWith('number')) {
-                return new NumberFormat(args[0]);
+            switch (name) {
+                case 'string':
+                    return new StringFormat(args[0]);
+                case 'number':
+                    return new NumberFormat(parseInt(args[0]));
+                case 'date':
+                    return new DateFormat(args[0]);
+                default:
+                    throw new Error(`Unknown format: ${name}`);
             }
-            if (format.startsWith('date')) {
-                return new DateFormat(args[0]);
-            }
-            return null;
         }
     }
 
-    class ObjectElement extends DataElement {
+    /**
+     * Object Element
+     */
+    class ObjectElement extends Element {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
             // attributes
@@ -476,19 +702,29 @@ var duice = (function (exports) {
                 this.format = FormatFactory.getFormat(format);
             }
         }
+        /**
+         * Gets property
+         */
         getProperty() {
             return this.property;
         }
+        /**
+         * Gets format
+         */
         getFormat() {
             return this.format;
         }
+        /**
+         * Overrides render
+         */
         render() {
             // check if
             if (!this.checkIf()) {
                 return;
             }
+            // property
             if (this.property) {
-                let objectHandler = ObjectProxy.getHandler(this.getBindData());
+                let objectHandler = ObjectProxy.getProxyHandler(this.getBindData());
                 // set value
                 let value = objectHandler.getValue(this.property);
                 this.setValue(value);
@@ -502,6 +738,9 @@ var duice = (function (exports) {
             // executes script
             this.executeScript();
         }
+        /**
+         * Check if condition in attribute
+         */
         checkIf() {
             let context = Object.assign({}, this.getContext());
             let bind = getElementAttribute(this.getHtmlElement(), 'bind');
@@ -514,6 +753,9 @@ var duice = (function (exports) {
             }
             return runIfCode(this.htmlElement, context);
         }
+        /**
+         * Executes script in attribute
+         */
         executeScript() {
             let context = Object.assign({}, this.getContext());
             let bind = getElementAttribute(this.getHtmlElement(), 'bind');
@@ -526,10 +768,15 @@ var duice = (function (exports) {
             }
             return runExecuteCode(this.htmlElement, context);
         }
+        /**
+         * Updates
+         * @param observable observable
+         * @param event event
+         */
         update(observable, event) {
-            console.debug('ObjectElement.update', observable, event);
+            console.trace('ObjectElement.update', observable, event);
             // ObjectHandler
-            if (observable instanceof ObjectHandler) {
+            if (observable instanceof ObjectProxyHandler) {
                 // check if
                 if (!this.checkIf()) {
                     return;
@@ -547,6 +794,10 @@ var duice = (function (exports) {
                 this.executeScript();
             }
         }
+        /**
+         * Sets property value
+         * @param value property value
+         */
         setValue(value) {
             if (value != null) {
                 value = this.getFormat() ? this.getFormat().format(value) : value;
@@ -556,6 +807,9 @@ var duice = (function (exports) {
                 this.htmlElement.innerText = '';
             }
         }
+        /**
+         * Gets property value
+         */
         getValue() {
             let value = this.htmlElement.innerText;
             if (value && value.trim().length > 0) {
@@ -566,49 +820,100 @@ var duice = (function (exports) {
             }
             return value;
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             // no-op
         }
+        /**
+         * Sets disable
+         * @param disable disable or not
+         */
         setDisable(disable) {
             // no-op
         }
+        /**
+         * Gets index
+         */
         getIndex() {
             let index = getElementAttribute(this.htmlElement, 'index');
             if (index) {
                 return Number(index);
             }
         }
+        /**
+         * Focus
+         */
         focus() {
             // no-ops
             return false;
         }
     }
 
-    class PropertyChangeEvent extends DataEvent {
+    /**
+     * Property Change Event
+     */
+    class PropertyChangeEvent extends Event {
+        /**
+         * Constructor
+         * @param source source
+         * @param property property
+         * @param value value
+         * @param index index (optional)
+         */
         constructor(source, property, value, index) {
             super(source);
             this.property = property;
             this.value = value;
             this.index = index;
         }
+        /**
+         * Gets property name
+         */
         getProperty() {
             return this.property;
         }
+        /**
+         * Gets property value
+         */
         getValue() {
             return this.value;
         }
+        /**
+         * Gets index in array if object is in array
+         */
         getIndex() {
             return this.index;
         }
     }
 
-    class ObjectHandler extends DataHandler {
+    /**
+     * Object Proxy Handler
+     */
+    class ObjectProxyHandler extends ProxyHandler {
+        /**
+         * Constructor
+         */
         constructor() {
             super();
         }
+        /**
+         * Gets target property value
+         * @param target target
+         * @param property property
+         * @param receiver receiver
+         */
         get(target, property, receiver) {
             return Reflect.get(target, property, receiver);
         }
+        /**
+         * Sets target property value
+         * @param target
+         * @param property
+         * @param value
+         */
         set(target, property, value) {
             // change value
             Reflect.set(target, property, value);
@@ -618,9 +923,13 @@ var duice = (function (exports) {
             // returns
             return true;
         }
+        /**
+         * Updates
+         * @param observable observable
+         * @param event event
+         */
         update(observable, event) {
-            console.debug("ObjectHandler.update", observable, event);
-            // Element
+            // element
             if (observable instanceof ObjectElement) {
                 let property = observable.getProperty();
                 let value = observable.getValue();
@@ -632,13 +941,26 @@ var duice = (function (exports) {
             // notify
             this.notifyObservers(event);
         }
+        /**
+         * Gets specified property value
+         * @param property property
+         */
         getValue(property) {
             property = property.replace('.', '?.');
             return new Function(`return this.${property};`).call(this.getTarget());
         }
+        /**
+         * Sets specified property value
+         * @param property property
+         * @param value value
+         */
         setValue(property, value) {
             new Function('value', `this.${property} = value;`).call(this.getTarget(), value);
         }
+        /**
+         * Sets focus on property element
+         * @param property
+         */
         focus(property) {
             this.observers.forEach(observer => {
                 if (observer instanceof ObjectElement) {
@@ -652,22 +974,34 @@ var duice = (function (exports) {
         }
     }
 
-    class ItemInsertEvent extends DataEvent {
+    class ItemDeleteEvent extends Event {
+        /**
+         * Constructor
+         * @param source source
+         * @param index deleted item index
+         * @param items delete items
+         */
         constructor(source, index, items) {
             super(source);
             this.items = [];
             this.index = index;
             this.items = items;
         }
+        /**
+         * Gets deleted item index
+         */
         getIndex() {
             return this.index;
         }
+        /**
+         * Gets deleted items
+         */
         getItems() {
             return this.items;
         }
     }
 
-    class ItemSelectEvent extends DataEvent {
+    class ItemSelectEvent extends Event {
         constructor(source, index) {
             super(source);
             this.index = index;
@@ -677,7 +1011,7 @@ var duice = (function (exports) {
         }
     }
 
-    class ItemMoveEvent extends DataEvent {
+    class ItemMoveEvent extends Event {
         constructor(source, fromIndex, toIndex) {
             super(source);
             this.fromIndex = fromIndex;
@@ -691,7 +1025,7 @@ var duice = (function (exports) {
         }
     }
 
-    class ItemDeleteEvent extends DataEvent {
+    class ItemInsertEvent extends Event {
         constructor(source, index, items) {
             super(source);
             this.items = [];
@@ -706,10 +1040,22 @@ var duice = (function (exports) {
         }
     }
 
-    class ArrayHandler extends DataHandler {
+    /**
+     * Array Proxy Handler
+     */
+    class ArrayProxyHandler extends ProxyHandler {
+        /**
+         * Constructor
+         */
         constructor() {
             super();
         }
+        /**
+         * Get trap
+         * @param target target
+         * @param property property
+         * @param receiver receiver
+         */
         get(target, property, receiver) {
             let _this = this;
             const value = target[property];
@@ -779,13 +1125,24 @@ var duice = (function (exports) {
             // return
             return value;
         }
+        /**
+         * Set trap
+         * @param target target
+         * @param property property
+         * @param value value
+         */
         set(target, property, value) {
             Reflect.set(target, property, value);
             if (property === 'length') {
-                this.notifyObservers(new DataEvent(this));
+                this.notifyObservers(new Event(this));
             }
             return true;
         }
+        /**
+         * Updates
+         * @param observable observable
+         * @param event event
+         */
         update(observable, event) {
             // instance is array component
             if (observable instanceof ArrayElement) {
@@ -806,27 +1163,39 @@ var duice = (function (exports) {
             // notify observers
             this.notifyObservers(event);
         }
-        insertItem(arrayProxy, index, ...rows) {
-            let arrayHandler = ArrayProxy.getHandler(arrayProxy);
+        /**
+         * Inserts items
+         * @param arrayProxy array proxy
+         * @param index index
+         * @param items items
+         */
+        insertItem(arrayProxy, index, ...items) {
+            let arrayHandler = ArrayProxy.getProxyHandler(arrayProxy);
             let proxyTarget = ArrayProxy.getTarget(arrayProxy);
-            rows.forEach((object, index) => {
+            items.forEach((object, index) => {
                 if (typeof object === 'object') {
                     let objectProxy = new ObjectProxy(object);
-                    let objectHandler = ObjectProxy.getHandler(objectProxy);
+                    let objectHandler = ObjectProxy.getProxyHandler(objectProxy);
                     objectHandler.propertyChangingListener = this.propertyChangingListener;
                     objectHandler.propertyChangedListener = this.propertyChangedListener;
-                    rows[index] = objectProxy;
+                    items[index] = objectProxy;
                 }
             });
-            let event = new ItemInsertEvent(this, index, rows);
+            let event = new ItemInsertEvent(this, index, items);
             if (arrayHandler.checkListener(arrayHandler.itemInsertingListener, event)) {
-                proxyTarget.splice(index, 0, ...rows);
+                proxyTarget.splice(index, 0, ...items);
                 arrayHandler.checkListener(arrayHandler.itemInsertedListener, event);
                 arrayHandler.notifyObservers(event);
             }
         }
+        /**
+         * Deletes items from array proxy
+         * @param arrayProxy array proxy to delete
+         * @param index index to delete
+         * @param size size for delete
+         */
         deleteItem(arrayProxy, index, size) {
-            let arrayHandler = ArrayProxy.getHandler(arrayProxy);
+            let arrayHandler = ArrayProxy.getProxyHandler(arrayProxy);
             let proxyTarget = ArrayProxy.getTarget(arrayProxy);
             let sliceBegin = index;
             let sliceEnd = (size ? index + size : index + 1);
@@ -840,20 +1209,30 @@ var duice = (function (exports) {
                 arrayHandler.notifyObservers(event);
             }
         }
+        /**
+         * Selects item by index
+         * @param index index
+         */
         selectItem(index) {
             this.selectedItemIndex = index;
             // notify row select event
             let rowSelectEvent = new ItemSelectEvent(this, this.selectedItemIndex);
             this.notifyObservers(rowSelectEvent);
         }
+        /**
+         * Gets selected item index
+         */
         getSelectedItemIndex() {
             return this.selectedItemIndex;
         }
     }
 
+    /**
+     * Array Proxy
+     */
     class ArrayProxy extends globalThis.Array {
         /**
-         * constructor
+         * Constructor
          * @param array
          */
         constructor(array) {
@@ -863,7 +1242,7 @@ var duice = (function (exports) {
                 return array;
             }
             // array handler
-            let arrayHandler = new ArrayHandler();
+            let arrayHandler = new ArrayProxyHandler();
             // copy array elements
             if (globalThis.Array.isArray(array)) {
                 for (let i = 0; i < array.length; i++) {
@@ -876,33 +1255,55 @@ var duice = (function (exports) {
             let arrayProxy = new Proxy(array, arrayHandler);
             arrayHandler.setTarget(array);
             // set property
-            ArrayProxy.setHandler(arrayProxy, arrayHandler);
+            ArrayProxy.setProxyHandler(arrayProxy, arrayHandler);
             ArrayProxy.setTarget(arrayProxy, array);
             // save
             ArrayProxy.save(arrayProxy);
             // returns
             return arrayProxy;
         }
+        /**
+         * Checks if array is proxy
+         * @param array array
+         */
         static isProxy(array) {
             return array.hasOwnProperty('_target_');
         }
+        /**
+         * Sets target to array proxy
+         * @param arrayProxy array proxy
+         * @param target target
+         */
         static setTarget(arrayProxy, target) {
             globalThis.Object.defineProperty(arrayProxy, '_target_', {
                 value: target,
                 writable: true
             });
         }
+        /**
+         * Gets target from array proxy
+         * @param arrayProxy
+         */
         static getTarget(arrayProxy) {
             return globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_target_').value;
         }
-        static setHandler(arrayProxy, arrayHandler) {
-            globalThis.Object.defineProperty(arrayProxy, '_handler_', {
+        /**
+         * Sets array proxy handler
+         * @param arrayProxy
+         * @param arrayHandler
+         */
+        static setProxyHandler(arrayProxy, arrayHandler) {
+            globalThis.Object.defineProperty(arrayProxy, '_proxy_handler_', {
                 value: arrayHandler,
                 writable: true
             });
         }
-        static getHandler(arrayProxy) {
-            let handler = globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_handler_').value;
+        /**
+         * Gets array proxy handler
+         * @param arrayProxy array proxy
+         */
+        static getProxyHandler(arrayProxy) {
+            let handler = globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_proxy_handler_').value;
             assert(handler, 'handler is not found');
             return handler;
         }
@@ -912,7 +1313,7 @@ var duice = (function (exports) {
          * @param array
          */
         static assign(arrayProxy, array) {
-            let arrayHandler = this.getHandler(arrayProxy);
+            let arrayHandler = this.getProxyHandler(arrayProxy);
             try {
                 // suspend
                 arrayHandler.suspendListener();
@@ -949,14 +1350,14 @@ var duice = (function (exports) {
                 arrayHandler.resumeNotify();
             }
             // notify observers
-            arrayHandler.notifyObservers(new DataEvent(this));
+            arrayHandler.notifyObservers(new Event(this));
         }
         /**
          * Clears array elements
          * @param arrayProxy
          */
         static clear(arrayProxy) {
-            let arrayHandler = this.getHandler(arrayProxy);
+            let arrayHandler = this.getProxyHandler(arrayProxy);
             try {
                 // suspend
                 arrayHandler.suspendListener();
@@ -970,7 +1371,7 @@ var duice = (function (exports) {
                 arrayHandler.resumeNotify();
             }
             // notify observers
-            arrayHandler.notifyObservers(new DataEvent(this));
+            arrayHandler.notifyObservers(new Event(this));
         }
         /**
          * Save array proxy
@@ -991,83 +1392,175 @@ var duice = (function (exports) {
             let origin = JSON.parse(globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_origin_').value);
             this.assign(arrayProxy, origin);
         }
+        /**
+         * Sets readonly
+         * @param arrayProxy array proxy
+         * @param property property
+         * @param readonly readonly
+         */
         static setReadonly(arrayProxy, property, readonly) {
-            this.getHandler(arrayProxy).setReadonly(property, readonly);
+            this.getProxyHandler(arrayProxy).setReadonly(property, readonly);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setReadonly(objectProxy, property, readonly);
             });
         }
+        /**
+         * Checks if property is readonly
+         * @param arrayProxy array proxy
+         * @param property property
+         */
         static isReadonly(arrayProxy, property) {
-            return this.getHandler(arrayProxy).isReadonly(property);
+            return this.getProxyHandler(arrayProxy).isReadonly(property);
         }
+        /**
+         * Checks if all properties are readonly
+         * @param arrayProxy array proxy
+         * @param readonly readonly
+         */
         static setReadonlyAll(arrayProxy, readonly) {
-            this.getHandler(arrayProxy).setReadonlyAll(readonly);
+            this.getProxyHandler(arrayProxy).setReadonlyAll(readonly);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setReadonlyAll(objectProxy, readonly);
             });
         }
+        /**
+         * Checks if all properties are readonly
+         * @param arrayProxy array proxy
+         */
         static isReadonlyAll(arrayProxy) {
-            return this.getHandler(arrayProxy).isReadonlyAll();
+            return this.getProxyHandler(arrayProxy).isReadonlyAll();
         }
+        /**
+         * Sets disable
+         * @param arrayProxy array proxy
+         * @param property property
+         * @param disable disable
+         */
         static setDisable(arrayProxy, property, disable) {
-            this.getHandler(arrayProxy).setDisable(property, disable);
+            this.getProxyHandler(arrayProxy).setDisable(property, disable);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setDisable(objectProxy, property, disable);
             });
         }
+        /**
+         * Checks if property is disabled
+         * @param arrayProxy array proxy
+         * @param property property
+         */
         static isDisable(arrayProxy, property) {
-            return this.getHandler(arrayProxy).isDisable(property);
+            return this.getProxyHandler(arrayProxy).isDisable(property);
         }
+        /**
+         * Sets all properties to be disabled
+         * @param arrayProxy array proxy
+         * @param disable disabled
+         */
         static setDisableAll(arrayProxy, disable) {
-            this.getHandler(arrayProxy).setDisableAll(disable);
+            this.getProxyHandler(arrayProxy).setDisableAll(disable);
             arrayProxy.forEach(objectProxy => {
                 ObjectProxy.setDisableAll(objectProxy, disable);
             });
         }
+        /**
+         * Checks if all properties are disabled
+         * @param arrayProxy array proxy
+         */
         static isDisableAll(arrayProxy) {
-            return this.getHandler(arrayProxy).isDisableAll();
+            return this.getProxyHandler(arrayProxy).isDisableAll();
         }
+        /**
+         * Inserts item
+         * @param arrayProxy
+         * @param index
+         */
         static selectItem(arrayProxy, index) {
-            return this.getHandler(arrayProxy).selectItem(index);
+            return this.getProxyHandler(arrayProxy).selectItem(index);
         }
+        /**
+         * Gets selected item index
+         * @param arrayProxy array proxy
+         */
         static getSelectedItemIndex(arrayProxy) {
-            return this.getHandler(arrayProxy).getSelectedItemIndex();
+            return this.getProxyHandler(arrayProxy).getSelectedItemIndex();
         }
+        /**
+         * Adds property changing listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onPropertyChanging(arrayProxy, listener) {
-            this.getHandler(arrayProxy).propertyChangingListener = listener;
+            this.getProxyHandler(arrayProxy).propertyChangingListener = listener;
             arrayProxy.forEach(objectProxy => {
-                ObjectProxy.getHandler(objectProxy).propertyChangingListener = listener;
+                ObjectProxy.getProxyHandler(objectProxy).propertyChangingListener = listener;
             });
         }
+        /**
+         * Adds property changed listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onPropertyChanged(arrayProxy, listener) {
-            this.getHandler(arrayProxy).propertyChangedListener = listener;
+            this.getProxyHandler(arrayProxy).propertyChangedListener = listener;
             arrayProxy.forEach(objectProxy => {
-                ObjectProxy.getHandler(objectProxy).propertyChangedListener = listener;
+                ObjectProxy.getProxyHandler(objectProxy).propertyChangedListener = listener;
             });
         }
+        /**
+         * Adds item inserting listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onItemInserting(arrayProxy, listener) {
-            this.getHandler(arrayProxy).itemInsertingListener = listener;
+            this.getProxyHandler(arrayProxy).itemInsertingListener = listener;
         }
+        /**
+         * Adds item inserted listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onItemInserted(arrayProxy, listener) {
-            this.getHandler(arrayProxy).itemInsertedListener = listener;
+            this.getProxyHandler(arrayProxy).itemInsertedListener = listener;
         }
+        /**
+         * Adds item deleting listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onItemDeleting(arrayProxy, listener) {
-            this.getHandler(arrayProxy).itemDeletingListener = listener;
+            this.getProxyHandler(arrayProxy).itemDeletingListener = listener;
         }
+        /**
+         * Adds item deleted listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onItemDeleted(arrayProxy, listener) {
-            this.getHandler(arrayProxy).itemDeletedListener = listener;
+            this.getProxyHandler(arrayProxy).itemDeletedListener = listener;
         }
+        /**
+         * Adds item moving listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onItemMoving(arrayProxy, listener) {
-            this.getHandler(arrayProxy).itemMovingListener = listener;
+            this.getProxyHandler(arrayProxy).itemMovingListener = listener;
         }
+        /**
+         * Adds item moved listener
+         * @param arrayProxy array proxy
+         * @param listener listener
+         */
         static onItemMoved(arrayProxy, listener) {
-            this.getHandler(arrayProxy).itemMovedListener = listener;
+            this.getProxyHandler(arrayProxy).itemMovedListener = listener;
         }
     }
 
+    /**
+     * Object Proxy
+     */
     class ObjectProxy extends globalThis.Object {
         /**
-         * constructor
+         * Constructor
          * @param object
          */
         constructor(object) {
@@ -1077,21 +1570,21 @@ var duice = (function (exports) {
                 return object;
             }
             // object handler
-            let objectHandler = new ObjectHandler();
+            let objectHandler = new ObjectProxyHandler();
             // copy property
             for (let name in object) {
                 let value = object[name];
                 // value is array
                 if (Array.isArray(value)) {
                     let arrayProxy = new ArrayProxy(value);
-                    ArrayProxy.getHandler(arrayProxy).addObserver(objectHandler);
+                    ArrayProxy.getProxyHandler(arrayProxy).addObserver(objectHandler);
                     object[name] = arrayProxy;
                     continue;
                 }
                 // value is object
                 if (value != null && typeof value === 'object') {
                     let objectProxy = new ObjectProxy(value);
-                    ObjectProxy.getHandler(objectProxy).addObserver(objectHandler);
+                    ObjectProxy.getProxyHandler(objectProxy).addObserver(objectHandler);
                     object[name] = objectProxy;
                     continue;
                 }
@@ -1108,33 +1601,48 @@ var duice = (function (exports) {
             let objectProxy = new Proxy(object, objectHandler);
             objectHandler.setTarget(object);
             // set property
-            ObjectProxy.setHandler(objectProxy, objectHandler);
+            ObjectProxy.setProxyHandler(objectProxy, objectHandler);
             ObjectProxy.setTarget(objectProxy, object);
             // save
             ObjectProxy.save(objectProxy);
             // returns
             return objectProxy;
         }
-        static isProxy(object) {
-            return object.hasOwnProperty('_target_');
-        }
+        /**
+         * Gets target
+         * @param objectProxy
+         * @param target
+         */
         static setTarget(objectProxy, target) {
             globalThis.Object.defineProperty(objectProxy, '_target_', {
                 value: target,
                 writable: true
             });
         }
+        /**
+         * Sets target
+         * @param objectProxy
+         */
         static getTarget(objectProxy) {
             return globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_target_').value;
         }
-        static setHandler(objectProxy, objectHandler) {
-            globalThis.Object.defineProperty(objectProxy, '_handler_', {
-                value: objectHandler,
+        /**
+         * Sets proxy handler
+         * @param objectProxy object proxy
+         * @param objectProxyHandler object proxy handler
+         */
+        static setProxyHandler(objectProxy, objectProxyHandler) {
+            globalThis.Object.defineProperty(objectProxy, '_proxy_handler_', {
+                value: objectProxyHandler,
                 writable: true
             });
         }
-        static getHandler(objectProxy) {
-            let handler = globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_handler_').value;
+        /**
+         * Gets proxy handler
+         * @param objectProxy object proxy handler
+         */
+        static getProxyHandler(objectProxy) {
+            let handler = globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_proxy_handler_').value;
             assert(handler, 'handler is not found');
             return handler;
         }
@@ -1144,7 +1652,7 @@ var duice = (function (exports) {
          * @param object
          */
         static assign(objectProxy, object) {
-            let objectHandler = this.getHandler(objectProxy);
+            let objectHandler = this.getProxyHandler(objectProxy);
             try {
                 // suspend
                 objectHandler.suspendListener();
@@ -1169,7 +1677,7 @@ var duice = (function (exports) {
                         }
                         else {
                             let objectProxy = new ObjectProxy(value);
-                            ObjectProxy.getHandler(objectProxy).addObserver(objectHandler);
+                            ObjectProxy.getProxyHandler(objectProxy).addObserver(objectHandler);
                             objectProxy[name] = objectProxy;
                         }
                         continue;
@@ -1184,14 +1692,14 @@ var duice = (function (exports) {
                 objectHandler.resumeNotify();
             }
             // notify observers
-            objectHandler.notifyObservers(new DataEvent(this));
+            objectHandler.notifyObservers(new Event(this));
         }
         /**
          * Clear object properties
          * @param objectProxy
          */
         static clear(objectProxy) {
-            let objectHandler = this.getHandler(objectProxy);
+            let objectHandler = this.getProxyHandler(objectProxy);
             try {
                 // suspend
                 objectHandler.suspendListener();
@@ -1216,7 +1724,7 @@ var duice = (function (exports) {
                 objectHandler.resumeNotify();
             }
             // notify observers
-            objectHandler.notifyObservers(new DataEvent(this));
+            objectHandler.notifyObservers(new Event(this));
         }
         /**
          * Save object properties
@@ -1244,7 +1752,7 @@ var duice = (function (exports) {
          * @param readonly
          */
         static setReadonly(objectProxy, property, readonly) {
-            this.getHandler(objectProxy).setReadonly(property, readonly);
+            this.getProxyHandler(objectProxy).setReadonly(property, readonly);
         }
         /**
          * Get whether property is readonly
@@ -1252,7 +1760,7 @@ var duice = (function (exports) {
          * @param property
          */
         static isReadonly(objectProxy, property) {
-            return this.getHandler(objectProxy).isReadonly(property);
+            return this.getProxyHandler(objectProxy).isReadonly(property);
         }
         /**
          * Set all properties to be readonly
@@ -1260,14 +1768,14 @@ var duice = (function (exports) {
          * @param readonly
          */
         static setReadonlyAll(objectProxy, readonly) {
-            this.getHandler(objectProxy).setReadonlyAll(readonly);
+            this.getProxyHandler(objectProxy).setReadonlyAll(readonly);
         }
         /**
          * Get whether all properties are readonly
          * @param objectProxy
          */
         static isReadonlyAll(objectProxy) {
-            return this.getHandler(objectProxy).isReadonlyAll();
+            return this.getProxyHandler(objectProxy).isReadonlyAll();
         }
         /**
          * Set object to be disabled
@@ -1276,7 +1784,7 @@ var duice = (function (exports) {
          * @param disable
          */
         static setDisable(objectProxy, property, disable) {
-            this.getHandler(objectProxy).setDisable(property, disable);
+            this.getProxyHandler(objectProxy).setDisable(property, disable);
         }
         /**
          * Get whether property is disabled
@@ -1284,7 +1792,7 @@ var duice = (function (exports) {
          * @param property
          */
         static isDisable(objectProxy, property) {
-            return this.getHandler(objectProxy).isDisable(property);
+            return this.getProxyHandler(objectProxy).isDisable(property);
         }
         /**
          * Set all properties to be disabled
@@ -1292,14 +1800,14 @@ var duice = (function (exports) {
          * @param disable
          */
         static setDisableAll(objectProxy, disable) {
-            this.getHandler(objectProxy).setDisableAll(disable);
+            this.getProxyHandler(objectProxy).setDisableAll(disable);
         }
         /**
          * Get whether all properties are disabled
          * @param objectProxy
          */
         static isDisableAll(objectProxy) {
-            return this.getHandler(objectProxy).isDisableAll();
+            return this.getProxyHandler(objectProxy).isDisableAll();
         }
         /**
          * Set property to be focused
@@ -1307,7 +1815,7 @@ var duice = (function (exports) {
          * @param property
          */
         static focus(objectProxy, property) {
-            this.getHandler(objectProxy).focus(property);
+            this.getProxyHandler(objectProxy).focus(property);
         }
         /**
          * Set readonly before changing event listener
@@ -1315,7 +1823,7 @@ var duice = (function (exports) {
          * @param listener
          */
         static onPropertyChanging(objectProxy, listener) {
-            this.getHandler(objectProxy).propertyChangingListener = listener;
+            this.getProxyHandler(objectProxy).propertyChangingListener = listener;
         }
         /**
          * Set property after changed event listener
@@ -1323,7 +1831,7 @@ var duice = (function (exports) {
          * @param listener
          */
         static onPropertyChanged(objectProxy, listener) {
-            this.getHandler(objectProxy).propertyChangedListener = listener;
+            this.getProxyHandler(objectProxy).propertyChangedListener = listener;
         }
     }
 
@@ -1336,7 +1844,16 @@ var duice = (function (exports) {
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
-    class ArrayElement extends DataElement {
+    /**
+     * Array Element
+     */
+    class ArrayElement extends Element {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         constructor(htmlElement, bindData, context) {
             super(htmlElement.cloneNode(true), bindData, context);
             this.editable = false;
@@ -1352,6 +1869,9 @@ var duice = (function (exports) {
             // mark initialized (not using after clone as templates)
             markInitialized(htmlElement);
         }
+        /**
+         * Renders
+         */
         render() {
             var _a;
             let arrayProxy = this.getBindData();
@@ -1428,7 +1948,6 @@ var duice = (function (exports) {
                 Initializer.initialize(itemHtmlElement, this.getContext());
                 this.itemHtmlElements.push(itemHtmlElement);
                 // append to slot
-                // this.slot.appendChild(itemHtmlElement);
                 this.slot.parentNode.insertBefore(itemHtmlElement, this.slot);
                 // check if
                 runIfCode(itemHtmlElement, context);
@@ -1436,6 +1955,12 @@ var duice = (function (exports) {
                 runExecuteCode(itemHtmlElement, context);
             }
         }
+        /**
+         * Creates item html element
+         * @param index index
+         * @param object object
+         * @param context context
+         */
         createItemHtmlElement(index, object, context) {
             // clones row elements
             let itemHtmlElement = this.getHtmlElement().cloneNode(true);
@@ -1488,9 +2013,14 @@ var duice = (function (exports) {
                 this.notifyObservers(rowSelectEvent);
             });
         }
+        /**
+         * Updates
+         * @param observable observable
+         * @param event event
+         */
         update(observable, event) {
-            console.debug('ArrayElement.update', observable, event);
-            if (observable instanceof ArrayHandler) {
+            console.trace('ArrayElement.update', observable, event);
+            if (observable instanceof ArrayProxyHandler) {
                 // row select event
                 if (event instanceof ItemSelectEvent) {
                     if (this.selectedItemClass) {
@@ -1512,25 +2042,60 @@ var duice = (function (exports) {
         }
     }
 
-    class ArrayElementFactory extends DataElementFactory {
+    /**
+     * Array Element Factory
+     */
+    class ArrayElementFactory extends ElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         createElement(htmlElement, bindData, context) {
             return new ArrayElement(htmlElement, bindData, context);
         }
     }
 
-    class CustomElementFactory extends DataElementFactory {
+    /**
+     * Custom Element Factory
+     */
+    class CustomElementFactory extends ElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         createElement(htmlElement, bindData, context) {
             return this.doCreateElement(htmlElement, bindData, context);
         }
     }
 
-    class ObjectElementFactory extends DataElementFactory {
+    /**
+     * Object Element Factory
+     */
+    class ObjectElementFactory extends ElementFactory {
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         createElement(htmlElement, bindData, context) {
             return new ObjectElement(htmlElement, bindData, context);
         }
     }
 
-    class DataElementRegistry {
+    /**
+     * Element Registry
+     */
+    class ElementRegistry {
+        /**
+         * Registers element factory
+         * @param tagName tag name
+         * @param elementFactory element factory
+         */
         static register(tagName, elementFactory) {
             if (elementFactory instanceof ArrayElementFactory) {
                 this.arrayElementFactories.set(tagName, elementFactory);
@@ -1547,6 +2112,12 @@ var duice = (function (exports) {
                 });
             }
         }
+        /**
+         * Gets factory
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
         static getFactory(htmlElement, bindData, context) {
             let tagName = htmlElement.tagName.toLowerCase();
             // custom element
@@ -1569,42 +2140,57 @@ var duice = (function (exports) {
             }
         }
     }
-    DataElementRegistry.defaultObjectElementFactory = new ObjectElementFactory();
-    DataElementRegistry.defaultArrayElementFactory = new ArrayElementFactory();
-    DataElementRegistry.objectElementFactories = new Map();
-    DataElementRegistry.arrayElementFactories = new Map();
-    DataElementRegistry.customElementFactories = new Map();
+    ElementRegistry.defaultObjectElementFactory = new ObjectElementFactory();
+    ElementRegistry.defaultArrayElementFactory = new ArrayElementFactory();
+    ElementRegistry.objectElementFactories = new Map();
+    ElementRegistry.arrayElementFactories = new Map();
+    ElementRegistry.customElementFactories = new Map();
 
+    /**
+     * Initializer
+     */
     class Initializer {
+        /**
+         * Initialize the container with the context
+         * @param container container
+         * @param context context
+         * @param index index (optional)
+         */
         static initialize(container, context, index) {
             // scan DOM tree
             container.querySelectorAll(getElementQuerySelector()).forEach(element => {
                 var _a, _b;
-                // if (element instanceof HTMLElement) {
-                const htmlElement = element;
-                if (!hasElementAttribute(htmlElement, 'id')) {
-                    try {
-                        let bindName = getElementAttribute(htmlElement, 'bind');
-                        let bindData = findVariable(context, bindName);
-                        (_b = (_a = DataElementRegistry.getFactory(htmlElement, bindData, context)) === null || _a === void 0 ? void 0 : _a.createElement(htmlElement, bindData, context)) === null || _b === void 0 ? void 0 : _b.render();
-                        // index
-                        if (index !== undefined) {
-                            setElementAttribute(htmlElement, "index", index.toString());
+                if (element instanceof HTMLElement) {
+                    const htmlElement = element;
+                    if (!hasElementAttribute(htmlElement, 'id')) {
+                        try {
+                            let bindName = getElementAttribute(htmlElement, 'bind');
+                            let bindData = findVariable(context, bindName);
+                            (_b = (_a = ElementRegistry.getFactory(htmlElement, bindData, context)) === null || _a === void 0 ? void 0 : _a.createElement(htmlElement, bindData, context)) === null || _b === void 0 ? void 0 : _b.render();
+                            // index
+                            if (index !== undefined) {
+                                setElementAttribute(htmlElement, "index", index.toString());
+                            }
+                        }
+                        catch (e) {
+                            console.error(e, htmlElement, container, JSON.stringify(context));
                         }
                     }
-                    catch (e) {
-                        console.error(e, htmlElement, container, JSON.stringify(context));
-                    }
                 }
-                // }
             });
         }
     }
 
-    class CustomElement extends DataElement {
+    /**
+     * Custom Element
+     */
+    class CustomElement extends Element {
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
         }
+        /**
+         * Renders element
+         */
         render() {
             // do render
             this.doRender(this.getBindData());
@@ -1615,8 +2201,13 @@ var duice = (function (exports) {
             // execute script
             runExecuteCode(this.getHtmlElement(), this.getContext());
         }
+        /**
+         * Implements update method
+         * @param observable observable
+         * @param event event
+         */
         update(observable, event) {
-            if (observable instanceof DataHandler) {
+            if (observable instanceof ProxyHandler) {
                 this.doUpdate(observable.getTarget());
             }
         }
@@ -1631,9 +2222,18 @@ var duice = (function (exports) {
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
+    /**
+     * Img Element
+     */
     class ImgElement extends ObjectElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement img html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             this.editable = false;
             this.closeButtonImg = 'data:image/svg+xml;base64,' + window.btoa('<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.4" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#292D32"></path> <path d="M13.0594 12.0001L15.3594 9.70011C15.6494 9.41011 15.6494 8.93011 15.3594 8.64011C15.0694 8.35011 14.5894 8.35011 14.2994 8.64011L11.9994 10.9401L9.69937 8.64011C9.40937 8.35011 8.92937 8.35011 8.63938 8.64011C8.34938 8.93011 8.34938 9.41011 8.63938 9.70011L10.9394 12.0001L8.63938 14.3001C8.34938 14.5901 8.34938 15.0701 8.63938 15.3601C8.78938 15.5101 8.97937 15.5801 9.16937 15.5801C9.35937 15.5801 9.54937 15.5101 9.69937 15.3601L11.9994 13.0601L14.2994 15.3601C14.4494 15.5101 14.6394 15.5801 14.8294 15.5801C15.0194 15.5801 15.2094 15.5101 15.3594 15.3601C15.6494 15.0701 15.6494 14.5901 15.3594 14.3001L13.0594 12.0001Z" fill="#292D32"></path> </g></svg>');
             this.originSrc = String(this.getHtmlElement().src);
@@ -1678,14 +2278,23 @@ var duice = (function (exports) {
                 this.height = parseInt(sizeArgs[1].trim());
             }
         }
+        /**
+         * Shows clear image button
+         */
         showClearImageButton() {
             this.getHtmlElement().parentNode.insertBefore(this.clearButton, this.getHtmlElement().nextSibling);
             this.clearButton.style.position = 'absolute';
             this.clearButton.style.zIndex = '100';
         }
+        /**
+         * Hides clear image button
+         */
         hideClearImageButton() {
             this.getHtmlElement().parentNode.removeChild(this.clearButton);
         }
+        /**
+         * Clears image
+         */
         clearImage() {
             if (this.originSrc) {
                 this.getHtmlElement().src = this.originSrc;
@@ -1697,6 +2306,9 @@ var duice = (function (exports) {
             let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
             this.notifyObservers(event);
         }
+        /**
+         * Changes image
+         */
         changeImage() {
             let input = document.createElement('input');
             input.setAttribute("type", "file");
@@ -1726,6 +2338,12 @@ var duice = (function (exports) {
             });
             input.click();
         }
+        /**
+         * Converts image
+         * @param dataUrl data url
+         * @param width width
+         * @param height height
+         */
         convertImage(dataUrl, width, height) {
             return new Promise(function (resolve, reject) {
                 try {
@@ -1753,6 +2371,10 @@ var duice = (function (exports) {
                 }
             });
         }
+        /**
+         * Sets value
+         * @param value value
+         */
         setValue(value) {
             if (value) {
                 this.getHtmlElement().src = value;
@@ -1761,6 +2383,9 @@ var duice = (function (exports) {
                 this.getHtmlElement().src = this.originSrc;
             }
         }
+        /**
+         * Gets value
+         */
         getValue() {
             let value = this.getHtmlElement().src;
             if (value === this.originSrc) {
@@ -1770,27 +2395,56 @@ var duice = (function (exports) {
                 return value;
             }
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             this.getHtmlElement().style.pointerEvents = (readonly ? 'none' : 'unset');
         }
+        /**
+         * Sets disable
+         * @param disable disable or not
+         */
         setDisable(disable) {
             this.getHtmlElement().style.pointerEvents = (disable ? 'none' : 'unset');
         }
     }
 
+    /**
+     * Img Element Factory
+     */
     class ImgElementFactory extends ObjectElementFactory {
-        createElement(element, bindData, context) {
-            return new ImgElement(element, bindData, context);
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        createElement(htmlElement, bindData, context) {
+            return new ImgElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register factory instance
-        DataElementRegistry.register('img', new ImgElementFactory());
+        ElementRegistry.register('img', new ImgElementFactory());
     })();
 
+    /**
+     * Input Element
+     */
     class InputElement extends ObjectElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             // adds change listener
             this.getHtmlElement().addEventListener('change', e => {
                 let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
@@ -1799,6 +2453,10 @@ var duice = (function (exports) {
             // turn off autocomplete
             this.getHtmlElement().setAttribute('autocomplete', 'off');
         }
+        /**
+         * Gets element value
+         * @param value element value
+         */
         setValue(value) {
             if (value != null) {
                 value = this.getFormat() ? this.getFormat().format(value) : value;
@@ -1808,6 +2466,9 @@ var duice = (function (exports) {
             }
             this.getHtmlElement().value = value;
         }
+        /**
+         * Gets element value
+         */
         getValue() {
             let value = this.getHtmlElement().value;
             if (value) {
@@ -1818,9 +2479,17 @@ var duice = (function (exports) {
             }
             return value;
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             this.getHtmlElement().readOnly = readonly;
         }
+        /**
+         * Sets disable
+         * @param disable disable or not
+         */
         setDisable(disable) {
             if (disable) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
@@ -1829,15 +2498,27 @@ var duice = (function (exports) {
                 this.getHtmlElement().removeAttribute('disabled');
             }
         }
+        /**
+         * Focus element
+         */
         focus() {
             this.getHtmlElement().focus();
             return true;
         }
     }
 
+    /**
+     * Input Number Element
+     */
     class InputNumberElement extends InputElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             // changes type and style
             this.getHtmlElement().setAttribute('type', 'text');
             this.getHtmlElement().style.textAlign = 'right';
@@ -1848,15 +2529,27 @@ var duice = (function (exports) {
                 }
             });
         }
+        /**
+         * Gets element value
+         */
         getValue() {
             let value = super.getValue();
             return Number(value);
         }
     }
 
+    /**
+     * Input Checkbox Element
+     */
     class InputCheckboxElement extends InputElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             this.trueValue = true;
             this.falseValue = false;
             // true false value
@@ -1865,6 +2558,10 @@ var duice = (function (exports) {
             let falseValue = getElementAttribute(this.getHtmlElement(), 'false-value');
             this.falseValue = falseValue ? falseValue : this.falseValue;
         }
+        /**
+         * Sets element value
+         * @param value element value
+         */
         setValue(value) {
             if (value === this.trueValue) {
                 this.getHtmlElement().checked = true;
@@ -1873,6 +2570,9 @@ var duice = (function (exports) {
                 this.htmlElement.checked = false;
             }
         }
+        /**
+         * Gets value
+         */
         getValue() {
             if (this.htmlElement.checked) {
                 return this.trueValue;
@@ -1881,9 +2581,17 @@ var duice = (function (exports) {
                 return this.falseValue;
             }
         }
+        /**
+         * Disable click
+         * @param event event
+         */
         disableClick(event) {
             event.preventDefault();
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             if (readonly) {
                 this.getHtmlElement().addEventListener('click', this.disableClick);
@@ -1894,11 +2602,24 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Input Datetime Local Element
+     */
     class InputDatetimeLocalElement extends InputElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             this.dateFormat = new DateFormat('yyyy-MM-ddTHH:mm');
         }
+        /**
+         * Sets element value
+         * @param value
+         */
         setValue(value) {
             if (value) {
                 this.getHtmlElement().value = this.dateFormat.format(value);
@@ -1907,6 +2628,9 @@ var duice = (function (exports) {
                 this.getHtmlElement().value = '';
             }
         }
+        /**
+         * Gets element value
+         */
         getValue() {
             let value = this.getHtmlElement().value;
             if (value) {
@@ -1918,16 +2642,36 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Input Radio Element
+     */
     class InputRadioElement extends InputElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
         }
+        /**
+         * Sets element value
+         * @param value element value
+         */
         setValue(value) {
             this.getHtmlElement().checked = (this.getHtmlElement().value === value);
         }
+        /**
+         * Gets element value
+         */
         getValue() {
             return this.getHtmlElement().value;
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             if (readonly) {
                 this.getHtmlElement().style.pointerEvents = 'none';
@@ -1938,31 +2682,52 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Input Element Factory
+     */
     class InputElementFactory extends ObjectElementFactory {
-        createElement(element, bindData, context) {
-            let type = element.getAttribute('type');
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        createElement(htmlElement, bindData, context) {
+            let type = htmlElement.getAttribute('type');
             switch (type) {
                 case 'number':
-                    return new InputNumberElement(element, bindData, context);
+                    return new InputNumberElement(htmlElement, bindData, context);
                 case 'checkbox':
-                    return new InputCheckboxElement(element, bindData, context);
+                    return new InputCheckboxElement(htmlElement, bindData, context);
                 case 'radio':
-                    return new InputRadioElement(element, bindData, context);
+                    return new InputRadioElement(htmlElement, bindData, context);
                 case 'datetime-local':
-                    return new InputDatetimeLocalElement(element, bindData, context);
+                    return new InputDatetimeLocalElement(htmlElement, bindData, context);
                 default:
-                    return new InputElement(element, bindData, context);
+                    return new InputElement(htmlElement, bindData, context);
             }
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register factory instance
-        DataElementRegistry.register('input', new InputElementFactory());
+        ElementRegistry.register('input', new InputElementFactory());
     })();
 
+    /**
+     * Select Element
+     */
     class SelectElement extends ObjectElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             this.defaultOptions = [];
             // checks if
             if (!this.checkIf()) {
@@ -1983,10 +2748,13 @@ var duice = (function (exports) {
                 this.option = findVariable(this.getContext(), optionName);
                 this.optionValueProperty = getElementAttribute(this.getHtmlElement(), 'option-value-property');
                 this.optionTextProperty = getElementAttribute(this.getHtmlElement(), 'option-text-property');
-                ArrayProxy.getHandler(this.option).addObserver(this);
+                ArrayProxy.getProxyHandler(this.option).addObserver(this);
                 this.updateOptions();
             }
         }
+        /**
+         * Updates options
+         */
         updateOptions() {
             let value = this.getHtmlElement().value;
             this.getHtmlElement().innerHTML = '';
@@ -2001,8 +2769,13 @@ var duice = (function (exports) {
             });
             this.getHtmlElement().value = value;
         }
-        update(observable, dataEvent) {
-            super.update(observable, dataEvent);
+        /**
+         * Overrides update
+         * @param observable observable
+         * @param event event
+         */
+        update(observable, event) {
+            super.update(observable, event);
             // checks if
             if (!this.checkIf()) {
                 return;
@@ -2011,6 +2784,10 @@ var duice = (function (exports) {
                 this.updateOptions();
             }
         }
+        /**
+         * Sets element value
+         * @param value value
+         */
         setValue(value) {
             this.getHtmlElement().value = value;
             // force select option
@@ -2024,6 +2801,9 @@ var duice = (function (exports) {
                 }
             }
         }
+        /**
+         * Gets element value
+         */
         getValue() {
             let value = this.getHtmlElement().value;
             if (!value || value.trim().length < 1) {
@@ -2031,15 +2811,22 @@ var duice = (function (exports) {
             }
             return value;
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             if (readonly) {
-                console.warn("==ok");
                 this.getHtmlElement().style.pointerEvents = 'none';
             }
             else {
                 this.getHtmlElement().style.pointerEvents = '';
             }
         }
+        /**
+         * Sets disable
+         * @param disable disable or not
+         */
         setDisable(disable) {
             if (disable) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
@@ -2050,25 +2837,50 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Select Element Factory
+     */
     class SelectElementFactory extends ObjectElementFactory {
-        createElement(element, bindData, context) {
-            return new SelectElement(element, bindData, context);
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        createElement(htmlElement, bindData, context) {
+            return new SelectElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register factory instance
-        DataElementRegistry.register('select', new SelectElementFactory());
+        ElementRegistry.register('select', new SelectElementFactory());
     })();
 
+    /**
+     * Textarea Element
+     */
     class TextareaElement extends ObjectElement {
-        constructor(element, bindData, context) {
-            super(element, bindData, context);
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
             // adds change event listener
             this.getHtmlElement().addEventListener('change', e => {
                 let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
                 this.notifyObservers(event);
             }, true);
         }
+        /**
+         * Sets element value
+         * @param value property value
+         */
         setValue(value) {
             if (value != null) {
                 this.getHtmlElement().value = value;
@@ -2077,6 +2889,9 @@ var duice = (function (exports) {
                 this.getHtmlElement().value = '';
             }
         }
+        /**
+         * Gets element value
+         */
         getValue() {
             let value = this.getHtmlElement().value;
             if (value != null && value.length > 0) {
@@ -2086,6 +2901,10 @@ var duice = (function (exports) {
                 return null;
             }
         }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
         setReadonly(readonly) {
             if (readonly) {
                 this.getHtmlElement().setAttribute('readonly', 'readonly');
@@ -2094,6 +2913,10 @@ var duice = (function (exports) {
                 this.getHtmlElement().removeAttribute('readonly');
             }
         }
+        /**
+         * Sets disable
+         * @param disable disable or not
+         */
         setDisable(disable) {
             if (disable) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
@@ -2104,14 +2927,26 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Textarea Element Factory
+     */
     class TextareaElementFactory extends ObjectElementFactory {
-        createElement(element, bindData, context) {
-            return new TextareaElement(element, bindData, context);
+        /**
+         * Creates element
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        createElement(htmlElement, bindData, context) {
+            return new TextareaElement(htmlElement, bindData, context);
         }
     }
+    /**
+     * Static block
+     */
     (() => {
         // register
-        DataElementRegistry.register('textarea', new TextareaElementFactory());
+        ElementRegistry.register('textarea', new TextareaElementFactory());
     })();
 
     var __awaiter = (window && window.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -2510,15 +3345,21 @@ var duice = (function (exports) {
     exports.ConfirmDialog = ConfirmDialog;
     exports.CustomElement = CustomElement;
     exports.CustomElementFactory = CustomElementFactory;
-    exports.DataElementRegistry = DataElementRegistry;
     exports.Dialog = Dialog;
+    exports.ElementRegistry = ElementRegistry;
+    exports.Event = Event;
     exports.ImgElementFactory = ImgElementFactory;
     exports.Initializer = Initializer;
     exports.InputElementFactory = InputElementFactory;
+    exports.ItemDeleteEvent = ItemDeleteEvent;
+    exports.ItemInsertEvent = ItemInsertEvent;
+    exports.ItemMoveEvent = ItemMoveEvent;
+    exports.ItemSelectEvent = ItemSelectEvent;
     exports.ObjectElement = ObjectElement;
     exports.ObjectElementFactory = ObjectElementFactory;
     exports.ObjectProxy = ObjectProxy;
     exports.PromptDialog = PromptDialog;
+    exports.PropertyChangeEvent = PropertyChangeEvent;
     exports.SelectElementFactory = SelectElementFactory;
     exports.TabFolder = TabFolder;
     exports.TabItem = TabItem;
