@@ -33,11 +33,13 @@ public interface RoleRepository extends JpaRepository<RoleEntity, String>, JpaSp
                     criteriaBuilder.like(root.get(RoleEntity_.NAME), '%' + roleSearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(RoleEntity_.SYSTEM_REQUIRED).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(RoleEntity_.SYSTEM_REQUIRED).descending())
+                .and(Sort.by(RoleEntity_.ROLE_ID).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
         return findAll(specification, finalPageable);
     }
 

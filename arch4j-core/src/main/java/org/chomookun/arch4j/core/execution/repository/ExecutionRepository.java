@@ -21,10 +21,15 @@ import java.util.List;
 @Repository
 public interface ExecutionRepository extends JpaRepository<ExecutionEntity, String>, JpaSpecificationExecutor<ExecutionEntity> {
 
+    /**
+     * find all by execution search
+     * @param executionSearch execution search
+     * @param pageable pageable
+     * @return page execution entity
+     */
     default Page<ExecutionEntity> findAll(ExecutionSearch executionSearch, Pageable pageable) {
         Specification<ExecutionEntity> specification = (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-
             // taskName
             if (executionSearch.getTaskName() != null) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(
@@ -37,7 +42,6 @@ public interface ExecutionRepository extends JpaRepository<ExecutionEntity, Stri
                         root.get(ExecutionEntity_.STATUS), executionSearch.getStatus()
                 ));
             }
-
             // conjunction order by
             List<Order> orders = new ArrayList<>();
             pageable.getSort().forEach(sort -> {
@@ -54,11 +58,9 @@ public interface ExecutionRepository extends JpaRepository<ExecutionEntity, Stri
             orders.add(criteriaBuilder.desc(root.get(ExecutionEntity_.STARTED_AT)));
             // adds
             query.orderBy(orders);
-
             // returns predicate
             return predicate;
         };
-
         return findAll(specification, pageable);
     }
 

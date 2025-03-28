@@ -20,7 +20,7 @@
         const alarm = new duice.ObjectProxy({
             alarmId: null,
         });
-        duice.ObjectProxy.setDisableAll(alarm, true);
+        duice.ObjectProxy.setDisabledAll(alarm, true);
         duice.ObjectProxy.onPropertyChanging(alarm, async event => {
             if (event.getProperty() === 'alarmId') {
                 if (!await validateAlarmId(event.getValue())) {
@@ -86,7 +86,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(alarm, data);
-                    duice.ObjectProxy.setDisableAll(alarm, false);
+                    duice.ObjectProxy.setDisabledAll(alarm, false);
                     duice.ObjectProxy.setReadonly(alarm, 'alarmId', true);
                     alarm._new = false;
                 });
@@ -100,7 +100,7 @@
             duice.ObjectProxy.assign(alarm, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(alarm, false);
+            duice.ObjectProxy.setDisabledAll(alarm, false);
             duice.ObjectProxy.setReadonly(alarm, 'alarmId', false);
             duice.ObjectProxy.focus(alarm, 'alarmId');
         }
@@ -287,7 +287,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="alarms"
-                            data-duice-loop="alarm,status"
+                            data-duice-foreach="alarm,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.alarmId=alarm.alarmId;"
                             onclick="getAlarm(this.dataset.alarmId);"

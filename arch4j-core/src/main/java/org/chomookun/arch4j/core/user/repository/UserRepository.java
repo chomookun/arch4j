@@ -50,11 +50,13 @@ public interface UserRepository extends JpaRepository<UserEntity, String>, JpaSp
                     criteriaBuilder.equal(root.get(UserEntity_.ADMIN), userSearch.getAdmin()));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(UserEntity_.ADMIN).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(UserEntity_.ADMIN).descending())
+                .and(Sort.by(UserEntity_.USER_ID).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
         return findAll(specification, finalPageable);
     }
 

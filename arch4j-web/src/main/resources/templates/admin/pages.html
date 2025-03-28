@@ -23,7 +23,7 @@
             contentFormat: 'TEXT',
             pageWidgets: []
         });
-        duice.ObjectProxy.setDisableAll(page, true);
+        duice.ObjectProxy.setDisabledAll(page, true);
         duice.ObjectProxy.onPropertyChanging(page, async event => {
             if (event.getProperty() === 'pageId') {
                 if (!await validatePageId(event.getValue())) {
@@ -61,11 +61,11 @@
 
         /**
          * gets pages
-         * @param page page number
+         * @param _page page number
          */
-        function getPages(page) {
-            if(page) {
-                pageSearch._page = page;
+        function getPages(_page) {
+            if(_page) {
+                pageSearch._page = _page;
             }
             let url = new URL(`${window.location.pathname}/get-pages`, document.location.origin);
             if (pageSearch.key && pageSearch.value) {
@@ -80,7 +80,7 @@
                     duice.ArrayProxy.assign(pages, data.content);
                     pageSearch._total = data['totalElements'];
                     // select current item
-                    duice.ArrayProxy.selectItem(pages, pages.findIndex(item => item.pageId === page.pageId));
+                    duice.ArrayProxy.selectItem(pages, pages.findIndex(it => it.pageId === page.pageId));
                 });
         }
 
@@ -103,7 +103,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(page, data);
-                    duice.ObjectProxy.setDisableAll(page, false);
+                    duice.ObjectProxy.setDisabledAll(page, false);
                     duice.ObjectProxy.setReadonly(page, 'pageId', true);
                     page._new = false;
                 });
@@ -118,7 +118,7 @@
                 _new: true,
                 contentFormat: 'TEXT'
             });
-            duice.ObjectProxy.setDisableAll(page, false);
+            duice.ObjectProxy.setDisabledAll(page, false);
             duice.ObjectProxy.setReadonly(page, 'pageId', false);
             duice.ObjectProxy.focus(page, 'pageId');
         }
@@ -315,7 +315,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="pages"
-                            data-duice-loop="page,status"
+                            data-duice-foreach="page,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.id=page.pageId;"
                             onclick="getPage(this.dataset.id);"
@@ -411,7 +411,7 @@
                             <!-- ====================================== -->
                             <div class="grid-column--span-6 s__grid-column--span-12 display--flex flex-direction--column gap--1rem box padding--1rem"
                                  data-duice-bind="page.pageWidgets"
-                                 data-duice-loop="pageWidget,status"
+                                 data-duice-foreach="pageWidget,status"
                                  data-duice-editable="true">
                                 <label>
                                 <span class="font-weight--bold tag-required" data-th-text="#{core.page.PageWidget.type}">

@@ -33,11 +33,13 @@ public interface MessageRepository extends JpaRepository<MessageEntity, String>,
                     criteriaBuilder.like(root.get(MessageEntity_.NAME), '%' + messageSearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(MessageEntity_.SYSTEM_REQUIRED).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(MessageEntity_.SYSTEM_REQUIRED).descending())
+                .and(Sort.by(MessageEntity_.MESSAGE_ID).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
         return findAll(specification, finalPageable);
     }
 

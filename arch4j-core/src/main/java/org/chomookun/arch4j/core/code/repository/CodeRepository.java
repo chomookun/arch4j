@@ -33,11 +33,13 @@ public interface CodeRepository extends JpaRepository<CodeEntity,String>, JpaSpe
                     criteriaBuilder.like(root.get(CodeEntity_.NAME), '%' + codeSearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(CodeEntity_.SYSTEM_REQUIRED).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(CodeEntity_.SYSTEM_REQUIRED).descending())
+                .and(Sort.by(CodeEntity_.CODE_ID).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
         return findAll(specification, finalPageable);
     }
 

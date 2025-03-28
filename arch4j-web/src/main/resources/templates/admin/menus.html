@@ -12,7 +12,7 @@
             viewMenuRoles: [],
             linkMenuRoles: []
         });
-        duice.ObjectProxy.setDisableAll(menu, true);
+        duice.ObjectProxy.setDisabledAll(menu, true);
 
         /**
          * gets menus
@@ -40,7 +40,7 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ObjectProxy.setDisableAll(menu, false);
+                    duice.ObjectProxy.setDisabledAll(menu, false);
                     duice.ObjectProxy.clear(menu);
                     duice.ObjectProxy.assign(menu, data);
                     duice.ObjectProxy.setReadonly(menu, 'menuId', true);
@@ -61,7 +61,7 @@
             duice.ObjectProxy.assign(menu, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(menu, false);
+            duice.ObjectProxy.setDisabledAll(menu, false);
             duice.ObjectProxy.focus(menu, 'menuName');
         }
 
@@ -266,7 +266,7 @@
                 </div>
                 <div class="panel-content">
                     <div>
-                        <div data-duice-bind="menus" data-duice-loop="menu,status" data-duice-hierarchy="menuId,parentMenuId" data-duice-selected-item-class="selected"
+                        <div data-duice-bind="menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId" data-duice-selected-item-class="selected"
                              data-duice-execute="
                     this.dataset.menuId = menu.menuId;
                     if(menu.parentMenuId) {
@@ -396,7 +396,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="menu.viewMenuRoles" data-duice-loop="menuRole,status">
+                                <tr data-duice-bind="menu.viewMenuRoles" data-duice-foreach="menuRole,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="menuRole"
@@ -455,7 +455,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="menu.linkMenuRoles" data-duice-loop="menuRole,status">
+                                <tr data-duice-bind="menu.linkMenuRoles" data-duice-foreach="menuRole,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="menuRole"
@@ -602,7 +602,7 @@
             </div>
             <div class="display--flex flex-direction--column gap--1em padding--1em">
                 <div class="overflow-x--scroll">
-                    <div data-duice-bind="menuSelectDialog.menus" data-duice-loop="menu,status" data-duice-hierarchy="menuId,parentMenuId"
+                    <div data-duice-bind="menuSelectDialog.menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId"
                          data-duice-execute="
                     this.dataset.menuId = menu.menuId;
                     if(menu.parentMenuId) {

@@ -176,7 +176,7 @@
                             </thead>
                             <tbody>
                             <tr data-duice-bind="jobs"
-                                data-duice-loop="job,status"
+                                data-duice-foreach="job,status"
                                 data-duice-selected-item-class="selected"
                                 data-duice-execute="this.dataset.jobName=job.jobName;"
                                 onclick="getJobInstances(this.dataset.jobName, 0);"
@@ -259,7 +259,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr data-duice-bind="jobInstances" data-duice-loop="jobInstance,status">
+                            <tr data-duice-bind="jobInstances" data-duice-foreach="jobInstance,status">
                                 <td class="text-align--center">
                                     <span data-duice-bind="status" data-duice-execute="this.innerHTML = jobInstanceSearch._total - (jobInstanceSearch._page * jobInstanceSearch._size + status.index);" class="number"></span>
                                 </td>

@@ -1,5 +1,5 @@
 /*!
- * duice - v0.2.64
+ * duice - v0.3.6
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -24,9 +24,96 @@ var duice = (function (exports) {
         static getNamespace() {
             return this.namespace;
         }
+        /**
+         * Sets debug enabled
+         * @param value
+         */
+        static setDebugEnabled(value) {
+            sessionStorage.setItem(`${this.namespace}.traceEnabled`, JSON.stringify(value));
+        }
+        /**
+         * Checks if debug is enabled
+         */
+        static isDebugEnabled() {
+            const value = sessionStorage.getItem(`${this.namespace}.debugEnabled`);
+            return value ? JSON.parse(value) : false;
+        }
     }
     Configuration.namespace = 'duice';
 
+    var __awaiter$4 = (window && window.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
+    /**
+     * Checks value is Array
+     */
+    function isArray(value) {
+        return Array.isArray(value);
+    }
+    /**
+     * Checks value is Object
+     */
+    function isObject(value) {
+        return value != null && typeof value === 'object' && !Array.isArray(value);
+    }
+    /**
+     * Checks value is primitive
+     */
+    function isPrimitive(value) {
+        return value !== Object(value);
+    }
+    /**
+     * Checks object is proxy
+     * @param object
+     */
+    function isProxy(object) {
+        if (object == null) {
+            return false;
+        }
+        return globalThis.Object.getOwnPropertyDescriptor(object, '_proxy_target_') != null;
+    }
+    /**
+     * Sets proxy target
+     * @param proxy
+     * @param target
+     */
+    function setProxyTarget(proxy, target) {
+        globalThis.Object.defineProperty(proxy, '_proxy_target_', {
+            value: target,
+            writable: true
+        });
+    }
+    /**
+     * Gets proxy target
+     * @param proxy
+     */
+    function getProxyTarget(proxy) {
+        return globalThis.Object.getOwnPropertyDescriptor(proxy, '_proxy_target_').value;
+    }
+    /**
+     * Sets proxy handler
+     * @param proxy proxy
+     * @param proxyHandler proxy handler
+     */
+    function setProxyHandler(proxy, proxyHandler) {
+        globalThis.Object.defineProperty(proxy, '_proxy_handler_', {
+            value: proxyHandler,
+            writable: true
+        });
+    }
+    /**
+     * Gets proxy handler
+     * @param proxy proxy
+     */
+    function getProxyHandler(proxy) {
+        return globalThis.Object.getOwnPropertyDescriptor(proxy, '_proxy_handler_').value;
+    }
     /**
      * Gets element query selector
      */
@@ -65,8 +152,7 @@ var duice = (function (exports) {
             }
         }
         catch (ignore) { }
-        // throw error
-        console.warn(`Object[${name}] is not found`);
+        // return default
         return undefined;
     }
     /**
@@ -76,19 +162,21 @@ var duice = (function (exports) {
      * @param context
      */
     function runCode(code, htmlElement, context) {
-        try {
-            let args = [];
-            let values = [];
-            for (let property in context) {
-                args.push(property);
-                values.push(context[property]);
+        return __awaiter$4(this, void 0, void 0, function* () {
+            try {
+                let args = [];
+                let values = [];
+                for (let property in context) {
+                    args.push(property);
+                    values.push(context[property]);
+                }
+                return yield Function(...args, code).call(htmlElement, ...values);
             }
-            return Function(...args, code).call(htmlElement, ...values);
-        }
-        catch (e) {
-            console.error(code, e);
-            throw e;
-        }
+            catch (e) {
+                console.error(code, e);
+                throw e;
+            }
+        });
     }
     /**
      * Runs if code
@@ -96,18 +184,20 @@ var duice = (function (exports) {
      * @param context current context
      */
     function runIfCode(htmlElement, context) {
-        let ifClause = getElementAttribute(htmlElement, 'if');
-        if (ifClause) {
-            let result = runCode(ifClause, htmlElement, context);
-            if (!result) {
-                htmlElement.hidden = true;
+        return __awaiter$4(this, void 0, void 0, function* () {
+            let ifClause = getElementAttribute(htmlElement, 'if');
+            if (ifClause) {
+                let result = yield runCode(ifClause, htmlElement, context);
+                if (!result) {
+                    htmlElement.hidden = true;
+                }
+                else {
+                    htmlElement.hidden = false;
+                }
+                return result;
             }
-            else {
-                htmlElement.hidden = false;
-            }
-            return result;
-        }
-        return true;
+            return true;
+        });
     }
     /**
      * Runs execute code
@@ -115,11 +205,13 @@ var duice = (function (exports) {
      * @param context current context
      */
     function runExecuteCode(htmlElement, context) {
-        let script = getElementAttribute(htmlElement, 'execute');
-        if (script) {
-            return runCode(script, htmlElement, context);
-        }
-        return null;
+        return __awaiter$4(this, void 0, void 0, function* () {
+            let script = getElementAttribute(htmlElement, 'execute');
+            if (script) {
+                return yield runCode(script, htmlElement, context);
+            }
+            return null;
+        });
     }
     /**
      * Checks if element has attribute
@@ -148,6 +240,14 @@ var duice = (function (exports) {
     function setElementAttribute(htmlElement, name, value) {
         let namespace = Configuration.getNamespace();
         htmlElement.setAttribute(`data-${namespace}-${name}`, value);
+    }
+    /**
+     * Prints debug message
+     */
+    function debug(...args) {
+        if (Configuration.isDebugEnabled()) {
+            console.trace(args);
+        }
     }
     /**
      * Asserts condition
@@ -208,7 +308,7 @@ var duice = (function (exports) {
         }
         /**
          * Notifies to observers
-         * @param event event
+         * @param event event (optional)
          */
         notifyObservers(event) {
             if (this.notifyEnabled) {
@@ -231,17 +331,16 @@ var duice = (function (exports) {
          * @protected
          */
         constructor(htmlElement, bindData, context) {
-            var _a;
             super();
             this.htmlElement = htmlElement;
             this.bindData = bindData;
             this.context = context;
             setElementAttribute(this.htmlElement, 'id', this.generateId());
             // bind data
-            let dataHandler = (_a = globalThis.Object.getOwnPropertyDescriptor(this.bindData, '_proxy_handler_')) === null || _a === void 0 ? void 0 : _a.value;
-            assert(dataHandler, 'DataHandler is not found');
-            this.addObserver(dataHandler);
-            dataHandler.addObserver(this);
+            let proxyHandler = getProxyHandler(bindData);
+            assert(proxyHandler, 'ProxyHandler is not found');
+            this.addObserver(proxyHandler);
+            proxyHandler.addObserver(this);
         }
         /**
          * Generate id
@@ -273,19 +372,102 @@ var duice = (function (exports) {
         }
     }
 
+    var __awaiter$3 = (window && window.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
     /**
-     * Event
+     * Event Dispatcher
      */
-    class Event {
+    class EventDispatcher {
+        constructor() {
+            this.eventListeners = new Map();
+        }
         /**
-         * Constructor
-         * @param source source
+         * Sets parent
+         * @param parent parent
          */
-        constructor(source) {
-            this.source = source;
+        setParent(parent) {
+            this.parent = parent;
+        }
+        /**
+         * Gets parent
+         */
+        getParent() {
+            return this.parent;
+        }
+        /**
+         * Adds event listener
+         * @param eventType event type
+         * @param eventListener event listener
+         */
+        addEventListener(eventType, eventListener) {
+            let listeners = this.eventListeners.get(eventType);
+            if (!listeners) {
+                listeners = [];
+                this.eventListeners.set(eventType, listeners);
+            }
+            listeners.push(eventListener);
+        }
+        /**
+         * Removes event listener
+         * @param eventType event type
+         * @param eventListener event listener
+         */
+        removeEventListener(eventType, eventListener) {
+            let listeners = this.eventListeners.get(eventType);
+            if (listeners) {
+                let index = listeners.indexOf(eventListener);
+                if (index >= 0) {
+                    listeners.splice(index, 1);
+                }
+            }
+        }
+        /**
+         * Clears event listeners
+         * @param eventType event type
+         */
+        clearEventListeners(eventType) {
+            this.eventListeners.delete(eventType);
+        }
+        /**
+         * Dispatches event listeners
+         * @param event event
+         */
+        dispatchEventListeners(event) {
+            return __awaiter$3(this, void 0, void 0, function* () {
+                let listeners = this.eventListeners.get(event.constructor);
+                let results = [];
+                if (listeners) {
+                    for (let listener of listeners) {
+                        results.push(yield listener.call(this, event));
+                    }
+                }
+                // calls parent
+                if (this.parent) {
+                    let parentResults = yield this.parent.dispatchEventListeners(event);
+                    results = results.concat(parentResults);
+                }
+                // returns results
+                return results;
+            });
         }
     }
 
+    var __awaiter$2 = (window && window.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
     /**
      * Proxy Handler
      */
@@ -294,13 +476,29 @@ var duice = (function (exports) {
          * Constructor
          * @protected
          */
-        constructor() {
+        constructor(target) {
             super();
-            this.readonlyAll = false;
-            this.readonly = new Set();
-            this.disableAll = false;
-            this.disable = new Set();
-            this.listenerEnabled = true;
+            this.readonlyProperties = new Map();
+            this.disabledProperties = new Map();
+            this.eventDispatcher = new EventDispatcher();
+            this.eventEnabled = true;
+            this.target = target;
+        }
+        /**
+         * Sets parent
+         * @param parent parent
+         */
+        setParent(parent) {
+            this.parent = parent;
+            this.addObserver(parent);
+            parent.addObserver(this);
+            this.eventDispatcher.setParent(parent.eventDispatcher);
+        }
+        /**
+         * Gets parent
+         */
+        getParent() {
+            return this.parent;
         }
         /**
          * Sets target
@@ -321,16 +519,26 @@ var duice = (function (exports) {
          */
         setReadonlyAll(readonly) {
             this.readonlyAll = readonly;
-            if (!readonly) {
-                this.readonly.clear();
-            }
-            this.notifyObservers(new Event(this));
+            this.readonlyProperties.forEach((value, key) => {
+                this.readonlyProperties.set(key, readonly);
+            });
+            this.notifyObservers();
         }
         /**
          * Returns readonly all
          */
         isReadonlyAll() {
-            return this.readonlyAll;
+            let readonlyAll = false;
+            if (this.parent) {
+                readonlyAll = (this.parent.isReadonlyAll() === true);
+            }
+            if (this.readonlyAll === true) {
+                readonlyAll = true;
+            }
+            if (this.readonlyAll === false) {
+                readonlyAll = false;
+            }
+            return readonlyAll;
         }
         /**
          * Sets readonly
@@ -338,87 +546,131 @@ var duice = (function (exports) {
          * @param readonly readonly or not
          */
         setReadonly(property, readonly) {
-            if (readonly) {
-                this.readonly.add(property);
-            }
-            else {
-                this.readonly.delete(property);
-            }
-            this.notifyObservers(new Event(this));
+            this.readonlyProperties.set(property, readonly);
+            this.notifyObservers();
         }
         /**
          * Returns whether property is readonly
          * @param property property
          */
         isReadonly(property) {
-            return this.readonlyAll || this.readonly.has(property);
-        }
-        /**
-         * Sets disable all
-         * @param disable
-         */
-        setDisableAll(disable) {
-            this.disableAll = disable;
-            if (!disable) {
-                this.disable.clear();
+            let readonly = false;
+            readonly = (this.isReadonlyAll() === true);
+            if (this.readonlyProperties.has(property)) {
+                readonly = (this.readonlyProperties.get(property) === true);
             }
-            this.notifyObservers(new Event(this));
+            // returns
+            return readonly;
         }
         /**
-         * Returns whether all properties are disabled
+         * Sets disabled all
+         * @param disabledAll
          */
-        isDisableAll() {
-            return this.disableAll;
+        setDisabledAll(disabledAll) {
+            this.disabledAll = disabledAll;
+            this.disabledProperties.forEach((value, key) => {
+                this.disabledProperties.set(key, disabledAll);
+            });
+            this.notifyObservers();
         }
         /**
-         * Sets disable
+         * Returns disabled all
+         */
+        isDisabledAll() {
+            let disabledAll = false;
+            if (this.parent) {
+                disabledAll = (this.parent.isDisabledAll() === true);
+            }
+            if (this.disabledAll === true) {
+                disabledAll = true;
+            }
+            if (this.disabledAll === false) {
+                disabledAll = false;
+            }
+            return disabledAll;
+        }
+        /**
+         * Sets disabled
          * @param property property
-         * @param disable disable or not
+         * @param disabled
          */
-        setDisable(property, disable) {
-            if (disable) {
-                this.disable.add(property);
-            }
-            else {
-                this.disable.delete(property);
-            }
-            this.notifyObservers(new Event(this));
+        setDisabled(property, disabled) {
+            this.disabledProperties.set(property, disabled);
+            this.notifyObservers();
         }
         /**
          * Returns whether property is disabled
-         * @param property property
+         * @param property
          */
-        isDisable(property) {
-            return this.disableAll || this.disable.has(property);
-        }
-        /**
-         * Subscribes to property changing
-         */
-        suspendListener() {
-            this.listenerEnabled = false;
-        }
-        /**
-         * Resumes to property changing
-         */
-        resumeListener() {
-            this.listenerEnabled = true;
-        }
-        /**
-         * Checks listener
-         * @param listener listener
-         * @param event event
-         */
-        checkListener(listener, event) {
-            if (this.listenerEnabled && listener) {
-                let result = listener.call(this.getTarget(), event);
-                if (result == false) {
-                    return false;
-                }
+        isDisabled(property) {
+            let disabled = false;
+            disabled = (this.isDisabledAll() === true);
+            // check property is disabled
+            if (this.disabledProperties.has(property)) {
+                disabled = (this.disabledProperties.get(property) === true);
             }
-            return true;
+            // returns
+            return disabled;
+        }
+        /**
+         * Adds event listener
+         * @param eventType event type
+         * @param eventListener event listener
+         */
+        addEventListener(eventType, eventListener) {
+            this.eventDispatcher.addEventListener(eventType, eventListener);
+        }
+        /**
+         * Removes event listener
+         * @param eventType event type
+         * @param eventListener event listener
+         */
+        removeEventListener(eventType, eventListener) {
+            this.eventDispatcher.removeEventListener(eventType, eventListener);
+        }
+        /**
+         * Clears event listeners
+         * @param eventType event type
+         */
+        clearEventListeners(eventType) {
+            this.eventDispatcher.clearEventListeners(eventType);
+        }
+        /**
+         * Suspends event
+         */
+        suspendEvent() {
+            this.eventEnabled = false;
+        }
+        /**
+         * Resumes event listener
+         */
+        resumeEvent() {
+            this.eventEnabled = true;
+        }
+        /**
+         * Calls event listeners
+         * @param event
+         */
+        dispatchEventListeners(event) {
+            return __awaiter$2(this, void 0, void 0, function* () {
+                if (!this.eventEnabled) {
+                    return null;
+                }
+                return this.eventDispatcher.dispatchEventListeners(event).then(results => {
+                    if (results != null && results.length > 0) {
+                        return !results.some(result => result === false);
+                    }
+                    else {
+                        return null;
+                    }
+                });
+            });
         }
     }
 
+    /**
+     * String Format
+     */
     class StringFormat {
         /**
          * Constructor
@@ -478,6 +730,9 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Number Format
+     */
     class NumberFormat {
         /**
          * Constructor
@@ -532,6 +787,9 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Date Format
+     */
     class DateFormat {
         /**
          * Constructor
@@ -684,6 +942,71 @@ var duice = (function (exports) {
     }
 
     /**
+     * Event
+     */
+    class Event {
+        /**
+         * Constructor
+         * @param element html element
+         * @param data data
+         */
+        constructor(element, data) {
+            this.element = element;
+            this.data = data;
+        }
+        /**
+         * Gets element
+         */
+        getElement() {
+            return this.element;
+        }
+        /**
+         * Gets data
+         */
+        getData() {
+            return this.data;
+        }
+    }
+
+    /**
+     * Property Changed Event
+     */
+    class PropertyChangedEvent extends Event {
+        /**
+         * Constructor
+         * @param element element
+         * @param data data
+         * @param property property
+         * @param value value
+         * @param index index (optional)
+         */
+        constructor(element, data, property, value, index) {
+            super(element, data);
+            this.property = property;
+            this.value = value;
+            this.index = index;
+        }
+        /**
+         * Gets property name
+         */
+        getProperty() {
+            return this.property;
+        }
+        /**
+         * Gets property value
+         */
+        getValue() {
+            return this.value;
+        }
+        /**
+         * Gets index in array if object is in array
+         */
+        getIndex() {
+            return this.index;
+        }
+    }
+
+    /**
      * Object Element
      */
     class ObjectElement extends Element {
@@ -718,55 +1041,37 @@ var duice = (function (exports) {
          * Overrides render
          */
         render() {
-            // check if
-            if (!this.checkIf()) {
-                return;
+            // context
+            let context = Object.assign({}, this.getContext());
+            let bind = getElementAttribute(this.getHtmlElement(), 'bind');
+            let bindSplit = bind.split('.');
+            if (bindSplit.length > 1) {
+                context[bindSplit[0]] = findVariable(context, bindSplit[0]);
             }
-            // property
-            if (this.property) {
-                let objectHandler = ObjectProxy.getProxyHandler(this.getBindData());
+            else {
+                context[bind] = this.getBindData();
+            }
+            // run if code
+            runIfCode(this.htmlElement, context).then(result => {
+                // checks result
+                if (result === false) {
+                    return;
+                }
+                let objectProxyHandler = getProxyHandler(this.getBindData());
                 // set value
-                let value = objectHandler.getValue(this.property);
-                this.setValue(value);
-                // set readonly
-                let readonly = objectHandler.isReadonly(this.property);
+                if (this.property) {
+                    let value = objectProxyHandler.getValue(this.property);
+                    this.setValue(value);
+                }
+                // sets readonly
+                let readonly = objectProxyHandler.isReadonly(this.property);
                 this.setReadonly(readonly);
-                // set disable
-                let disable = objectHandler.isDisable(this.property);
-                this.setDisable(disable);
-            }
-            // executes script
-            this.executeScript();
-        }
-        /**
-         * Check if condition in attribute
-         */
-        checkIf() {
-            let context = Object.assign({}, this.getContext());
-            let bind = getElementAttribute(this.getHtmlElement(), 'bind');
-            let bindSplit = bind.split('.');
-            if (bindSplit.length > 1) {
-                context[bindSplit[0]] = findVariable(context, bindSplit[0]);
-            }
-            else {
-                context[bind] = this.getBindData();
-            }
-            return runIfCode(this.htmlElement, context);
-        }
-        /**
-         * Executes script in attribute
-         */
-        executeScript() {
-            let context = Object.assign({}, this.getContext());
-            let bind = getElementAttribute(this.getHtmlElement(), 'bind');
-            let bindSplit = bind.split('.');
-            if (bindSplit.length > 1) {
-                context[bindSplit[0]] = findVariable(context, bindSplit[0]);
-            }
-            else {
-                context[bind] = this.getBindData();
-            }
-            return runExecuteCode(this.htmlElement, context);
+                // sets disabled
+                let disabled = objectProxyHandler.isDisabled(this.property);
+                this.setDisabled(disabled);
+                // run execute code
+                runExecuteCode(this.htmlElement, context).then();
+            });
         }
         /**
          * Updates
@@ -774,25 +1079,17 @@ var duice = (function (exports) {
          * @param event event
          */
         update(observable, event) {
-            console.trace('ObjectElement.update', observable, event);
+            debug('ObjectElement.update', observable, event);
             // ObjectHandler
             if (observable instanceof ObjectProxyHandler) {
-                // check if
-                if (!this.checkIf()) {
+                // property changed event
+                if (event instanceof PropertyChangedEvent) {
+                    this.render();
                     return;
                 }
-                // property
-                if (this.property) {
-                    // set value
-                    this.setValue(observable.getValue(this.property));
-                    // set readonly
-                    this.setReadonly(observable.isReadonly(this.property));
-                    // set disable
-                    this.setDisable(observable.isDisable(this.property));
-                }
-                // executes script
-                this.executeScript();
             }
+            // default
+            this.render();
         }
         /**
          * Sets property value
@@ -828,10 +1125,10 @@ var duice = (function (exports) {
             // no-op
         }
         /**
-         * Sets disable
-         * @param disable disable or not
+         * Sets disabled
+         * @param disabled disabled or not
          */
-        setDisable(disable) {
+        setDisabled(disabled) {
             // no-op
         }
         /**
@@ -855,16 +1152,17 @@ var duice = (function (exports) {
     /**
      * Property Change Event
      */
-    class PropertyChangeEvent extends Event {
+    class PropertyChangingEvent extends Event {
         /**
          * Constructor
-         * @param source source
+         * @param element element
+         * @param data data
          * @param property property
          * @param value value
          * @param index index (optional)
          */
-        constructor(source, property, value, index) {
-            super(source);
+        constructor(element, data, property, value, index) {
+            super(element, data);
             this.property = property;
             this.value = value;
             this.index = index;
@@ -890,153 +1188,103 @@ var duice = (function (exports) {
     }
 
     /**
-     * Object Proxy Handler
+     * Item Selecting Event
      */
-    class ObjectProxyHandler extends ProxyHandler {
+    class ItemSelectingEvent extends Event {
         /**
          * Constructor
+         * @param element element
+         * @param data data
+         * @param index index
          */
-        constructor() {
-            super();
-        }
-        /**
-         * Gets target property value
-         * @param target target
-         * @param property property
-         * @param receiver receiver
-         */
-        get(target, property, receiver) {
-            return Reflect.get(target, property, receiver);
-        }
-        /**
-         * Sets target property value
-         * @param target
-         * @param property
-         * @param value
-         */
-        set(target, property, value) {
-            // change value
-            Reflect.set(target, property, value);
-            // notify
-            let event = new PropertyChangeEvent(this, property, value);
-            this.notifyObservers(event);
-            // returns
-            return true;
-        }
-        /**
-         * Updates
-         * @param observable observable
-         * @param event event
-         */
-        update(observable, event) {
-            // element
-            if (observable instanceof ObjectElement) {
-                let property = observable.getProperty();
-                let value = observable.getValue();
-                if (this.checkListener(this.propertyChangingListener, event)) {
-                    this.setValue(property, value);
-                    this.checkListener(this.propertyChangedListener, event);
-                }
-            }
-            // notify
-            this.notifyObservers(event);
-        }
-        /**
-         * Gets specified property value
-         * @param property property
-         */
-        getValue(property) {
-            property = property.replace('.', '?.');
-            return new Function(`return this.${property};`).call(this.getTarget());
-        }
-        /**
-         * Sets specified property value
-         * @param property property
-         * @param value value
-         */
-        setValue(property, value) {
-            new Function('value', `this.${property} = value;`).call(this.getTarget(), value);
-        }
-        /**
-         * Sets focus on property element
-         * @param property
-         */
-        focus(property) {
-            this.observers.forEach(observer => {
-                if (observer instanceof ObjectElement) {
-                    if (observer.getProperty() === property) {
-                        if (observer.focus()) {
-                            return false;
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    class ItemDeleteEvent extends Event {
-        /**
-         * Constructor
-         * @param source source
-         * @param index deleted item index
-         * @param items delete items
-         */
-        constructor(source, index, items) {
-            super(source);
-            this.items = [];
-            this.index = index;
-            this.items = items;
-        }
-        /**
-         * Gets deleted item index
-         */
-        getIndex() {
-            return this.index;
-        }
-        /**
-         * Gets deleted items
-         */
-        getItems() {
-            return this.items;
-        }
-    }
-
-    class ItemSelectEvent extends Event {
-        constructor(source, index) {
-            super(source);
+        constructor(element, data, index) {
+            super(element, data);
             this.index = index;
         }
+        /**
+         * Gets index
+         */
         getIndex() {
             return this.index;
         }
     }
 
-    class ItemMoveEvent extends Event {
-        constructor(source, fromIndex, toIndex) {
-            super(source);
+    /**
+     * Item Moving Event
+     */
+    class ItemMovingEvent extends Event {
+        /**
+         * Constructor
+         * @param element element
+         * @param data data
+         * @param fromIndex from index
+         * @param toIndex to index
+         */
+        constructor(element, data, fromIndex, toIndex) {
+            super(element, data);
             this.fromIndex = fromIndex;
             this.toIndex = toIndex;
         }
+        /**
+         * Gets from index
+         */
         getFromIndex() {
             return this.fromIndex;
         }
+        /**
+         * Gets to index
+         */
         getToIndex() {
             return this.toIndex;
         }
     }
 
-    class ItemInsertEvent extends Event {
-        constructor(source, index, items) {
-            super(source);
-            this.items = [];
+    /**
+     * Item Selected Event
+     */
+    class ItemSelectedEvent extends Event {
+        /**
+         * Constructor
+         * @param element element
+         * @param data data
+         * @param index index (optional)
+         */
+        constructor(element, data, index) {
+            super(element, data);
             this.index = index;
-            this.items = items;
         }
+        /**
+         * Gets index
+         */
         getIndex() {
             return this.index;
         }
-        getItems() {
-            return this.items;
+    }
+
+    class ItemMovedEvent extends Event {
+        /**
+         * Constructor
+         * @param element element
+         * @param data data
+         * @param fromIndex from index
+         * @param toIndex to index
+         */
+        constructor(element, data, fromIndex, toIndex) {
+            super(element, data);
+            this.fromIndex = fromIndex;
+            this.toIndex = toIndex;
+        }
+        /**
+         * Gets from index
+         */
+        getFromIndex() {
+            return this.fromIndex;
+        }
+        /**
+         * Gets to index
+         */
+        getToIndex() {
+            return this.toIndex;
         }
     }
 
@@ -1047,8 +1295,8 @@ var duice = (function (exports) {
         /**
          * Constructor
          */
-        constructor() {
-            super();
+        constructor(array) {
+            super(array);
         }
         /**
          * Get trap
@@ -1134,7 +1382,7 @@ var duice = (function (exports) {
         set(target, property, value) {
             Reflect.set(target, property, value);
             if (property === 'length') {
-                this.notifyObservers(new Event(this));
+                this.notifyObservers(null);
             }
             return true;
         }
@@ -1144,24 +1392,43 @@ var duice = (function (exports) {
          * @param event event
          */
         update(observable, event) {
-            // instance is array component
+            debug('ArrayProxyHandler.update', observable, event);
+            // observable is array element
             if (observable instanceof ArrayElement) {
-                // row select event
-                if (event instanceof ItemSelectEvent) {
-                    this.selectedItemIndex = event.getIndex();
-                    return;
+                // item selecting event
+                if (event instanceof ItemSelectingEvent) {
+                    this.dispatchEventListeners(event).then(result => {
+                        if (result === false) {
+                            return;
+                        }
+                        this.selectedItemIndex = event.getIndex();
+                        // fires item selected event
+                        let itemSelectedEvent = new ItemSelectedEvent(event.getElement(), event.getData(), this.selectedItemIndex);
+                        this.notifyObservers(itemSelectedEvent);
+                        this.dispatchEventListeners(itemSelectedEvent).then();
+                    });
                 }
-                // row move event
-                if (event instanceof ItemMoveEvent) {
-                    if (this.checkListener(this.itemMovingListener, event)) {
+                // item moving event
+                if (event instanceof ItemMovingEvent) {
+                    this.dispatchEventListeners(event).then(result => {
+                        if (result === false) {
+                            return;
+                        }
                         let object = this.getTarget().splice(event.getFromIndex(), 1)[0];
                         this.getTarget().splice(event.getToIndex(), 0, object);
-                        this.checkListener(this.itemMovedListener, event);
-                    }
+                        // fires item moved event
+                        let itemMovedEvent = new ItemMovedEvent(event.getElement(), event.getData(), event.getFromIndex(), event.getToIndex());
+                        this.notifyObservers(itemMovedEvent);
+                        this.dispatchEventListeners(itemMovedEvent).then();
+                    });
                 }
             }
-            // notify observers
-            this.notifyObservers(event);
+            // observable is object proxy handler
+            if (observable instanceof ObjectProxyHandler) {
+                if (event instanceof PropertyChangedEvent) {
+                    this.notifyObservers(event);
+                }
+            }
         }
         /**
          * Inserts items
@@ -1170,23 +1437,17 @@ var duice = (function (exports) {
          * @param items items
          */
         insertItem(arrayProxy, index, ...items) {
-            let arrayHandler = ArrayProxy.getProxyHandler(arrayProxy);
-            let proxyTarget = ArrayProxy.getTarget(arrayProxy);
+            let arrayHandler = getProxyHandler(arrayProxy);
+            let proxyTarget = getProxyTarget(arrayProxy);
             items.forEach((object, index) => {
                 if (typeof object === 'object') {
                     let objectProxy = new ObjectProxy(object);
-                    let objectHandler = ObjectProxy.getProxyHandler(objectProxy);
-                    objectHandler.propertyChangingListener = this.propertyChangingListener;
-                    objectHandler.propertyChangedListener = this.propertyChangedListener;
+                    getProxyHandler(objectProxy);
                     items[index] = objectProxy;
                 }
             });
-            let event = new ItemInsertEvent(this, index, items);
-            if (arrayHandler.checkListener(arrayHandler.itemInsertingListener, event)) {
-                proxyTarget.splice(index, 0, ...items);
-                arrayHandler.checkListener(arrayHandler.itemInsertedListener, event);
-                arrayHandler.notifyObservers(event);
-            }
+            proxyTarget.splice(index, 0, ...items);
+            arrayHandler.notifyObservers();
         }
         /**
          * Deletes items from array proxy
@@ -1195,19 +1456,15 @@ var duice = (function (exports) {
          * @param size size for delete
          */
         deleteItem(arrayProxy, index, size) {
-            let arrayHandler = ArrayProxy.getProxyHandler(arrayProxy);
-            let proxyTarget = ArrayProxy.getTarget(arrayProxy);
+            let arrayHandler = getProxyHandler(arrayProxy);
+            let proxyTarget = getProxyTarget(arrayProxy);
             let sliceBegin = index;
             let sliceEnd = (size ? index + size : index + 1);
-            let rows = proxyTarget.slice(sliceBegin, sliceEnd);
-            let event = new ItemDeleteEvent(this, index, rows);
-            if (arrayHandler.checkListener(arrayHandler.itemDeletingListener, event)) {
-                let spliceStart = index;
-                let spliceDeleteCount = (size ? size : 1);
-                proxyTarget.splice(spliceStart, spliceDeleteCount);
-                arrayHandler.checkListener(arrayHandler.itemDeletedListener, event);
-                arrayHandler.notifyObservers(event);
-            }
+            proxyTarget.slice(sliceBegin, sliceEnd);
+            let spliceStart = index;
+            let spliceDeleteCount = (size ? size : 1);
+            proxyTarget.splice(spliceStart, spliceDeleteCount);
+            arrayHandler.notifyObservers();
         }
         /**
          * Selects item by index
@@ -1215,15 +1472,144 @@ var duice = (function (exports) {
          */
         selectItem(index) {
             this.selectedItemIndex = index;
-            // notify row select event
-            let rowSelectEvent = new ItemSelectEvent(this, this.selectedItemIndex);
-            this.notifyObservers(rowSelectEvent);
+            // notify item selected event
+            const itemSelectedEvent = new ItemSelectedEvent(null, this.getTarget(), index);
+            this.notifyObservers(itemSelectedEvent);
         }
         /**
          * Gets selected item index
          */
         getSelectedItemIndex() {
             return this.selectedItemIndex;
+        }
+    }
+
+    /**
+     * Object Proxy Handler
+     */
+    class ObjectProxyHandler extends ProxyHandler {
+        /**
+         * Constructor
+         */
+        constructor(object) {
+            super(object);
+        }
+        /**
+         * Gets target property value
+         * @param target target
+         * @param property property
+         * @param receiver receiver
+         */
+        get(target, property, receiver) {
+            return Reflect.get(target, property, receiver);
+        }
+        /**
+         * Sets target property value
+         * @param target
+         * @param property
+         * @param value
+         */
+        set(target, property, value) {
+            // change value
+            Reflect.set(target, property, value);
+            // notify
+            this.notifyObservers();
+            // returns
+            return true;
+        }
+        /**
+         * Updates
+         * @param observable observable
+         * @param event event
+         */
+        update(observable, event) {
+            debug('ObjectProxyHandler.update', observable, event);
+            // element
+            if (observable instanceof ObjectElement) {
+                if (event instanceof PropertyChangingEvent) {
+                    this.dispatchEventListeners(event).then(result => {
+                        // result is false
+                        if (result === false) {
+                            // rollback and return
+                            observable.update(this, event);
+                            return;
+                        }
+                        // updates property value
+                        let property = observable.getProperty();
+                        let value = observable.getValue();
+                        this.setValue(property, value);
+                        // property changed event
+                        let propertyChangedEvent = new PropertyChangedEvent(event.getElement(), event.getData(), event.getProperty(), event.getValue(), event.getIndex());
+                        this.notifyObservers(propertyChangedEvent);
+                        this.dispatchEventListeners(propertyChangedEvent).then();
+                    });
+                }
+            }
+        }
+        /**
+         * Gets specified property value
+         * @param property property
+         */
+        getValue(property) {
+            property = property.replace(/\./g, '?.');
+            return new Function(`return this.${property};`).call(this.getTarget());
+        }
+        /**
+         * Sets specified property value
+         * @param property property
+         * @param value value
+         */
+        setValue(property, value) {
+            new Function('value', `this.${property} = value;`).call(this.getTarget(), value);
+        }
+        /**
+         * Sets focus on property element
+         * @param property
+         */
+        focus(property) {
+            this.observers.forEach(observer => {
+                if (observer instanceof ObjectElement) {
+                    if (observer.getProperty() === property) {
+                        if (observer.focus()) {
+                            return false;
+                        }
+                    }
+                }
+            });
+        }
+        /**
+         * Overrides is readonly by property
+         * @param property property
+         */
+        isReadonly(property) {
+            let readonly = super.isReadonly(property);
+            // parent is ArrayProxyHandler
+            if (this.parent && this.parent instanceof ArrayProxyHandler) {
+                if (this.parent.isReadonly(property) === true) {
+                    readonly = true;
+                }
+                if (this.parent.isReadonly(property) === false) {
+                    readonly = false;
+                }
+            }
+            return readonly;
+        }
+        /**
+         * Overrides is disabled by property
+         * @param property property
+         */
+        isDisabled(property) {
+            let disabled = super.isDisabled(property);
+            // parent is ArrayProxyHandler
+            if (this.parent && this.parent instanceof ArrayProxyHandler) {
+                if (this.parent.isDisabled(property) === true) {
+                    disabled = true;
+                }
+                if (this.parent.isDisabled(property) === false) {
+                    disabled = false;
+                }
+            }
+            return disabled;
         }
     }
 
@@ -1238,74 +1624,21 @@ var duice = (function (exports) {
         constructor(array) {
             super();
             // is already proxy
-            if (ArrayProxy.isProxy(array)) {
+            if (array instanceof ArrayProxy) {
                 return array;
             }
-            // array handler
-            let arrayHandler = new ArrayProxyHandler();
-            // copy array elements
-            if (globalThis.Array.isArray(array)) {
-                for (let i = 0; i < array.length; i++) {
-                    if (typeof array[i] === 'object') {
-                        array[i] = new ObjectProxy(array[i]);
-                    }
-                }
-            }
             // create proxy
+            let arrayHandler = new ArrayProxyHandler(array);
             let arrayProxy = new Proxy(array, arrayHandler);
-            arrayHandler.setTarget(array);
-            // set property
-            ArrayProxy.setProxyHandler(arrayProxy, arrayHandler);
-            ArrayProxy.setTarget(arrayProxy, array);
+            setProxyTarget(arrayProxy, array);
+            setProxyHandler(arrayProxy, arrayHandler);
+            // assign
+            let initialArray = JSON.parse(JSON.stringify(array));
+            ArrayProxy.assign(arrayProxy, initialArray);
             // save
             ArrayProxy.save(arrayProxy);
             // returns
             return arrayProxy;
-        }
-        /**
-         * Checks if array is proxy
-         * @param array array
-         */
-        static isProxy(array) {
-            return array.hasOwnProperty('_target_');
-        }
-        /**
-         * Sets target to array proxy
-         * @param arrayProxy array proxy
-         * @param target target
-         */
-        static setTarget(arrayProxy, target) {
-            globalThis.Object.defineProperty(arrayProxy, '_target_', {
-                value: target,
-                writable: true
-            });
-        }
-        /**
-         * Gets target from array proxy
-         * @param arrayProxy
-         */
-        static getTarget(arrayProxy) {
-            return globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_target_').value;
-        }
-        /**
-         * Sets array proxy handler
-         * @param arrayProxy
-         * @param arrayHandler
-         */
-        static setProxyHandler(arrayProxy, arrayHandler) {
-            globalThis.Object.defineProperty(arrayProxy, '_proxy_handler_', {
-                value: arrayHandler,
-                writable: true
-            });
-        }
-        /**
-         * Gets array proxy handler
-         * @param arrayProxy array proxy
-         */
-        static getProxyHandler(arrayProxy) {
-            let handler = globalThis.Object.getOwnPropertyDescriptor(arrayProxy, '_proxy_handler_').value;
-            assert(handler, 'handler is not found');
-            return handler;
         }
         /**
          * Assigns array to array proxy
@@ -1313,65 +1646,55 @@ var duice = (function (exports) {
          * @param array
          */
         static assign(arrayProxy, array) {
-            let arrayHandler = this.getProxyHandler(arrayProxy);
+            let arrayProxyHandler = getProxyHandler(arrayProxy);
             try {
                 // suspend
-                arrayHandler.suspendListener();
-                arrayHandler.suspendNotify();
+                arrayProxyHandler.suspendEvent();
+                arrayProxyHandler.suspendNotify();
                 // clears elements
                 arrayProxy.length = 0;
                 // creates elements
                 for (let index = 0; index < array.length; index++) {
-                    let object = array[index];
-                    // if not object, skip
-                    if (typeof object !== 'object') {
+                    let value = array[index];
+                    // source value is object
+                    if (isObject(value)) {
+                        let objectProxy = new ObjectProxy(value);
+                        getProxyHandler(objectProxy).setParent(arrayProxyHandler);
+                        arrayProxy[index] = objectProxy;
                         continue;
                     }
-                    let objectProxy = new ObjectProxy(object);
-                    arrayProxy[index] = objectProxy;
-                    // readonly
-                    ObjectProxy.setReadonlyAll(objectProxy, arrayHandler.isReadonlyAll());
-                    arrayHandler.readonly.forEach(property => {
-                        ObjectProxy.setReadonly(objectProxy, property, true);
-                    });
-                    // disable
-                    ObjectProxy.setDisableAll(objectProxy, arrayHandler.isDisableAll());
-                    arrayHandler.disable.forEach(property => {
-                        ObjectProxy.setDisable(objectProxy, property, true);
-                    });
-                    // add listener
-                    ObjectProxy.onPropertyChanging(objectProxy, arrayHandler.propertyChangingListener);
-                    ObjectProxy.onPropertyChanged(objectProxy, arrayHandler.propertyChangedListener);
+                    // default
+                    arrayProxy[index] = value;
                 }
             }
             finally {
                 // resume
-                arrayHandler.resumeListener();
-                arrayHandler.resumeNotify();
+                arrayProxyHandler.resumeEvent();
+                arrayProxyHandler.resumeNotify();
             }
             // notify observers
-            arrayHandler.notifyObservers(new Event(this));
+            arrayProxyHandler.notifyObservers();
         }
         /**
          * Clears array elements
          * @param arrayProxy
          */
         static clear(arrayProxy) {
-            let arrayHandler = this.getProxyHandler(arrayProxy);
+            let arrayHandler = getProxyHandler(arrayProxy);
             try {
                 // suspend
-                arrayHandler.suspendListener();
+                arrayHandler.suspendEvent();
                 arrayHandler.suspendNotify();
                 // clear element
                 arrayProxy.length = 0;
             }
             finally {
                 // resume
-                arrayHandler.resumeListener();
+                arrayHandler.resumeEvent();
                 arrayHandler.resumeNotify();
             }
             // notify observers
-            arrayHandler.notifyObservers(new Event(this));
+            arrayHandler.notifyObservers();
         }
         /**
          * Save array proxy
@@ -1393,16 +1716,28 @@ var duice = (function (exports) {
             this.assign(arrayProxy, origin);
         }
         /**
+         * Checks if all properties are readonly
+         * @param arrayProxy array proxy
+         * @param readonly readonly
+         */
+        static setReadonlyAll(arrayProxy, readonly) {
+            getProxyHandler(arrayProxy).setReadonlyAll(readonly);
+        }
+        /**
+         * Checks if all properties are readonly
+         * @param arrayProxy array proxy
+         */
+        static isReadonlyAll(arrayProxy) {
+            return getProxyHandler(arrayProxy).isReadonlyAll();
+        }
+        /**
          * Sets readonly
          * @param arrayProxy array proxy
          * @param property property
          * @param readonly readonly
          */
         static setReadonly(arrayProxy, property, readonly) {
-            this.getProxyHandler(arrayProxy).setReadonly(property, readonly);
-            arrayProxy.forEach(objectProxy => {
-                ObjectProxy.setReadonly(objectProxy, property, readonly);
-            });
+            getProxyHandler(arrayProxy).setReadonly(property, readonly);
         }
         /**
          * Checks if property is readonly
@@ -1410,25 +1745,22 @@ var duice = (function (exports) {
          * @param property property
          */
         static isReadonly(arrayProxy, property) {
-            return this.getProxyHandler(arrayProxy).isReadonly(property);
+            return getProxyHandler(arrayProxy).isReadonly(property);
         }
         /**
-         * Checks if all properties are readonly
+         * Sets all properties to be disabled
          * @param arrayProxy array proxy
-         * @param readonly readonly
+         * @param disable disabled
          */
-        static setReadonlyAll(arrayProxy, readonly) {
-            this.getProxyHandler(arrayProxy).setReadonlyAll(readonly);
-            arrayProxy.forEach(objectProxy => {
-                ObjectProxy.setReadonlyAll(objectProxy, readonly);
-            });
+        static setDisabledAll(arrayProxy, disable) {
+            getProxyHandler(arrayProxy).setDisabledAll(disable);
         }
         /**
-         * Checks if all properties are readonly
+         * Checks if all properties are disabled
          * @param arrayProxy array proxy
          */
-        static isReadonlyAll(arrayProxy) {
-            return this.getProxyHandler(arrayProxy).isReadonlyAll();
+        static isDisabledAll(arrayProxy) {
+            return getProxyHandler(arrayProxy).isDisabledAll();
         }
         /**
          * Sets disable
@@ -1436,37 +1768,16 @@ var duice = (function (exports) {
          * @param property property
          * @param disable disable
          */
-        static setDisable(arrayProxy, property, disable) {
-            this.getProxyHandler(arrayProxy).setDisable(property, disable);
-            arrayProxy.forEach(objectProxy => {
-                ObjectProxy.setDisable(objectProxy, property, disable);
-            });
+        static setDisabled(arrayProxy, property, disable) {
+            getProxyHandler(arrayProxy).setDisabled(property, disable);
         }
         /**
          * Checks if property is disabled
          * @param arrayProxy array proxy
          * @param property property
          */
-        static isDisable(arrayProxy, property) {
-            return this.getProxyHandler(arrayProxy).isDisable(property);
-        }
-        /**
-         * Sets all properties to be disabled
-         * @param arrayProxy array proxy
-         * @param disable disabled
-         */
-        static setDisableAll(arrayProxy, disable) {
-            this.getProxyHandler(arrayProxy).setDisableAll(disable);
-            arrayProxy.forEach(objectProxy => {
-                ObjectProxy.setDisableAll(objectProxy, disable);
-            });
-        }
-        /**
-         * Checks if all properties are disabled
-         * @param arrayProxy array proxy
-         */
-        static isDisableAll(arrayProxy) {
-            return this.getProxyHandler(arrayProxy).isDisableAll();
+        static isDisabled(arrayProxy, property) {
+            return getProxyHandler(arrayProxy).isDisabled(property);
         }
         /**
          * Inserts item
@@ -1474,84 +1785,80 @@ var duice = (function (exports) {
          * @param index
          */
         static selectItem(arrayProxy, index) {
-            return this.getProxyHandler(arrayProxy).selectItem(index);
+            return getProxyHandler(arrayProxy).selectItem(index);
         }
         /**
          * Gets selected item index
          * @param arrayProxy array proxy
          */
         static getSelectedItemIndex(arrayProxy) {
-            return this.getProxyHandler(arrayProxy).getSelectedItemIndex();
+            return getProxyHandler(arrayProxy).getSelectedItemIndex();
         }
         /**
-         * Adds property changing listener
+         * On item selecting
          * @param arrayProxy array proxy
-         * @param listener listener
+         * @param eventListener event listener
          */
-        static onPropertyChanging(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).propertyChangingListener = listener;
-            arrayProxy.forEach(objectProxy => {
-                ObjectProxy.getProxyHandler(objectProxy).propertyChangingListener = listener;
-            });
+        static onItemSelecting(arrayProxy, eventListener) {
+            let proxyHandler = getProxyHandler(arrayProxy);
+            let eventType = ItemSelectingEvent;
+            proxyHandler.clearEventListeners(eventType);
+            proxyHandler.addEventListener(eventType, eventListener);
         }
         /**
-         * Adds property changed listener
+         * On item selected
          * @param arrayProxy array proxy
-         * @param listener listener
+         * @param eventListener event listener
          */
-        static onPropertyChanged(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).propertyChangedListener = listener;
-            arrayProxy.forEach(objectProxy => {
-                ObjectProxy.getProxyHandler(objectProxy).propertyChangedListener = listener;
-            });
+        static onItemSelected(arrayProxy, eventListener) {
+            let proxyHandler = getProxyHandler(arrayProxy);
+            let eventType = ItemSelectedEvent;
+            proxyHandler.clearEventListeners(eventType);
+            proxyHandler.addEventListener(eventType, eventListener);
         }
         /**
-         * Adds item inserting listener
+         * On item moving
          * @param arrayProxy array proxy
-         * @param listener listener
+         * @param eventListener event listener
          */
-        static onItemInserting(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).itemInsertingListener = listener;
+        static onItemMoving(arrayProxy, eventListener) {
+            let proxyHandler = getProxyHandler(arrayProxy);
+            let eventType = ItemMovingEvent;
+            proxyHandler.clearEventListeners(eventType);
+            proxyHandler.addEventListener(eventType, eventListener);
         }
         /**
-         * Adds item inserted listener
+         * On item moved
          * @param arrayProxy array proxy
-         * @param listener listener
+         * @param eventListener event listener
          */
-        static onItemInserted(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).itemInsertedListener = listener;
+        static onItemMoved(arrayProxy, eventListener) {
+            let proxyHandler = getProxyHandler(arrayProxy);
+            let eventType = ItemMovedEvent;
+            proxyHandler.clearEventListeners(eventType);
+            proxyHandler.addEventListener(eventType, eventListener);
         }
         /**
-         * Adds item deleting listener
-         * @param arrayProxy array proxy
-         * @param listener listener
+         * On property changing
+         * @param objectProxy object proxy
+         * @param eventListener event listener
          */
-        static onItemDeleting(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).itemDeletingListener = listener;
+        static onPropertyChanging(objectProxy, eventListener) {
+            let proxyHandler = getProxyHandler(objectProxy);
+            let eventType = PropertyChangingEvent;
+            proxyHandler.clearEventListeners(eventType);
+            proxyHandler.addEventListener(eventType, eventListener);
         }
         /**
-         * Adds item deleted listener
-         * @param arrayProxy array proxy
-         * @param listener listener
+         * On property changed
+         * @param objectProxy object proxy
+         * @param eventListener event listener
          */
-        static onItemDeleted(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).itemDeletedListener = listener;
-        }
-        /**
-         * Adds item moving listener
-         * @param arrayProxy array proxy
-         * @param listener listener
-         */
-        static onItemMoving(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).itemMovingListener = listener;
-        }
-        /**
-         * Adds item moved listener
-         * @param arrayProxy array proxy
-         * @param listener listener
-         */
-        static onItemMoved(arrayProxy, listener) {
-            this.getProxyHandler(arrayProxy).itemMovedListener = listener;
+        static onPropertyChanged(objectProxy, eventListener) {
+            let proxyHandler = getProxyHandler(objectProxy);
+            let eventType = PropertyChangedEvent;
+            proxyHandler.clearEventListeners(eventType);
+            proxyHandler.addEventListener(eventType, eventListener);
         }
     }
 
@@ -1570,81 +1877,17 @@ var duice = (function (exports) {
                 return object;
             }
             // object handler
-            let objectHandler = new ObjectProxyHandler();
-            // copy property
-            for (let name in object) {
-                let value = object[name];
-                // value is array
-                if (Array.isArray(value)) {
-                    let arrayProxy = new ArrayProxy(value);
-                    ArrayProxy.getProxyHandler(arrayProxy).addObserver(objectHandler);
-                    object[name] = arrayProxy;
-                    continue;
-                }
-                // value is object
-                if (value != null && typeof value === 'object') {
-                    let objectProxy = new ObjectProxy(value);
-                    ObjectProxy.getProxyHandler(objectProxy).addObserver(objectHandler);
-                    object[name] = objectProxy;
-                    continue;
-                }
-                // value is primitive
-                object[name] = value;
-            }
-            // delete not exists property
-            for (let name in object) {
-                if (!Object.keys(object).includes(name)) {
-                    delete this[name];
-                }
-            }
-            // creates proxy
-            let objectProxy = new Proxy(object, objectHandler);
-            objectHandler.setTarget(object);
-            // set property
-            ObjectProxy.setProxyHandler(objectProxy, objectHandler);
-            ObjectProxy.setTarget(objectProxy, object);
+            let objectProxyHandler = new ObjectProxyHandler(object);
+            let objectProxy = new Proxy(object, objectProxyHandler);
+            setProxyTarget(objectProxy, object);
+            setProxyHandler(objectProxy, objectProxyHandler);
+            // assign
+            let initialObject = JSON.parse(JSON.stringify(object));
+            ObjectProxy.assign(objectProxy, initialObject);
             // save
             ObjectProxy.save(objectProxy);
             // returns
             return objectProxy;
-        }
-        /**
-         * Gets target
-         * @param objectProxy
-         * @param target
-         */
-        static setTarget(objectProxy, target) {
-            globalThis.Object.defineProperty(objectProxy, '_target_', {
-                value: target,
-                writable: true
-            });
-        }
-        /**
-         * Sets target
-         * @param objectProxy
-         */
-        static getTarget(objectProxy) {
-            return globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_target_').value;
-        }
-        /**
-         * Sets proxy handler
-         * @param objectProxy object proxy
-         * @param objectProxyHandler object proxy handler
-         */
-        static setProxyHandler(objectProxy, objectProxyHandler) {
-            globalThis.Object.defineProperty(objectProxy, '_proxy_handler_', {
-                value: objectProxyHandler,
-                writable: true
-            });
-        }
-        /**
-         * Gets proxy handler
-         * @param objectProxy object proxy handler
-         */
-        static getProxyHandler(objectProxy) {
-            let handler = globalThis.Object.getOwnPropertyDescriptor(objectProxy, '_proxy_handler_').value;
-            assert(handler, 'handler is not found');
-            return handler;
         }
         /**
          * Assign object to object proxy
@@ -1652,79 +1895,93 @@ var duice = (function (exports) {
          * @param object
          */
         static assign(objectProxy, object) {
-            let objectHandler = this.getProxyHandler(objectProxy);
+            let objectProxyHandler = getProxyHandler(objectProxy);
             try {
                 // suspend
-                objectHandler.suspendListener();
-                objectHandler.suspendNotify();
+                objectProxyHandler.suspendEvent();
+                objectProxyHandler.suspendNotify();
                 // loop object properties
                 for (let name in object) {
-                    let value = object[name];
-                    // source value is array
-                    if (Array.isArray(value)) {
-                        if (Array.isArray(objectProxy[name])) {
-                            ArrayProxy.assign(objectProxy[name], value);
+                    let source = object[name];
+                    let target = objectProxy[name];
+                    // source is array
+                    if (isArray(source)) {
+                        if (isProxy(target)) {
+                            ArrayProxy.assign(target, source);
                         }
                         else {
-                            objectProxy[name] = new ArrayProxy(value);
+                            objectProxy[name] = new ArrayProxy(source);
+                            getProxyHandler(objectProxy[name]).setParent(objectProxyHandler);
                         }
                         continue;
                     }
-                    // source value is object
-                    if (value != null && typeof value === 'object') {
-                        if (objectProxy[name] != null && typeof objectProxy[name] === 'object') {
-                            ObjectProxy.assign(objectProxy[name], value);
+                    // source is object
+                    if (isObject(source)) {
+                        if (isProxy(target)) {
+                            ObjectProxy.assign(target, source);
                         }
                         else {
-                            let objectProxy = new ObjectProxy(value);
-                            ObjectProxy.getProxyHandler(objectProxy).addObserver(objectHandler);
-                            objectProxy[name] = objectProxy;
+                            objectProxy[name] = new ObjectProxy(source);
+                            getProxyHandler(objectProxy[name]).setParent(objectProxyHandler);
                         }
                         continue;
                     }
-                    // source value is primitive
-                    objectProxy[name] = value;
+                    // default
+                    objectProxy[name] = source;
                 }
             }
             finally {
                 // resume
-                objectHandler.resumeListener();
-                objectHandler.resumeNotify();
+                objectProxyHandler.resumeEvent();
+                objectProxyHandler.resumeNotify();
             }
             // notify observers
-            objectHandler.notifyObservers(new Event(this));
+            objectProxyHandler.notifyObservers(null);
         }
         /**
          * Clear object properties
          * @param objectProxy
          */
         static clear(objectProxy) {
-            let objectHandler = this.getProxyHandler(objectProxy);
+            let objectHandler = getProxyHandler(objectProxy);
             try {
                 // suspend
-                objectHandler.suspendListener();
+                objectHandler.suspendEvent();
                 objectHandler.suspendNotify();
                 // clear properties
                 for (let name in objectProxy) {
                     let value = objectProxy[name];
-                    if (Array.isArray(value)) {
-                        ArrayProxy.clear(value);
+                    // source value is array
+                    if (isArray(value)) {
+                        if (isProxy(value)) {
+                            ArrayProxy.clear(value);
+                        }
+                        else {
+                            objectProxy[name] = [];
+                        }
                         continue;
                     }
-                    if (value != null && typeof value === 'object') {
-                        ObjectProxy.clear(value);
+                    // source value is object
+                    if (isObject(value)) {
+                        if (isProxy(value)) {
+                            ObjectProxy.clear(value);
+                        }
+                        else {
+                            objectProxy[name] = null;
+                        }
                         continue;
                     }
+                    // default
                     objectProxy[name] = null;
                 }
             }
             finally {
                 // resume
-                objectHandler.resumeListener();
+                objectHandler.resumeEvent();
                 objectHandler.resumeNotify();
             }
             // notify observers
-            objectHandler.notifyObservers(new Event(this));
+            objectHandler.notifyObservers(null);
         }
         /**
          * Save object properties
@@ -1746,13 +2003,28 @@ var duice = (function (exports) {
             this.assign(objectProxy, origin);
         }
         /**
+         * Set all properties to be readonly
+         * @param objectProxy
+         * @param readonly
+         */
+        static setReadonlyAll(objectProxy, readonly) {
+            getProxyHandler(objectProxy).setReadonlyAll(readonly);
+        }
+        /**
+         * Get whether all properties are readonly
+         * @param objectProxy
+         */
+        static isReadonlyAll(objectProxy) {
+            return getProxyHandler(objectProxy).isReadonlyAll();
+        }
+        /**
          * Set property to be readonly
          * @param objectProxy
          * @param property
          * @param readonly
          */
         static setReadonly(objectProxy, property, readonly) {
-            this.getProxyHandler(objectProxy).setReadonly(property, readonly);
+            getProxyHandler(objectProxy).setReadonly(property, readonly);
         }
         /**
          * Get whether property is readonly
@@ -1760,22 +2032,22 @@ var duice = (function (exports) {
          * @param property
          */
         static isReadonly(objectProxy, property) {
-            return this.getProxyHandler(objectProxy).isReadonly(property);
+            return getProxyHandler(objectProxy).isReadonly(property);
         }
         /**
-         * Set all properties to be readonly
+         * Set all properties to be disabled
          * @param objectProxy
-         * @param readonly
+         * @param disable
          */
-        static setReadonlyAll(objectProxy, readonly) {
-            this.getProxyHandler(objectProxy).setReadonlyAll(readonly);
+        static setDisabledAll(objectProxy, disable) {
+            getProxyHandler(objectProxy).setDisabledAll(disable);
         }
         /**
-         * Get whether all properties are readonly
+         * Get whether all properties are disabled
          * @param objectProxy
          */
-        static isReadonlyAll(objectProxy) {
-            return this.getProxyHandler(objectProxy).isReadonlyAll();
+        static isDisabledAll(objectProxy) {
+            return getProxyHandler(objectProxy).isDisabledAll();
         }
         /**
          * Set object to be disabled
@@ -1783,31 +2055,16 @@ var duice = (function (exports) {
          * @param property
          * @param disable
          */
-        static setDisable(objectProxy, property, disable) {
-            this.getProxyHandler(objectProxy).setDisable(property, disable);
+        static setDisabled(objectProxy, property, disable) {
+            getProxyHandler(objectProxy).setDisabled(property, disable);
         }
         /**
          * Get whether property is disabled
          * @param objectProxy
          * @param property
          */
-        static isDisable(objectProxy, property) {
-            return this.getProxyHandler(objectProxy).isDisable(property);
-        }
-        /**
-         * Set all properties to be disabled
-         * @param objectProxy
-         * @param disable
-         */
-        static setDisableAll(objectProxy, disable) {
-            this.getProxyHandler(objectProxy).setDisableAll(disable);
-        }
-        /**
-         * Get whether all properties are disabled
-         * @param objectProxy
-         */
-        static isDisableAll(objectProxy) {
-            return this.getProxyHandler(objectProxy).isDisableAll();
+        static isDisabled(objectProxy, property) {
+            return getProxyHandler(objectProxy).isDisabled(property);
         }
         /**
          * Set property to be focused
@@ -1815,35 +2072,30 @@ var duice = (function (exports) {
          * @param property
          */
         static focus(objectProxy, property) {
-            this.getProxyHandler(objectProxy).focus(property);
+            getProxyHandler(objectProxy).focus(property);
         }
         /**
-         * Set readonly before changing event listener
-         * @param objectProxy
-         * @param listener
+         * On property changing
+         * @param objectProxy object proxy
+         * @param eventListener event listener
          */
-        static onPropertyChanging(objectProxy, listener) {
-            this.getProxyHandler(objectProxy).propertyChangingListener = listener;
+        static onPropertyChanging(objectProxy, eventListener) {
+            let proxyHandler = getProxyHandler(objectProxy);
+            proxyHandler.clearEventListeners(PropertyChangingEvent);
+            proxyHandler.addEventListener(PropertyChangingEvent, eventListener);
         }
         /**
-         * Set property after changed event listener
-         * @param objectProxy
-         * @param listener
+         * On property changed
+         * @param objectProxy object proxy
+         * @param eventListener event listener
          */
-        static onPropertyChanged(objectProxy, listener) {
-            this.getProxyHandler(objectProxy).propertyChangedListener = listener;
+        static onPropertyChanged(objectProxy, eventListener) {
+            let proxyHandler = getProxyHandler(objectProxy);
+            proxyHandler.clearEventListeners(PropertyChangedEvent);
+            proxyHandler.addEventListener(PropertyChangedEvent, eventListener);
         }
     }
 
-    var __awaiter$2 = (window && window.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     /**
      * Array Element
      */
@@ -1860,8 +2112,8 @@ var duice = (function (exports) {
             this.slot = document.createElement('slot');
             this.itemHtmlElements = [];
             // attributes
-            this.loop = getElementAttribute(htmlElement, 'loop');
-            this.hierarchy = getElementAttribute(htmlElement, 'hierarchy');
+            this.foreach = getElementAttribute(htmlElement, 'foreach');
+            this.recursive = getElementAttribute(htmlElement, 'recursive');
             this.editable = (getElementAttribute(htmlElement, 'editable') === 'true');
             this.selectedItemClass = getElementAttribute(htmlElement, 'selected-item-class');
             // replace with slot for position
@@ -1873,24 +2125,23 @@ var duice = (function (exports) {
          * Renders
          */
         render() {
-            var _a;
+            var _a, _b;
             let arrayProxy = this.getBindData();
             // reset row elements
             this.itemHtmlElements.forEach(rowElement => {
                 rowElement.parentNode.removeChild(rowElement);
             });
             this.itemHtmlElements.length = 0;
-            // loop
-            if (this.loop) {
-                let loopArgs = this.loop.split(',');
-                let itemName = loopArgs[0].trim();
-                let statusName = (_a = loopArgs[1]) === null || _a === void 0 ? void 0 : _a.trim();
-                // hierarchy loop
-                if (this.hierarchy) {
-                    let hierarchyArray = this.hierarchy.split(',');
-                    let idName = hierarchyArray[0];
-                    let parentIdName = hierarchyArray[1];
-                    //let index = -1;
+            // foreach
+            if (this.foreach) {
+                let foreachArgs = this.foreach.split(',');
+                let itemName = foreachArgs[0].trim();
+                let statusName = (_a = foreachArgs[1]) === null || _a === void 0 ? void 0 : _a.trim();
+                // recursive loop
+                if (this.recursive) {
+                    let recursiveArgs = this.recursive.split(',');
+                    let idName = recursiveArgs[0].trim();
+                    let parentIdName = (_b = recursiveArgs[1]) === null || _b === void 0 ? void 0 : _b.trim();
                     const _this = this;
                     // visit function
                     let visit = function (array, parentId, depth) {
@@ -1909,7 +2160,7 @@ var duice = (function (exports) {
                                     depth: depth
                                 });
                                 // create row element
-                                _this.createItemHtmlElement(index, object, context);
+                                _this.createItemHtmlElement(index, context);
                                 // visit child elements
                                 let id = object[idName];
                                 visit(array, id, depth + 1);
@@ -1919,7 +2170,7 @@ var duice = (function (exports) {
                     // start visit
                     visit(arrayProxy, null, 0);
                 }
-                // default loop
+                // default foreach
                 else {
                     // normal
                     for (let index = 0; index < arrayProxy.length; index++) {
@@ -1936,11 +2187,11 @@ var duice = (function (exports) {
                             last: (arrayProxy.length == index + 1)
                         });
                         // create row element
-                        this.createItemHtmlElement(index, object, context);
+                        this.createItemHtmlElement(index, context);
                     }
                 }
             }
-            // not loop
+            // not foreach
             else {
                 // initialize
                 let itemHtmlElement = this.getHtmlElement().cloneNode(true);
@@ -1950,18 +2201,20 @@ var duice = (function (exports) {
                 // append to slot
                 this.slot.parentNode.insertBefore(itemHtmlElement, this.slot);
                 // check if
-                runIfCode(itemHtmlElement, context);
-                // execute script
-                runExecuteCode(itemHtmlElement, context);
+                runIfCode(itemHtmlElement, context).then(result => {
+                    if (result === false) {
+                        return;
+                    }
+                    runExecuteCode(itemHtmlElement, context).then();
+                });
             }
         }
         /**
          * Creates item html element
          * @param index index
-         * @param object object
          * @param context context
          */
-        createItemHtmlElement(index, object, context) {
+        createItemHtmlElement(index, context) {
             // clones row elements
             let itemHtmlElement = this.getHtmlElement().cloneNode(true);
             // adds embedded attribute
@@ -1970,23 +2223,24 @@ var duice = (function (exports) {
             let _this = this;
             if (this.editable) {
                 itemHtmlElement.setAttribute('draggable', 'true');
-                itemHtmlElement.addEventListener('dragstart', function (e) {
-                    let fromIndex = getElementAttribute(this, 'index');
+                itemHtmlElement.addEventListener('dragstart', e => {
+                    let fromIndex = getElementAttribute(e.currentTarget, 'index');
                     e.dataTransfer.setData("text", fromIndex);
                 });
-                itemHtmlElement.addEventListener('dragover', function (e) {
+                itemHtmlElement.addEventListener('dragover', e => {
                     e.preventDefault();
                     e.stopPropagation();
                 });
-                itemHtmlElement.addEventListener('drop', function (e) {
-                    return __awaiter$2(this, void 0, void 0, function* () {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        let fromIndex = parseInt(e.dataTransfer.getData('text'));
-                        let toIndex = parseInt(getElementAttribute(this, 'index'));
-                        let itemMoveEvent = new ItemMoveEvent(_this, fromIndex, toIndex);
-                        _this.notifyObservers(itemMoveEvent);
-                    });
+                itemHtmlElement.addEventListener('drop', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Notifies item move event
+                    let element = this.getHtmlElement();
+                    let data = getProxyTarget(this.getBindData());
+                    let fromIndex = parseInt(e.dataTransfer.getData('text'));
+                    let toIndex = parseInt(getElementAttribute(e.currentTarget, 'index'));
+                    let itemMoveEvent = new ItemMovingEvent(element, data, fromIndex, toIndex);
+                    _this.notifyObservers(itemMoveEvent);
                 });
             }
             // initializes row element
@@ -1994,23 +2248,20 @@ var duice = (function (exports) {
             this.itemHtmlElements.push(itemHtmlElement);
             // insert into slot
             this.slot.parentNode.insertBefore(itemHtmlElement, this.slot);
-            // check if clause
-            runIfCode(itemHtmlElement, context);
-            // execute script
-            runExecuteCode(itemHtmlElement, context);
-            // selectable
+            // trigger item selecting event
             itemHtmlElement.addEventListener('click', e => {
-                // selected class
-                if (this.selectedItemClass) {
-                    this.itemHtmlElements.forEach(element => {
-                        element.classList.remove(this.selectedItemClass);
-                    });
-                    e.currentTarget.classList.add(this.selectedItemClass);
-                    e.stopPropagation();
+                e.stopPropagation();
+                let element = this.getHtmlElement();
+                let data = getProxyTarget(this.getBindData());
+                let itemSelectingEvent = new ItemSelectingEvent(element, data, index);
+                this.notifyObservers(itemSelectingEvent);
+            });
+            // check if code
+            runIfCode(itemHtmlElement, context).then(result => {
+                if (result === false) {
+                    return;
                 }
-                // trigger row select event
-                let rowSelectEvent = new ItemSelectEvent(this, index);
-                this.notifyObservers(rowSelectEvent);
+                runExecuteCode(itemHtmlElement, context).then();
             });
         }
         /**
@@ -2019,10 +2270,12 @@ var duice = (function (exports) {
          * @param event event
          */
         update(observable, event) {
-            console.trace('ArrayElement.update', observable, event);
+            var _a;
+            debug('ArrayElement.update', observable, event);
+            // if observable is array proxy handler
             if (observable instanceof ArrayProxyHandler) {
-                // row select event
-                if (event instanceof ItemSelectEvent) {
+                // item selected event
+                if (event instanceof ItemSelectedEvent) {
                     if (this.selectedItemClass) {
                         this.itemHtmlElements.forEach(el => el.classList.remove(this.selectedItemClass));
                         let index = event.getIndex();
@@ -2034,11 +2287,32 @@ var duice = (function (exports) {
                             });
                         }
                     }
+                    // no render
                     return;
                 }
-                // render
-                this.render();
+                // item moved event
+                if (event instanceof ItemMovedEvent) {
+                    this.render();
+                    return;
+                }
+                // property change event
+                if (event instanceof PropertyChangedEvent) {
+                    // if recursive and parent is changed, render array element
+                    if (this.recursive) {
+                        let parentId = (_a = this.recursive.split(',')[1]) === null || _a === void 0 ? void 0 : _a.trim();
+                        if (event.getProperty() === parentId) {
+                            this.render();
+                            return;
+                        }
+                    }
+                    // default is no-op
+                    else {
+                        return;
+                    }
+                }
             }
+            // default
+            this.render();
         }
     }
 
@@ -2173,7 +2447,8 @@ var duice = (function (exports) {
                             }
                         }
                         catch (e) {
-                            console.error(e, htmlElement, container, JSON.stringify(context));
+                            console.error(e, htmlElement.outerHTML, context);
+                            // console.error(e, htmlElement, container, JSON.stringify(context));
                         }
                     }
                 }
@@ -2185,6 +2460,13 @@ var duice = (function (exports) {
      * Custom Element
      */
     class CustomElement extends Element {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context contxt
+         * @protected
+         */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
         }
@@ -2192,14 +2474,14 @@ var duice = (function (exports) {
          * Renders element
          */
         render() {
-            // do render
-            this.doRender(this.getBindData());
-            // check if
-            runIfCode(this.getHtmlElement(), this.getContext());
-            // initialize
-            Initializer.initialize(this.getHtmlElement(), this.getContext());
-            // execute script
-            runExecuteCode(this.getHtmlElement(), this.getContext());
+            runIfCode(this.getHtmlElement(), this.getContext()).then(result => {
+                if (result == false) {
+                    return;
+                }
+                this.doRender(this.getBindData());
+                Initializer.initialize(this.getHtmlElement(), this.getContext());
+                runExecuteCode(this.getHtmlElement(), this.getContext()).then();
+            });
         }
         /**
          * Implements update method
@@ -2207,6 +2489,7 @@ var duice = (function (exports) {
          * @param event event
          */
         update(observable, event) {
+            debug('ObjectElement.update', observable, event);
             if (observable instanceof ProxyHandler) {
                 this.doUpdate(observable.getTarget());
             }
@@ -2235,7 +2518,9 @@ var duice = (function (exports) {
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
             this.editable = false;
-            this.closeButtonImg = 'data:image/svg+xml;base64,' + window.btoa('<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.4" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#292D32"></path> <path d="M13.0594 12.0001L15.3594 9.70011C15.6494 9.41011 15.6494 8.93011 15.3594 8.64011C15.0694 8.35011 14.5894 8.35011 14.2994 8.64011L11.9994 10.9401L9.69937 8.64011C9.40937 8.35011 8.92937 8.35011 8.63938 8.64011C8.34938 8.93011 8.34938 9.41011 8.63938 9.70011L10.9394 12.0001L8.63938 14.3001C8.34938 14.5901 8.34938 15.0701 8.63938 15.3601C8.78938 15.5101 8.97937 15.5801 9.16937 15.5801C9.35937 15.5801 9.54937 15.5101 9.69937 15.3601L11.9994 13.0601L14.2994 15.3601C14.4494 15.5101 14.6394 15.5801 14.8294 15.5801C15.0194 15.5801 15.2094 15.5101 15.3594 15.3601C15.6494 15.0701 15.6494 14.5901 15.3594 14.3001L13.0594 12.0001Z" fill="#292D32"></path> </g></svg>');
+            this.clearButtonImg = 'data:image/svg+xml;base64,' + window.btoa('<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.4" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#292D32"></path> <path d="M13.0594 12.0001L15.3594 9.70011C15.6494 9.41011 15.6494 8.93011 15.3594 8.64011C15.0694 8.35011 14.5894 8.35011 14.2994 8.64011L11.9994 10.9401L9.69937 8.64011C9.40937 8.35011 8.92937 8.35011 8.63938 8.64011C8.34938 8.93011 8.34938 9.41011 8.63938 9.70011L10.9394 12.0001L8.63938 14.3001C8.34938 14.5901 8.34938 15.0701 8.63938 15.3601C8.78938 15.5101 8.97937 15.5801 9.16937 15.5801C9.35937 15.5801 9.54937 15.5101 9.69937 15.3601L11.9994 13.0601L14.2994 15.3601C14.4494 15.5101 14.6394 15.5801 14.8294 15.5801C15.0194 15.5801 15.2094 15.5101 15.3594 15.3601C15.6494 15.0701 15.6494 14.5901 15.3594 14.3001L13.0594 12.0001Z" fill="#292D32"></path> </g></svg>');
+            this.readonly = false;
+            this.disabled = false;
             this.originSrc = String(this.getHtmlElement().src);
             // editable
             this.editable = (getElementAttribute(this.getHtmlElement(), 'editable') === 'true');
@@ -2247,7 +2532,7 @@ var duice = (function (exports) {
                 });
                 // create clear button
                 this.clearButton = document.createElement('img');
-                this.clearButton.src = this.closeButtonImg;
+                this.clearButton.src = this.clearButtonImg;
                 this.clearButton.style.cursor = 'pointer';
                 this.clearButton.style.width = '16px';
                 this.clearButton.style.height = '16px';
@@ -2303,7 +2588,9 @@ var duice = (function (exports) {
                 this.getHtmlElement().src = null;
             }
             // notify observers
-            let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
+            let element = this.getHtmlElement();
+            let data = getProxyTarget(this.getBindData());
+            let event = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
             this.notifyObservers(event);
         }
         /**
@@ -2312,7 +2599,7 @@ var duice = (function (exports) {
         changeImage() {
             let input = document.createElement('input');
             input.setAttribute("type", "file");
-            input.setAttribute("accept", "image/gif, image/jpeg, image/png");
+            input.setAttribute("accept", "image/gif, image/jpeg, image/png, image/svg+xml");
             let _this = this;
             input.addEventListener('change', function (e) {
                 let fileReader = new FileReader();
@@ -2328,7 +2615,9 @@ var duice = (function (exports) {
                         }
                         _this.setValue(value);
                         // notify observers
-                        let event = new PropertyChangeEvent(_this, _this.getProperty(), _this.getValue(), _this.getIndex());
+                        let element = _this.getHtmlElement();
+                        let data = getProxyTarget(_this.getBindData());
+                        let event = new PropertyChangingEvent(element, data, _this.getProperty(), _this.getValue(), _this.getIndex());
                         _this.notifyObservers(event);
                     }));
                     fileReader.readAsDataURL(this.files[0]);
@@ -2400,14 +2689,16 @@ var duice = (function (exports) {
          * @param readonly readonly or not
          */
         setReadonly(readonly) {
-            this.getHtmlElement().style.pointerEvents = (readonly ? 'none' : 'unset');
+            this.readonly = readonly;
+            this.getHtmlElement().style.pointerEvents = (this.readonly || this.disabled ? 'none' : 'unset');
         }
         /**
-         * Sets disable
-         * @param disable disable or not
+         * Sets disabled
+         * @param disabled disabled or not
          */
-        setDisable(disable) {
-            this.getHtmlElement().style.pointerEvents = (disable ? 'none' : 'unset');
+        setDisabled(disabled) {
+            this.disabled = disabled;
+            this.getHtmlElement().style.pointerEvents = (this.disabled || this.readonly ? 'none' : 'unset');
         }
     }
 
@@ -2445,10 +2736,13 @@ var duice = (function (exports) {
          */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
-            // adds change listener
+            // Adds change event listener
             this.getHtmlElement().addEventListener('change', e => {
-                let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
-                this.notifyObservers(event);
+                e.stopPropagation();
+                let element = this.getHtmlElement();
+                let data = getProxyTarget(this.getBindData());
+                let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
+                this.notifyObservers(propertyChangingEvent);
             }, true);
             // turn off autocomplete
             this.getHtmlElement().setAttribute('autocomplete', 'off');
@@ -2487,11 +2781,11 @@ var duice = (function (exports) {
             this.getHtmlElement().readOnly = readonly;
         }
         /**
-         * Sets disable
-         * @param disable disable or not
+         * Sets disabled
+         * @param disabled disabled or not
          */
-        setDisable(disable) {
-            if (disable) {
+        setDisabled(disabled) {
+            if (disabled) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
             }
             else {
@@ -2593,6 +2887,7 @@ var duice = (function (exports) {
          * @param readonly readonly or not
          */
         setReadonly(readonly) {
+            debug('InputCheckboxElement.setReadonly', readonly);
             if (readonly) {
                 this.getHtmlElement().addEventListener('click', this.disableClick);
             }
@@ -2683,6 +2978,47 @@ var duice = (function (exports) {
     }
 
     /**
+     * Input Range Element
+     */
+    class InputRangeElement extends InputElement {
+        /**
+         * Constructor
+         * @param htmlElement html element
+         * @param bindData bind data
+         * @param context context
+         */
+        constructor(htmlElement, bindData, context) {
+            super(htmlElement, bindData, context);
+            this.trueValue = true;
+            this.falseValue = false;
+        }
+        /**
+         * Sets readonly
+         * @param readonly readonly or not
+         */
+        setReadonly(readonly) {
+            debug('InputRangeElement.setReadonly', readonly);
+            this.getHtmlElement().readOnly = readonly;
+            if (readonly) {
+                this.getHtmlElement().addEventListener('mousedown', this.disableEvent);
+                this.getHtmlElement().addEventListener('touchstart', this.disableEvent);
+            }
+            else {
+                this.getHtmlElement().removeEventListener('mousedown', this.disableEvent);
+                this.getHtmlElement().removeEventListener('touchstart', this.disableEvent);
+            }
+        }
+        /**
+         * Disable event
+         * @param event event
+         */
+        disableEvent(event) {
+            event.preventDefault();
+            return false;
+        }
+    }
+
+    /**
      * Input Element Factory
      */
     class InputElementFactory extends ObjectElementFactory {
@@ -2703,6 +3039,8 @@ var duice = (function (exports) {
                     return new InputRadioElement(htmlElement, bindData, context);
                 case 'datetime-local':
                     return new InputDatetimeLocalElement(htmlElement, bindData, context);
+                case 'range':
+                    return new InputRangeElement(htmlElement, bindData, context);
                 default:
                     return new InputElement(htmlElement, bindData, context);
             }
@@ -2729,60 +3067,51 @@ var duice = (function (exports) {
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
             this.defaultOptions = [];
-            // checks if
-            if (!this.checkIf()) {
-                return;
-            }
-            // adds event listener
-            this.getHtmlElement().addEventListener('change', () => {
-                let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
-                this.notifyObservers(event);
-            }, true);
             // stores default option
             for (let i = 0; i < this.getHtmlElement().options.length; i++) {
                 this.defaultOptions.push(this.getHtmlElement().options[i]);
             }
             // option property
-            let optionName = getElementAttribute(this.getHtmlElement(), 'option');
-            if (optionName) {
-                this.option = findVariable(this.getContext(), optionName);
-                this.optionValueProperty = getElementAttribute(this.getHtmlElement(), 'option-value-property');
-                this.optionTextProperty = getElementAttribute(this.getHtmlElement(), 'option-text-property');
-                ArrayProxy.getProxyHandler(this.option).addObserver(this);
-                this.updateOptions();
-            }
+            this.option = getElementAttribute(this.getHtmlElement(), 'option');
+            this.optionValueProperty = getElementAttribute(this.getHtmlElement(), 'option-value-property');
+            this.optionTextProperty = getElementAttribute(this.getHtmlElement(), 'option-text-property');
+            // adds event listener
+            this.getHtmlElement().addEventListener('change', e => {
+                e.stopPropagation();
+                let element = this.getHtmlElement();
+                let data = getProxyTarget(this.getBindData());
+                let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
+                this.notifyObservers(propertyChangingEvent);
+            }, true);
+        }
+        /**
+         * Overrides render
+         */
+        render() {
+            this.createOptions();
+            super.render();
         }
         /**
          * Updates options
          */
-        updateOptions() {
+        createOptions() {
             let value = this.getHtmlElement().value;
             this.getHtmlElement().innerHTML = '';
             this.defaultOptions.forEach(defaultOption => {
                 this.getHtmlElement().appendChild(defaultOption);
             });
-            this.option.forEach(data => {
-                let option = document.createElement('option');
-                option.value = data[this.optionValueProperty];
-                option.appendChild(document.createTextNode(data[this.optionTextProperty]));
-                this.getHtmlElement().appendChild(option);
-            });
-            this.getHtmlElement().value = value;
-        }
-        /**
-         * Overrides update
-         * @param observable observable
-         * @param event event
-         */
-        update(observable, event) {
-            super.update(observable, event);
-            // checks if
-            if (!this.checkIf()) {
-                return;
-            }
             if (this.option) {
-                this.updateOptions();
+                let optionArray = findVariable(this.getContext(), this.option);
+                if (optionArray) {
+                    optionArray.forEach(it => {
+                        let option = document.createElement('option');
+                        option.value = it[this.optionValueProperty];
+                        option.appendChild(document.createTextNode(it[this.optionTextProperty]));
+                        this.getHtmlElement().appendChild(option);
+                    });
+                }
             }
+            this.getHtmlElement().value = value;
         }
         /**
          * Sets element value
@@ -2824,11 +3153,11 @@ var duice = (function (exports) {
             }
         }
         /**
-         * Sets disable
-         * @param disable disable or not
+         * Sets disabled
+         * @param disabled disable or not
          */
-        setDisable(disable) {
-            if (disable) {
+        setDisabled(disabled) {
+            if (disabled) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
             }
             else {
@@ -2873,8 +3202,11 @@ var duice = (function (exports) {
             super(htmlElement, bindData, context);
             // adds change event listener
             this.getHtmlElement().addEventListener('change', e => {
-                let event = new PropertyChangeEvent(this, this.getProperty(), this.getValue(), this.getIndex());
-                this.notifyObservers(event);
+                e.stopPropagation();
+                let element = this.getHtmlElement();
+                let data = getProxyTarget(this.getBindData());
+                let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
+                this.notifyObservers(propertyChangingEvent);
             }, true);
         }
         /**
@@ -2914,11 +3246,11 @@ var duice = (function (exports) {
             }
         }
         /**
-         * Sets disable
-         * @param disable disable or not
+         * Sets disabled
+         * @param disabled disabled or not
          */
-        setDisable(disable) {
-            if (disable) {
+        setDisabled(disabled) {
+            if (disabled) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
             }
             else {
@@ -2958,7 +3290,14 @@ var duice = (function (exports) {
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
+    /**
+     * Dialog
+     */
     class Dialog {
+        /**
+         * Constructor
+         * @param dialogElement dialog element
+         */
         constructor(dialogElement) {
             this.dialogElement = dialogElement;
             let _this = this;
@@ -3016,26 +3355,45 @@ var duice = (function (exports) {
             this.header.appendChild(this.closeButton);
             // on resize event
             window.addEventListener('resize', function (event) {
-                _this.moveToCenterPosition();
+                _this.movePositionToCenter();
             });
         }
+        /**
+         * Sets opening listener
+         * @param listener listener
+         */
         onOpening(listener) {
             this.openingListener = listener;
             return this;
         }
+        /**
+         * Sets opened listener
+         * @param listener listener
+         */
         onOpened(listener) {
             this.openedListener = listener;
             return this;
         }
+        /**
+         * Sets closing listener
+         * @param listener listener
+         */
         onClosing(listener) {
             this.closingListener = listener;
             return this;
         }
+        /**
+         * Sets closed listener
+         * @param listener listener
+         */
         onClosed(listener) {
             this.closedListener = listener;
             return this;
         }
-        moveToCenterPosition() {
+        /**
+         * Moves position to center
+         */
+        movePositionToCenter() {
             window.getComputedStyle(this.dialogElement);
             this.dialogElement.style.boxSizing = 'border-box';
             let computedWidth = this.dialogElement.offsetWidth;
@@ -3045,35 +3403,39 @@ var duice = (function (exports) {
             this.dialogElement.style.left = Math.max(0, window.innerWidth / 2 - computedWidth / 2) + scrollX + 'px';
             this.dialogElement.style.top = Math.max(0, window.innerHeight / 3 - computedHeight / 3) + scrollY + 'px';
         }
+        /**
+         * Gets dialog element
+         * @protected
+         */
         getDialogElement() {
             return this.dialogElement;
         }
+        /**
+         * Shows dialog
+         * @protected
+         */
         show() {
             // saves current scroll position
             let scrollX = window.scrollX;
             let scrollY = window.scrollY;
             // show dialog modal
-            this.dialogElement.style.opacity = '0';
             window.document.body.appendChild(this.dialogElement);
             this.dialogElement.showModal();
             // restore previous scroll position
             window.scrollTo(scrollX, scrollY);
             // adjusting position
-            this.moveToCenterPosition();
-            // fade in
-            let _this = this;
-            (function fade() {
-                let val = parseFloat(_this.dialogElement.style.opacity);
-                if (!((val += .1) > 1)) {
-                    _this.dialogElement.style.opacity = String(val);
-                    requestAnimationFrame(fade);
-                }
-            })();
+            this.movePositionToCenter();
         }
+        /**
+         * Hides dialog
+         * @protected
+         */
         hide() {
-            // closes modal
             this.dialogElement.close();
         }
+        /**
+         * Opens dialog
+         */
         open() {
             return __awaiter(this, void 0, void 0, function* () {
                 // opening listener
@@ -3097,6 +3459,11 @@ var duice = (function (exports) {
                 return this.promise;
             });
         }
+        /**
+         * Closes dialog
+         * @param args args
+         * @protected
+         */
         close(...args) {
             // closing listener
             if (this.closingListener) {
@@ -3114,7 +3481,14 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Alert Dialog
+     */
     class AlertDialog extends Dialog {
+        /**
+         * Constructor
+         * @param message message
+         */
         constructor(message) {
             super(document.createElement('dialog'));
             this.getDialogElement().style.padding = '1rem';
@@ -3137,22 +3511,38 @@ var duice = (function (exports) {
             });
             this.getDialogElement().appendChild(this.confirmButton);
         }
+        /**
+         * Overrides open
+         */
         open() {
             let promise = super.open();
             this.confirmButton.focus();
             return promise;
         }
+        /**
+         * Confirm
+         */
         confirm() {
             super.close();
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
+        /**
+         * Overrides close
+         */
         close() {
             super.close();
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
     }
 
+    /**
+     * Confirm Dialog
+     */
     class ConfirmDialog extends Dialog {
+        /**
+         * Constructor
+         * @param message message
+         */
         constructor(message) {
             super(document.createElement('dialog'));
             this.getDialogElement().style.padding = '1rem';
@@ -3186,26 +3576,47 @@ var duice = (function (exports) {
             });
             this.getDialogElement().appendChild(this.confirmButton);
         }
+        /**
+         * Opens dialog
+         */
         open() {
             let promise = super.open();
             this.confirmButton.focus();
             return promise;
         }
+        /**
+         * Closes dialog
+         * @param args args
+         */
         close(...args) {
             super.close(false);
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
+        /**
+         * Confirm
+         */
         confirm() {
             super.close(true);
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
+        /**
+         * Cancel
+         */
         cancel() {
             super.close(false);
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
     }
 
+    /**
+     * Prompt Dialog
+     */
     class PromptDialog extends Dialog {
+        /**
+         * Constructor
+         * @param message message
+         * @param type type
+         */
         constructor(message, type) {
             super(document.createElement('dialog'));
             this.getDialogElement().style.padding = '1rem';
@@ -3248,34 +3659,59 @@ var duice = (function (exports) {
             });
             this.getDialogElement().appendChild(this.confirmButton);
         }
+        /**
+         * Overrides open
+         */
         open() {
             let promise = super.open();
             this.promptInput.focus();
             return promise;
         }
+        /**
+         * Overrides close
+         * @param args
+         */
         close(...args) {
             super.close();
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
+        /**
+         * Confirm
+         * @param value
+         */
         confirm(value) {
             super.close(value);
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
+        /**
+         * Cancel
+         */
         cancel() {
             super.close();
             this.getDialogElement().parentNode.removeChild(this.getDialogElement());
         }
     }
 
+    /**
+     * Tab Folder
+     */
     class TabFolder {
         constructor() {
             this.items = [];
         }
+        /**
+         * Adds tab item
+         * @param item
+         */
         addItem(item) {
             item.setTabFolder(this);
             item.setTabIndex(this.items.length);
             this.items.push(item);
         }
+        /**
+         * set Active tab item
+         * @param index index
+         */
         setActive(index) {
             for (let i = 0; i < this.items.length; i++) {
                 this.items[i].setActive(i === index);
@@ -3283,7 +3719,16 @@ var duice = (function (exports) {
         }
     }
 
+    /**
+     * Tab Item
+     */
     class TabItem {
+        /**
+         * Constructor
+         * @param button button
+         * @param content content
+         * @param listener listener
+         */
         constructor(button, content, listener) {
             this.button = button;
             this.content = content;
@@ -3298,12 +3743,24 @@ var duice = (function (exports) {
             // set de-active
             this.setActive(false);
         }
+        /**
+         * Sets tab folder
+         * @param tabFolder tab folder
+         */
         setTabFolder(tabFolder) {
             this.tabFolder = tabFolder;
         }
+        /**
+         * Sets tab index
+         * @param tabIndex tab index
+         */
         setTabIndex(tabIndex) {
             this.tabIndex = tabIndex;
         }
+        /**
+         * Sets active
+         * @param active active or not
+         */
         setActive(active) {
             if (active) {
                 this.button.style.opacity = 'unset';
@@ -3327,12 +3784,15 @@ var duice = (function (exports) {
         }
         // listen history event and forward to DOMContentLoaded event
         if (globalThis.window) {
-            ['popstate', 'pageshow'].forEach(event => {
-                window.addEventListener(event, (e) => {
-                    if (event === 'pageshow' && !e.persisted)
-                        return;
+            // popstate
+            window.addEventListener('popstate', e => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
+            // pageshow
+            window.addEventListener('pageshow', (e) => {
+                if (e.persisted) {
                     document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
-                });
+                }
             });
         }
     })();
@@ -3347,33 +3807,43 @@ var duice = (function (exports) {
     exports.CustomElementFactory = CustomElementFactory;
     exports.Dialog = Dialog;
     exports.ElementRegistry = ElementRegistry;
-    exports.Event = Event;
     exports.ImgElementFactory = ImgElementFactory;
     exports.Initializer = Initializer;
     exports.InputElementFactory = InputElementFactory;
-    exports.ItemDeleteEvent = ItemDeleteEvent;
-    exports.ItemInsertEvent = ItemInsertEvent;
-    exports.ItemMoveEvent = ItemMoveEvent;
-    exports.ItemSelectEvent = ItemSelectEvent;
+    exports.ItemMovedEvent = ItemMovedEvent;
+    exports.ItemMovingEvent = ItemMovingEvent;
+    exports.ItemSelectedEvent = ItemSelectedEvent;
+    exports.ItemSelectingEvent = ItemSelectingEvent;
     exports.ObjectElement = ObjectElement;
     exports.ObjectElementFactory = ObjectElementFactory;
     exports.ObjectProxy = ObjectProxy;
     exports.PromptDialog = PromptDialog;
-    exports.PropertyChangeEvent = PropertyChangeEvent;
+    exports.PropertyChangedEvent = PropertyChangedEvent;
+    exports.PropertyChangingEvent = PropertyChangingEvent;
+    exports.ProxyHandler = ProxyHandler;
     exports.SelectElementFactory = SelectElementFactory;
     exports.TabFolder = TabFolder;
     exports.TabItem = TabItem;
     exports.TextareaElementFactory = TextareaElementFactory;
     exports.assert = assert;
+    exports.debug = debug;
     exports.findVariable = findVariable;
     exports.getElementAttribute = getElementAttribute;
     exports.getElementQuerySelector = getElementQuerySelector;
+    exports.getProxyHandler = getProxyHandler;
+    exports.getProxyTarget = getProxyTarget;
     exports.hasElementAttribute = hasElementAttribute;
+    exports.isArray = isArray;
+    exports.isObject = isObject;
+    exports.isPrimitive = isPrimitive;
+    exports.isProxy = isProxy;
     exports.markInitialized = markInitialized;
     exports.runCode = runCode;
     exports.runExecuteCode = runExecuteCode;
     exports.runIfCode = runIfCode;
     exports.setElementAttribute = setElementAttribute;
+    exports.setProxyHandler = setProxyHandler;
+    exports.setProxyTarget = setProxyTarget;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

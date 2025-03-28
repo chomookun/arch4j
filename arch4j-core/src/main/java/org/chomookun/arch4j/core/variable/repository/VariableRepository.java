@@ -33,7 +33,9 @@ public interface VariableRepository extends JpaRepository<VariableEntity, String
                     criteriaBuilder.like(root.get(VariableEntity_.NAME), '%' + variableSearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(VariableEntity_.SYSTEM_REQUIRED).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(VariableEntity_.SYSTEM_REQUIRED).descending())
+                .and(Sort.by(VariableEntity_.VARIABLE_ID).ascending());
         // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)

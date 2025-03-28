@@ -33,11 +33,13 @@ public interface AuthorityRepository extends JpaRepository<AuthorityEntity, Stri
                     criteriaBuilder.like(root.get(AuthorityEntity_.NAME), '%' + authoritySearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(AuthorityEntity_.SYSTEM_REQUIRED).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(AuthorityEntity_.SYSTEM_REQUIRED).descending())
+                .and(Sort.by(AuthorityEntity_.AUTHORITY_ID).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
         return findAll(specification, finalPageable);
     }
 

@@ -22,7 +22,7 @@
             name: null,
             codeItems: []
         });
-        duice.ObjectProxy.setDisableAll(code, true);
+        duice.ObjectProxy.setDisabledAll(code, true);
         duice.ObjectProxy.onPropertyChanging(code, async event => {
             if (event.getProperty() === 'codeId') {
                 if (!await validateCodeId(event.getValue())) {
@@ -77,7 +77,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(code, data);
-                    duice.ObjectProxy.setDisableAll(code, false);
+                    duice.ObjectProxy.setDisabledAll(code, false);
                     duice.ObjectProxy.setReadonly(code, 'codeId', true);
                     code._new = false;
                 });
@@ -91,7 +91,7 @@
             duice.ObjectProxy.assign(code, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(code, false);
+            duice.ObjectProxy.setDisabledAll(code, false);
             duice.ObjectProxy.setReadonly(code, 'codeId', false);
             duice.ObjectProxy.focus(code, 'codeId');
         }
@@ -280,7 +280,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="codes"
-                            data-duice-loop="code,status"
+                            data-duice-foreach="code,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.id=code.codeId;"
                             onclick="getCode(this.dataset.id);"
@@ -382,7 +382,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="code.codeItems" data-duice-loop="codeItem,status">
+                                <tr data-duice-bind="code.codeItems" data-duice-foreach="codeItem,status">
                                     <td class="text-align--center">
                                         <button type="button" class="small"
                                                 data-duice-bind="codeItem"

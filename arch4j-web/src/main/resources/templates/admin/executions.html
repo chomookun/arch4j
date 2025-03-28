@@ -176,7 +176,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="executions" data-duice-loop="execution,status" class="text-align--center">
+                    <tr data-duice-bind="executions" data-duice-foreach="execution,status" class="text-align--center">
                         <td>
                             <span data-duice-bind="status"
                                   data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"

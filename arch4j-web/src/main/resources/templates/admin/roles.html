@@ -24,7 +24,7 @@
             name: null,
             authorities:[]
         });
-        duice.ObjectProxy.setDisableAll(role, true);
+        duice.ObjectProxy.setDisabledAll(role, true);
         duice.ObjectProxy.onPropertyChanging(roles, async event => {
             if (event.getProperty() === 'id') {
                 if (!await validateRoleId(event.getValue())) {
@@ -50,7 +50,7 @@
 
         // authority
         const authority = new duice.ObjectProxy({});
-        duice.ObjectProxy.setDisableAll(authority, true);
+        duice.ObjectProxy.setDisabledAll(authority, true);
         duice.ObjectProxy.onPropertyChanging(authority, async event => {
             if(event.getProperty() === 'authorityId') {
                 if(!await validateAuthorityId(event.getValue())) {
@@ -104,7 +104,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(role, data);
-                    duice.ObjectProxy.setDisableAll(role, false);
+                    duice.ObjectProxy.setDisabledAll(role, false);
                     duice.ObjectProxy.setReadonly(role, 'roleId', true);
                     roles._new = false;
                 });
@@ -118,7 +118,7 @@
             duice.ObjectProxy.assign(role, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(role, false);
+            duice.ObjectProxy.setDisabledAll(role, false);
             duice.ObjectProxy.setReadonly(role, 'roleId', false);
             duice.ObjectProxy.focus(role, 'roleId');
         }
@@ -276,7 +276,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(authority, data);
-                    duice.ObjectProxy.setDisableAll(authority, false);
+                    duice.ObjectProxy.setDisabledAll(authority, false);
                     duice.ObjectProxy.setReadonly(authority, 'authorityId', true);
                     authority._new = false;
                 });
@@ -290,7 +290,7 @@
             duice.ObjectProxy.assign(authority, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(authority, false);
+            duice.ObjectProxy.setDisabledAll(authority, false);
             duice.ObjectProxy.setReadonly(authority, 'authorityId', false);
             duice.ObjectProxy.focus(authority, 'authorityId');
         }
@@ -495,7 +495,7 @@
                             <tbody>
                             <tr class="cursor--pointer"
                                     data-duice-bind="roles"
-                                data-duice-loop="role,status"
+                                data-duice-foreach="role,status"
                                 data-duice-selected-item-class="selected"
                                 data-duice-execute="this.dataset.id=role.roleId;"
                                 onclick="getRole(this.dataset.id);">
@@ -628,7 +628,7 @@
                                     </thead>
                                     <tbody>
                                     <tr data-duice-bind="role.authorities"
-                                        data-duice-loop="authority,status">
+                                        data-duice-foreach="authority,status">
                                         <td class="text-align--center">
                                             <button class="button small" type="button"
                                                     data-duice-bind="authority"
@@ -752,7 +752,7 @@
                             <tbody>
                             <tr class="cursor--pointer"
                                 data-duice-bind="authorities"
-                                data-duice-loop="authority,status"
+                                data-duice-foreach="authority,status"
                                 data-duice-selected-item-class="selected"
                                 data-duice-execute="this.dataset.id=authority.authorityId;"
                                 onclick="getAuthority(this.dataset.id);">
@@ -1031,7 +1031,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="authoritySelectDialog.authorities" data-duice-loop="authority,status">
+                    <tr data-duice-bind="authoritySelectDialog.authorities" data-duice-foreach="authority,status">
                         <td class="text-align--center">
                             <button class="button small" type="button"
                                     data-duice-bind="authority"
@@ -1091,7 +1091,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="authoritySelectDialog.selectedAuthorities" data-duice-loop="authority,status">
+                    <tr data-duice-bind="authoritySelectDialog.selectedAuthorities" data-duice-foreach="authority,status">
                         <td class="text-align--center">
                             <button class="button" type="button"
                                     data-duice-bind="authority"

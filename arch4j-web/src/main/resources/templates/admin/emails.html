@@ -21,7 +21,7 @@
             emailId: null,
             name: null
         });
-        duice.ObjectProxy.setDisableAll(email, true);
+        duice.ObjectProxy.setDisabledAll(email, true);
         duice.ObjectProxy.onPropertyChanging(email, async event => {
             if (event.getProperty() === 'emailId') {
                 if (!await validateEmailId(event.getValue())) {
@@ -76,7 +76,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(email, data);
-                    duice.ObjectProxy.setDisableAll(email, false);
+                    duice.ObjectProxy.setDisabledAll(email, false);
                     duice.ObjectProxy.setReadonly(email, 'emailId', true);
                     email._new = false;
                 });
@@ -90,7 +90,7 @@
             duice.ObjectProxy.assign(email, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(email, false);
+            duice.ObjectProxy.setDisabledAll(email, false);
             duice.ObjectProxy.setReadonly(email, 'emailId', false);
             duice.ObjectProxy.focus(email, 'emailId');
         }
@@ -254,7 +254,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="emails"
-                            data-duice-loop="email,status"
+                            data-duice-foreach="email,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.emailId=email.emailId;"
                             onclick="getEmail(this.dataset.emailId);"

@@ -28,9 +28,9 @@
         body {
             display: grid;
             grid-template-areas:
-                '_header _header _header'
-                '_nav _main _aside'
-                '_footer _footer _footer';
+                    '_header _header _header'
+                    '_nav _main _aside'
+                    '_footer _footer _footer';
             grid-template-columns: 18rem calc(100% - 18rem - 9rem) 9rem;
             grid-template-rows: auto 1fr 3rem;
         }
@@ -38,11 +38,11 @@
             body {
                 display: grid;
                 grid-template-areas:
-                    '_header'
-                    '_nav'
-                    '_main'
-                    '_aside'
-                    '_footer';
+                        '_header'
+                        '_nav'
+                        '_main'
+                        '_aside'
+                        '_footer';
                 grid-template-columns: 100%;
                 grid-template-rows: auto auto 1fr auto auto;
                 grid-gap: 0.5rem 0.5rem;
@@ -71,6 +71,9 @@
         #_brand,
         #_brand * {
             height: 2rem;
+            line-height: 2rem;
+            font-size: 2rem;
+            vertical-align: middle;
             font-weight: bold;
         }
         .dark-mode #_brand {
@@ -97,8 +100,8 @@
             header {
                 display: grid;
                 grid-template-areas:
-                    '_header-logo _header-menuButton'
-                    '_header-menu _header-menu';
+                        '_header-logo _header-menuButton'
+                        '_header-menu _header-menu';
             }
             header #_header-menuButton {
                 display: flex;
@@ -119,7 +122,7 @@
             grid-area: _nav;
             display: grid;
             grid-template-areas:
-                '_nav-menu';
+                    '_nav-menu';
             padding: 1rem;
         }
         nav #_nav-menu {
@@ -242,8 +245,8 @@
     <nav>
         <ul id="_nav-menu">
             <li data-duice-bind="_menus"
-                data-duice-loop="menu,status"
-                data-duice-hierarchy="menuId,parentMenuId"
+                data-duice-foreach="menu,status"
+                data-duice-recursive="menuId,parentMenuId"
                 data-duice-execute="
                 if(menu.parentMenuId) {
                    this.style.marginLeft = status.depth + 'em';
@@ -285,7 +288,7 @@
     </footer>
     </th:block>
     <!-- ====================================== -->
-    <!-- end: _footer                           -->
+    <!-- end: _footer                            -->
     <!-- ====================================== -->
 
 </body>

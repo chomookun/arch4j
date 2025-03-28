@@ -109,12 +109,11 @@ ul, ol {
 
 /* anchor */
 a {
-  color: inherit;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 a:hover {
-  text-decoration: underline;
+  text-shadow: 0 0 0.5px var(--duice-color);
 }
 
 /* h1~6 */
@@ -165,6 +164,12 @@ small {
   font-size: smaller;
 }
 
+/* img */
+@media screen and (max-width: 1023px) {
+  img {
+    max-width: 100%;
+  }
+}
 /* input */
 input {
   box-sizing: border-box;
@@ -181,6 +186,11 @@ input:focus {
   outline: none;
   border: var(--duice-form-element-focus-border);
   transition: var(--duice-form-element-focus-transition);
+}
+
+input:disabled {
+  background-color: rgba(128, 128, 128, 0.1);
+  color: rgba(128, 128, 128, 0.9);
 }
 
 /* input-checkbox */
@@ -239,6 +249,11 @@ option {
   background: var(--duice-background);
 }
 
+select:disabled {
+  background-color: rgba(128, 128, 128, 0.1);
+  color: rgba(128, 128, 128, 0.9);
+}
+
 /* button */
 button {
   box-sizing: border-box;
@@ -258,7 +273,6 @@ button {
 }
 
 button:disabled {
-  pointer-events: none;
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -289,6 +303,11 @@ textarea:focus {
   transition: var(--duice-form-element-focus-transition);
 }
 
+textarea:disabled {
+  background-color: rgba(128, 128, 128, 0.1);
+  color: rgba(128, 128, 128, 0.9);
+}
+
 /* table */
 table {
   border-collapse: separate;
@@ -296,6 +315,13 @@ table {
   border: var(--duice-table-border);
 }
 
+@media screen and (max-width: 1023px) {
+  table {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+}
 table > thead {
   position: sticky;
   top: 0;

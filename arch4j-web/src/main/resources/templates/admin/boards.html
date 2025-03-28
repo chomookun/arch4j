@@ -27,7 +27,7 @@
             fileRoles: [],
             commentRoles: []
         });
-        duice.ObjectProxy.setDisableAll(board, true);
+        duice.ObjectProxy.setDisabledAll(board, true);
         duice.ObjectProxy.onPropertyChanging(board, async event => {
             if (event.getProperty() === 'boardId') {
                 if (!await validateBoardId(event.getValue())) {
@@ -82,7 +82,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(board, data);
-                    duice.ObjectProxy.setDisableAll(board, false);
+                    duice.ObjectProxy.setDisabledAll(board, false);
                     duice.ObjectProxy.setReadonly(board, 'boardId', true);
                     board._new = false;
                 });
@@ -102,7 +102,7 @@
                 fileSizeLimit: 1,
                 commentEnabled: true
             });
-            duice.ObjectProxy.setDisableAll(board, false);
+            duice.ObjectProxy.setDisabledAll(board, false);
             duice.ObjectProxy.setReadonly(board, 'boardId', false);
             duice.ObjectProxy.focus(board, 'boardId');
         }
@@ -388,7 +388,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="boards"
-                            data-duice-loop="board,status"
+                            data-duice-foreach="board,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.boardId=board.boardId;"
                             onclick="getBoard(this.dataset.boardId);"
@@ -532,7 +532,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="board.accessRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="board.accessRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
@@ -589,7 +589,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="board.readRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="board.readRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
@@ -646,7 +646,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="board.writeRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="board.writeRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
@@ -715,7 +715,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="board.fileRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="board.fileRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
@@ -778,7 +778,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="board.commentRoles" data-duice-loop="role,status">
+                                <tr data-duice-bind="board.commentRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"

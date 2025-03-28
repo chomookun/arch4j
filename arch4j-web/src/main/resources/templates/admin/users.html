@@ -25,7 +25,7 @@
             userId: null,
             roles:[]
         });
-        duice.ObjectProxy.setDisableAll(user, true);
+        duice.ObjectProxy.setDisabledAll(user, true);
         duice.ObjectProxy.setReadonly(user, 'joinAt', true);
         duice.ObjectProxy.setReadonly(user, 'closeAt', true);
         duice.ObjectProxy.setReadonly(user, 'passwordAt', true);
@@ -90,7 +90,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(user, data);
-                    duice.ObjectProxy.setDisableAll(user, false);
+                    duice.ObjectProxy.setDisabledAll(user, false);
                     duice.ObjectProxy.setReadonly(user, 'userId', true);
                     user._new = false;
                 });
@@ -105,7 +105,7 @@
                 _new: true,
                 status: 'ACTIVE'
             });
-            duice.ObjectProxy.setDisableAll(user, false);
+            duice.ObjectProxy.setDisabledAll(user, false);
             duice.ObjectProxy.setReadonly(user, 'userId', false);
             duice.ObjectProxy.focus(user, 'userId');
         }
@@ -198,7 +198,7 @@
                         .then(data => {
                             _alert(/*[[#{web.global.saveItemComplete(#{core.user.User})}]]*/'').then(() => {
                                 getUsers();
-                                getUser(response.userId);
+                                getUser(data.userId);
                             });
                         });
                 }
@@ -356,7 +356,7 @@
                             <tbody>
                             <tr class="cursor--pointer"
                                 data-duice-bind="users"
-                                data-duice-loop="user,status"
+                                data-duice-foreach="user,status"
                                 data-duice-selected-item-class="selected" data-duice-execute="this.dataset.userId=user.userId;"
                                 onclick="getUser(this.dataset.userId);">
                                 <td class="text-align--center">
@@ -562,7 +562,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr data-duice-bind="user.roles" data-duice-loop="role,status">
+                                    <tr data-duice-bind="user.roles" data-duice-foreach="role,status">
                                         <td class="text-align--center">
                                             <button type="button" class="button small"
                                                     data-duice-bind="role"
@@ -973,7 +973,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="authoritySelectDialog.authorities" data-duice-loop="authority,status">
+                    <tr data-duice-bind="authoritySelectDialog.authorities" data-duice-foreach="authority,status">
                         <td class="text-align--center">
                             <button class="button small" type="button"
                                     data-duice-bind="authority"
@@ -1033,7 +1033,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="authoritySelectDialog.selectedAuthorities" data-duice-loop="authority,status">
+                    <tr data-duice-bind="authoritySelectDialog.selectedAuthorities" data-duice-foreach="authority,status">
                         <td class="text-align--center">
                             <button class="button" type="button"
                                     data-duice-bind="authority"

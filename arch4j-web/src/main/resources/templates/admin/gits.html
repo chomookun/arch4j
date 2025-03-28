@@ -20,7 +20,7 @@
 
         // git
         const git = new duice.ObjectProxy({});
-        duice.ObjectProxy.setDisableAll(git, true);
+        duice.ObjectProxy.setDisabledAll(git, true);
         duice.ObjectProxy.onPropertyChanging(git, async event => {
             if (event.getProperty() === 'gitId') {
                 if (!await validateGitId(event.getValue())) {
@@ -75,7 +75,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(git, data);
-                    duice.ObjectProxy.setDisableAll(git, false);
+                    duice.ObjectProxy.setDisabledAll(git, false);
                     duice.ObjectProxy.setReadonly(git, 'gitId', true);
                     git._new = false;
                 });
@@ -89,7 +89,7 @@
             duice.ObjectProxy.assign(git, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(git, false);
+            duice.ObjectProxy.setDisabledAll(git, false);
             duice.ObjectProxy.setReadonly(git, 'gitId', false);
             duice.ObjectProxy.focus(git, 'gitId');
         }
@@ -258,7 +258,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="gits"
-                            data-duice-loop="git,status"
+                            data-duice-foreach="git,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.gitId=git.gitId;"
                             onclick="getGit(this.dataset.gitId);"

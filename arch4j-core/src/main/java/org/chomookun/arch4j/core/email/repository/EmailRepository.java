@@ -33,12 +33,14 @@ public interface EmailRepository extends JpaRepository<EmailEntity,String>, JpaS
                     criteriaBuilder.like(root.get(EmailEntity_.NAME), '%' + emailSearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(EmailEntity_.SYSTEM_REQUIRED).descending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(EmailEntity_.SYSTEM_REQUIRED).descending())
+                .and(Sort.by(EmailEntity_.EMAIL_ID).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
-        return findAll(specification, pageable);
+        return findAll(specification, finalPageable);
     }
 
 }

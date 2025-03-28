@@ -20,7 +20,7 @@
             messageId: null,
             name: null
         });
-        duice.ObjectProxy.setDisableAll(message, true);
+        duice.ObjectProxy.setDisabledAll(message, true);
         duice.ObjectProxy.onPropertyChanging(message, async event => {
             if (event.getProperty() === 'messageId') {
                 if (!await validateMessageId(event.getValue())) {
@@ -75,7 +75,7 @@
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(message, data);
-                    duice.ObjectProxy.setDisableAll(message, false);
+                    duice.ObjectProxy.setDisabledAll(message, false);
                     duice.ObjectProxy.setReadonly(message, 'messageId', true);
                     message._new = false;
                 });
@@ -89,7 +89,7 @@
             duice.ObjectProxy.assign(message, {
                 _new: true
             });
-            duice.ObjectProxy.setDisableAll(message, false);
+            duice.ObjectProxy.setDisabledAll(message, false);
             duice.ObjectProxy.setReadonly(message, 'messageId', false);
             duice.ObjectProxy.focus(message, 'messageId');
         }
@@ -250,7 +250,7 @@
                         </thead>
                         <tbody>
                         <tr data-duice-bind="messages"
-                            data-duice-loop="message,status"
+                            data-duice-foreach="message,status"
                             data-duice-selected-item-class="selected"
                             data-duice-execute="this.dataset.id=message.messageId;"
                             onclick="getMessage(this.dataset.id);"
