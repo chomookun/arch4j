@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.6
+ * duice - v0.3.7
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -2738,7 +2738,6 @@ var duice = (function (exports) {
             super(htmlElement, bindData, context);
             // Adds change event listener
             this.getHtmlElement().addEventListener('change', e => {
-                e.stopPropagation();
                 let element = this.getHtmlElement();
                 let data = getProxyTarget(this.getBindData());
                 let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
@@ -3077,7 +3076,6 @@ var duice = (function (exports) {
             this.optionTextProperty = getElementAttribute(this.getHtmlElement(), 'option-text-property');
             // adds event listener
             this.getHtmlElement().addEventListener('change', e => {
-                e.stopPropagation();
                 let element = this.getHtmlElement();
                 let data = getProxyTarget(this.getBindData());
                 let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
@@ -3202,7 +3200,6 @@ var duice = (function (exports) {
             super(htmlElement, bindData, context);
             // adds change event listener
             this.getHtmlElement().addEventListener('change', e => {
-                e.stopPropagation();
                 let element = this.getHtmlElement();
                 let data = getProxyTarget(this.getBindData());
                 let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
