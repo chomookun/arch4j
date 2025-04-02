@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public abstract class GenericFileItemReader<T> extends FlatFileItemReader<T> {
 
     private final Map<Class<? extends T>, LineMapper<T>> lineMapperRegistry = new HashMap<>();

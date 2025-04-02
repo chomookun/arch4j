@@ -7,6 +7,7 @@ import org.springframework.core.io.WritableResource;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+@Deprecated
 @Setter
 @Accessors(chain = true, fluent = true)
 public class DelimiterFileItemWriterBuilder<T> {

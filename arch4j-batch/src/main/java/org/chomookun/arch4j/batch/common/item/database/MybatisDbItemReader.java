@@ -8,6 +8,7 @@ import org.chomookun.arch4j.core.common.crpyto.CryptoUtil;
  * so we directly implement a cursor item reader with a decoding function added.
  * @param <T>
  */
+@Deprecated
 public class MybatisDbItemReader<T> extends org.mybatis.spring.batch.MyBatisCursorItemReader<T> {
 
     @Override

@@ -20,10 +20,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.annotation.*;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
@@ -57,6 +59,12 @@ public class BatchConfiguration implements EnvironmentPostProcessor {
         Properties properties = Optional.ofNullable(factory.getObject()).orElseThrow(RuntimeException::new);
         PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("batch", properties);
         environment.getPropertySources().addLast(propertiesPropertySource);
+    }
+
+    @Bean
+    public ConversionService conversionService() {
+        DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+        return conversionService;
     }
 
 }

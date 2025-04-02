@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.chomookun.arch4j.batch.example.mapper.ExampleMapper">
+
+    <resultMap id="exampleVo" type="org.chomookun.arch4j.batch.example.vo.ExampleVo">
+        <result property="exampleId" column="example_id"/>
+        <result property="name" column="name"/>
+        <result property="icon" column="icon"/>
+        <result property="number" column="number"/>
+        <result property="decimalNumber" column="decimal_number"/>
+        <result property="dateTime" column="date_time"/>
+        <result property="instantDateTime" column="instant_date_time"/>
+        <result property="zonedDateTime" column="zoned_date_time"/>
+        <result property="date" column="date"/>
+        <result property="time" column="time"/>
+        <result property="enabled" column="enabled"/>
+        <result property="type" column="type"/>
+        <result property="code" column="code"/>
+        <result property="text" column="text"/>
+        <result property="cryptoText" column="crypto_text" typeHandler="org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler"/>
+    </resultMap>
+
+    <select id="selectExamples" resultMap="exampleVo">
+        select  /* ExampleMapper.selectExamples*/
+                example_id,
+                name,
+                icon,
+                number,
+                decimal_number,
+                date_time,
+                instant_date_time,
+                zoned_date_time,
+                date,
+                time,
+                enabled,
+                type,
+                code,
+                text,
+                crypto_text
+        from    core_example
+        where   1 = 1
+        <if test = "type != null">
+            and type like ${type}
+        </if>
+    </select>
+
+</mapper>

@@ -7,6 +7,7 @@ import org.chomookun.arch4j.batch.common.item.file.transform.ItemTypeDescriptor;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.LineAggregator;
 
+@Deprecated
 public class DelimiterFileItemWriter<T> extends GenericFileItemWriter<T> {
 
     @Setter

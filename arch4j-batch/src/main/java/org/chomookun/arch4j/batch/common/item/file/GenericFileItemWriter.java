@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public abstract class GenericFileItemWriter<T> extends FlatFileItemWriter<T> {
 
     private final Map<Class<? extends T>,LineAggregator<T>> lineAggregatorRegistry = new HashMap<>();

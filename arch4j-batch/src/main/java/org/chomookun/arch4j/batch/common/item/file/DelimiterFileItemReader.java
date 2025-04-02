@@ -9,6 +9,7 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 
+@Deprecated
 public class DelimiterFileItemReader<T> extends GenericFileItemReader<T> {
 
     @Setter

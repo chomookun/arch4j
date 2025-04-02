@@ -6,11 +6,14 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.File;
+
 @ConfigurationProperties(prefix = "batch")
 @Validated
 @AllArgsConstructor
 @Getter
 public final class BatchProperties {
 
+    private String dataHome;
 
 }

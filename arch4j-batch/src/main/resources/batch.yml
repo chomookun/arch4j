@@ -23,3 +23,5 @@ spring:
         maximum-pool-size: 3
 
 # batch
+batch:
+  data-home: ${user.home}/.arch4j

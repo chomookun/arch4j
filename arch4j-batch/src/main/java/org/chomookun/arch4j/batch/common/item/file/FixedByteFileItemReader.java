@@ -7,6 +7,7 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 
+@Deprecated
 public class FixedByteFileItemReader<T> extends GenericFileItemReader<T> {
 
 

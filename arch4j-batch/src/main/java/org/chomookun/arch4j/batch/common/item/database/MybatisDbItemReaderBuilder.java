@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Deprecated
 @Setter
 @Accessors(chain = true, fluent = true)
 public class MybatisDbItemReaderBuilder<T> {

@@ -9,6 +9,7 @@ import org.springframework.core.convert.support.GenericConversionService;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+@Deprecated
 public class FieldConversionService extends GenericConversionService {
 
     @Setter

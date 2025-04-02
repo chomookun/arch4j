@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 
 import java.util.Optional;
 
+@Deprecated
 @Setter
 @Accessors(chain = true, fluent = true)
 public class FixedByteFileItemReaderBuilder<T> {

@@ -1,7 +1,7 @@
 package org.chomookun.arch4j.batch.sample;
 
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.batch.common.support.BatchTestSupport;
+import org.chomookun.arch4j.batch.common.test.BatchTestSupport;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.*;

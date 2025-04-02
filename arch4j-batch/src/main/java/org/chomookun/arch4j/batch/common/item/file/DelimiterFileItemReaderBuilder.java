@@ -2,11 +2,13 @@ package org.chomookun.arch4j.batch.common.item.file;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.springframework.core.io.Resource;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+@Deprecated
 @Setter
 @Accessors(chain = true, fluent = true)
 public class DelimiterFileItemReaderBuilder<T> {

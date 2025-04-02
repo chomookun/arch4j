@@ -8,6 +8,7 @@ import org.hibernate.ScrollMode;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.Optional;
 
+@Deprecated
 @Setter
 @Accessors(chain = true, fluent = true)
 public class QuerydslDbItemReaderBuilder<T> {

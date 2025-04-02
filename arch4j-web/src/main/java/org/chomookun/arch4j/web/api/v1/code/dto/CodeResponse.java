@@ -19,17 +19,20 @@ public class CodeResponse {
     @Builder.Default
     private List<CodeItemResponse> codeItems = new ArrayList<>();
 
+    /**
+     * Convert code to code response
+     * @param code code
+     * @return code response
+     */
     public static CodeResponse from(Code code){
         CodeResponse codeResponse = CodeResponse.builder()
                 .codeId(code.getCodeId())
                 .codeName(code.getName())
                 .build();
-
         List<CodeItemResponse> codeItems = code.getCodeItems().stream()
                 .map(CodeItemResponse::from)
                 .collect(Collectors.toList());
         codeResponse.setCodeItems(codeItems);
-
         return codeResponse;
     }
 

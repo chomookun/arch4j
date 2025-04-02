@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.chomookun.arch4j.core.example.mapper.ExampleMapper">
+
+    <resultMap id="exampleVo" type="org.chomookun.arch4j.core.example.vo.ExampleVo">
+        <result property="exampleId" column="example_id"/>
+        <result property="name" column="name"/>
+        <result property="icon" column="icon"/>
+        <result property="number" column="number"/>
+        <result property="decimalNumber" column="decimal_number"/>
+        <result property="dateTime" column="date_time"/>
+        <result property="instantDateTime" column="instant_date_time"/>
+        <result property="zonedDateTime" column="zoned_date_time"/>
+        <result property="date" column="date"/>
+        <result property="time" column="time"/>
+        <result property="enabled" column="enabled" typeHandler="org.chomookun.arch4j.core.common.data.typehandler.BooleanTypeHandler"/>
+        <result property="type" column="type"/>
+        <result property="code" column="code"/>
+        <result property="text" column="text"/>
+        <result property="cryptoText" column="crypto_text" typeHandler="org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler"/>
+    </resultMap>
+
+    <resultMap id="exampleItemVo" type="org.chomookun.arch4j.core.example.vo.ExampleItemVo">
+        <result property="exampleId" column="example_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="sort" column="sort"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <sql id="sqlExamples">
+        select  /* ExampleMapper.sqlExamples*/
+                example_id,
+                name,
+                icon,
+                number,
+                decimal_number,
+                date_time,
+                instant_date_time,
+                zoned_date_time,
+                date,
+                time,
+                enabled,
+                type,
+                code,
+                text,
+                crypto_text
+        from    core_example
+        where   1 = 1
+        <if test = "exampleId != null">
+            and example_id like #{exampleId}
+        </if>
+        <if test = "name != null">
+            and name like #{name}
+        </if>
+        <if test = "type != null">
+            and type like ${type}
+        </if>
+        <if test = "code != null">
+            and code like #{code}
+        </if>
+    </sql>
+
+    <select id="selectExamples" resultMap="exampleVo">
+        <include refid="sqlExamples"/>
+    </select>
+
+    <select id="selectExamplesCount" resultType="long">
+        select  count(*) from (
+            <include refid="sqlExamples"/>
+        )
+    </select>
+
+    <select id="selectExample" resultMap="exampleVo">
+        select  /* ExampleMapper.selectExample*/
+                example_id,
+                name,
+                icon,
+                number,
+                decimal_number,
+                date_time,
+                instant_date_time,
+                zoned_date_time,
+                date,
+                time,
+                enabled,
+                type,
+                code,
+                text,
+                crypto_text
+        from    core_example
+        where   example_id = #{exampleId}
+    </select>
+
+    <insert id="insertExample">
+        insert into core_example (
+                example_id,
+                name,
+                icon,
+                number,
+                decimal_number,
+                date_time,
+                instant_date_time,
+                zoned_date_time,
+                date,
+                time,
+                enabled,
+                type,
+                code,
+                text,
+                crypto_text
+        ) values (
+                #{exampleId},
+                #{name},
+                #{icon},
+                #{number},
+                #{decimalNumber},
+                #{dateTime},
+                #{instantDateTime},
+                #{zonedDateTime},
+                #{date},
+                #{time},
+                #{enabled, typeHandler=org.chomookun.arch4j.core.common.data.typehandler.BooleanTypeHandler},
+                #{type},
+                #{code},
+                #{text},
+                #{cryptoText, typeHandler=org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler}
+        )
+    </insert>
+
+    <update id="updateExample">
+        update  /* ExampleMapper.updateExample */
+                core_example
+        set     name = #{name},
+                icon = #{icon},
+                number = #{number},
+                decimal_number = #{decimalNumber},
+                date_time = #{dateTime},
+                instant_date_time = #{instantDateTime},
+                zoned_date_time = #{zonedDateTime},
+                date = #{date},
+                time = #{time},
+                enabled = #{enabled, typeHandler=org.chomookun.arch4j.core.common.data.typehandler.BooleanTypeHandler},
+                type = #{type},
+                code = #{code},
+                text = #{text},
+                crypto_text = #{cryptoText, typeHandler=org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler}
+        where   example_id = #{exampleId}
+    </update>
+
+    <delete id="deleteExample">
+        delete  /* ExampleMapper.deleteExample */
+        from    core_example
+        where   example_id = #{exampleId}
+    </delete>
+
+    <select id="selectExampleItems" resultMap="exampleItemVo">
+        select /* ExampleMapper.selectExampleItems*/
+                example_id,
+                item_id,
+                sort,
+                name
+        from    core_example_item
+        where   example_id = #{exampleId}
+        order by sort
+    </select>
+
+    <insert id="insertExampleItem">
+        insert into core_example_item (
+                example_id,
+                item_id,
+                sort,
+                name
+        ) values (
+                #{exampleId},
+                #{itemId},
+                #{sort},
+                #{name}
+        )
+    </insert>
+
+    <delete id="deleteExampleItems">
+        delete  /* ExampleMapper.deleteExampleItems */
+        from    core_example_item
+        where   example_id = #{exampleId}
+    </delete>
+
+</mapper>

@@ -20,7 +20,7 @@ import org.chomookun.arch4j.web.api.v1.board.dto.ArticleRequest;
 import org.chomookun.arch4j.web.api.v1.board.dto.ArticleResponse;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
 import org.chomookun.arch4j.web.common.doc.PageableAsQueryParam;
-import org.chomookun.arch4j.web.common.data.PageableUtils;
+import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;

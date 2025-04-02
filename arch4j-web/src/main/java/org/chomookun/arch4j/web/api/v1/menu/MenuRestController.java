@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.menu.MenuService;
 import org.chomookun.arch4j.web.api.v1.menu.dto.MenuResponse;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
-import org.chomookun.arch4j.web.common.data.PageableUtils;
+import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

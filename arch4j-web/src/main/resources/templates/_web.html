@@ -25,6 +25,8 @@
     <script th:src="@{/static/sheetjs/sheetjs.min.js?version={version}(version=${_scriptVersion})}"></script>
     <!-- randomColor -->
     <script th:src="@{/static/randomColor/randomColor.js?version={version}(version=${_scriptVersion})}"></script>
+    <!-- fontawesome -->
+    <link rel="stylesheet" th:href="@{/static/fontawesome/css/all.min.css?version={version}(version=${_scriptVersion})}"/>
     <!-- duice -->
     <script th:src="@{/static/duice/duice.js?version={version}(version=${_scriptVersion})}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/static/duice/duice.css?version={version}(version=${_scriptVersion})}">
@@ -121,6 +123,17 @@
                     duice.ArrayProxy.clear(_menus);
                     duice.ArrayProxy.assign(_menus, data);
                 });
+        }
+
+        /**
+         * Get code
+         * @param codeId
+         * @returns {Promise<void>}
+         * @private
+         */
+        const _getCode = function(codeId) {
+            let url = new URL(`${_apiUrl}/v1/codes/${codeId}`, document.location.origin);
+            return _fetch(url).then(response => response.json());
         }
 
         // checks session expired

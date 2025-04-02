@@ -17,7 +17,7 @@
                 value: null,
                 _page: 0,
                 _size: 5,
-                _count: 0
+                _total: -1
             }),
             roles: new duice.ArrayProxy([]),
             selectedRoles: new duice.ArrayProxy([]),
@@ -55,7 +55,7 @@
                     .then(data => {
                         duice.ArrayProxy.clear(this.roles);
                         duice.ArrayProxy.assign(this.roles, data.content);
-                        this.roleSearch._count = data.totalElements;
+                        this.roleSearch._total = data.totalElements;
                         // check already selected
                         this.roles.forEach(role => {
                             if(this.alreadySelectedRoleIds.includes(role.roleId)){
@@ -207,19 +207,19 @@
             </table>
         </div>
         <div class="display--flex justify-content--space-between">
-            <div>
+            <div class="flex--1">
                 <span data-th-text="#{web.global.total}"></span>
-                <span data-duice-bind="roleSelectDialog.roleSearch" data-duice-property="_count" data-duice-format="number()"></span>
+                <span data-duice-bind="roleSelectDialog.roleSearch" data-duice-property="_total" data-duice-format="number()"></span>
                 <span data-th-text="#{web.global.rows}"></span>
             </div>
             <duice-pagination
                     data-duice-bind="roleSelectDialog.roleSearch"
                     data-duice-size-property="_size"
                     data-duice-page-property="_page"
-                    data-duice-count-property="_count"
+                    data-duice-total-property="_total"
                     data-duice-onclick="roleSelectDialog.getRoles(this.dataset.page);">
             </duice-pagination>
-            <div></div>
+            <div class="flex--1"></div>
         </div>
         <div class="overflow--scroll box">
             <table class="table width--100 border--none">

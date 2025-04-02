@@ -120,16 +120,22 @@ const _fetch = function(url, options, _bypass) {
     options.headers['Pragma'] = 'no-cache';
     options.headers['Expires'] = '0';
     options.redirect = 'follow';
+    // request interceptors
+    _fetch.interceptors.request.forEach(interceptor => {
+        interceptor.call(null, options);
+    });
     _startProgress();
     return globalThis.fetch(url, options)
         .then(async function(response) {
             console.debug(response);
-
+            // calls interceptor
+            _fetch.interceptors.response.forEach(interceptor => {
+                interceptor.call(response);
+            });
             // bypass
             if (_bypass) {
                 return response;
             }
-
             // checks response
             if (response.ok) {
                 return response;
@@ -142,19 +148,34 @@ const _fetch = function(url, options, _bypass) {
                 }else{
                     errorMessage = await response.text();
                 }
+
                 throw Error(errorMessage);
             }
         })
-        .catch((error)=>{
+        .catch((error)=> {
             if(!_bypass) {
                 _alert(error.message).then();
             }
+            // calls error interceptor
+            _fetch.interceptors.error.forEach(interceptor => {
+                interceptor.call(error);
+            });
             throw Error(error);
         })
         .finally(() => {
             _stopProgress();
         });
 }
+
+/**
+ * _fetch interceptors
+ * @type {{request: *, response: *, error: *}}
+ */
+_fetch.interceptors = {
+    request: [],
+    response: [],
+    error: []
+};
 
 /**
  * Parsed total count from Content-Range header
@@ -349,6 +370,11 @@ class WebSocketClient {
         this.stomp.reconnect = true;
     }
 
+    /**
+     * subscribe
+     * @param subscription
+     * @returns {*}
+     */
     subscribe(subscription) {
         this.subscriptions.push(subscription);
         if (this.stomp.connected) {
@@ -357,12 +383,19 @@ class WebSocketClient {
         return subscription;
     }
 
+    /**
+     * unsubscribe
+     * @param subscription
+     */
     unsubscribe(subscription) {
         if (subscription?.subscribe) {
             subscription.subscribe.unsubscribe();
         }
     }
 
+    /**
+     * connect
+     */
     connect() {
         const _this = this;
         this.stomp.connect({}, function() {
@@ -375,10 +408,17 @@ class WebSocketClient {
         });
     }
 
+    /**
+     * send message
+     * @param message
+     */
     send(message) {
         this.stomp.send(message.destination, message.headers, message.body);
     }
 
+    /**
+     * disconnect
+     */
     disconnect() {
         this.stomp.disconnect(() => console.log('websocket disconnected.'));
     }

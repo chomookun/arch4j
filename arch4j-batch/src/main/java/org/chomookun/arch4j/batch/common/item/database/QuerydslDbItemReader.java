@@ -21,6 +21,7 @@ import jakarta.persistence.EntityManagerFactory;
  * so a decryption function is added after inheritance.
  * @param <T>
  */
+@Deprecated
 @Slf4j
 public class QuerydslDbItemReader<T> extends AbstractItemCountingItemStreamItemReader<T> {
 

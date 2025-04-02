@@ -27,7 +27,7 @@ public class ErrorResponseHandler {
     private final ObjectMapper objectMapper;
 
     /**
-     * sends error response
+     * Sends error response
      * @param request http servlet request
      * @param response http servlet response
      * @param status http status
@@ -51,7 +51,7 @@ public class ErrorResponseHandler {
     }
 
     /**
-     * creates error response
+     * Creates error response
      * @param request http servlet request
      * @param status http status
      * @param exception exception
@@ -65,7 +65,7 @@ public class ErrorResponseHandler {
     }
 
     /**
-     * checks is rest request
+     * Checks is rest request
      * @param request http servlet request
      * @return whether if rest request or not
      */

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.chomookun.arch4j.batch.example.mapper.ExampleBackupMapper">
+
+    <insert id="insertExampleBackup">
+        insert into core_example_backup (
+                example_id,
+                name,
+                icon,
+                number,
+                decimal_number,
+                date_time,
+                instant_date_time,
+                zoned_date_time,
+                date,
+                time,
+                enabled,
+                type,
+                code,
+                text,
+                crypto_text
+        ) values (
+                #{exampleId},
+                #{name},
+                #{icon},
+                #{number},
+                #{decimalNumber},
+                #{dateTime},
+                #{instantDateTime},
+                #{zonedDateTime},
+                #{date},
+                #{time},
+                #{enabled},
+                #{type},
+                #{code},
+                #{text},
+                #{cryptoText, typeHandler=org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler}
+        )
+    </insert>
+
+</mapper>
