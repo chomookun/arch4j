@@ -9,109 +9,127 @@
         }
     </style>
     <script th:inline="javascript">
-        const roleSelectDialog = {
-            dialog: new duice.Dialog(document.getElementById('roleSelectDialog')),
-            alreadySelectedRoleIds : null,
-            roleSearch: new duice.ObjectProxy({
+        const roleSelectDialog = (() => {
+            const dialog = new duice.Dialog(document.getElementById('roleSelectDialog'));
+            let disabledRoleIds = null;
+            const roleSearch = new duice.ObjectProxy({
                 key: 'roleId',
                 value: null,
                 _page: 0,
                 _size: 5,
                 _total: -1
-            }),
-            roles: new duice.ArrayProxy([]),
-            selectedRoles: new duice.ArrayProxy([]),
+            });
+            const roles = new duice.ArrayProxy([]);
+            const selectedRoles = new duice.ArrayProxy([]);
+
             /**
              * opens dialog
              * @param alreadySelectedRoleIds
              * @returns {Promise<*>}
              */
-            open: async function(alreadySelectedRoleIds) {
+            function open(alreadySelectedRoleIds) {
                 if(alreadySelectedRoleIds) {
-                    this.alreadySelectedRoleIds = alreadySelectedRoleIds;
+                    disabledRoleIds = alreadySelectedRoleIds;
                 }else{
-                    this.alreadySelectedRoleIds = [];
+                    disabledRoleIds = [];
                 }
                 duice.ArrayProxy.clear(this.selectedRoles);
-                this.getRoles(0);
-                return this.dialog.open();
-            },
+                getRoles(0);
+                return dialog.open();
+            }
+
             /**
              * gets roles
              * @param page
              */
-            getRoles: async function(page) {
+            async function getRoles(page) {
                 if(page) {
-                    this.roleSearch._page = page;
+                    roleSearch._page = page;
                 }
                 let url = new URL(/*[[@{/admin/common/get-roles}]]*/'',document.location.origin);
-                if(this.roleSearch.key && this.roleSearch.value) {
-                    url.searchParams.append(this.roleSearch.key, this.roleSearch.value);
+                if(roleSearch.key && roleSearch.value) {
+                    url.searchParams.set(roleSearch.key, roleSearch.value);
                 }
-                url.searchParams.append('_page', this.roleSearch._page);
-                url.searchParams.append('_size', this.roleSearch._size);
+                url.searchParams.set('_page', roleSearch._page);
+                url.searchParams.set('_size', roleSearch._size);
                 await _fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        duice.ArrayProxy.clear(this.roles);
-                        duice.ArrayProxy.assign(this.roles, data.content);
-                        this.roleSearch._total = data.totalElements;
+                        duice.ArrayProxy.clear(roles);
+                        duice.ArrayProxy.assign(roles, data.content);
+                        roleSearch._total = data['totalElements'];
                         // check already selected
-                        this.roles.forEach(role => {
-                            if(this.alreadySelectedRoleIds.includes(role.roleId)){
+                        roles.forEach(role => {
+                            if(disabledRoleIds.includes(role.roleId)){
                                 role['_selected'] = true;
                             }
-                            this.selectedRoles.forEach(element => {
+                            selectedRoles.forEach(element => {
                                 if(element.roleId === role.roleId) {
                                     role['_selected'] = true;
                                 }
                             });
                         });
                     });
-            },
+            }
+
             /**
              * resets roles
              */
-            resetRoles: function() {
+            function resetRoles() {
                 duice.ObjectProxy.reset(this.roleSearch);
-                this.getRoles();
-            },
+                getRoles();
+            }
+
             /**
              * selects role
              * @param index
              */
-            selectRole: function(index) {
-                let role = JSON.parse(JSON.stringify(this.roles[index]));
-                this.selectedRoles.push(role);
-                this.roles.forEach(element => {
+            function selectRole(index) {
+                let role = JSON.parse(JSON.stringify(roles[index]));
+                selectedRoles.push(role);
+                roles.forEach(element => {
                     if(element.roleId === role.roleId) {
                         element['_selected'] = true;
                         return false;
                     }
                 });
-            },
+            }
+
             /**
              * deselect role
              * @param index
              * @returns {Promise<void>}
              */
-            deselectRole: async function(index) {
+            async function deselectRole(index) {
                 let role = this.selectedRoles[index];
-                this.selectedRoles.splice(index, 1);
-                this.roles.forEach(element => {
+                selectedRoles.splice(index, 1);
+                roles.forEach(element => {
                     if(element.roleId === role.roleId) {
                         element['_selected'] = false;
                         return false;
                     }
                 });
-            },
+            }
+
             /**
              * confirm
              */
-            confirm: function() {
-                this.dialog.close(this.selectedRoles);
+            function confirm() {
+                dialog.close(selectedRoles);
             }
-        }
+
+            return {
+                open,
+                alreadySelectedRoleIds: disabledRoleIds,
+                roleSearch,
+                roles,
+                selectedRoles,
+                getRoles,
+                selectRole,
+                deselectRole,
+                confirm
+            };
+        })();
     </script>
     <div class="dialog-title">
         <h2>
@@ -183,7 +201,7 @@
                     <span data-duice-bind="role"
                           data-duice-property="roleId"
                           data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
-                          class="font-weight--bold"></span>
+                          class="code"></span>
                     </td>
                     <td>
                         <span data-duice-bind="role" data-duice-property="name"></span>
@@ -252,7 +270,7 @@
                     <span data-duice-bind="role"
                           data-duice-property="roleId"
                           data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
-                          class="font-weight--bold"></span>
+                          class="code"></span>
                     </td>
                     <td>
                         <span data-duice-bind="role" data-duice-property="name"></span>

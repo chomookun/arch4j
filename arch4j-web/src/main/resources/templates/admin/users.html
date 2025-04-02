@@ -15,11 +15,9 @@
             _size: 20,
             _total: 0
         });
-
         // user list
         const users = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(users, true);
-
         // user
         const user = new duice.ObjectProxy({
             userId: null,
@@ -122,7 +120,6 @@
                 duice.ObjectProxy.focus(user, 'username');
                 return false;
             }
-
             // check duplicated id
             let url = new URL(`${window.location.pathname}/get-user`, window.location.origin);
             url.searchParams.append('userId', username);
@@ -134,7 +131,6 @@
                     return false;
                 }
             }
-
             // return true
             return true;
         }
@@ -150,14 +146,12 @@
                 duice.ObjectProxy.focus(user, 'username');
                 return false;
             }
-
             // checks name
             if (_isEmpty(user.name)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.name})}]]*/'');
                 duice.ObjectProxy.focus(user, 'name');
                 return false;
             }
-
             // checks password
             if (user._new) {
                 if (_isEmpty(user.password)) {
@@ -176,14 +170,12 @@
                     return false;
                 }
             }
-
             // status
             if(_isEmpty(user.status)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.status})}]]*/'');
                 duice.ObjectProxy.focus(user, 'status');
                 return false;
             }
-
             // call save
             _confirm(/*[[#{web.global.saveItemConfirm(#{core.user.User})}]]*/'').then(result => {
                 if (result) {
@@ -368,7 +360,7 @@
                                     <span data-duice-bind="user"
                                           data-duice-property="username"
                                           data-duice-execute="this.classList.toggle('tag-system-required', user.systemRequired);"
-                                          class="code font-weight--bold"></span>
+                                          class="code"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="user" data-duice-property="name"></span>
@@ -442,7 +434,7 @@
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.user.User.username}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="user" data-duice-property="username" maxlength="128" class="width--100 code font-weight--bold"/>
+                                <input type="text" data-duice-bind="user" data-duice-property="username" maxlength="128" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
@@ -575,7 +567,7 @@
                                         <span data-duice-bind="role"
                                               data-duice-property="roleId"
                                               data-duice-execute="this.classList.toggle('tag-system-required',role.systemRequired);"
-                                              class="font-weight--bold"></span>
+                                              class="code"></span>
                                         </td>
                                         <td>
                                             <span data-duice-bind="role" data-duice-property="name"></span>

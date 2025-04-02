@@ -13,10 +13,8 @@
             _size: 20,
             _total: 0
         });
-
         // board list
         const boards = new duice.ArrayProxy([]);
-
         // board
         const board = new duice.ObjectProxy({
             boardId: null,
@@ -397,8 +395,7 @@
                                 class="text-align--center"></td>
                             <td>
                                 <img th:src="@{/static/image/icon-null.svg}" data-duice-bind="board" data-duice-property="icon" class="icon" alt="icon"/>
-                                <span data-duice-bind="board" data-duice-property="boardId"
-                                      class="font-weight--bold"></span>
+                                <span data-duice-bind="board" data-duice-property="boardId" class="code"></span>
                             </td>
                             <td data-duice-bind="board" data-duice-property="name"></td>
                         </tr>
@@ -448,13 +445,11 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.board.Board.boardId}" class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="board" data-duice-property="boardId"
-                                   class="width--100 font-weight--bold"/>
+                            <input type="text" data-duice-bind="board" data-duice-property="boardId" class="width--100 code"/>
                         </label>
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.board.Board.name}" class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="board" data-duice-property="name"
-                                   class="width--100"/>
+                            <input type="text" data-duice-bind="board" data-duice-property="name" class="width--100"/>
                         </label>
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.board.Board.skin}" class="font-weight--bold"></span>
@@ -487,12 +482,12 @@
                             <div>
                                 <label>
                                     <input type="radio" data-duice-bind="board" data-duice-property="messageFormat" value="TEXT"/>
-                                    <span data-th-text="#{core.board.ContentFormat.TEXT}" class="font-weight--bold"></span>
+                                    <span data-th-text="#{core.board.ContentFormat.TEXT}"></span>
                                 </label>
                                 &nbsp;
                                 <label>
                                     <input type="radio" data-duice-bind="board" data-duice-property="messageFormat" value="MARKDOWN"/>
-                                    <span data-th-text="#{core.board.ContentFormat.MARKDOWN}" class="font-weight--bold"></span>
+                                    <span data-th-text="#{core.board.ContentFormat.MARKDOWN}"></span>
                                 </label>
                             </div>
                             <div>
@@ -542,7 +537,7 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="font-weight--bold"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="role" data-duice-property="name"></span>
@@ -599,7 +594,7 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="font-weight--bold"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="role" data-duice-property="name"></span>
@@ -656,7 +651,7 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="font-weight--bold"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="role" data-duice-property="name"></span>
@@ -725,7 +720,7 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="font-weight--bold"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="role" data-duice-property="name"></span>
@@ -788,7 +783,7 @@
                                         </button>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="font-weight--bold"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="role" data-duice-property="name"></span>

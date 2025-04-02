@@ -189,8 +189,8 @@ input:focus {
 }
 
 input:disabled {
-  background-color: rgba(128, 128, 128, 0.1);
-  color: rgba(128, 128, 128, 0.9);
+  background-color: rgba(128, 128, 128, 0.05);
+  color: rgba(128, 128, 128, 0.95);
 }
 
 /* input-checkbox */
@@ -250,8 +250,8 @@ option {
 }
 
 select:disabled {
-  background-color: rgba(128, 128, 128, 0.1);
-  color: rgba(128, 128, 128, 0.9);
+  background-color: rgba(128, 128, 128, 0.05);
+  color: rgba(128, 128, 128, 0.95);
 }
 
 /* button */
@@ -304,8 +304,8 @@ textarea:focus {
 }
 
 textarea:disabled {
-  background-color: rgba(128, 128, 128, 0.1);
-  color: rgba(128, 128, 128, 0.9);
+  background-color: rgba(128, 128, 128, 0.05);
+  color: rgba(128, 128, 128, 0.95);
 }
 
 /* table */

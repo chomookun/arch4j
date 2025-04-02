@@ -273,12 +273,16 @@
                         this.style.marginLeft=status.depth + 'em';
                     }
                     ">
-                            <div class="menu-item cursor--pointer" data-duice-bind="menu" data-duice-execute="this.dataset.menuId = menu.menuId;"
-                                 onclick="getMenu(this.dataset.menuId);">
-                                <img data-duice-bind="menu" data-duice-property="icon" class="icon"
-                                     th:src="@{/static/image/icon-null.svg}"/>
-                                <span data-duice-bind="menu" data-duice-property="name" class="font-weight--bold"></span>
-                            </div>
+                            <span class="menu-item">
+                                <a href="javascript:void(0);"
+                                   data-duice-bind="menu"
+                                   data-duice-execute="this.dataset.menuId = menu.menuId;"
+                                   onclick="getMenu(this.dataset.menuId);">
+                                    <img data-duice-bind="menu" data-duice-property="icon" class="icon"
+                                         th:src="@{/static/image/icon-null.svg}" alt=""/>
+                                    <span data-duice-bind="menu" data-duice-property="name"></span>
+                                </a>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -309,7 +313,7 @@
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.menu.Menu.name}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="menu" data-duice-property="name" class="font-weight--bold width--100"/>
+                                <input type="text" data-duice-bind="menu" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
@@ -408,7 +412,7 @@
                                     <td>
                                     <span data-duice-bind="menuRole" data-duice-property="roleId"
                                           data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
-                                          class="font-weight--bold"></span>
+                                          class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="menuRole" data-duice-property="name"></span>
@@ -465,9 +469,10 @@
                                         </button>
                                     </td>
                                     <td>
-                                    <span data-duice-bind="menuRole" data-duice-property="roleId"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
-                                          class="font-weight--bold"></span>
+                                        <span data-duice-bind="menuRole"
+                                              data-duice-property="roleId"
+                                              data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
+                                              class="code"></span>
                                     </td>
                                     <td>
                                         <span data-duice-bind="menuRole" data-duice-property="name"></span>

@@ -13,11 +13,9 @@
             _size: 20,
             _total: 0
         });
-
         // page list
         const pages = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(pages, true);
-
         // page
         const page = new duice.ObjectProxy({
             contentFormat: 'TEXT',
@@ -55,7 +53,6 @@
                 });
             }
         });
-
         // page pageWidget definition
         const pageWidgetDefinitions = new duice.ArrayProxy([[${pageWidgetDefinitions}]]);
 
@@ -321,7 +318,7 @@
                             onclick="getPage(this.dataset.id);"
                             class="cursor--pointer">
                             <td data-duice-bind="status" data-duice-execute="this.innerHTML = (pageSearch._page * pageSearch._size) + status.count;" class="text-align--center"></td>
-                            <td data-duice-bind="page" data-duice-property="pageId" class="font-weight--bold"></td>
+                            <td data-duice-bind="page" data-duice-property="pageId" class="code"></td>
                             <td data-duice-bind="page" data-duice-property="name"></td>
                         </tr>
                         <tr data-duice-bind="pages" data-duice-execute="if(pages.length === 0) this.hidden=false;" hidden>
@@ -371,8 +368,7 @@
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.page.Page.pageId}"
                               class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="page" data-duice-property="pageId"
-                                   class="width--100 font-weight--bold"/>
+                            <input type="text" data-duice-bind="page" data-duice-property="pageId" class="width--100 code"/>
                         </label>
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.page.Page.name}" class="font-weight--bold tag-required"></span>

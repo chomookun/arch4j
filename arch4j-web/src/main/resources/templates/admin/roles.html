@@ -13,11 +13,9 @@
             _size: 20,
             _total: -1
         });
-
         // role list
         const roles = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(roles, true);
-
         // role
         const role = new duice.ObjectProxy({
             roleId: null,
@@ -34,7 +32,6 @@
             }
             return true;
         });
-
         // authority search condition
         const authoritySearch = new duice.ObjectProxy({
             key: 'authorityId',
@@ -43,11 +40,9 @@
             _size: 20,
             _total: 0
         });
-
         // authority list
         const authorities = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(authorities, true);
-
         // authority
         const authority = new duice.ObjectProxy({});
         duice.ObjectProxy.setDisabledAll(authority, true);
@@ -505,7 +500,7 @@
                                 <td>
                                     <span data-duice-bind="role" data-duice-property="roleId"
                                           data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
-                                          class="code font-weight--bold"></span>
+                                          class="code"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="role" data-duice-property="name"></span>
@@ -572,15 +567,13 @@
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.role.Role.roleId}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="role" data-duice-property="roleId"
-                                       class="width--100 code font-weight--bold"/>
+                                <input type="text" data-duice-bind="role" data-duice-property="roleId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.role.Role.name}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="role" data-duice-property="name"
-                                       class="width--100"/>
+                                <input type="text" data-duice-bind="role" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
@@ -641,7 +634,7 @@
                                             <span data-duice-bind="authority"
                                                   data-duice-property="authorityId"
                                                   data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                                                  class="code font-weight--bold"></span>
+                                                  class="code"></span>
                                         </td>
                                         <td>
                                             <span data-duice-bind="authority" data-duice-property="name"></span>
@@ -762,7 +755,7 @@
                                 <td>
                                     <span data-duice-bind="authority" data-duice-property="authorityId"
                                           data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                                          class="code font-weight--bold"></span>
+                                          class="code"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="authority" data-duice-property="name"></span>
@@ -816,22 +809,19 @@
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.role.Authority.authorityId}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="authority" data-duice-property="authorityId"
-                                       class="width--100 code font-weight--bold"/>
+                                <input type="text" data-duice-bind="authority" data-duice-property="authorityId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.role.Authority.name}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="authority" data-duice-property="name"
-                                       class="width--100"/>
+                                <input type="text" data-duice-bind="authority" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.role.Authority.note}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="authority" data-duice-property="note" rows="5"
-                                          class="width--100"></textarea>
+                                <textarea data-duice-bind="authority" data-duice-property="note" rows="5" class="width--100"></textarea>
                             </label>
                         </div>
                     </form>
@@ -881,108 +871,127 @@
             }
         </style>
         <script th:inline="javascript">
-            const authoritySelectDialog = {
-                dialog: new duice.Dialog(document.getElementById('authoritySelectDialog')),
-                alreadySelectedAuthorityIds : null,
-                authoritySearch: new duice.ObjectProxy({
+            const authoritySelectDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('authoritySelectDialog'));
+                let disabledAuthorityIds = null;
+                const authoritySearch = new duice.ObjectProxy({
                     key: 'authorityId',
                     value: null,
                     _page: 0,
                     _size: 5,
                     _total: -1
-                }),
-                authorities: new duice.ArrayProxy([]),
-                selectedAuthorities: new duice.ArrayProxy([]),
+                });
+                const authorities = new duice.ArrayProxy([]);
+                const selectedAuthorities = new duice.ArrayProxy([]);
+
                 /**
                  * open
                  * @param alreadySelectedAuthorityIds
                  */
-                open: async function(alreadySelectedAuthorityIds) {
+                async function open(alreadySelectedAuthorityIds) {
                     if(alreadySelectedAuthorityIds) {
-                        this.alreadySelectedAuthorityIds = alreadySelectedAuthorityIds;
+                        disabledAuthorityIds = alreadySelectedAuthorityIds;
                     }else{
-                        this.alreadySelectedAuthorityIds = [];
+                        disabledAuthorityIds = [];
                     }
-                    duice.ObjectProxy.reset(this.authoritySearch);
-                    duice.ArrayProxy.clear(this.selectedAuthorities);
-                    this.getAuthorities(0);
-                    return this.dialog.open();
-                },
+                    duice.ObjectProxy.reset(authoritySearch);
+                    duice.ArrayProxy.clear(selectedAuthorities);
+                    getAuthorities(0);
+                    return dialog.open();
+                }
+
                 /**
                  * getAuthorities
                  * @param page
                  */
-                getAuthorities: function(page) {
+                function getAuthorities(page) {
                     if(page) {
-                        this.authoritySearch._page = page;
+                        authoritySearch._page = page;
                     }
                     let url = new URL(`${window.location.pathname}/get-authorities`, document.location.origin);
-                    if(this.authoritySearch.key && this.authoritySearch.value) {
-                        url.searchParams.append(this.authoritySearch.key, this.authoritySearch.value);
+                    if(authoritySearch.key && authoritySearch.value) {
+                        url.searchParams.set(authoritySearch.key, authoritySearch.value);
                     }
-                    url.searchParams.append('_page', this.authoritySearch._page);
-                    url.searchParams.append('_size', this.authoritySearch._size);
+                    url.searchParams.set('_page', authoritySearch._page);
+                    url.searchParams.set('_size', authoritySearch._size);
                     _fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            duice.ArrayProxy.clear(this.authorities);
-                            duice.ArrayProxy.assign(this.authorities, data.content);
-                            this.authoritySearch._total = data['totalElements'];
+                            duice.ArrayProxy.clear(authorities);
+                            duice.ArrayProxy.assign(authorities, data.content);
+                            authoritySearch._total = data['totalElements'];
                             // check already selected
-                            this.authorities.forEach(authority => {
-                                if(this.alreadySelectedAuthorityIds.includes(authority['authorityId'])){
+                            authorities.forEach(authority => {
+                                if(disabledAuthorityIds.includes(authority['authorityId'])){
                                     authority['_selected'] = true;
                                 }
-                                this.selectedAuthorities.forEach(element => {
+                                selectedAuthorities.forEach(element => {
                                     if(element.id === authority['authorityId']) {
                                         authority['_selected'] = true;
                                     }
                                 });
                             });
                         });
-                },
+                }
+
                 /**
                  * resetAuthorities
                  */
-                resetAuthorities: function() {
-                    duice.ObjectProxy.reset(this.authoritySearch);
-                    this.getAuthorities();
-                },
+                function resetAuthorities() {
+                    duice.ObjectProxy.reset(authoritySearch);
+                    getAuthorities();
+                }
+
                 /**
                  * select authority
                  * @param index
                  */
-                selectAuthority: function(index) {
-                    let authority = JSON.parse(JSON.stringify(this.authorities[index]));
-                    this.selectedAuthorities.push(authority);
-                    this.authorities.forEach(element => {
+                function selectAuthority(index) {
+                    let authority = JSON.parse(JSON.stringify(authorities[index]));
+                    selectedAuthorities.push(authority);
+                    authorities.forEach(element => {
                         if(element.authorityId === authority.authorityId) {
                             element['_selected'] = true;
                             return false;
                         }
                     });
-                },
+                }
+
                 /**
                  * deselect authority
                  * @param index
                  */
-                deselectAuthority: async function(index) {
-                    let authority = this.selectedAuthorities[index];
-                    this.selectedAuthorities.splice(index, 1);
-                    this.authorities.forEach(element => {
+                async function deselectAuthority(index) {
+                    let authority = selectedAuthorities[index];
+                    selectedAuthorities.splice(index, 1);
+                    authorities.forEach(element => {
                         if(element.authorityId === authority.authorityId) {
                             element['_selected'] = false;
                             return false;
                         }
                     });
-                },
+                }
+
                 /**
                  * confirm
                  */
-                confirm: function() {
-                    this.dialog.close(this.selectedAuthorities);
+                function confirm() {
+                    dialog.close(selectedAuthorities);
                 }
-            }
+
+                // returns
+                return {
+                    open,
+                    authoritySearch,
+                    getAuthorities,
+                    resetAuthorities,
+                    authorities,
+                    selectedAuthorities,
+                    selectAuthority,
+                    deselectAuthority,
+                    confirm
+                };
+            })();
         </script>
         <div class="dialog-title">
             <h2>
@@ -1048,7 +1057,7 @@
                         <span data-duice-bind="authority"
                               data-duice-property="authorityId"
                               data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                              class="font-weight--bold"></span>
+                              class="code"></span>
                         </td>
                         <td>
                             <span data-duice-bind="authority" data-duice-property="name"></span>
@@ -1104,7 +1113,7 @@
                         <span data-duice-bind="authority"
                               data-duice-property="authorityId"
                               data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                              class="font-weight--bold"></span>
+                              class="code"></span>
                         </td>
                         <td>
                             <span data-duice-bind="authority" data-duice-property="name"></span>

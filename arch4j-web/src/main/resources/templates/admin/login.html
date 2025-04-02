@@ -58,6 +58,10 @@
             message: null
         });
 
+        /**
+         * Request login
+         * @returns {Promise<boolean>}
+         */
         async function requestLogin() {
             if(_isEmpty(login.username)){
                 await _alert([[#{web.global.itemEmpty(#{core.user.User.username})}]]);
@@ -69,7 +73,6 @@
                 duice.ObjectProxy.focus(login, 'password');
                 return false;
             }
-
             // request login
             let url = new URL(`${window.location.pathname}/process`, document.location.origin);
             let payload = new URLSearchParams();
@@ -110,7 +113,7 @@
                 <label class="grid-column--span-12">
                     <input type="text" autocomplete="off"
                            data-duice-bind="login" data-duice-property="username"
-                           class="width--100 text-align--center font-weight--bold"
+                           class="width--100 text-align--center"
                            th:placeholder="#{web.admin.login.userId}"/>
                 </label>
                 <label class="grid-column--span-12">
