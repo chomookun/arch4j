@@ -1,6 +1,5 @@
 package org.chomookun.arch4j.core.role;
 
-import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
