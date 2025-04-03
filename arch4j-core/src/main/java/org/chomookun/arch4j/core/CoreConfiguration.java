@@ -226,7 +226,7 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
 
     /**
      * Batch dataSource
-     * @param batchHikariConfig batch hiakri config
+     * @param batchHikariConfig batch hikari config
      * @param environment environment
      * @return batch dataSource
      */
