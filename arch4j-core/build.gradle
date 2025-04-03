@@ -101,7 +101,6 @@ dependencies {
     api "net.datafaker:datafaker"
 
     // jwt
-    api 'io.jsonwebtoken:jjwt'
     api 'com.auth0:java-jwt'
 
     // mail

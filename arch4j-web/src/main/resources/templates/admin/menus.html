@@ -147,7 +147,7 @@
          */
         function selectParentMenuId() {
             let disabledMenuIds = [ menu.menuId ];
-            menuSelectDialog.open(disabledMenuIds).then(selectedMenu => {
+            selectMenuDialog.open(disabledMenuIds).then(selectedMenu => {
                 menu.parentMenuId = selectedMenu.menuId;
                 menu.parentMenuName = selectedMenu.name;
             });
@@ -213,28 +213,16 @@
     </script>
     <style th:inline="css">
         .menu-item {
-            padding: 0.2em;
+            padding: 0.0rem 1rem;
+            border-radius: 2px;
         }
         .menu-item:hover {
-            background-color: var(--web-table-body-hover-background-color);
+            background-color: var(--duice-table-tbody-hover-background);
         }
-        .menu-item::before {
-            content: "";
-            background-image: url(/*[[@{/static/image/icon-folder-close.svg}]]*/);
-            background-size: 1em 1em;
-            display: inline-block;
-            width: 1em;
-            height: 1em;
-            vertical-align: middle;
-        }
-        .dark-mode .menu-item::before {
-            filter: invert(1) hue-rotate(180deg);
-        }
-        .selected > .menu-item::before {
-            background-image: url(/*[[@{/static/image/icon-folder-open.svg}]]*/);
-        }
-        .selected > .menu-item {
-            background-color: var(--web-table-body-hover-background-color);
+        .menu-item.selected {
+            background-color: var(--duice-table-tbody-hover-background);
+            font-weight: bold;
+            text-decoration: underline;
         }
     </style>
 
@@ -268,21 +256,15 @@
                     <div>
                         <div data-duice-bind="menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId" data-duice-selected-item-class="selected"
                              data-duice-execute="
-                    this.dataset.menuId = menu.menuId;
-                    if(menu.parentMenuId) {
-                        this.style.marginLeft=status.depth + 'em';
-                    }
-                    ">
-                            <span class="menu-item">
-                                <a href="javascript:void(0);"
-                                   data-duice-bind="menu"
-                                   data-duice-execute="this.dataset.menuId = menu.menuId;"
-                                   onclick="getMenu(this.dataset.menuId);">
-                                    <img data-duice-bind="menu" data-duice-property="icon" class="icon"
-                                         th:src="@{/static/image/icon-null.svg}" alt=""/>
-                                    <span data-duice-bind="menu" data-duice-property="name"></span>
-                                </a>
-                            </span>
+                            this.dataset.menuId = menu.menuId;
+                            if(menu.parentMenuId) {
+                                this.style.marginLeft=status.depth + 'em';
+                            }"
+                            onclick="getMenu(this.dataset.menuId);"
+                            class="menu-item cursor--pointer">
+                            <img data-duice-bind="menu" data-duice-property="icon" class="icon"
+                                 th:src="@{/static/image/icon-null.svg}" alt=""/>
+                            <span data-duice-bind="menu" data-duice-property="name"></span>
                         </div>
                     </div>
                 </div>
@@ -430,7 +412,9 @@
                                 </tr>
                                 <tr data-duice-bind="menu.viewMenuRoles"
                                     data-duice-if="return (menu.viewMenuRoles.length < 1);">
-                                    <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
+                                    <td colspan="100%" class="text-align--center">
+                                        <span data-th-text="#{web.global.itemNotFound(#{core.role.Role})}"></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -490,7 +474,9 @@
                                 </tr>
                                 <tr data-duice-bind="menu.linkMenuRoles"
                                     data-duice-if="return (menu.linkMenuRoles.length < 1);">
-                                    <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
+                                    <td colspan="100%" class="text-align--center">
+                                        <span data-th-text="#{web.global.itemNotFound(#{core.role.Role})}"></span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -540,63 +526,73 @@
     <!-- ================================== -->
 
     <!-- ================================== -->
-    <!-- start: menuSelectDialog            -->
+    <!-- start: select Menu Dialog          -->
     <!-- ================================== -->
-    <dialog id="menuSelectDialog">
+    <dialog id="selectMenuDialog">
         <style>
-            #menuSelectDialog {
+            #selectMenuDialog {
                 min-width: 300px;
             }
         </style>
         <script th:inline="javascript">
-            const menuSelectDialog = {
-                dialog: new duice.Dialog(document.getElementById('menuSelectDialog')),
-                disabledMenuIds : null,
-                menus: new duice.ArrayProxy([]),
+            const selectMenuDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('selectMenuDialog'));
+                let disabledMenuIds = [];
+                const menus = new duice.ArrayProxy([]);
+
                 /**
                  * open
-                 * @param disabledMenuIds
+                 * @param disableMenuIds
                  */
-                open: async function(disabledMenuIds) {
-                    if(disabledMenuIds) {
-                        this.disabledMenuIds = disabledMenuIds;
-                    }else{
-                        this.disabledMenuIds = [];
+                async function open(disableMenuIds) {
+                    disabledMenuIds.length = 0;
+                    if(disableMenuIds) {
+                        disabledMenuIds.push(...disableMenuIds);
                     }
-                    this.getMenus();
-                    return this.dialog.open();
-                },
+                    getMenus();
+                    return dialog.open();
+                }
+
                 /**
                  * getMenus
                  */
-                getMenus: function() {
-                    let url = new URL(`${window.location.pathname}/get-menus`, document.location.origin);
+                function getMenus() {
+                    let url = new URL(`${location.pathname}/get-menus`, location.origin);
                     _fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            duice.ArrayProxy.clear(this.menus);
-                            duice.ArrayProxy.assign(this.menus, data);
-                            // check already selected
-                            this.menus.forEach(menu => {
-                                if(this.disabledMenuIds.includes(menu.id)){
+                            duice.ArrayProxy.clear(menus);
+                            duice.ArrayProxy.assign(menus, data);
+                            // check disabled menu
+                            menus.forEach(menu => {
+                                if(disabledMenuIds.includes(menu.id)){
                                     menu['_selected'] = true;
                                 }
                             });
                         });
-                },
+                }
+
                 /**
                  * select menu
                  * @param menuId selected menu id
                  */
-                selectMenu: function(menuId) {
-                    let selectedMenu = this.menus.filter(menu => {
+                function selectMenu(menuId) {
+                    let selectedMenu = menus.filter(menu => {
                         if(menu.menuId === menuId) {
                             return menu;
                         }
                     })[0];
-                    this.dialog.close(selectedMenu);
+                    dialog.close(selectedMenu);
                 }
-            }
+
+                // returns
+                return {
+                    open,
+                    disabledMenuIds,
+                    menus,
+                    selectMenu
+                };
+            })();
         </script>
         <div class="display--flex flex-direction--column padding--1em">
             <div>
@@ -607,7 +603,7 @@
             </div>
             <div class="display--flex flex-direction--column gap--1em padding--1em">
                 <div class="overflow-x--scroll">
-                    <div data-duice-bind="menuSelectDialog.menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId"
+                    <div data-duice-bind="selectMenuDialog.menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId"
                          data-duice-execute="
                     this.dataset.menuId = menu.menuId;
                     if(menu.parentMenuId) {
@@ -617,13 +613,13 @@
                         <div>
                             <a href="#" data-duice-bind="menu" data-duice-execute="
                         this.dataset.menuId = menu.menuId;
-                        if(menuSelectDialog.disabledMenuIds.includes(menu.menuId)) {
+                        if(selectMenuDialog.disabledMenuIds.includes(menu.menuId)) {
                             this.style.opacity = '0.5';
                             this.style.pointerEvents = 'none';
                         }
-                        " onclick="menuSelectDialog.selectMenu(this.dataset.menuId);">
+                        " onclick="selectMenuDialog.selectMenu(this.dataset.menuId);">
                                 <img data-duice-bind="menu" data-duice-property="icon" class="icon" th:src="@{/static/image/icon-null.svg}"/>
-                                <span data-duice-bind="menu" data-duice-property="name" class="font-weight--bold"></span>
+                                <span data-duice-bind="menu" data-duice-property="name"></span>
                             </a>
                         </div>
                     </div>

@@ -244,14 +244,14 @@
          * changes user password (open change user password dialog)
          */
         function changeUserPassword() {
-            userPasswordChangeDialog.open(user.userId);
+            changeUserPasswordDialog.open(user.userId);
         }
 
         /**
          * generates security token (open generate token dialog)
          */
         function generateSecurityToken() {
-            securityTokenGenerateDialog.open(user.userId);
+            generateSecurityTokenDialog.open(user.userId);
         }
 
         // DOM content loaded listener
@@ -386,7 +386,9 @@
                             </tr>
                             <tr data-duice-bind="users" data-duice-execute="if(users.length === 0) this.hidden=false;"
                                 hidden>
-                                <td colspan="100%" class="text-align--center">No Data</td>
+                                <td colspan="100%" class="text-align--center">
+                                    <span data-th-text="#{web.global.itemNotFound(#{core.user.User})}"></span>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -586,7 +588,9 @@
                                     <tr data-duice-bind="user.roles"
                                         data-duice-execute="if(user.roles.length === 0) this.hidden=false;"
                                         hidden>
-                                        <td colspan="100%" class="text-align--center">No Data</td>
+                                        <td colspan="100%" class="text-align--center">
+                                            <span data-th-text="#{web.global.itemNotFound(#{core.role.Role})}"></span>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -647,64 +651,81 @@
     <!-- ====================================== -->
     <!-- start: password change dialog          -->
     <!-- ====================================== -->
-    <dialog id="userPasswordChangeDialog" class="dialog">
+    <dialog id="changeUserPasswordDialog" class="dialog">
         <style>
-            #userPasswordChangeDialog {
+            #changeUserPasswordDialog {
                 width: 300px;
             }
         </style>
         <script th:inline="javascript">
-            const userPasswordChangeDialog = {
-                dialog: new duice.Dialog(document.getElementById('userPasswordChangeDialog')),
-                data: new duice.ObjectProxy({
+            const changeUserPasswordDialog = (() => {
+                const dialog =  new duice.Dialog(document.getElementById('changeUserPasswordDialog'));
+                const data = new duice.ObjectProxy({
                     userId: null,
                     password: null,
                     passwordConfirm: null
-                }),
-                open: async function(userId) {
-                    duice.ObjectProxy.clear(this.data);
-                    this.data.userId = userId;
-                    return this.dialog.open();
-                },
-                confirm: async function() {
-                    // checks password
-                    if (_isEmpty(this.data.password)) {
-                        await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
-                        duice.ObjectProxy.focus(this.data, 'password');
-                        return false;
-                    }
-                    if (_isEmpty(this.data.passwordConfirm)) {
-                        await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
-                        duice.ObjectProxy.focus(this.data, 'passwordConfirm');
-                        return false;
-                    }
-                    if (this.data.password !== this.data.passwordConfirm) {
-                        await _alert(/*[[#{web.global.itemNotMatch(#{core.user.User.password})}]]*/'');
-                        duice.ObjectProxy.focus(this.data, 'password');
-                        return false;
-                    }
+                });
 
+                /**
+                 * Opens
+                 * @param userId
+                 * @returns {Promise<*>}
+                 */
+                async function open(userId) {
+                    duice.ObjectProxy.clear(data);
+                    data.userId = userId;
+                    return dialog.open();
+                }
+
+                /**
+                 * Confirms
+                 * @returns {Promise<boolean>}
+                 */
+                async function confirm() {
+                    // checks password
+                    if (_isEmpty(data.password)) {
+                        await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
+                        duice.ObjectProxy.focus(data, 'password');
+                        return false;
+                    }
+                    if (_isEmpty(data.passwordConfirm)) {
+                        await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
+                        duice.ObjectProxy.focus(data, 'passwordConfirm');
+                        return false;
+                    }
+                    if (data.password !== data.passwordConfirm) {
+                        await _alert(/*[[#{web.global.itemNotMatch(#{core.user.User.password})}]]*/'');
+                        duice.ObjectProxy.focus(data, 'password');
+                        return false;
+                    }
                     // call save
                     _confirm(/*[[#{web.global.saveItemConfirm(#{core.user.User.password})}]]*/'').then(result => {
                         if (result) {
-                            let url = new URL(/*[[@{/admin/security/change-user-password}]]*/'', document.location.origin);
+                            let url = new URL(`${location.pathname}/change-user-password`, location.origin);
                             _fetch(url, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify(this.data)
+                                body: JSON.stringify(data)
                             }).then(response => {
                                 if (response.ok) {
                                     _alert(/*[[#{web.global.saveItemComplete(#{core.user.User.password})}]]*/).then(() => {
-                                        this.dialog.close();
+                                        dialog.close();
                                     });
                                 }
                             });
                         }
                     });
                 }
-            }
+
+                // returns
+                return {
+                    open,
+                    data,
+                    confirm
+                };
+            })();
         </script>
         <div class="dialog-title">
             <h2>
@@ -716,15 +737,15 @@
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <label class="grid-column--span-12">
                     <span data-th-text="#{core.user.User.password}" class="font-weight--bold tag-required"></span>
-                    <input type="password" data-duice-bind="userPasswordChangeDialog.data" data-duice-property="password" class="width--100"/>
+                    <input type="password" data-duice-bind="changeUserPasswordDialog.data" data-duice-property="password" class="width--100"/>
                 </label>
                 <label class="grid-column--span-12">
                     <span data-th-text="#{core.user.User.password}" class="font-weight--bold tag-required"></span>(*)
-                    <input type="password" data-duice-bind="userPasswordChangeDialog.data" data-duice-property="passwordConfirm" class="width--100"/>
+                    <input type="password" data-duice-bind="changeUserPasswordDialog.data" data-duice-property="passwordConfirm" class="width--100"/>
                 </label>
             </form>
             <div class="text-align--right">
-                <button class="button" type="button" onclick="userPasswordChangeDialog.confirm();">
+                <button class="button" type="button" onclick="changeUserPasswordDialog.confirm();">
                     <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
                     <span data-th-text="#{web.global.confirm}"></span>
                 </button>
@@ -736,42 +757,58 @@
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: security token generate dialog  -->
+    <!-- start: generate security token dialog  -->
     <!-- ====================================== -->
-    <dialog id="securityTokenGenerateDialog" class="dialog">
+    <dialog id="generateSecurityTokenDialog" class="dialog">
         <style th:inline="css">
-            #securityTokenGenerateDialog {
+            #generateSecurityTokenDialog {
                 width: 400px;
             }
         </style>
         <script th:inline="javascript">
-            const securityTokenGenerateDialog = {
-                dialog: new duice.Dialog(document.getElementById('securityTokenGenerateDialog')),
-                data: new duice.ObjectProxy({
+            const generateSecurityTokenDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('generateSecurityTokenDialog'));
+                const data = new duice.ObjectProxy({
                     userId: null,
                     expirationDays: null,
                     securityToken: null
-                }),
-                open: async function(userId) {
-                    duice.ObjectProxy.clear(this.data);
-                    this.data.userId = userId;
-                    this.data.expirationDays = 0;
-                    return this.dialog.open();
-                },
-                confirm: async function() {
-                    let url = new URL(/*[[@{/admin/security/generate-security-token}]]*/'', document.location.origin);
+                });
+
+                /**
+                 * Opens
+                 * @param userId
+                 * @returns {Promise<*>}
+                 */
+                async function open(userId) {
+                    duice.ObjectProxy.clear(data);
+                    data.userId = userId;
+                    data.expirationDays = 0;
+                    return dialog.open();
+                }
+
+                /**
+                 * Confirms
+                 * @returns {Promise<void>}
+                 */
+                async function confirm() {
+                    let url = new URL(`${location.pathname}/generate-security-token`, location.origin);
                     _fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(this.data)
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
                     }).then(response => response.text())
-                        .then(data => {
-                            this.data.securityToken = data;
+                        .then(responseBody => {
+                            data.securityToken = responseBody;
                         });
                 }
-            }
+
+                // returns
+                return {
+                    open,
+                    data,
+                    confirm
+                };
+            })();
         </script>
         <div class="dialog-title">
             <h2>
@@ -782,7 +819,7 @@
         <div class="dialog-content">
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <label class="grid-column--span-6">
-                    <select data-duice-bind="securityTokenGenerateDialog.data" data-duice-property="expirationDays" class="width--100">
+                    <select data-duice-bind="generateSecurityTokenDialog.data" data-duice-property="expirationDays" class="width--100">
                         <option value="0">No expiration</option>
                         <option value="30">30 days</option>
                         <option value="60">60 days</option>
@@ -790,277 +827,19 @@
                     </select>
                 </label>
                 <div class="grid-column--span-6 justify-self--end">
-                    <button class="button" type="button" onclick="securityTokenGenerateDialog.confirm();">
+                    <button class="button" type="button" onclick="generateSecurityTokenDialog.confirm();">
                         <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
                         <span data-th-text="#{web.global.confirm}"></span>
                     </button>
                 </div>
             </form>
             <label>
-                <textarea data-duice-bind="securityTokenGenerateDialog.data" data-duice-property="securityToken" class="code width--100" style="height:10em; white-space:normal;"></textarea>
+                <textarea data-duice-bind="generateSecurityTokenDialog.data" data-duice-property="securityToken" class="code width--100" style="height:10em; line-height:1rem; white-space:normal;"></textarea>
             </label>
         </div>
     </dialog>
     <!-- ====================================== -->
-    <!-- end: security token generate           -->
-    <!-- ====================================== -->
-
-    <!-- ====================================== -->
-    <!-- start: authoritySelectDialog           -->
-    <!-- ====================================== -->
-    <dialog id="authoritySelectDialog" class="dialog">
-        <style th:inline="css">
-            #authoritySelectDialog {
-                width: 800px;
-            }
-        </style>
-        <script th:inline="javascript">
-            const authoritySelectDialog = {
-                dialog: new duice.Dialog(document.getElementById('authoritySelectDialog')),
-                alreadySelectedAuthorityIds : null,
-                authoritySearch: new duice.ObjectProxy({
-                    key: 'authorityId',
-                    value: null,
-                    _page: 0,
-                    _size: 5,
-                    _count: 0
-                }),
-                authorities: new duice.ArrayProxy([]),
-                selectedAuthorities: new duice.ArrayProxy([]),
-                /**
-                 * open
-                 * @param alreadySelectedAuthorityIds
-                 */
-                open: async function(alreadySelectedAuthorityIds) {
-                    if(alreadySelectedAuthorityIds) {
-                        this.alreadySelectedAuthorityIds = alreadySelectedAuthorityIds;
-                    }else{
-                        this.alreadySelectedAuthorityIds = [];
-                    }
-                    duice.ObjectProxy.reset(this.authoritySearch);
-                    duice.ArrayProxy.clear(this.selectedAuthorities);
-                    this.getAuthorities(0);
-                    return this.dialog.open();
-                },
-                /**
-                 * getAuthorities
-                 * @param page
-                 */
-                getAuthorities: function(page) {
-                    if(page) {
-                        this.authoritySearch._page = page;
-                    }
-                    let url = new URL(/*[[@{/admin/security/get-authorities}]]*/'',document.location.origin);
-                    if(this.authoritySearch.key && this.authoritySearch.value) {
-                        url.searchParams.append(this.authoritySearch.key, this.authoritySearch.value);
-                    }
-                    url.searchParams.append('_page', this.authoritySearch._page);
-                    url.searchParams.append('_size', this.authoritySearch._size);
-                    _fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            duice.ArrayProxy.clear(this.authorities);
-                            duice.ArrayProxy.assign(this.authorities, data.content);
-                            this.authoritySearch._count = data['totalElements'];
-                            // check already selected
-                            this.authorities.forEach(authority => {
-                                if(this.alreadySelectedAuthorityIds.includes(authority['authorityId'])){
-                                    authority['_selected'] = true;
-                                }
-                                this.selectedAuthorities.forEach(element => {
-                                    if(element.id === authority['authorityId']) {
-                                        authority['_selected'] = true;
-                                    }
-                                });
-                            });
-                        });
-                },
-                /**
-                 * resetAuthorities
-                 */
-                resetAuthorities: function() {
-                    duice.ObjectProxy.reset(this.authoritySearch);
-                    this.getAuthorities();
-                },
-                /**
-                 * select authority
-                 * @param index
-                 */
-                selectAuthority: function(index) {
-                    let authority = JSON.parse(JSON.stringify(this.authorities[index]));
-                    this.selectedAuthorities.push(authority);
-                    this.authorities.forEach(element => {
-                        if(element.authorityId === authority.authorityId) {
-                            element['_selected'] = true;
-                            return false;
-                        }
-                    });
-                },
-                /**
-                 * deselect authority
-                 * @param index
-                 */
-                deselectAuthority: async function(index) {
-                    let authority = this.selectedAuthorities[index];
-                    this.selectedAuthorities.splice(index, 1);
-                    this.authorities.forEach(element => {
-                        if(element.authorityId === authority.authorityId) {
-                            element['_selected'] = false;
-                            return false;
-                        }
-                    });
-                },
-                /**
-                 * confirm
-                 */
-                confirm: function() {
-                    this.dialog.close(this.selectedAuthorities);
-                }
-            }
-        </script>
-        <div class="dialog-title">
-            <h1>
-                <img class="icon" th:src="@{/static/image/icon-authority.svg}" alt="authority"/>
-                <span data-th-text="#{core.role.Authority}"></span>
-            </h1>
-        </div>
-        <div class="dialog-content">
-            <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1rem">
-                <div>
-                    <div class="white-space--nowrap">
-                        <label>
-                            <select data-duice-bind="authoritySelectDialog.authoritySearch" data-duice-property="key">
-                                <option value="authorityId" th:text="#{core.role.Authority.authorityId}"></option>
-                                <option value="name" th:text="#{core.role.Authority.name}"></option>
-                            </select>
-                        </label>
-                        <label>
-                            <input type="text" data-duice-bind="authoritySelectDialog.authoritySearch" data-duice-property="value"/>
-                        </label>
-                    </div>
-                </div>
-                <div class="white-space--nowrap text-align--right s__text-align--left">
-                    <button class="button" type="submit" onclick="authoritySelectDialog.getAuthorities();">
-                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
-                        <span data-th-text="#{web.global.search}">Search</span>
-                    </button>
-                    <button class="button" type="button" onclick="authoritySelectDialog.resetAuthorities();">
-                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
-                        <span data-th-text="#{web.global.reset}">Reset</span>
-                    </button>
-                </div>
-            </form>
-            <div class="overflow-x--scroll box">
-                <table class="table width--100 border--none">
-                    <colgroup>
-                        <col style="width:3rem;"/>
-                        <col/>
-                        <col/>
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th class="text-align--center">-</th>
-                        <th data-th-text="#{core.role.Authority.authorityId}"></th>
-                        <th data-th-text="#{core.role.Authority.name}"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr data-duice-bind="authoritySelectDialog.authorities" data-duice-foreach="authority,status">
-                        <td class="text-align--center">
-                            <button class="button small" type="button"
-                                    data-duice-bind="authority"
-                                    data-duice-execute="
-                                    this.dataset.index = status.index;
-                                    if(authority._selected) {
-                                        this.disabled = true;
-                                    }"
-                                    onclick="authoritySelectDialog.selectAuthority(this.dataset.index);">
-                                <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
-                            </button>
-                        </td>
-                        <td>
-                        <span data-duice-bind="authority"
-                              data-duice-property="authorityId"
-                              data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                              class="font-weight--bold"></span>
-                        </td>
-                        <td>
-                            <span data-duice-bind="authority" data-duice-property="name"></span>
-                        </td>
-                    </tr>
-                    <tr data-duice-bind="authoritySelectDialog.authorities"
-                        data-duice-execute="if(authoritySelectDialog.authorities.length === 0) this.hidden=false;" hidden>
-                        <td colspan="100%" class="text-align--center">No Data</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="display--flex justify-content--space-between">
-                <div>
-                    <span data-th-text="#{web.global.total}"></span>
-                    <span data-duice-bind="authoritySelectDialog.authoritySearch" data-duice-property="_count" data-duice-format="number(0)"></span>
-                    <span data-th-text="#{web.global.rows}"></span>
-                </div>
-                <duice-pagination
-                        data-duice-bind="authoritySelectDialog.authoritySearch"
-                        data-duice-size-property="_size"
-                        data-duice-page-property="_page"
-                        data-duice-count-property="_count"
-                        data-duice-onclick="authoritySelectDialog.getAuthorities(this.dataset.page);">
-                </duice-pagination>
-                <div></div>
-            </div>
-            <div class="overflow-x--scroll">
-                <table class="width--100">
-                    <colgroup>
-                        <col style="width:3rem;"/>
-                        <col/>
-                        <col/>
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th class="text-align--center">-</th>
-                        <th data-th-text="#{core.role.Authority.authorityId}"></th>
-                        <th data-th-text="#{core.role.Authority.name}"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr data-duice-bind="authoritySelectDialog.selectedAuthorities" data-duice-foreach="authority,status">
-                        <td class="text-align--center">
-                            <button class="button" type="button"
-                                    data-duice-bind="authority"
-                                    data-duice-execute="this.dataset.index = status.index;"
-                                    onclick="authoritySelectDialog.deselectAuthority(this.dataset.index);">
-                                <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
-                            </button>
-                        </td>
-                        <td>
-                        <span data-duice-bind="authority"
-                              data-duice-property="authorityId"
-                              data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                              class="font-weight--bold"></span>
-                        </td>
-                        <td>
-                            <span data-duice-bind="authority" data-duice-property="name"></span>
-                        </td>
-                    </tr>
-                    <tr data-duice-bind="authoritySelectDialog.selectedAuthorities"
-                        data-duice-execute="if(authoritySelectDialog.selectedAuthorities.length === 0) this.hidden=false;" hidden>
-                        <td colspan="100%" class="text-align--center">No Data</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="text-align--right">
-                <button class="button" type="button" onclick="authoritySelectDialog.confirm();">
-                    <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
-                    <span data-th-text="#{web.global.confirm}"></span>
-                </button>
-            </div>
-        </div>
-    </dialog>
-    <!-- ====================================== -->
-    <!-- end: authoritySelectDialog             -->
+    <!-- end: generate security token dialog    -->
     <!-- ====================================== -->
 
     <th:block th:include="admin/_common.html :: roleSelectDialog"/>

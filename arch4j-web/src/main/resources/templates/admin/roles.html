@@ -520,7 +520,9 @@
                                 </td>
                             </tr>
                             <tr data-duice-bind="roles" data-duice-execute="if(roles.length === 0) this.hidden=false;" hidden>
-                                <td colspan="100%" class="text-align--center">No Data</td>
+                                <td colspan="100%" class="text-align--center">
+                                    <span data-th-text="#{web.global.itemNotFound(#{core.role.Role})}"></span>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -643,7 +645,9 @@
                                     <tr data-duice-bind="role.authorities"
                                         data-duice-execute="if(role.authorities.length === 0) this.hidden=false;"
                                         hidden>
-                                        <td colspan="100%" class="text-align--center">No Data</td>
+                                        <td colspan="100%" class="text-align--center">
+                                            <span data-th-text="#{web.global.itemNotFound(#{core.role.Authority})}"></span>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -762,7 +766,9 @@
                                 </td>
                             </tr>
                             <tr data-duice-bind="authorities" data-duice-execute="if(authorities.length === 0) this.hidden=false;" hidden>
-                                <td colspan="100%" class="text-align--center">No Data</td>
+                                <td colspan="100%" class="text-align--center">
+                                    <span data-th-text="#{web.global.itemNotFound(#{core.role.Authority})}"></span>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

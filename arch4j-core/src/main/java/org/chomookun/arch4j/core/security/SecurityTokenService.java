@@ -1,14 +1,24 @@
 package org.chomookun.arch4j.core.security;
 
-import io.jsonwebtoken.*;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -17,6 +27,8 @@ public class SecurityTokenService {
 
     private final SecurityProperties securityProperties;
 
+    private final UserDetailsService userDetailsService;
+
     /**
      * Encodes the security token
      * @param userDetails user details
@@ -24,14 +36,12 @@ public class SecurityTokenService {
      * @return security token
      */
     public String encodeSecurityToken(UserDetails userDetails, int expirationMinutes) {
-        JwtBuilder jwtBuilder = Jwts.builder();
-        jwtBuilder.claim("username", userDetails.getUsername());
-        if(securityProperties.getSessionExpireMinutes() > 0) {
-            jwtBuilder.setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expirationMinutes).toInstant()));
-        }
-        jwtBuilder.signWith(SignatureAlgorithm.HS256, securityProperties.getSigningKey());
-        jwtBuilder.compressWith(CompressionCodecs.GZIP);
-        return jwtBuilder.compact();
+        Instant expiresAt = ZonedDateTime.now().plusMinutes(expirationMinutes).toInstant();
+        Algorithm sign = Algorithm.HMAC256(securityProperties.getSigningKey());
+        return JWT.create()
+                .withClaim("username", userDetails.getUsername())
+                .withExpiresAt(expiresAt)
+                .sign(sign);
     }
 
     /**
@@ -40,12 +50,13 @@ public class SecurityTokenService {
      * @return user details
      */
     public UserDetails decodeSecurityToken(String securityToken) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(securityProperties.getSigningKey())
-                .parseClaimsJws(securityToken).getBody();
-        return UserDetailsImpl.builder()
-                .username((String)claims.get("username"))
+        Algorithm sign = Algorithm.HMAC256(securityProperties.getSigningKey());
+        JWTVerifier jwtVerifier = JWT
+                .require(sign)
                 .build();
+        DecodedJWT decodedJwt = jwtVerifier.verify(securityToken);
+        String username = decodedJwt.getClaim("username").asString();
+        return userDetailsService.loadUserByUsername(username);
     }
 
 }
