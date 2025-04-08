@@ -5,7 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.menu.model.MenuRole;
-import org.chomookun.arch4j.core.role.entity.RoleEntity;
+import org.chomookun.arch4j.core.security.entity.RoleEntity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.Type;

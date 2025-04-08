@@ -1,17 +1,19 @@
 <!-- ====================================== -->
-<!-- start: roleSelectDialog                -->
+<!-- start: select role dialog              -->
 <!-- ====================================== -->
-<th:block th:fragment="roleSelectDialog">
-<dialog id="roleSelectDialog" class="dialog">
+<th:block th:fragment="_selectRoleDialog">
+<dialog id="_selectRoleDialog" class="dialog">
     <style th:inline="css">
-        #roleSelectDialog {
+        #_selectRoleDialog {
             width: 800px;
         }
     </style>
     <script th:inline="javascript">
-        const roleSelectDialog = (() => {
-            const dialog = new duice.Dialog(document.getElementById('roleSelectDialog'));
-            let disabledRoleIds = null;
+        const _selectRoleDialog = (() => {
+            const dialog = new duice.Dialog(document.getElementById('_selectRoleDialog'));
+            const options = {
+                disabledRoleIds: []
+            }
             const roleSearch = new duice.ObjectProxy({
                 key: 'roleId',
                 value: null,
@@ -23,24 +25,20 @@
             const selectedRoles = new duice.ArrayProxy([]);
 
             /**
-             * opens dialog
-             * @param alreadySelectedRoleIds
-             * @returns {Promise<*>}
+             * Opens dialog
+             * @param disabledRoleIds
+             * @returns {*}
              */
-            function open(alreadySelectedRoleIds) {
-                if(alreadySelectedRoleIds) {
-                    disabledRoleIds = alreadySelectedRoleIds;
-                }else{
-                    disabledRoleIds = [];
-                }
+            function open({disabledRoleIds = []}) {
+                options.disabledRoleIds = disabledRoleIds;
                 duice.ArrayProxy.clear(this.selectedRoles);
                 getRoles(0);
                 return dialog.open();
             }
 
             /**
-             * gets roles
-             * @param page
+             * Gets roles
+             * @param page page number
              */
             async function getRoles(page) {
                 if(page) {
@@ -60,7 +58,7 @@
                         roleSearch._total = data['totalElements'];
                         // check already selected
                         roles.forEach(role => {
-                            if(disabledRoleIds.includes(role.roleId)){
+                            if(options.disabledRoleIds.includes(role.roleId)){
                                 role['_selected'] = true;
                             }
                             selectedRoles.forEach(element => {
@@ -73,7 +71,7 @@
             }
 
             /**
-             * resets roles
+             * Resets roles
              */
             function resetRoles() {
                 duice.ObjectProxy.reset(this.roleSearch);
@@ -81,7 +79,7 @@
             }
 
             /**
-             * selects role
+             * Selects role
              * @param index
              */
             function selectRole(index) {
@@ -96,7 +94,7 @@
             }
 
             /**
-             * deselect role
+             * Deselect role
              * @param index
              * @returns {Promise<void>}
              */
@@ -112,15 +110,16 @@
             }
 
             /**
-             * confirm
+             * Confirms
              */
             function confirm() {
                 dialog.close(selectedRoles);
             }
 
+            // returns
             return {
                 open,
-                alreadySelectedRoleIds: disabledRoleIds,
+                options,
                 roleSearch,
                 roles,
                 selectedRoles,
@@ -134,7 +133,7 @@
     <div class="dialog-title">
         <h2>
             <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
-            <span data-th-text="#{core.role.Role}"></span>
+            <span data-th-text="#{core.security.Role}"></span>
         </h2>
     </div>
     <div class="dialog-content">
@@ -142,22 +141,22 @@
             <div>
                 <div class="white-space--nowrap">
                     <label>
-                        <select data-duice-bind="roleSelectDialog.roleSearch" data-duice-property="key">
-                            <option value="roleId" th:text="#{core.role.Role.roleId}"></option>
-                            <option value="name" th:text="#{core.role.Role.name}"></option>
+                        <select data-duice-bind="_selectRoleDialog.roleSearch" data-duice-property="key">
+                            <option value="roleId" th:text="#{core.security.Role.roleId}"></option>
+                            <option value="name" th:text="#{core.security.Role.name}"></option>
                         </select>
                     </label>
                     <label>
-                        <input type="text" data-duice-bind="roleSelectDialog.roleSearch" data-duice-property="value"/>
+                        <input type="text" data-duice-bind="_selectRoleDialog.roleSearch" data-duice-property="value"/>
                     </label>
                 </div>
             </div>
             <div class="white-space--nowrap text-align--right s__text-align--left">
-                <button class="button" onclick="roleSelectDialog.getRoles();">
+                <button class="button" onclick="_selectRoleDialog.getRoles();">
                     <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                     <span data-th-text="#{web.global.search}">Search</span>
                 </button>
-                <button class="button" onclick="roleSelectDialog.resetRoles();">
+                <button class="button" onclick="_selectRoleDialog.resetRoles();">
                     <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                     <span data-th-text="#{web.global.reset}">Reset</span>
                 </button>
@@ -175,14 +174,14 @@
                 <thead>
                 <tr>
                     <th class="text-align--center">-</th>
-                    <th data-th-text="#{core.role.Role.roleId}"></th>
-                    <th data-th-text="#{core.role.Role.name}"></th>
-                    <th data-th-text="#{core.role.Role.anonymous}" class="text-align--center"></th>
-                    <th data-th-text="#{core.role.Role.authenticated}" class="text-align--center"></th>
+                    <th data-th-text="#{core.security.Role.roleId}"></th>
+                    <th data-th-text="#{core.security.Role.name}"></th>
+                    <th data-th-text="#{core.security.Role.anonymous}" class="text-align--center"></th>
+                    <th data-th-text="#{core.security.Role.authenticated}" class="text-align--center"></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr data-duice-bind="roleSelectDialog.roles" data-duice-foreach="role,status">
+                <tr data-duice-bind="_selectRoleDialog.roles" data-duice-foreach="role,status">
                     <td class="text-align--center">
                         <button type="button" class="button small"
                                 data-duice-bind="role"
@@ -193,7 +192,7 @@
                                 } else {
                                     this.disabled = false;
                                 }"
-                                onclick="roleSelectDialog.selectRole(this.dataset.index);">
+                                onclick="_selectRoleDialog.selectRole(this.dataset.index);">
                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                         </button>
                     </td>
@@ -217,8 +216,8 @@
                         </label>
                     </td>
                 </tr>
-                <tr data-duice-bind="roleSelectDialog.roles"
-                    data-duice-execute="if(roleSelectDialog.roles.length === 0) this.hidden=false;" hidden>
+                <tr data-duice-bind="_selectRoleDialog.roles"
+                    data-duice-execute="if(_selectRoleDialog.roles.length === 0) this.hidden=false;" hidden>
                     <td colspan="100%" class="text-align--center">No Data</td>
                 </tr>
                 </tbody>
@@ -227,15 +226,15 @@
         <div class="display--flex justify-content--space-between">
             <div class="flex--1">
                 <span data-th-text="#{web.global.total}"></span>
-                <span data-duice-bind="roleSelectDialog.roleSearch" data-duice-property="_total" data-duice-format="number()"></span>
+                <span data-duice-bind="_selectRoleDialog.roleSearch" data-duice-property="_total" data-duice-format="number()"></span>
                 <span data-th-text="#{web.global.rows}"></span>
             </div>
             <duice-pagination
-                    data-duice-bind="roleSelectDialog.roleSearch"
+                    data-duice-bind="_selectRoleDialog.roleSearch"
                     data-duice-size-property="_size"
                     data-duice-page-property="_page"
                     data-duice-total-property="_total"
-                    data-duice-onclick="roleSelectDialog.getRoles(this.dataset.page);">
+                    data-duice-onclick="_selectRoleDialog.getRoles(this.dataset.page);">
             </duice-pagination>
             <div class="flex--1"></div>
         </div>
@@ -251,18 +250,18 @@
                 <thead>
                 <tr>
                     <th class="text-align--center">-</th>
-                    <th data-th-text="#{core.role.Role.roleId}"></th>
-                    <th data-th-text="#{core.role.Role.name}"></th>
-                    <th data-th-text="#{core.role.Role.anonymous}" class="text-align--center"></th>
-                    <th data-th-text="#{core.role.Role.authenticated}" class="text-align--center"></th>
+                    <th data-th-text="#{core.security.Role.roleId}"></th>
+                    <th data-th-text="#{core.security.Role.name}"></th>
+                    <th data-th-text="#{core.security.Role.anonymous}" class="text-align--center"></th>
+                    <th data-th-text="#{core.security.Role.authenticated}" class="text-align--center"></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr data-duice-bind="roleSelectDialog.selectedRoles" data-duice-foreach="role,status">
+                <tr data-duice-bind="_selectRoleDialog.selectedRoles" data-duice-foreach="role,status">
                     <td class="text-align--center">
                         <button data-duice-bind="role" class="button small"
                                 data-duice-execute="this.dataset.index = status.index;"
-                                onclick="roleSelectDialog.deselectRole(this.dataset.index);">
+                                onclick="_selectRoleDialog.deselectRole(this.dataset.index);">
                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                         </button>
                     </td>
@@ -286,15 +285,15 @@
                         </label>
                     </td>
                 </tr>
-                <tr data-duice-bind="roleSelectDialog.selectedRoles"
-                    data-duice-execute="if(roleSelectDialog.selectedRoles.length === 0) this.hidden=false;" hidden>
+                <tr data-duice-bind="_selectRoleDialog.selectedRoles"
+                    data-duice-execute="if(_selectRoleDialog.selectedRoles.length === 0) this.hidden=false;" hidden>
                     <td colspan="100%" class="text-align--center">No Data</td>
                 </tr>
                 </tbody>
             </table>
         </div>
         <div class="display--flex justify-content--end">
-            <button class="button" onclick="roleSelectDialog.confirm();">
+            <button class="button" onclick="_selectRoleDialog.confirm();">
                 <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
                 <span data-th-text="#{web.global.confirm}"></span>
             </button>
@@ -303,5 +302,5 @@
 </dialog>
 </th:block>
 <!-- ====================================== -->
-<!-- end: roleSelectDialog                  -->
+<!-- end: select role dialog                -->
 <!-- ====================================== -->

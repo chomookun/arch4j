@@ -3,7 +3,6 @@ package org.chomookun.arch4j.core.example.repository;
 import org.chomookun.arch4j.core.example.entity.ExampleEntity;
 import org.chomookun.arch4j.core.example.entity.ExampleEntity_;
 import org.chomookun.arch4j.core.example.model.ExampleSearch;
-import org.chomookun.arch4j.core.role.entity.RoleEntity_;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

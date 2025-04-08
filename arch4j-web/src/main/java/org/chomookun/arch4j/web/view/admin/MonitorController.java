@@ -28,63 +28,40 @@ public class MonitorController {
     private final MonitorCollector monitorCollector;
 
     @GetMapping
-    public ModelAndView monitor() {
+    public ModelAndView index() {
         return new ModelAndView("admin/monitor.html");
     }
 
-    /**
-     * Returns application info
-     * @return application info
-     */
     @GetMapping("get-info")
     @ResponseBody
     public Map<String,Object> getInfo() {
         return infoEndpoint.info();
     }
 
-    /**
-     * Returns cpu usage
-     * @return cpu usage
-     */
     @GetMapping("get-cpu")
     @ResponseBody
     public List<Map<String,Object>> getCpu() {
         return monitorCollector.getCpu();
     }
 
-    /**
-     * Returns memory usage
-     * @return memory usage
-     */
     @GetMapping("get-memory")
     @ResponseBody
     public List<Map<String,Object>> getMemory() {
         return monitorCollector.getMemory();
     }
 
-    /**
-     * Returns disk usage
-     * @return disk usage
-     */
     @GetMapping("get-disk")
     @ResponseBody
     public List<Map<String,Object>> getDisk() {
         return monitorCollector.getDisk();
     }
 
-    /**
-     * Returns server info
-     */
     @GetMapping("get-server")
     @ResponseBody
     public List<Map<String,Object>> getServer() {
         return monitorCollector.getServer();
     }
 
-    /**
-     * Returns datasource usage
-     * @return datasource usage
-     */
     @GetMapping("get-datasource")
     @ResponseBody
     public List<Map<String,Object>> getDatasource() {

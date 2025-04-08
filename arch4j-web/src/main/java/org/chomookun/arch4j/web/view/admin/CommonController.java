@@ -1,9 +1,9 @@
 package org.chomookun.arch4j.web.view.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.role.model.Role;
-import org.chomookun.arch4j.core.role.model.RoleSearch;
-import org.chomookun.arch4j.core.role.RoleService;
+import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.security.model.RoleSearch;
+import org.chomookun.arch4j.core.security.RoleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;

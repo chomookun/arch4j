@@ -2,11 +2,12 @@ package org.chomookun.arch4j.core.role;
 
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
+import org.chomookun.arch4j.core.security.RoleService;
 import org.junit.jupiter.api.Test;
-import org.chomookun.arch4j.core.role.model.Role;
-import org.chomookun.arch4j.core.role.model.RoleSearch;
+import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.security.model.RoleSearch;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
-import org.chomookun.arch4j.core.role.entity.RoleEntity;
+import org.chomookun.arch4j.core.security.entity.RoleEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

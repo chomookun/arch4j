@@ -2,8 +2,9 @@ package org.chomookun.arch4j.core.role.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.role.entity.RoleEntity;
-import org.chomookun.arch4j.core.role.model.RoleSearch;
+import org.chomookun.arch4j.core.security.entity.RoleEntity;
+import org.chomookun.arch4j.core.security.model.RoleSearch;
+import org.chomookun.arch4j.core.security.repository.RoleRepository;
 import org.junit.jupiter.api.*;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.springframework.data.domain.Page;

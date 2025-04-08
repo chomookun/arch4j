@@ -2,16 +2,14 @@ package org.chomookun.arch4j.core.role.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.role.entity.AuthorityEntity;
-import org.chomookun.arch4j.core.role.model.AuthoritySearch;
-import org.junit.jupiter.api.Order;
+import org.chomookun.arch4j.core.security.entity.AuthorityEntity;
+import org.chomookun.arch4j.core.security.model.AuthoritySearch;
+import org.chomookun.arch4j.core.security.repository.AuthorityRepository;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @RequiredArgsConstructor
 @Slf4j

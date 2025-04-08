@@ -19,11 +19,6 @@ public class CodeResponse {
     @Builder.Default
     private List<CodeItemResponse> codeItems = new ArrayList<>();
 
-    /**
-     * Convert code to code response
-     * @param code code
-     * @return code response
-     */
     public static CodeResponse from(Code code){
         CodeResponse codeResponse = CodeResponse.builder()
                 .codeId(code.getCodeId())

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<th:block layout:fragment="_content">
+    <script th:inline="javascript">
+        const executionSearch = new duice.ObjectProxy({
+            key: 'taskName',
+            value: null,
+            _page: 0,
+            _size: 10,
+            _total: 0
+        });
+        const executionStatuses = new duice.ArrayProxy(/*[[${executionStatuses}]]*/[]);
+        const executions = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(executions, true);
+
+        /**
+         * gets executions
+         * @param page page number
+         */
+        function getExecutions(page) {
+            if(Number.isFinite(parseInt(page))) {
+                executionSearch._page = page;
+            }
+            let url = new URL(`${location.pathname}/get-executions`, location.origin);
+            if (executionSearch.key && executionSearch.value) {
+                url.searchParams.append(executionSearch.key, executionSearch.value);
+            }
+            url.searchParams.append('_page', executionSearch._page);
+            url.searchParams.append('_size', executionSearch._size);
+            duice.ArrayProxy.clear(executions);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    executionSearch._total = data['totalElements'];
+                    duice.ArrayProxy.assign(executions, data.content);
+                });
+        }
+
+        /**
+         * resets messages
+         */
+        function resetExecutions() {
+            duice.ObjectProxy.reset(executionSearch);
+            getExecutions();
+        }
+
+        /**
+         * Marks status
+         * @param element element
+         * @param status status
+         */
+        function markStatus(element, status) {
+            element.classList.toggle('background-color--green', status === 'SUCCESS');
+            element.classList.toggle('background-color--red', status === 'FAIL');
+            element.classList.toggle('background-color--blue', status === 'RUNNING');
+            element.classList.toggle('blink', status === 'RUNNING');
+        }
+
+        /**
+         * Opens execution dialog
+         * @param executionId
+         */
+        function openExecutionDialog(executionId) {
+            executionDialog.open(executionId).then(result => {
+                if (result) {
+                    getExecutions();
+                }
+            });
+        }
+
+        // initial load
+        document.addEventListener('DOMContentLoaded',()=> {
+            getExecutions();
+        });
+    </script>
+
+    <!-- ================================== -->
+    <!-- start: title                       -->
+    <!-- ================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="execution"/>
+        <span data-th-text="#{web.admin.execution}"></span>
+    </h1>
+    <!-- ================================== -->
+    <!-- end: title                         -->
+    <!-- ================================== -->
+
+    <!-- ================================== -->
+    <!-- start: executions                  -->
+    <!-- ================================== -->
+    <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{core.execution.Execution} #{web.global.list}|"></span>
+            </h2>
+        </div>
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
+                <div class="display--flex flex-wrap--wrap gap--1px">
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
+                        <label>
+                            <select data-duice-bind="executionSearch" data-duice-property="key">
+                                <option value="taskName" th:text="#{core.execution.Execution.taskName}"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <input type="text" data-duice-bind="executionSearch" data-duice-property="value"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
+                    <button class="button" type="submit" onclick="getExecutions(0);">
+                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                        <span data-th-text="#{web.global.search}"></span>
+                    </button>
+                    <button class="button" type="button" onclick="resetExecutions();">
+                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.reset}"></span>
+                    </button>
+                </div>
+            </form>
+            <div class="overflow--auto box">
+                <table class="table width--100 border--none">
+                    <colgroup>
+                        <col style="min-width:5em;"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>
+                            <span data-th-text="#{web.global.no}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.taskName}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.status}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.startedAt}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.endedAt}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.totalCount}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.successCount}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.failCount}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.duration}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.execution.Execution.message}"></span>
+                        </th>
+                        <th>
+                            -
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-duice-bind="executions" data-duice-foreach="execution,status" class="text-align--center">
+                        <td>
+                            <span data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"
+                                  class="number">
+                            </span>
+                        </td>
+                        <td>
+                            <span class="code" data-duice-bind="execution" data-duice-property="taskName"></span>
+                        </td>
+                        <td>
+                            <span class="code badge"
+                                  data-duice-bind="execution"
+                                  data-duice-property="status"
+                                  data-duice-execute="markStatus(this, execution.status);"></span>
+                        </td>
+                        <td>
+                            <span class="date" data-duice-bind="execution" data-duice-property="startedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                        </td>
+                        <td>
+                            <span class="date" data-duice-bind="execution" data-duice-property="endedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                        </td>
+                        <td>
+                            <span class="number" data-duice-bind="execution" data-duice-property="totalCount" data-duice-format="number()"></span>
+                        </td>
+                        <td>
+                            <span class="number" data-duice-bind="execution" data-duice-property="successCount" data-duice-format="number()"></span>
+                        </td>
+                        <td>
+                            <span class="number" data-duice-bind="execution" data-duice-property="failCount" data-duice-format="number()"></span>
+                        </td>
+                        <td>
+                        <span class="number"
+                              data-duice-bind="execution"
+                              data-duice-execute="
+                              if (execution.duration) {
+                                this.innerHTML = luxon.Duration
+                                    .fromISO(execution.duration)
+                                    .toFormat('hh:mm:ss');
+                              }"></span>
+                        </td>
+                        <td>
+                            <label class="display--flex">
+                            <textarea class="width--100 height--100 code font-size--smaller"
+                                      data-duice-bind="execution"
+                                      data-duice-property="message"
+                                      readonly></textarea>
+                            </label>
+                        </td>
+                        <td>
+                            <button class="button" type="button"
+                                data-duice-bind="execution" data-duice-execute="this.dataset.executionId = execution.executionId;"
+                                onclick="openExecutionDialog(this.dataset.executionId);">
+                                <span data-th-text="#{web.global.detail}"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="executions" data-duice-if="return executions.length < 1;" hidden>
+                        <td colspan="100%" class="text-align--center">
+                            <span data-th-text="#{web.global.itemNotFound(#{core.execution.Execution})}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="display--flex justify-content--space-between">
+                <div class="flex--1">
+                    <span data-th-text="#{web.global.total}"></span>
+                    <span data-duice-bind="executionSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                    <span data-th-text="#{web.global.rows}"></span>
+                </div>
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            data-duice-bind="executionSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-total-property="_total"
+                            data-duice-onclick="getExecutions(this.dataset.page);"
+                            class="number">
+                    </duice-pagination>
+                </div>
+                <div class="flex--1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================================== -->
+    <!-- end: executions                    -->
+    <!-- ================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: execution dialog                -->
+    <!-- ====================================== -->
+    <dialog id="executionDialog" class="dialog">
+        <style>
+            #executionDialog {
+                width: 600px;
+            }
+        </style>
+        <script th:inline="javascript">
+            const executionDialog = {
+                dialog: new duice.Dialog(document.getElementById('executionDialog')),
+                execution: new duice.ObjectProxy({}),
+                open: async function(executionId) {
+                    duice.ObjectProxy.clear(this.execution);
+                    // duice.ObjectProxy.setReadonlyAll(this.execution, true);
+                    let url = new URL(`${location.pathname}/get-execution`, location.origin);
+                    url.searchParams.set('executionId', executionId);
+                    _fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            duice.ObjectProxy.assign(this.execution, data);
+                        });
+                    return this.dialog.open();
+                },
+                save: function() {
+                    _confirm(/*[[#{web.global.saveItemConfirm(#{core.execution.Execution})}]]*/'').then(result => {
+                        if (result) {
+                            let url = new URL(`${location.pathname}/save-execution`, location.origin);
+                            _fetch(url, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(this.execution)
+                            }).then(response => {
+                                if (response.ok) {
+                                    _alert(/*[[#{web.global.saveItemComplete(#{core.execution.Execution})}]]*/'').then(() => {
+                                        this.dialog.close(true);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                },
+                delete: function() {
+                    _confirm(/*[[#{web.global.saveItemConfirm(#{core.execution.Execution})}]]*/'').then(result => {
+                        if (result) {
+                            let url = new URL(`${location.pathname}/delete-execution?executionId=${this.execution.executionId}`, document.location.origin);
+                            _fetch(url,{
+                                method: 'DELETE'
+                            }).then(response => {
+                                if (response.ok) {
+                                    _alert(/*[[#{web.global.deleteItemComplete(#{core.execution.Execution})}]]*/'').then(() => {
+                                        this.dialog.close(true);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        </script>
+        <div class="dialog-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="password"/>
+                <span data-th-text="#{web.admin.execution}"></span>
+            </h2>
+        </div>
+        <div class="dialog-content">
+            <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.taskName}" class="font-weight--bold"></span>
+                        <input type="text" data-duice-bind="executionDialog.execution" data-duice-property="taskName"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.status}" class="font-weight--bold"></span>
+                        <select data-duice-bind="executionDialog.execution"
+                                data-duice-property="status" class="code">
+                            <option th:each="executionStatus : ${executionStatuses}"
+                                    th:value="${executionStatus}"
+                                    th:text="${executionStatus}"></option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.startedAt}" class="font-weight--bold"></span>
+                        <input type="datetime-local" data-duice-bind="executionDialog.execution" data-duice-property="startedAt" class="date"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.startedAt}" class="font-weight--bold"></span>
+                        <input type="datetime-local" data-duice-bind="executionDialog.execution" data-duice-property="endedAt" class="date"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.totalCount}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="executionDialog.execution" data-duice-property="totalCount" data-duice-format="number(0)" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.successCount}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="executionDialog.execution" data-duice-property="successCount" data-duice-format="number(0)" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.failCount}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="executionDialog.execution" data-duice-property="failCount" data-duice-format="number(0)" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <div class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.duration}" class="font-weight--bold"></span>
+                        <span data-duice-bind="executionDialog.execution" data-duice-property="duration"
+                        data-duice-execute="
+                            let duration = executionDialog.execution.duration;
+                            if (duration) {
+                                this.innerHTML = luxon.Duration
+                                    .fromISO(duration)
+                                    .toFormat('hh:mm:ss');
+                            }" class="number"></span>
+                    </div>
+                </div>
+                <div class="grid-column--span-12">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{core.execution.Execution.message}" class="font-weight--bold"></span>
+                        <textarea rows="3" data-duice-bind="executionDialog.execution" data-duice-property="message" class="width--100 code"></textarea>
+                    </label>
+                </div>
+            </form>
+            <div class="display--flex justify-content--end gap--1px">
+                <button class="button" type="button" onclick="executionDialog.delete();">
+                    <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                    <span data-th-text="#{web.global.delete}"></span>
+                </button>
+                <button class="button" type="button" onclick="executionDialog.save();">
+                    <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
+                    <span data-th-text="#{web.global.save}"></span>
+                </button>
+            </div>
+        </div>
+    </dialog>
+    <!-- ====================================== -->
+    <!-- end: execution dialog                  -->
+    <!-- ====================================== -->
+
+</th:block>

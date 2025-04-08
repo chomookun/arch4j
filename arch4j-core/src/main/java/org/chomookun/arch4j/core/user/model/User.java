@@ -2,11 +2,10 @@ package org.chomookun.arch4j.core.user.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.role.model.Role;
+import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
 import org.chomookun.arch4j.core.user.entity.UserRoleEntity;
 

@@ -46,11 +46,6 @@ public class ExampleResponse {
     @Builder.Default
     private List<ExampleItemResponse> exampleItems = new ArrayList<>();
 
-    /**
-     * Factory method from model
-     * @param example example
-     * @return example response
-     */
     public static ExampleResponse from(Example example) {
         return ExampleResponse.builder()
                 .exampleId(example.getExampleId())

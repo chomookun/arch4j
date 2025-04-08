@@ -487,3 +487,22 @@ const _deleteUrlSearchParams = function(_properties) {
     history.pushState({ time: new Date().getTime() }, null, url);
 };
 
+/**
+ * initialize
+ * @type {(function(*): void)|*}
+ * @private
+ */
+const _initialize = (function() {
+    let initialized = false;
+    return function(callback) {
+        function handler(event) {
+            if (initialized) return;
+            initialized = true;
+            callback(event);
+        }
+        document.addEventListener('DOMContentLoaded', handler);
+        window.addEventListener('popstate', handler);
+        window.addEventListener('pageshow', handler);
+    };
+})();
+

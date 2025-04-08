@@ -42,10 +42,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Tag(name = "board")
 @RestController
 @RequestMapping("api/v1/board/{boardId}/article")
 @RequiredArgsConstructor
-@Tag(name = "board")
 public class ArticleRestController {
 
     private final BoardService boardService;

@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.web.common.security;
 
 import lombok.Builder;
-import org.chomookun.arch4j.core.role.model.Role;
-import org.chomookun.arch4j.core.role.RoleService;
+import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.security.RoleService;
 import org.chomookun.arch4j.core.security.model.GrantedAuthorityImpl;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.springframework.http.HttpHeaders;

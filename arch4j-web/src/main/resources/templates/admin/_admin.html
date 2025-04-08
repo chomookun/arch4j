@@ -328,55 +328,55 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/users}" th:classappend="!${#authorization.expression('hasAuthority(''admin.users'')')}?'locked'">
+                <a th:href="@{/admin/user}" th:classappend="!${#authorization.expression('hasAuthority(''admin.user'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-user.svg}" alt="user"/>
                     <span data-th-text="#{web.admin.user}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/roles}" th:classappend="!${#authorization.expression('hasAuthority(''admin.roles'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
-                    <span data-th-text="#{web.admin.role}"></span>
+                <a th:href="@{/admin/security}" th:classappend="!${#authorization.expression('hasAuthority(''admin.security'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-security.svg}" alt="role"/>
+                    <span data-th-text="#{web.admin.security}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/menus}" th:classappend="!${#authorization.expression('hasAuthority(''admin.menus'')')}?'locked'">
+                <a th:href="@{/admin/menu}" th:classappend="!${#authorization.expression('hasAuthority(''admin.menu'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-menu.svg}" alt="menu"/>
                     <span data-th-text="#{web.admin.menu}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/messages}" th:classappend="!${#authorization.expression('hasAuthority(''admin.messages'')')}?'locked'">
+                <a th:href="@{/admin/message}" th:classappend="!${#authorization.expression('hasAuthority(''admin.message'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-message.svg}" alt="message"/>
                     <span data-th-text="#{web.admin.message}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/variables}" th:classappend="!${#authorization.expression('hasAuthority(''admin.variables'')')}?'locked'">
+                <a th:href="@{/admin/variable}" th:classappend="!${#authorization.expression('hasAuthority(''admin.variable'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-variable.svg}" alt="variable"/>
                     <span data-th-text="#{web.admin.variable}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/codes}" th:classappend="!${#authorization.expression('hasAuthority(''admin.codes'')')}?'locked'">
+                <a th:href="@{/admin/code}" th:classappend="!${#authorization.expression('hasAuthority(''admin.code'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-code.svg}" alt="code"/>
                     <span data-th-text="#{web.admin.code}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/emails}" th:classappend="!${#authorization.expression('hasAuthority(''admin.emails'')')}?'locked'">
+                <a th:href="@{/admin/email}" th:classappend="!${#authorization.expression('hasAuthority(''admin.email'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-email.svg}" alt="email"/>
                     <span data-th-text="#{web.admin.email}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/alarms}" th:classappend="!${#authorization.expression('hasAuthority(''admin.alarms'')')}?'locked'">
+                <a th:href="@{/admin/alarm}" th:classappend="!${#authorization.expression('hasAuthority(''admin.alarm'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-alarm.svg}" alt="alarm"/>
                     <span data-th-text="#{web.admin.alarm}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/executions}" th:classappend="!${#authorization.expression('hasAuthority(''admin.executions'')')}?'locked'">
+                <a th:href="@{/admin/execution}" th:classappend="!${#authorization.expression('hasAuthority(''admin.execution'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="execution"/>
                     <span data-th-text="#{web.admin.execution}"></span>
                 </a>
@@ -388,19 +388,19 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/boards}" th:classappend="!${#authorization.expression('hasAuthority(''admin.boards'')')}?'locked'">
+                <a th:href="@{/admin/board}" th:classappend="!${#authorization.expression('hasAuthority(''admin.board'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-board.svg}" alt="board"/>
                     <span data-th-text="#{web.admin.board}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/pages}" th:classappend="!${#authorization.expression('hasAuthority(''admin.pages'')')}?'locked'">
+                <a th:href="@{/admin/page}" th:classappend="!${#authorization.expression('hasAuthority(''admin.page'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-page.svg}" alt="page"/>
                     <span data-th-text="#{web.admin.page}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/gits}" th:classappend="!${#authorization.expression('hasAuthority(''admin.gits'')')}?'locked'">
+                <a th:href="@{/admin/git}" th:classappend="!${#authorization.expression('hasAuthority(''admin.git'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-git.svg}" alt="git"/>
                     <span data-th-text="#{web.admin.git}"></span>
                 </a>

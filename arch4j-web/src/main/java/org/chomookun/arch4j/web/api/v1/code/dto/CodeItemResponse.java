@@ -15,11 +15,6 @@ public class CodeItemResponse {
 
     private String value;
 
-    /**
-     * Convert from code item to code Item response
-     * @param codeItem code item
-     * @return code item response
-     */
     static CodeItemResponse from(CodeItem codeItem) {
         return CodeItemResponse.builder()
                 .itemId(codeItem.getItemId())

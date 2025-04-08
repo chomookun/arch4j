@@ -8,6 +8,7 @@ import org.chomookun.arch4j.core.batch.model.JobInstance;
 import org.chomookun.arch4j.core.batch.model.JobSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,14 @@ import java.util.List;
 
 @Controller
 @RequestMapping("admin/batch")
+@PreAuthorize("hasAuthority('admin.batch')")
 @RequiredArgsConstructor
 public class BatchController {
 
     private final BatchService batchService;
 
     @GetMapping
-    public ModelAndView batch() {
+    public ModelAndView index() {
         return new ModelAndView("admin/batch.html");
     }
 

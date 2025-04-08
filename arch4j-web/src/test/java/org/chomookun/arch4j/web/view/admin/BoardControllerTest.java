@@ -12,7 +12,7 @@ import java.util.Set;
 @Slf4j
 class BoardControllerTest extends WebTestSupport {
 
-    private final BoardsController boardController;
+    private final BoardController boardController;
 
     @Test
     public void getSkinNames() throws IOException {

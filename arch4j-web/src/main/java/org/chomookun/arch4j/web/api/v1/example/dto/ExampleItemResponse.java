@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import org.chomookun.arch4j.core.example.model.ExampleItem;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-
 @Builder
 @Getter
 public class ExampleItemResponse {
@@ -21,11 +18,6 @@ public class ExampleItemResponse {
 
     private String name;
 
-    /**
-     * Convert from ExampleItem to ExampleItemResponse
-     * @param exampleItem example item
-     * @return example item response
-     */
     public static ExampleItemResponse from(ExampleItem exampleItem) {
         return ExampleItemResponse.builder()
                 .exampleId(exampleItem.getExampleId())

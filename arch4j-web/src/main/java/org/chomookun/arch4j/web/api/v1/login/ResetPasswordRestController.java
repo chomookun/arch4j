@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+@Tag(name = "login")
 @RestController
 @RequestMapping("api/v1/login/reset-password")
 @RequiredArgsConstructor
-@Tag(name = "login")
 public class ResetPasswordRestController {
 
     private final UserService userService;
