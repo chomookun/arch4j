@@ -34,7 +34,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git fetch origin
-          git tag $RELEASE_TAG
+          git tag -f $RELEASE_TAG
           git push origin $RELEASE_TAG
 
       - name: Build and Test
