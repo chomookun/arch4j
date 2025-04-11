@@ -60,6 +60,12 @@ jib {
     allowInsecureRegistries = true
     from {
         image = providers.gradleProperty("jibFromImage").get()
+        platforms {
+            platform {
+                architecture = "arm64"
+                os = "linux"
+            }
+        }
         auth {
             username = providers.gradleProperty("jibFromAuthUsername").get()
             password = providers.gradleProperty("jibFromAuthPassword").get()
