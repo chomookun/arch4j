@@ -41,7 +41,7 @@ jobs:
 
       - name: Builds gradle and distribution
         run: |
-          ./gradlew bootDistZip -x text --stacktrace
+          ./gradlew bootDistZip -x test --stacktrace
 
       - name: Upload Additional Files
         uses: actions/upload-artifact@v4
