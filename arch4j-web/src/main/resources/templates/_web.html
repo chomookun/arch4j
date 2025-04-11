@@ -116,7 +116,7 @@
          * Get menus
          */
         const _getMenus = function() {
-            let url = new URL(`${_apiUrl}/v1/menu`, document.location.origin);
+            let url = new URL(`${_apiUrl}/v1/menus`, location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -132,7 +132,7 @@
          * @private
          */
         const _getCode = function(codeId) {
-            let url = new URL(`${_apiUrl}/v1/codes/${codeId}`, document.location.origin);
+            let url = new URL(`${_apiUrl}/v1/codes/${codeId}`, location.origin);
             return _fetch(url).then(response => response.json());
         }
 

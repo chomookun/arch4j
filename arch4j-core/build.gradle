@@ -77,6 +77,7 @@ dependencies {
 
     // apache commons
     api 'commons-io:commons-io'
+    api 'commons-codec:commons-codec'
     api 'org.apache.httpcomponents.client5:httpclient5'
     api 'org.apache.commons:commons-exec'
     api 'org.apache.commons:commons-math3'
@@ -117,6 +118,9 @@ dependencies {
 
     // okhttp
     api 'com.squareup.okhttp3:okhttp'
+
+    // awssdk
+    api 'software.amazon.awssdk:s3'
 
 }
 

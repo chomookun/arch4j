@@ -268,6 +268,20 @@ const _getRandomColor = function() {
 }
 
 /**
+ * Formats bytes size
+ * @returns {string}
+ * @private
+ */
+const _formatBytes = function(bytes, scale = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const value = parseFloat((bytes / Math.pow(k, i)).toFixed(scale));
+    return `${value} ${sizes[i]}`;
+}
+
+/**
  * Opens link
  * @param linkUrl
  * @param linkTarget
@@ -486,4 +500,23 @@ const _deleteUrlSearchParams = function(_properties) {
     });
     history.pushState({ time: new Date().getTime() }, null, url);
 };
+
+/**
+ * initialize
+ * @type {(function(*): void)|*}
+ * @private
+ */
+const _initialize = (function() {
+    let initialized = false;
+    return function(callback) {
+        function handler(event) {
+            if (initialized) return;
+            initialized = true;
+            callback(event);
+        }
+        document.addEventListener('DOMContentLoaded', handler);
+        window.addEventListener('popstate', handler);
+        window.addEventListener('pageshow', handler);
+    };
+})();
 

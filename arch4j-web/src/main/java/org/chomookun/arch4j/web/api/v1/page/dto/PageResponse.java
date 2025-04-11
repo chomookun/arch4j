@@ -17,11 +17,6 @@ public class PageResponse {
 
     private String content;
 
-    /**
-     * page factory method
-     * @param page page
-     * @return page response
-     */
     public static PageResponse from(Page page) {
         return PageResponse.builder()
                 .pageId(page.getPageId())

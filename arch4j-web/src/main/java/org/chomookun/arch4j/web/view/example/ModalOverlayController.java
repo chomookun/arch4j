@@ -12,13 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 @PreAuthorize("hasAuthority('example')")
 public class ModalOverlayController {
 
-    /**
-     * Examples
-     * @return model and view
-     */
-    @GetMapping("examples")
+    @GetMapping
     public ModelAndView index() {
-        ModelAndView modelAndView = new ModelAndView("example/modal-overlay/examples.html");
+        ModelAndView modelAndView = new ModelAndView("example/modal-overlay");
         modelAndView.addObject("_title", "Modal Overlay Example");
         modelAndView.addObject("exampleTypes", Example.Type.values());
         return modelAndView;

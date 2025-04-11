@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+@Tag(name = "join")
 @RestController
 @RequestMapping("api/v1/join")
 @RequiredArgsConstructor
-@Tag(name = "join", description = "Join")
 public class JoinRestController {
 
     private final UserService userService;

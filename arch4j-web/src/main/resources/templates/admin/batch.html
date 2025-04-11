@@ -33,7 +33,7 @@
             if(page) {
                 jobSearch._page = page;
             }
-            let url = new URL(`${window.location.pathname}/get-jobs`, document.location.origin);
+            let url = new URL(`${location.pathname}/get-jobs`, location.origin);
             if (jobSearch.key && jobSearch.value) {
                 url.searchParams.append(jobSearch.key, jobSearch.value);
             }
@@ -66,7 +66,7 @@
             if (page != null) {
                 jobInstanceSearch._page = parseInt(page);
             }
-            let url = new URL(`${window.location.pathname}/get-job-instances`, document.location.origin);
+            let url = new URL(`${location.pathname}/get-job-instances`, location.origin);
             url.searchParams.set('jobName', jobInstanceSearch.jobName);
             url.searchParams.set('_page', jobInstanceSearch._page);
             url.searchParams.set('_size', jobInstanceSearch._size);

@@ -12,13 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 @PreAuthorize("hasAuthority('example')")
 public class MasterDetailController {
 
-    /**
-     * Examples
-     * @return model and view
-     */
-    @GetMapping("examples")
-    public ModelAndView examples() {
-        ModelAndView modelAndView = new ModelAndView("example/master-detail/examples.html");
+    @GetMapping
+    public ModelAndView index() {
+        ModelAndView modelAndView = new ModelAndView("example/master-detail");
         modelAndView.addObject("_title", "Master Detail Example");
         modelAndView.addObject("exampleTypes", Example.Type.values());
         return modelAndView;

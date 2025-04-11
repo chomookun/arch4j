@@ -11,12 +11,11 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.CoreConfiguration;
 import org.chomookun.arch4j.core.CoreProperties;
-import org.chomookun.arch4j.core.role.RoleService;
+import org.chomookun.arch4j.core.security.RoleService;
 import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.web.common.security.SecurityFilter;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
@@ -126,8 +125,8 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
     }
 
     @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(String.class, ZonedDateTime.class, source ->
+    public void addFormatters(FormatterRegistry formatterRegistry) {
+        formatterRegistry.addConverter(String.class, ZonedDateTime.class, source ->
                 ZonedDateTime.parse(source, DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.systemDefault())));
     }
 
@@ -274,7 +273,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
         @Bean
         @Order(2)
-        public SecurityFilterChain ActuatorSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector, WebEndpointProperties webEndpointProperties) throws Exception {
+        public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector, WebEndpointProperties webEndpointProperties) throws Exception {
             // security matcher
             String actuatorBasePath = webEndpointProperties.getBasePath();
             String actuatorMatcherPattern = String.format("%s/**", actuatorBasePath);

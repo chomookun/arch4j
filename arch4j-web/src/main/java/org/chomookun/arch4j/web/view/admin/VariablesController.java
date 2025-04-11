@@ -14,39 +14,24 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("admin/variables")
-@PreAuthorize("hasAuthority('admin.variables')")
+@RequestMapping("admin/variable")
+@PreAuthorize("hasAuthority('admin.variable')")
 @RequiredArgsConstructor
 public class VariablesController {
 
     private final VariableService variableService;
 
-    /**
-     * Returns variables model and view
-     * @return model and view
-     */
     @GetMapping
-    public ModelAndView variables() {
-        return new ModelAndView("admin/variables.html");
+    public ModelAndView index() {
+        return new ModelAndView("admin/variable.html");
     }
 
-    /**
-     * Returns variables
-     * @param variableSearch variable search
-     * @param pageable pageable
-     * @return variables page
-     */
     @GetMapping("get-variables")
     @ResponseBody
     public Page<Variable> getVariables(VariableSearch variableSearch, Pageable pageable) {
         return variableService.getVariables(variableSearch, pageable);
     }
 
-    /**
-     * Returns specified variable
-     * @param variableId variable id
-     * @return variable
-     */
     @GetMapping("get-variable")
     @ResponseBody
     public Variable getVariable(@RequestParam("variableId")String variableId) {
@@ -54,25 +39,16 @@ public class VariablesController {
                 .orElseThrow();
     }
 
-    /**
-     * Saves variable
-     * @param variable variable
-     * @return saved variable
-     */
     @PostMapping("save-variable")
     @ResponseBody
-    @PreAuthorize("hasAuthority('admin.variables.edit')")
+    @PreAuthorize("hasAuthority('admin.variable:edit')")
     public Variable saveVariable(@RequestBody @Valid Variable variable) {
         return variableService.saveVariable(variable);
     }
 
-    /**
-     * Deletes variable
-     * @param variableId variable id
-     */
     @GetMapping("delete-variable")
     @ResponseBody
-    @PreAuthorize("hasAuthority('admin.variables.edit')")
+    @PreAuthorize("hasAuthority('admin.variable:edit')")
     public void deleteVariable(@RequestParam("variableId")String variableId) {
         variableService.deleteVariable(variableId);
     }

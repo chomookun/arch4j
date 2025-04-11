@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class AdminController {
 
     @GetMapping
-    public ModelAndView admin() {
+    public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView();
         RedirectView redirectView = new RedirectView("admin/monitor");
         redirectView.setExposeModelAttributes(false);

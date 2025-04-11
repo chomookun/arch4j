@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@Tag(name = "board")
 @RestController
 @RequestMapping("api/v1/board/{boardId}/article/{articleId}/vote")
 @RequiredArgsConstructor
-@Tag(name = "board")
 public class ArticleVoteRestController {
 
     private final ArticleVoteService articleVoteService;

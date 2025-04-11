@@ -3,12 +3,9 @@ package org.chomookun.arch4j.core.example.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
-import org.chomookun.arch4j.core.example.model.Example;
 import org.chomookun.arch4j.core.example.model.ExampleSearch;
 import org.chomookun.arch4j.core.example.vo.ExampleItemVo;
 import org.chomookun.arch4j.core.example.vo.ExampleVo;
-import org.chomookun.arch4j.core.sample.model.SampleSearch;
-import org.chomookun.arch4j.core.sample.vo.SampleVo;
 
 import java.util.List;
 

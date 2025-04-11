@@ -23,10 +23,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
+@Tag(name = "login")
 @RestController
 @RequestMapping("api/v1/login")
 @RequiredArgsConstructor
-@Tag(name = "login", description = "Login")
 public class LoginRestController {
 
     private final UserService userService;

@@ -1,9 +1,7 @@
 package org.chomookun.arch4j.core.security;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.role.AuthorityService;
-import org.chomookun.arch4j.core.role.RoleService;
-import org.chomookun.arch4j.core.role.model.Role;
+import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
@@ -16,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service

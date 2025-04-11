@@ -8,10 +8,6 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
 @SpringBootApplication(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 public class WebApplication {
 
-    /**
-     * Runs web application
-     * @param args arguments
-     */
     public static void main(String[] args) {
         new SpringApplicationBuilder(WebApplication.class)
                 .web(WebApplicationType.SERVLET)

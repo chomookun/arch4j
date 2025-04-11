@@ -30,11 +30,6 @@ public class MonitorCollector {
 
     private final List<Map<String,Object>> datasource = new CopyOnWriteArrayList<>();
 
-    /**
-     * Returns metric value
-     * @param name metric name
-     * @return metric value
-     */
     private Double getMetricValue (String name) {
         try {
             MetricsEndpoint.MetricDescriptor metricDescriptor = metricsEndpoint.metric(name, null);
@@ -46,9 +41,6 @@ public class MonitorCollector {
         }
     }
 
-    /**
-     * Collects cpu usage
-     */
     @Scheduled(fixedDelay = 10 * 1_000)
     public void collectCpu() {
         Map<String,Object> cpu = new LinkedHashMap<>();
@@ -61,9 +53,6 @@ public class MonitorCollector {
         this.cpu.add(cpu);
     }
 
-    /**
-     * Collects memory usage
-     */
     @Scheduled(fixedDelay = 10 * 1_000)
     public void collectMemory() {
         Map<String,Object> memory = new LinkedHashMap<>();
@@ -78,9 +67,6 @@ public class MonitorCollector {
         this.memory.add(memory);
     }
 
-    /**
-     * Collects disk usage
-     */
     @Scheduled(fixedDelay = 10 * 1_000)
     public void collectDisk() {
         Map<String,Object> disk = new LinkedHashMap<>();
@@ -97,9 +83,6 @@ public class MonitorCollector {
         this.disk.add(disk);
     }
 
-    /**
-     * Collects server usage
-     */
     @Scheduled(fixedDelay = 10 * 1_000)
     public void collectServer() {
         Map<String,Object> datasource = new LinkedHashMap<>();
@@ -116,9 +99,6 @@ public class MonitorCollector {
         this.server.add(datasource);
     }
 
-    /**
-     * Collects datasource usage
-     */
     @Scheduled(fixedDelay = 10 * 1_000)
     public void collectDatasource() {
         Map<String,Object> datasource = new LinkedHashMap<>();

@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+@Tag(name = "user")
 @RestController
 @RequestMapping("api/v1/user")
 @RequiredArgsConstructor
-@Tag(name = "user", description = "User")
 public class UserRestController {
 
     private final UserService userService;

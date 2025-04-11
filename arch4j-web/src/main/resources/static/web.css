@@ -160,6 +160,19 @@ html {
     bottom: 0;
     content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA00lEQVR4nMWSvQ3CUAyEvwKoyAbAHgiQGCBr8DMPipQJIBmBZQIFScEGpAKdZAqe/EgaxDWW/Ox7Z5/hB1gBJdAALVADBbDoahwAOVABG2BiOcUtcAEyy7nIgSeQRt7HwNlIXNmVNd+BdYQkAa7eOKXJxpq/keyAU5hsbFZ6kMxssR9ogVGQi5Go7uEpmDq/eSRScAsLC7OKHiTawTEsWpoLSQdJavcw94oy8zlGktqdHCLv6MJEIp8lUzsZWtzbz2qOXuIbOhL5rEXJHUXN7Mr+P17xbTARxXqiZgAAAABJRU5ErkJggg==');
 }
+.button.small {
+    height: calc(var(--duice-form-element-height) * 0.8);
+    min-width: calc(var(--duice-form-element-height) * 0.8);
+    padding-left: calc(var(--duice-form-element-height) / 5);
+    padding-right: calc(var(--duice-form-element-height) / 5);
+    vertical-align: middle;
+}
+.button.small > * {
+    font-size: smaller;
+}
+.button:has(img.icon).small > span {
+    margin-right: 0.4rem;
+}
 
 /* badge */
 .badge {

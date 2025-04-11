@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("admin/users")
-@PreAuthorize("hasAuthority('admin.users')")
+@RequestMapping("admin/user")
+@PreAuthorize("hasAuthority('admin.user')")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -31,81 +31,49 @@ public class UserController {
 
     private final SecurityTokenService securityTokenService;
 
-    /**
-     * Return users model and view
-     * @return model and view
-     */
     @GetMapping
-    public ModelAndView users() {
-        ModelAndView modelAndView = new ModelAndView("admin/users.html");
+    public ModelAndView index() {
+        ModelAndView modelAndView = new ModelAndView("admin/user.html");
         modelAndView.addObject("userStatuses", User.Status.values());
         return modelAndView;
     }
 
-    /**
-     * Returns page of users
-     * @param userSearch user search
-     * @param pageable pageable
-     * @return page of users
-     */
     @GetMapping("get-users")
     @ResponseBody
     public Page<User> getUsers(UserSearch userSearch, Pageable pageable) {
         return userService.getUsers(userSearch, pageable);
     }
 
-    /**
-     * Returns specified user
-     * @param userId user id
-     * @return user
-     */
     @GetMapping("get-user")
     @ResponseBody
     public User getUser(@RequestParam("userId") String userId) {
         return userService.getUser(userId).orElseThrow();
     }
 
-    /**
-     * Saves user
-     * @param user user
-     * @return saved user
-     */
     @PostMapping("save-user")
     @ResponseBody
-    @PreAuthorize("hasAuthority('admin.users.edit')")
+    @PreAuthorize("hasAuthority('admin.user:edit')")
     public User saveUser(@RequestBody @Valid User user) {
         return userService.saveUser(user);
     }
 
-    /**
-     * Deletes user
-     * @param userId user id
-     */
     @GetMapping("delete-user")
     @ResponseBody
-    @PreAuthorize("hasAuthority('admin.users.edit')")
+    @PreAuthorize("hasAuthority('admin.user:edit')")
     public void deleteUser(@RequestParam("userId") String userId) {
         userService.deleteUser(userId);
     }
 
-    /**
-     * Changes user password
-     * @param payload payload for changing user password
-     */
     @PostMapping("change-user-password")
     @ResponseBody
+    @PreAuthorize("hasAuthority('admin.user:edit')")
     public void changeUserPassword(@RequestBody Map<String,String> payload) {
         userService.changePassword(payload.get("userId"), payload.get("password"));
     }
 
-    /**
-     * Generates security token
-     * @param payload payload for generating security token
-     * @return security token
-     */
     @PostMapping(value = "generate-security-token", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    @PreAuthorize("hasAuthority('admin.users.edit')")
+    @PreAuthorize("hasAuthority('admin.user:edit')")
     public String generateAccessToken(@RequestBody Map<String,String> payload) {
         String userId = Optional.ofNullable(payload.get("userId")).orElseThrow();
         int expirationDays = Optional.ofNullable(payload.get("expirationDays")).map(Integer::parseInt).orElseThrow();
