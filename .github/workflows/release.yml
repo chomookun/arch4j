@@ -44,7 +44,7 @@ jobs:
           name: my-artifact
           path: |
             ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
-            ${{ github.workspace }}/arch4j-cli/build/distribution/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
+            ${{ github.workspace }}/arch4j-shell/build/distribution/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
             ${{ github.workspace }}/arch4j-batch/build/distribution/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
             
       - name: Delete Existing Release (if exists)
@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/arch4j-cli/build/distributions/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_path: ${{ github.workspace }}/arch4j-shell/build/distributions/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
           asset_name: arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
           asset_content_type: application/zip
 
