@@ -14,7 +14,6 @@ jobs:
 
     env:
       RELEASE_VERSION: 1.0.0-SNAPSHOT
-      IMAGE_NAMESPACE: chomookun/arch4j
       RELEASE_TAG: ${{ github.event.inputs.tag }}
 
     steps:
@@ -32,7 +31,7 @@ jobs:
           ./gradlew jib -x test --stacktrace \
           -PjibFromAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibFromAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
-          -PjibToImageNamespace=${{ env.IMAGE_NAMESPACE }} \
+          -PjibToImageNamespace=${{ secrets.DOCKER_NAMESPACE }} \
           -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToTags=latest
