@@ -76,14 +76,14 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload Release Asset shell
-        id: upload-release-asset-cli
+        id: upload-release-asset-shell
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/arch4j-cli/build/distributions/arch4j-cli-boot-${{ env.RELEASE_VERSION }}.zip
-          asset_name: arch4j-cli-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_path: ${{ github.workspace }}/arch4j-cli/build/distributions/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
           asset_content_type: application/zip
 
       - name: Upload Release Asset batch
