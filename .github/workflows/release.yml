@@ -26,6 +26,81 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Creates tag for release
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git fetch origin
+          git tag -f $RELEASE_TAG
+          git push -f origin $RELEASE_TAG
+
+      - name: Gradle build
+        run: |
+          ./gradlew clean build -x test --stacktrace
+
+      - name: Builds distributio files
+        run: |
+          ./gradlew bootDistZip -x test --stacktrace
+
+      - name: Upload Additional Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: |
+            ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
+            ${{ github.workspace }}/arch4j-shell/build/distribution/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
+            ${{ github.workspace }}/arch4j-batch/build/distribution/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
+
+      - name: Delete Existing Release (if exists)
+        run: gh release delete "$RELEASE_TAG" -y
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        id: create_release
+        continue-on-error: true
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: Release ${{ env.RELEASE_VERSION }}.${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset web
+        id: upload-release-asset-web
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset shell
+        id: upload-release-asset-shell
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/arch4j-shell/build/distributions/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset batch
+        id: upload-release-asset-batch
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/arch4j-batch/build/distributions/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_content_type: application/zip
+
       - name: Publish container image
         run: |
           ./gradlew jib -x test --stacktrace \
@@ -35,79 +110,4 @@ jobs:
           -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToTags=latest
-
-#      - name: Creates tag for release
-#        run: |
-#          git config user.name "github-actions"
-#          git config user.email "actions@github.com"
-#          git fetch origin
-#          git tag -f $RELEASE_TAG
-#          git push -f origin $RELEASE_TAG
-#
-#      - name: Gradle build
-#        run: |
-#          ./gradlew clean build -x test --stacktrace
-#
-#      - name: Builds gradle and distribution
-#        run: |
-#          ./gradlew bootDistZip -x test --stacktrace
-#
-#      - name: Upload Additional Files
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: my-artifact
-#          path: |
-#            ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
-#            ${{ github.workspace }}/arch4j-shell/build/distribution/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
-#            ${{ github.workspace }}/arch4j-batch/build/distribution/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
-#
-#      - name: Delete Existing Release (if exists)
-#        run: gh release delete "$RELEASE_TAG" -y
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: Create Release
-#        id: create_release
-#        continue-on-error: true
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ env.RELEASE_TAG }}
-#          release_name: Release ${{ env.RELEASE_VERSION }}.${{ env.RELEASE_TAG }}
-#          draft: false
-#          prerelease: false
-#
-#      - name: Upload Release Asset web
-#        id: upload-release-asset-web
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
-#          asset_name: arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
-#          asset_content_type: application/zip
-#
-#      - name: Upload Release Asset shell
-#        id: upload-release-asset-shell
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ${{ github.workspace }}/arch4j-shell/build/distributions/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
-#          asset_name: arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
-#          asset_content_type: application/zip
-#
-#      - name: Upload Release Asset batch
-#        id: upload-release-asset-batch
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: ${{ github.workspace }}/arch4j-batch/build/distributions/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
-#          asset_name: arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
-#          asset_content_type: application/zip
 
