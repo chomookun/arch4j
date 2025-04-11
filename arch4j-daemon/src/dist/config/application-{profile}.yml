@@ -12,7 +12,7 @@ spring:
     redis:
       host: ~ # Redis host
       port: ~ # Redis port
-      password: ~ # Redis password
+      password: # Redis password
   mail:
     host: ~ # SMTP host (ex: smtp.gmail.com)
     port: ~ # SMTP port (ex: 587)

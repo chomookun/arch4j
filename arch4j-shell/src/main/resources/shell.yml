@@ -1,7 +1,7 @@
 # logging
 logging:
   level:
-    root: ERROR
+    root: DEBUG
     com.zaxxer.hikari: ERROR
     com.zaxxer.hikari.HikariConfig: DEBUG
 

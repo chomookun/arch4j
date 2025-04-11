@@ -10,7 +10,7 @@ import org.chomookun.arch4j.core.board.repository.ArticleRepository;
 import org.chomookun.arch4j.core.board.repository.ArticleVoteRepository;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.data.ValidationUtil;
-import org.chomookun.arch4j.core.common.storage.StorageClient;
+import org.chomookun.arch4j.core.storage.StorageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,11 +36,11 @@ public class ArticleService {
 
     private final ArticleFileRepository articleFileRepository;
 
-    private final StorageClient fileService;
-
     private final PasswordEncoder passwordEncoder;
 
     private final ArticleVoteRepository articleVoteRepository;
+
+    private final StorageService storageService;
 
     @Transactional
     public Article saveArticle(Article article, List<MultipartFile> files) {
@@ -84,7 +85,7 @@ public class ArticleService {
                 for(MultipartFile file : files) {
                     if(Objects.equals(file.getOriginalFilename(), articleFileEntity.getFilename())){
                         try {
-                            fileService.upload("board", articleFileEntity.getFileId(), file.getInputStream());
+                            storageService.createStorageFile("board", null, file.getName(), file.getInputStream());
                         }catch(Throwable ignore){}
                         break;
                     }
@@ -97,9 +98,7 @@ public class ArticleService {
             if(article.getFiles().stream().noneMatch(e -> articleFileEntity.getFilename().equals(e.getFilename()))){
                 articleFileRepository.delete(articleFileEntity);
                 articleFileRepository.flush();
-
-                // delete file
-                fileService.delete("board", articleFileEntity.getFileId());
+                storageService.deleteStorageFile("board", articleFileEntity.getFilename());
             }
         }
 
@@ -140,7 +139,11 @@ public class ArticleService {
     }
 
     public InputStream getArticleFileInputStream(ArticleFile articleFile) {
-        return fileService.download("board", articleFile.getFileId());
+        try {
+            return storageService.getStorageResource("board", articleFile.getFilename()).getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

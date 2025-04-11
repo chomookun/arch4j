@@ -6,13 +6,11 @@ spring:
       jdbc-url: ~ # Jdbc url
       username: ~ # Database username
       password: ~ # Database password
-      minimum-idle: 10
-      maximum-pool-size: 20
   data:
     redis:
       host: ~ # Redis host
       port: ~ # Redis port
-      password: ~ # Redis password
+      password: # Redis password
   mail:
     host: ~ # SMTP host (ex: smtp.gmail.com)
     port: ~ # SMTP port (ex: 587)
@@ -38,3 +36,11 @@ core:
   security:
     authentication-token:
       signing-key: ~ # Security signing key
+
+# batch
+batch:
+  datasource:
+    driver-class-name: ~ # Batch meta data jdbc driver
+    jdbc-url: ~ # Batch meta data jdbc url
+    username: ~ # Batch meta data username
+    password: ~ # Batch meta data password
