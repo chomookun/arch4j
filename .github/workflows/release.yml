@@ -35,7 +35,7 @@ jobs:
           name: my-artifact
           path: |
             ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
-            ${{ github.workspace }}/arch4j-cli/build/distribution/arch4j-cli-boot-${{ env.RELEASE_VERSION }}.zip
+            ${{ github.workspace }}/arch4j-cli/build/distribution/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
             ${{ github.workspace }}/arch4j-batch/build/distribution/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
 
       - name: Create Release
@@ -49,7 +49,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset Web
+      - name: Upload Release Asset web
         id: upload-release-asset-web
         uses: actions/upload-release-asset@v1
         env:
@@ -60,7 +60,7 @@ jobs:
           asset_name: arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
           asset_content_type: application/zip
 
-      - name: Upload Release Asset Cli
+      - name: Upload Release Asset shell
         id: upload-release-asset-cli
         uses: actions/upload-release-asset@v1
         env:
@@ -71,7 +71,7 @@ jobs:
           asset_name: arch4j-cli-boot-${{ env.RELEASE_VERSION }}.zip
           asset_content_type: application/zip
 
-      - name: Upload Release Asset Batch
+      - name: Upload Release Asset batch
         id: upload-release-asset-batch
         uses: actions/upload-release-asset@v1
         env:

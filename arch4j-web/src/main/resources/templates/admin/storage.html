@@ -486,8 +486,10 @@
                         duice.ObjectProxy.focus(storage, 'storageId');
                         return false;
                     }
-                    if (!await validateStorageId(storage.storageId)) {
-                        return false;
+                    if (!options.storageId) {
+                        if (!await validateStorageId(storage.storageId)) {
+                            return false;
+                        }
                     }
                     if (!storage.name) {
                         await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.name})}]]*/'');
