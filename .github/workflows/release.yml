@@ -1,9 +1,6 @@
 name: arch4j-release
 
 on:
-  push:
-    tags:
-      - '*'
   workflow_dispatch:
     inputs:
       tag:
@@ -56,8 +53,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ env.RELEASE_VERSION }}.${{ github.ref }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: Release ${{ env.RELEASE_VERSION }}.${{ env.RELEASE_TAG }}
           draft: false
           prerelease: false
 
