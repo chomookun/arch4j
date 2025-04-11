@@ -6,6 +6,9 @@ on:
       tag:
         description: 'Git tag to create (e.g. v1.0.0)'
         required: true
+      jibToImageNamespace:
+        description: 'Docker image namespace (e.g. docker.io/arch4j)'
+        required: true
 
 jobs:
   create_release:
@@ -14,6 +17,7 @@ jobs:
 
     env:
       RELEASE_VERSION: 1.0.0-SNAPSHOT
+      IMAGE_NAMESPACE: chomookun/arch4j
       RELEASE_TAG: ${{ github.event.inputs.tag }}
 
     steps:
@@ -26,7 +30,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Create Git Tag and Push
+      - name: Creates tag for release
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
@@ -34,9 +38,13 @@ jobs:
           git tag -f $RELEASE_TAG
           git push -f origin $RELEASE_TAG
 
-      - name: Build and Test
+      - name: Gradle build
         run: |
-          ./gradlew clean bootDistZip -x test
+          ./gradlew clean build -x test --stacktrace
+
+      - name: Builds gradle and distribution
+        run: |
+          ./gradlew bootDistZip -x text --stacktrace
 
       - name: Upload Additional Files
         uses: actions/upload-artifact@v4
@@ -96,3 +104,11 @@ jobs:
           asset_path: ${{ github.workspace }}/arch4j-batch/build/distributions/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
           asset_name: arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
           asset_content_type: application/zip
+
+      - name: Publish container image
+        run: |
+          ./gradlew jib -x test --stacktrace \
+          -PjibToImageNamespace=${{ env.IMAGE_NAMESPACE }} \
+          -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
+          -PjibToTags=latest
+
