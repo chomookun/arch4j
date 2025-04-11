@@ -33,7 +33,7 @@ jobs:
           -PjibFromAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibFromAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToImageNamespace=${{ env.IMAGE_NAMESPACE }} \
-          -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \ 
+          -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToTags=latest
 
