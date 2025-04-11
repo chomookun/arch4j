@@ -31,12 +31,13 @@
             return true;
         });
         duice.ObjectProxy.onPropertyChanged(alarm, event => {
-            console.log(event);
             if(event.getProperty() === 'alarmClientId') {
-                let alarmClientId = event.getValue();
-                alarm.alarmClientConfig = alarmClientDefinitions
-                    .find(item => item['alarmClientId'] === alarmClientId)
-                    ?.alarmClientConfigTemplate;
+                if (!alarm.alarmClientConfig) {
+                    let alarmClientId = event.getValue();
+                    alarm.alarmClientConfig = alarmClientDefinitions
+                        .find(item => item['alarmClientId'] === alarmClientId)
+                        ?.alarmClientConfigTemplate;
+                }
             }
         });
         // alarm client definitions

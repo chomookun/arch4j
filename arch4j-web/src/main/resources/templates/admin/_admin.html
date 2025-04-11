@@ -376,6 +376,12 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/admin/storage}" th:classappend="!${#authorization.expression('hasAuthority(''admin.storage'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
+                    <span data-th-text="#{web.admin.storage}"></span>
+                </a>
+            </li>
+            <li>
                 <a th:href="@{/admin/execution}" th:classappend="!${#authorization.expression('hasAuthority(''admin.execution'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="execution"/>
                     <span data-th-text="#{web.admin.execution}"></span>

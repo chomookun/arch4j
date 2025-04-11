@@ -254,14 +254,17 @@
                 </div>
                 <div class="panel-content">
                     <div>
-                        <div data-duice-bind="menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId" data-duice-selected-item-class="selected"
+                        <div data-duice-bind="menus"
+                             data-duice-foreach="menu,status"
+                             data-duice-recursive="menuId,parentMenuId"
+                             data-duice-selected-item-class="selected"
                              data-duice-execute="
                             this.dataset.menuId = menu.menuId;
                             if(menu.parentMenuId) {
                                 this.style.marginLeft=status.depth + 'em';
                             }"
                             onclick="getMenu(this.dataset.menuId);"
-                            class="menu-item cursor--pointer">
+                            class="menu-item link">
                             <img data-duice-bind="menu" data-duice-property="icon" class="icon"
                                  th:src="@{/static/image/icon-null.svg}" alt=""/>
                             <span data-duice-bind="menu" data-duice-property="name"></span>

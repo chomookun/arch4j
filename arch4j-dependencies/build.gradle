@@ -12,8 +12,8 @@ dependencies {
     // spring boot dependencies
     api platform("org.springframework.boot:spring-boot-dependencies:3.4.1")
 
-    // spring cloud dependencies
-    api platform("org.springframework.cloud:spring-cloud-dependencies:2024.0.0")
+    // cloud platform dependencies
+    api platform('software.amazon.awssdk:bom:2.31.20')
 
     constraints {
 

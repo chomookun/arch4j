@@ -24,4 +24,4 @@ spring:
 
 # batch
 batch:
-  data-home: ${user.home}/.arch4j
+  data-home: ${user.home}/.arch4j/batch

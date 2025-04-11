@@ -40,6 +40,8 @@ values
     ('admin.email:edit','Y','Admin Email Edit Authority'),
     ('admin.alarm','Y','Admin Alarm Access Authority'),
     ('admin.alarm:edit','Y','Admin Alarm Edit Authority'),
+    ('admin.storage','Y','Admin Storage Access Authority'),
+    ('admin.storage:edit','Y','Admin Storage Edit Authority'),
     ('actuator','Y','Actuator Access Authority'),
     ('h2-console','Y','Actuator Access Authority'),
     ('springdoc','Y','API Docs Docs Access Authority'),
@@ -72,6 +74,7 @@ values
     ('DEVELOPER','admin.git'),
     ('DEVELOPER','admin.email'),
     ('DEVELOPER','admin.alarm'),
+    ('DEVELOPER','admin.storage'),
     ('DEVELOPER','admin.execution'),
     ('DEVELOPER', 'admin.batch'),
     ('DEVELOPER','actuator'),
@@ -192,6 +195,14 @@ insert into `core_code_item_i18n`
 values
     ('core.example.Example.code','STUDENT','ko','학생'),
     ('core.example.Example.code','TEACHER','ko','교사');
+
+-- core_storage
+insert into `core_storage`
+    (`storage_id`,`name`,`storage_client_id`,`storage_client_config`)
+values
+    ('board','Board Storage','FILE','location=${user.home}/.arch4j/board'),
+    ('batch','Batch Storage','FILE','location=${user.home}/.arch4j/batch'),
+    ('test','Test Storage','FILE', 'location=${user.home}/.arch4j/test');
 
 -- core_board
 insert into `core_board` (

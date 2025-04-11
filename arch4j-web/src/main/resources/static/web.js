@@ -268,6 +268,20 @@ const _getRandomColor = function() {
 }
 
 /**
+ * Formats bytes size
+ * @returns {string}
+ * @private
+ */
+const _formatBytes = function(bytes, scale = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const value = parseFloat((bytes / Math.pow(k, i)).toFixed(scale));
+    return `${value} ${sizes[i]}`;
+}
+
+/**
  * Opens link
  * @param linkUrl
  * @param linkTarget
