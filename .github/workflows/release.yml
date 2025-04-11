@@ -46,6 +46,11 @@ jobs:
             ${{ github.workspace }}/arch4j-web/build/distributions/arch4j-web-boot-${{ env.RELEASE_VERSION }}.zip
             ${{ github.workspace }}/arch4j-cli/build/distribution/arch4j-shell-boot-${{ env.RELEASE_VERSION }}.zip
             ${{ github.workspace }}/arch4j-batch/build/distribution/arch4j-batch-boot-${{ env.RELEASE_VERSION }}.zip
+            
+      - name: Delete Existing Release (if exists)
+        run: gh release delete "$RELEASE_TAG" -y
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         id: create_release
