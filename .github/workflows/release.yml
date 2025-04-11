@@ -5,6 +5,10 @@ on:
     tags:
       - '*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to create (e.g. v1.0.0)'
+        required: true
 
 jobs:
   create_release:
@@ -13,6 +17,7 @@ jobs:
 
     env:
       RELEASE_VERSION: 1.0.0-SNAPSHOT
+      RELEASE_TAG: ${{ github.event.inputs.tag }}
 
     steps:
       - name: Checkout repository
@@ -23,6 +28,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Create Git Tag and Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git fetch origin
+          git tag $RELEASE_TAG
+          git push origin $RELEASE_TAG
 
       - name: Build and Test
         run: |
