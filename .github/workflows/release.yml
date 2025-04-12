@@ -95,3 +95,14 @@ jobs:
           -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToTags=${{ env.RELEASE_TAG }},latest 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Deploy to GCP Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          region: us-central1
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          service: arch4j-web
+          image: docker.io/${{ vars.DOCKER_NAMESPACE }}/arch4j-web:${{ env.RELEASE_TAG }}
