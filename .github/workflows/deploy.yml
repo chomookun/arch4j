@@ -1,0 +1,25 @@
+name: arch4j-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to create (e.g. v1.0.0)'
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Deploy to GCP Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          region: us-central1
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          service: arch4j-web
+          image: docker.io/${{ vars.DOCKER_NAMESPACE }}/arch4j-web:latest
