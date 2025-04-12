@@ -106,7 +106,7 @@ jobs:
           ./gradlew jib -x test --stacktrace \
           -PjibFromAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibFromAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
-          -PjibToImageNamespace=${{ secrets.DOCKER_NAMESPACE }} \
+          -PjibToImageNamespace=${{ vars.DOCKER_NAMESPACE }} \
           -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToTags=latest
@@ -114,8 +114,9 @@ jobs:
       - name: Deploy to GCP Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
           service: arch4j-web
-          image: docker.io/${{ secrets.DOCKER_NAMESPACE }}/arch4j-web:latest
+          image: docker.io/${{ vars.DOCKER_NAMESPACE }}/arch4j-web:latest
           region: us-central1
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
