@@ -1,4 +1,4 @@
-name: arch4j-release
+name: deploy
 
 on:
   workflow_dispatch:
