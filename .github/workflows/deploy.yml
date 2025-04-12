@@ -23,4 +23,4 @@ jobs:
           region: us-central1
           project_id: ${{ vars.GCP_PROJECT_ID }}
           service: arch4j-web
-          image: docker.io/${{ vars.DOCKER_NAMESPACE }}/arch4j-web:${{ RELEASE_TAG }}
+          image: docker.io/${{ vars.DOCKER_NAMESPACE }}/arch4j-web:${{ env.RELEASE_TAG }}

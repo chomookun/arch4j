@@ -25,8 +25,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git fetch origin
-          git tag -f $RELEASE_TAG
-          git push -f origin $RELEASE_TAG
+          git tag -f ${{ env.RELEASE_TAG }}
+          git push -f origin ${{ env.RELEASE_TAG }}
       - name: Gradle build
         run: |
           ./gradlew clean build -x test --stacktrace
