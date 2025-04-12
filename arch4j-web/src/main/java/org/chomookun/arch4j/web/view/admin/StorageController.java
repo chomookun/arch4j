@@ -101,7 +101,6 @@ public class StorageController {
 
     @DeleteMapping("delete-storage-resource")
     @ResponseBody
-    @PreAuthorize("hasAuthority('admin.storage:edit')")
     @Transactional
     public void deleteStorageResource(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId) {
         StorageResource storageResource = storageService.getStorageResource(storageId, resourceId);

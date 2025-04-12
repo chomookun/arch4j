@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/example/list-detail")
+@RequestMapping("/example/hub-and-spoke")
 @PreAuthorize("hasAuthority('example')")
-public class ListDetailController {
+public class HubAndSpokeController {
 
     @GetMapping
     public ModelAndView index() {
-        ModelAndView modelAndView = new ModelAndView("example/list-detail");
-        modelAndView.addObject("_title", "Model And View Example");
+        ModelAndView modelAndView = new ModelAndView("example/hub-and-spoke");
+        modelAndView.addObject("_title", "Hub and Spoke Example");
         modelAndView.addObject("exampleTypes", Example.Type.values());
         return modelAndView;
     }
 
     @GetMapping("detail")
     public ModelAndView getExample(@RequestParam(value = "exampleId", required = false) String exampleId) {
-        ModelAndView modelAndView = new ModelAndView("example/list-detail-detail");
-        modelAndView.addObject("_title", "Model And View Example");
+        ModelAndView modelAndView = new ModelAndView("example/hub-and-spoke-detail");
+        modelAndView.addObject("_title", "Hub and Spoke Example Detail");
         modelAndView.addObject("exampleTypes", Example.Type.values());
         return modelAndView;
     }

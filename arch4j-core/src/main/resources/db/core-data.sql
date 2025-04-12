@@ -1,12 +1,3 @@
--- core_user
-insert into `core_user`
-    (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`, `join_at`, `password_at`)
-values
-    ('35db23b70f3940819d1965a891cbbef0','admin','{noop}admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678', current_timestamp, current_timestamp),
-    ('f3b3f3b3b3b34b3b3b3b3b3b3b3b3b3','user','{noop}user','User','N','ACTIVE', null, null, current_timestamp, current_timestamp),
-    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null, current_timestamp, current_timestamp),
-    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222', current_timestamp, current_timestamp);
-
 -- core_authority
 insert into `core_authority`
     (`authority_id`,`system_required`,`name`)
@@ -81,13 +72,29 @@ values
     ('DEVELOPER','h2-console'),
     ('DEVELOPER','springdoc');
 
+-- core_user
+insert into `core_user`
+    (`user_id`,`username`,`password`,`name`,`admin`,`status`,`email`,`mobile`, `join_at`, `password_at`)
+values
+    ('1fa8cd866e1a4baf94d62a6f3b71ac74','admin','{noop}admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678', current_timestamp, current_timestamp),
+    ('027d360d6a3a4a319959e29647815f9b','developer','{noop}developer','Developer','N','ACTIVE', null, null, current_timestamp, current_timestamp),
+    ('6edb6033f8ea40858179cd657e9b9c8e','user','{noop}user','User','N','ACTIVE', null, null, current_timestamp, current_timestamp),
+    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null, current_timestamp, current_timestamp),
+    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222', current_timestamp, current_timestamp);
+
+-- core_user_role
+insert into `core_user_role`
+    (`user_id`,`role_id`)
+values
+    ('027d360d6a3a4a319959e29647815f9b','DEVELOPER');
+
 -- core_menu
 insert into `core_menu`
     (`menu_id`,`parent_menu_id`,`name`,`link`,`target`,`sort`,`icon`)
 values
     ('1e9fd6f84bfb4504ae0e067c45244907',null,'Admin Console','/admin',null,1,'data:image/png;base64,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'),
     ('d1c6f5afbd9d40e4a4ad237b19cc21fb',null,'Example', null,null,2, 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADGUlEQVR4nO2aXWiOYRjHf5tvtldClOZzPpYcUCtf6aH5SCQ15WQ2ksY0lHKAmQMj+ZoDseRgQpQjDp2gfMxOKAlJZKRRvtYSenXX/9bd0/a2F+923+v91VXP9fQ89f7f+76u57qu54Esf8iVBc1c4IFsHoFyAfgFnJeZ44tAAYGRBG4CxfJnA/eBNmAfMIiAhCwESoEjwFggB1gDvALeAOt0znshkY7zgd3ADmAAkAfUAe3ALWAWHjJK5gqxTNTqrHb8Z8BXYCie0B/YCXyWdSTEsgg4DpwAlgItWi0veAp8ACplrcDiFNfnKegNe4AXQB88IAlcBjYDfYFhQC2wBejXyT01ip+RipdVeEBSW6kIOAYs0fkiZwvFmQBU6fgccFd/QI+SjMXECuAoMNnxjcApsfsOA1OB0wr8Vq1qj22zZAfBbRJAtWIg4fh7nSxlHpRN2l5uwnikpNDtJFNkqeGKhyr90535Wx2/HvgJXFOa9kKIZabiZUEKvz7mmzLnu84n8ESIZSVwUsHeVf8l8BbYlOm2IB0hqGisVumS30V/F/AFaM5kW5CuEMsY4CBQpgKyK36j2oIrwDhfhFiKFQdz0vDvqC2o/Z9twb8KQXu/AjgAjJZfHvMrVDlbfwPwTjFU6osQYmX/dpX9cT8R80foYWp+g1dCLIUq+20NNinmFyq7GdvosxBLiZ430x2/QdVA5Jj3QlBFXQnslzXERAQjxFIii0IXEqWwrBCX7IqkSZTdWmlsreX0ghVpUgFXk+G5bpRpId01140yLcQyRGV1u6bvZrgQpBBLgdMANWoeHKQQi3m18BD4ppUyZXeQQlADZGLmPfBcsRSkEIsZhx7SeOcGMINAhVjMiPQ68AM4ow4vSCEWU44/Bj4C29RzBCkEvXIwIj4BT4BlBCrEYtLzWaXrqynmvZFj69Wvj/dJiMW8GL2tB2qd3my5RLJpmjwO1DWnfBOCSpu1wGvNe8udcidyOtEcpfUWXWvu8ZLBes/Y5pQ7kSz+AYK51ntMuXNJ8XNPFuwnIYb5msQ36zhocnvDZ1N/zW/sPu+bsFdLvwAAAABJRU5ErkJggg=='),
-    ('0231d214ffc6463fafe31c13797fdde1','d1c6f5afbd9d40e4a4ad237b19cc21fb','List Detail', '/example/list-detail',null,1,'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAsElEQVR4nO2WQQoCMRAE+xUi/v9JoviaXhbm4FXpmWiogiHHUExBIsF/4cZ5SLruIGJJL0m3SZE04zJuFnm+na2ZdYtcJN0nNuNmEU3JeEBkRMZDIu0yHhQ5aZOZFmmTWSHSIrNKJC4z8bJ/8jfbQsSJC1djRAo2EsakVZBWGJNWQVphTFoFaYUxaRWkFcakVZBWGJNWQVphTFoFaYUxaRWkFcaktWta/pH5mm1EQMMcw5pTKIlq9sYAAAAASUVORK5CYII='),
+    ('0231d214ffc6463fafe31c13797fdde1','d1c6f5afbd9d40e4a4ad237b19cc21fb','Hub and Spoke', '/example/hub-and-spoke',null,1,'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAsElEQVR4nO2WQQoCMRAE+xUi/v9JoviaXhbm4FXpmWiogiHHUExBIsF/4cZ5SLruIGJJL0m3SZE04zJuFnm+na2ZdYtcJN0nNuNmEU3JeEBkRMZDIu0yHhQ5aZOZFmmTWSHSIrNKJC4z8bJ/8jfbQsSJC1djRAo2EsakVZBWGJNWQVphTFoFaYUxaRWkFcakVZBWGJNWQVphTFoFaYUxaRWkFcaktWta/pH5mm1EQMMcw5pTKIlq9sYAAAAASUVORK5CYII='),
     ('d97e96219e624d8591102495a2c799c3','d1c6f5afbd9d40e4a4ad237b19cc21fb','Master Detail', '/example/master-detail',null,2,  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAsElEQVR4nO2WQQoCMRAE+xUi/v9JoviaXhbm4FXpmWiogiHHUExBIsF/4cZ5SLruIGJJL0m3SZE04zJuFnm+na2ZdYtcJN0nNuNmEU3JeEBkRMZDIu0yHhQ5aZOZFmmTWSHSIrNKJC4z8bJ/8jfbQsSJC1djRAo2EsakVZBWGJNWQVphTFoFaYUxaRWkFcakVZBWGJNWQVphTFoFaYUxaRWkFcaktWta/pH5mm1EQMMcw5pTKIlq9sYAAAAASUVORK5CYII='),
     ('51ea3c97b9384eb69b5d0f5530e00f4a','d1c6f5afbd9d40e4a4ad237b19cc21fb','Modal Overlay', '/example/modal-overlay',null,3, 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAsElEQVR4nO2WQQoCMRAE+xUi/v9JoviaXhbm4FXpmWiogiHHUExBIsF/4cZ5SLruIGJJL0m3SZE04zJuFnm+na2ZdYtcJN0nNuNmEU3JeEBkRMZDIu0yHhQ5aZOZFmmTWSHSIrNKJC4z8bJ/8jfbQsSJC1djRAo2EsakVZBWGJNWQVphTFoFaYUxaRWkFcakVZBWGJNWQVphTFoFaYUxaRWkFcaktWta/pH5mm1EQMMcw5pTKIlq9sYAAAAASUVORK5CYII='),
     ('fce30ba305ba4742a84cdc41996810fd',null,'Board Demo','/page/boards',null,3,'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAABGJJREFUeF7tWl1oHUUUPmeuZSkaDdg+WIPcO7PJNQ0VQnxQsFANSAriiz/VUBRbKdVaX3yQCMWrICiCCLYGxIBgS6XxTUlVUiulIIIRqXg1zczubWgNFiWhtGCT3T0yyQaC3tzdzZ2Ylcy+hNw9880535yzM/NxENb5g+s8frAE2AwwzMDAmanNziwMElIfAN5oBp6uRYAnC4yeq9y/5Q8zmAsoxkugMjr1KSE8YtLJRSwEGK703va4SezUBBSLxdZCoXAPIrY0cqB/8JuPkRUcIrjIEL414WxEcC8itEVh+Nfx53c8lYB5JQiC72q12kyauVMRwDl/BgDeRcSbk0B3f3B23uTPC+PVw3t2dCXZp3n/wtCp6q3FrZ3a9ui++xKHENE1xtjLUsojScaJBAgh+gBgJG255IGAOGhCxJ1Syi8bkZBIQKlU+oEx1g0AIQC8iojn81wCRFQGgAoAFABgTCl1d1MEcM5nEXFDFEVf+L6/MymlDp2aGmYAjybZrex9dOK13tt3JY0tlUonGWN9RDTreZ7TFAFCCNIARDTseV7iF7hy+rdNYYSDSNSHiDclOZvmPRFdRaQRZHggzTbIOT+BiI9pbKVUwyxPLIGsBKQJaLVtLAE2A2wJ2G+A/QjaXcBug/YcYA9C9iRoj8L2LmAvQ/Y2aK/DVg/4TxWh1RY70uBbQcQKIlYQsYKIFUSsIGIFESuIWEHECiJWELGCSLOCSEEIEcQXkAki+jzNZWStbRDxIQBojz+CN8TNHXXdWvauzDnfhohHAeCutQ6oyfnPM8Z2TUxM/FgPpy4BnPNbEPEcANzR5OS5GE5El4Ig2DY5OTn9T4fqEuC67itE9EZsPEJE47mIJKMTiHgnAMy39RDRgOd5b6Yl4BgR9Wtjx3FaqtXq1Yxz58K8XC63BEFwRTuDiMeklLtTEZBFUclFpA2cSGrxWa4Ehohoj8YNw7CzVqv9mvdA6/nX3t7eGUVRNS6BIc/znk2bAf06ZWLjywBwloh0n2CWBxFxvlOUiH7Wf7IMXsha7CIiPU4HkWk8IhaIaDsibo7nfVIp9UkqAnSToRDiKwB4IKPTeTUfVUrpjtd/LeKy54Cenp4N09PTA4i493+8HV4AgA9bW1vfGhsbm0t9Dmh2GTnn+xFxUONEUfSe7/svrgRTCHEIAF6Py+h9z/MOrASn0ZjERsmsE+rMmZmZ0f3ERSK6zhhzpZQXs+Jo+7a2to2O4+j6L+r0JaJuz/N+WgnWcmOME2Bq9RcdFkI8AQDH4/+/Vkr15pYAk6u/NEghxBkA2K5/Q8SHpZSfmSLBaAaYXv3FIF3X7Sai7wGAEZFijHVJKa+bIMEYAau1+ktK4SMAeDrOgpeklO/kigDOeS8ijsZOHVZKHTTh4CJGuVzeMjc3Nx634P+ilNpqAt9YBnR0dGwKw/D0ws4XPej7/u8mHFyK4bruXiJ6GwCOKKX0Ftn0Y4yApj1ZIwBLwBoRn5tp130G/A33IBFuxy9ymgAAAABJRU5ErkJggg=='),
@@ -105,7 +112,7 @@ insert into `core_menu_i18n`
 values
     ('1e9fd6f84bfb4504ae0e067c45244907', 'ko', '관리자 콘솔'),
     ('d1c6f5afbd9d40e4a4ad237b19cc21fb','ko','예제'),
-    ('0231d214ffc6463fafe31c13797fdde1','ko','리스트 디테일'),
+    ('0231d214ffc6463fafe31c13797fdde1','ko','허브 앤 스포크'),
     ('d97e96219e624d8591102495a2c799c3','ko','마스터 디테일'),
     ('51ea3c97b9384eb69b5d0f5530e00f4a','ko','모달 오버레이'),
     ('fce30ba305ba4742a84cdc41996810fd', 'ko', '게시판 데모'),

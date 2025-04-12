@@ -26,6 +26,11 @@ public class S3StorageClient extends StorageClient {
     }
 
     @Override
+    public void initializeRootFolder() {
+
+    }
+
+    @Override
     public List<StorageResource> getChildResources(String resourceId) {
         return List.of();
     }

@@ -16,6 +16,8 @@ public abstract class StorageClient {
         this.properties = properties;
     }
 
+    public abstract void initializeRootFolder();
+
     public abstract List<StorageResource> getChildResources(String resourceId);
 
     public abstract StorageResource getParentResource(String resourceId);

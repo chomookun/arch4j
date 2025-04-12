@@ -22,6 +22,16 @@ public class FileStorageClient extends StorageClient {
     }
 
     @Override
+    public void initializeRootFolder() {
+        File rootFolder = new File(this.location);
+        if (!rootFolder.exists()) {
+            if (!rootFolder.mkdirs()) {
+                throw new RuntimeException("root folder create error [" + this.location + "]");
+            }
+        }
+    }
+
+    @Override
     public List<StorageResource> getChildResources(String resourceId) {
         List<StorageResource> resources = new ArrayList<>();
         File file = new File(location, resourceId);

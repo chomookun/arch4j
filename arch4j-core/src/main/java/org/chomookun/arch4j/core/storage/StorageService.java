@@ -59,6 +59,10 @@ public class StorageService {
         Storage storage = getStorage(storageId)
                 .orElseThrow();
         StorageClient storageClient = StorageClientFactory.getStorageClient(storage);
+        // if root folder request, initializes root folder
+        if (resourceId == null || resourceId.trim().isEmpty()) {
+            storageClient.initializeRootFolder();
+        }
         // parent resource
         StorageResource parentStorageResource = storageClient.getParentResource(resourceId);
         StorageResourceInfo parentStorageResourceInfo = Optional.ofNullable(parentStorageResource)
