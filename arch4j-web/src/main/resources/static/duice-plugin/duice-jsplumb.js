@@ -1,5 +1,5 @@
 /*!
- * duice-jsplumb - v0.3.0
+ * duice-jsplumb - v0.3.1
  * git: https://gitbub.com/chomookun/duice-plugin
  * website: https://duice-plugin.chomookun.org
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -27,7 +27,7 @@ this.duice.plugin.Jsplumb = (function (exports, duice) {
             this.connectorItems = [];
             // parse attribute
             this.elementProperty = duice.getElementAttribute(this.getHtmlElement(), 'element-property');
-            this.elementLoop = duice.getElementAttribute(this.getHtmlElement(), 'element-loop');
+            this.elementForeach = duice.getElementAttribute(this.getHtmlElement(), 'element-foreach');
             this.elementIdProperty = duice.getElementAttribute(this.getHtmlElement(), 'element-id-property');
             let positionProperty = duice.getElementAttribute(this.getHtmlElement(), 'element-position-property');
             let positionPropertyParts = positionProperty.split(',');
@@ -142,7 +142,7 @@ this.duice.plugin.Jsplumb = (function (exports, duice) {
             this.clearContainer();
             this.jsPlumbInstance.setSuspendDrawing(true);
             let elementArray = this.bindData[this.elementProperty];
-            let elementLoopArgs = this.elementLoop.split(',');
+            let elementLoopArgs = this.elementForeach.split(',');
             let elementItemName = elementLoopArgs[0].trim();
             let elementStatusName = (_a = elementLoopArgs[1]) === null || _a === void 0 ? void 0 : _a.trim();
             for (let index = 0; index < elementArray.length; index++) {
@@ -340,7 +340,7 @@ this.duice.plugin.Jsplumb = (function (exports, duice) {
          */
         isEditable() {
             return !duice.ObjectProxy.isReadonlyAll(this.bindData)
-                && !duice.ObjectProxy.isDisableAll(this.bindData);
+                && !duice.ObjectProxy.isDisabledAll(this.bindData);
         }
     }
 
