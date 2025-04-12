@@ -94,4 +94,4 @@ jobs:
           -PjibToImageNamespace=${{ vars.DOCKER_NAMESPACE }} \
           -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
-          -PjibToTags=latest
+          -PjibToTags=latest,${{ env.RELEASE_TAG }} 
