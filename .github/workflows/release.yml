@@ -111,3 +111,12 @@ jobs:
           -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
           -PjibToTags=latest
 
+      - name: Deploy to GCP Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: arch4j-web
+          image: docker.io/${{ secrets.DOCKER_NAMESPACE }}/arch4j-web:latest
+          region: us-central1
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+
