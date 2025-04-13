@@ -273,7 +273,7 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
         return null;
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
+    @Bean(destroyMethod = "stop")
     public RedisServer redisServer(ConfigurableEnvironment environment) throws IOException {
         String host = environment.getProperty("spring.data.redis.host");
         if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
@@ -288,8 +288,14 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
                 log.info("redisServer - Port {} is already in use.", port);
                 return null;
             }
-            // settings
-            return new RedisServer(port);
+            // starts
+            RedisServer redisServer =  new RedisServer(port);
+            try {
+                redisServer.start();
+                log.info("Embedded Redis started on port {}", port);
+            } catch (Exception e) {
+                log.warn("⚠ Failed to start embedded Redis on port {}: {}", port, e.getMessage());
+            }
         }
         return null;
     }
