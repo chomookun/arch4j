@@ -1,4 +1,4 @@
-name: deploy-web-gcp
+name: deploy-gcp
 on:
   workflow_dispatch:
     inputs:
