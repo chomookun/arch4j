@@ -1,6 +1,5 @@
 package org.chomookun.arch4j.web.view.admin;
 
-import io.micrometer.core.instrument.Statistic;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.info.InfoEndpoint;
@@ -25,7 +24,7 @@ public class MonitorController {
 
     private final MetricsEndpoint metricsEndpoint;
 
-    private final MonitorCollector monitorCollector;
+    private final MonitorScheduler monitorCollector;
 
     @GetMapping
     public ModelAndView index() {

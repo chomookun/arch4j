@@ -7,6 +7,7 @@ import org.chomookun.arch4j.core.git.model.Git;
 import org.chomookun.arch4j.core.git.client.GitClient;
 import org.chomookun.arch4j.core.git.GitProperties;
 import org.chomookun.arch4j.core.git.GitService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
+@Lazy(false)
 @RequiredArgsConstructor
 @Slf4j
 public class GitScheduler {

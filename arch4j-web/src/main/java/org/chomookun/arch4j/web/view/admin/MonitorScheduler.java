@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +14,11 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
+@Lazy(false)
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public class MonitorCollector {
+public class MonitorScheduler {
 
     private final MetricsEndpoint metricsEndpoint;
 
