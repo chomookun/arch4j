@@ -1,4 +1,4 @@
-name: release
+name: Deploy GCP
 on:
   workflow_dispatch:
     inputs:
@@ -7,8 +7,8 @@ on:
         required: true
         default: 'latest'
 jobs:
-  release:
-    name: Release
+  deploy-gcp:
+    name: Deploy GCP
     runs-on: ubuntu-latest
     env:
       IMAGE_TAG: ${{ github.event.inputs.tag }}
