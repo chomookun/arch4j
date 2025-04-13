@@ -294,7 +294,7 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
                 redisServer.start();
                 log.info("Embedded Redis started on port {}", port);
             } catch (Exception e) {
-                log.warn("⚠ Failed to start embedded Redis on port {}: {}", port, e.getMessage());
+                log.warn("Failed to start embedded Redis on port {}: {}", port, e.getMessage());
             }
         }
         return null;
