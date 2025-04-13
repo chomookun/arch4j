@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix="core.security")
 @Validated
+@Lazy(false)
 @AllArgsConstructor
 @Getter
 public class SecurityProperties {

@@ -7,6 +7,7 @@ import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Lazy(false)
 public class SecurityUtils {
 
     private static SecurityProperties securityProperties;
