@@ -7,8 +7,8 @@ on:
         required: true
         default: 'latest'
 jobs:
-  deploy-web-gcp:
-    name: deploy-web-gcp
+  deploy-gcp:
+    name: deploy-gcp
     runs-on: ubuntu-latest
     env:
       IMAGE_TAG: ${{ github.event.inputs.tag }}
