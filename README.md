@@ -152,38 +152,91 @@ Provides email template module.(template engine is thymeleaf syntax)
 
 ### 🔔 Alarm
 
+Provides an alarm message sending module.
+
 ![](docs/assets/image/screenshot-alarm.png)
 
 
 ### 💾 Storage
+
+Provides file management capabilities for storage.
 
 ![](docs/assets/image/screenshot-storage.png)
 
 
 ### 💨 Execution
 
+Provides a feature to store execution history of background tasks.
+
 ![](docs/assets/image/screenshot-execution.png)
 
 
 ### 📦 Batch
 
+Provides metadata management functionality for Spring Batch.
+
+![](docs/assets/image/screenshot-batch.png)
 
 
-
-### 🧾 Board
-
+## 📁 Sub features
 
 
-### 📃 Page
+### 🔒 Configuration security feature with PBE
 
+Enters ENC([encrypted value]) in the configuration file.
 
+```yml
+spring:
+  datasource:
+    hikari:
+      ...
+      username: ENC(iqTD9xHUch57rODDJr163Q==) 
+      ...
+```
 
-### 📚 Git
+Inject secret password in runtime.
 
+```shell
+# from environment variable
+export JASYPT_ENCRYPTOR_PASSWORD=[Your secret password]
 
+# from command line argument
+java -jar app.jar --jasypt.encryptor.password=[Your secret password]
+```
 
+### 🔒 Data security (encryption) feature
 
+### JPA Entity with CryptoConverter
+```java
+@Entity
+@Table(name = "core_example")
+public class ExampleEntity extends BaseModel {
+    ...
+    @Column(name = "crypto_text", length = Integer.MAX_VALUE)
+    @Lob
+    @Convert(converter = CryptoConverter.class)
+    private String cryptoText;
+    ...
+}
+```
 
+### Mybatis with TypeHandler
+```xml
+<resultMap id="exampleVo" type="org.chomookun.arch4j.core.example.vo.ExampleVo">
+    ...
+    <result property="cryptoText" column="crypto_text" typeHandler="org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler"/>
+    ...
+</resultMap>
 
-
-
+<insert id="insertExample">
+insert into core_example (
+    ...
+    crypto_text
+    ...
+) values (
+    ...
+    #{cryptoText, typeHandler=org.chomookun.arch4j.core.common.data.typehandler.CryptoTypeHandler}
+    ...
+)
+</insert>
+```
