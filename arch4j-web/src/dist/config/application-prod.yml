@@ -38,3 +38,5 @@ core:
   security:
     authentication-token:
       signing-key: ENC(GgF+YM6Oc307CxjpiHf/6HsH6mo2Y7JJY03ai2nHQy4LpTQsSryiFzwKTPfXyt50cCWA/zaOcrCpX5Hqo6InUXxRdqtVui643lnVW7SwFq0=)
+  git:
+    location: /data/arch4j/git/

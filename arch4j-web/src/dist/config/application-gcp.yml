@@ -1,3 +1,8 @@
 spring:
   main:
     lazy-initialization: true
+
+# core
+core:
+  git:
+    location: /data/arch4j/git/

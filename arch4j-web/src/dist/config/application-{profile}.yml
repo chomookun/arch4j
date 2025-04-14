@@ -38,3 +38,5 @@ core:
   security:
     authentication-token:
       signing-key: ~ # Security signing key
+  git:
+    location: ~ # Git location
