@@ -5,59 +5,166 @@
 
 spring-boot-based archetype for web application, batch application, CLI(Command Line Interface) application.
 
-This archetype has Basic CMS(Content Management System) functionality.
 
-## Git and Website
-
-* Git Repository: [https://github.com/chomookun/arch4j](https://github.com/oopscraft/arch4j)
-* Website: [https://arch4j.chomookun.org](https://arch4j.chomookun.org)
-
-## Demo Site
-
-* Service Page: [https://arch4j-web.chomookun.org](https://arch4j-web.chomookun.org)
-* Admin Console: [https://arch4j-web.chomookun.org/admin](https://arch4j-web.chomookun.org/admin)
-* Test Account: **developer/developer**
-
-## Main Features
-
-| Functionality                                                                      | Description                                                                                                  |
-|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| **Admin Web Console**                                                              | Provide Web-based administration console(/admin)                                                             |
-| **Design Theme**                                                                   | Customizable design theme (with Thymeleaf)                                                                   |
-| **User/Role/Authority with Spring Security**                                       | Database-based User, Role, Authority (with Spring Security)                                                  |
-| **Multiple Bulletin Boards**                                                       | Multiple bulletin board with skin, file attachments and comments.                                            |
-| **Dynamic Page Composition**                                                       | Database-based dynamic content page publishing.                                                              |
-| **Markdown Content with Git Integration**                                          | Git integrated Markdown page publishing.                                                                     |
-| **Menu Management**                                                                | Dynamic menu management.                                                                                     |
-| **Email Templates**                                                                | Email template(with thymeleaf).                                                                              |
-| **Message, Variable, and Common Code Management for Additional Development Needs** | Common functionality for managing messages, variables, and common codes for additional business development. |
+| Subproject                                                                         | Description                              |
+|------------------------------------------------------------------------------------|------------------------------------------|
+| **arch4j-core**                                                                    | Shared core component archetype project  |
+| **arch4j-web**                                                                     | web application archetype project        |
+| **arch4j-shell**                                                                   | Shell(CLI) application archetype project |
+| **arch4j-batch**                                                                   | Batch application archetype project      |
 
 
-## Quick Local Test
+
+## 🖥️ Demo site
+
+Credentials: developer/developer
+
+### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.arch4j--web.chomookun.org-blue?logo=google-cloud)](https://gcp.arch4j-web.chomookun.org)
+
+Due to a cold start, there is an initialization delay of approximately 30 seconds.<br/>
+Trading daemon is not available on the demo site.<br/>
+(No money!!!)
+
+### [![](https://img.shields.io/badge/Self--Hosting-https://arch4j--web.chomookun.org-orange?logo=linux)](https://arch4j-web.chomookun.org)
+
+The service is hosted on a personal home server, so performance may be slower.
+(No money!!!)
+
+
+## 🧪 Running from source
+
+### Starts arch4j-daemon
+Runs the daemon application.
+```shell
+# starts fintics-daemon
+./gradlew :arch4j-daemon:bootRun
+```
+
+### Starts arch4j-web
+Runs web application.
+```shell
+# starts arch4j-web
+./gradlew :arch4j-web:bootRun
+```
+
+## 🧪 Running from release binary
+
+Downloads Released archives.
+
+### Starts arch4j-daemon
 
 ```shell
-# download source
-git clone https://github.com/chomookun/arch4j.git
-
-# run application
-./gradlew :arch4j-web:bootRun
-
+./bin/arch4j-daemon
 ```
-connect to http://localhost:8080
+
+### Starts arch4j-web
+```shell
+./bin/arch4j-web
+```
+
+## 🧪 Running from container image
+
+### Starts arch4j-daemon
+```shell
+docker run -rm -p 8081:8081 docker.io/chomoookun/arch4j-daemon:latest
+```
+
+### Starts arch4j-web
+```shell
+docker run -rm -p 8080:8080 docker.io/chomoookun/arch4j-web:latest
+```
 
 
-## Documentation
+## 🔗 References
 
-[1.Installation](docs/01.installation/index.md)
+### [![](https://img.shields.io/badge/Github-https://github.com/chomoomun/arch4j-green?logo=github)](https://github.com/chomookun/arch4j)
+Git source repository
 
-[2.Configuration](docs/02.configuration/index.md)
-
-
-## License
-
-[LICENSE](LICENSE)
+### [![](https://img.shields.io/badge/Duice-https://github.com/chomookun/duice-blue?logo=github)](https://github.com/chomookun/duice)
+UI Component javascript library
 
 
-## Contact
-* email: [chomookun@gmailcom](mailto:chomookun@gmail.com)
-* linkedin: [https://www.linkedin.com/in/chomookun](https://www.linkedin.com/in/chomookun)
+## 📁 Main features
+
+### 🖥️ Monitor
+
+Provides simple application monitor admin.<br/>
+(info, cpu, mem, disk, server thread, datasource, requests ...)
+
+![](docs/assets/image/screenshot-monitor.png)
+
+
+### 😳 User
+
+Offers a user management module that integrates with a database.<br/>
+It's based on spring-security.
+
+![](docs/assets/image/screenshot-user.png)
+
+
+### 🔐 Security (Role, Authority)
+
+Offers a spring-security(role,authority) module that integrates with a database.<br/>
+
+![](docs/assets/image/screenshot-security.png)
+
+
+### 📋 Menu
+
+Offers dynamic menu module with database. (supports i18n)
+
+![](docs/assets/image/screenshot-menu.png)
+
+
+### 💬 Message
+
+Offers combined message (spring message + database message) module. (support i18n)
+
+![](docs/assets/image/screenshot-message.png)
+
+
+### 🪪 Variable
+
+
+
+### ⌥ Code
+
+
+
+### ✉️ Email
+
+
+
+### 🔔 Alarm
+
+
+
+### 💾 Storage
+
+
+
+### 💨 Execution
+
+
+
+### 📦 Batch
+
+
+
+### 🧾 Board
+
+
+
+### 📃 Page
+
+
+
+### 📚 Git
+
+
+
+
+
+
+
+
