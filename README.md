@@ -21,13 +21,13 @@ spring-boot-based archetype for web application, batch application, CLI(Command 
 
 Credentials: **developer/developer**
 
-### Self-hosting
+### Web application (self-hosting)
 [![](https://img.shields.io/badge/Self--Hosting-https://arch4j--web.chomookun.org-orange?logo=linux)](https://arch4j-web.chomookun.org)
 <br/>
 The service is hosted on a personal home server, so performance may be slower.
 (No money!!!)
 
-### Google cloud run
+### Web application (google cloud run)
 [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.arch4j--web.chomookun.org-blue?logo=google-cloud)](https://gcp.arch4j-web.chomookun.org)
 <br/>
 Due to a cold start, there is an initialization delay of approximately 30 seconds.<br/>
@@ -38,7 +38,7 @@ Trading daemon is not available on the demo site.<br/>
 ---
 
 
-## 🧪 Running from source
+## 🧪 Running from source code
 
 ### Starts arch4j-daemon
 Runs the daemon application.
