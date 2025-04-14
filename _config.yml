@@ -1,0 +1,20 @@
+remote_theme: chomookun/jekyll-plain
+plugins:
+  - jekyll-remote-theme
+
+# theme configuration
+brand-icon: /docs/assets/image/arch4j-icon.svg
+brand-title: <img src="/docs/assets/image/arch4j-title.svg"/>
+
+# exclude
+exclude:
+  - .github
+  - arch4j-batch
+  - arch4j-core
+  - arch4j-daemon
+  - arch4j-dependencies
+  - arch4j-shell
+  - arch4j-web
+  - gradle
+  - vendor
+
