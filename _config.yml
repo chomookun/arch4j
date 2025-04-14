@@ -9,6 +9,8 @@ brand-title: <img src="/docs/assets/image/arch4j-title.svg"/>
 # exclude
 exclude:
   - .github
+  - build
+  - out
   - arch4j-batch
   - arch4j-core
   - arch4j-daemon
@@ -17,4 +19,9 @@ exclude:
   - arch4j-web
   - gradle
   - vendor
-
+  - build.grade
+  - gradle.properties
+  - settings.gradle
+  - Jenkinsfile.groovy
+  - Gemfile
+  - Gemfile.lock
