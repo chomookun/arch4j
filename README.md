@@ -14,21 +14,28 @@ spring-boot-based archetype for web application, batch application, CLI(Command 
 | **arch4j-batch**                                                                   | Batch application archetype project      |
 
 
+---
+
 
 ## 🖥️ Demo site
 
-Credentials: developer/developer
+Credentials: **developer/developer**
 
-### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.arch4j--web.chomookun.org-blue?logo=google-cloud)](https://gcp.arch4j-web.chomookun.org)
+### Self-hosting
+[![](https://img.shields.io/badge/Self--Hosting-https://arch4j--web.chomookun.org-orange?logo=linux)](https://arch4j-web.chomookun.org)
+<br/>
+The service is hosted on a personal home server, so performance may be slower.
+(No money!!!)
 
+### Google cloud run
+[![](https://img.shields.io/badge/Cloud%20Run-https://gcp.arch4j--web.chomookun.org-blue?logo=google-cloud)](https://gcp.arch4j-web.chomookun.org)
+<br/>
 Due to a cold start, there is an initialization delay of approximately 30 seconds.<br/>
 Trading daemon is not available on the demo site.<br/>
 (No money!!!)
 
-### [![](https://img.shields.io/badge/Self--Hosting-https://arch4j--web.chomookun.org-orange?logo=linux)](https://arch4j-web.chomookun.org)
 
-The service is hosted on a personal home server, so performance may be slower.
-(No money!!!)
+---
 
 
 ## 🧪 Running from source
@@ -47,6 +54,8 @@ Runs web application.
 ./gradlew :arch4j-web:bootRun
 ```
 
+---
+
 ## 🧪 Running from release binary
 
 Downloads Released archives.
@@ -62,6 +71,8 @@ Downloads Released archives.
 ./bin/arch4j-web
 ```
 
+---
+
 ## 🧪 Running from container image
 
 ### Starts arch4j-daemon
@@ -74,15 +85,17 @@ docker run -rm -p 8081:8081 docker.io/chomoookun/arch4j-daemon:latest
 docker run -rm -p 8080:8080 docker.io/chomoookun/arch4j-web:latest
 ```
 
+---
 
 ## 🔗 References
 
-### [![](https://img.shields.io/badge/Github-https://github.com/chomoomun/arch4j-green?logo=github)](https://github.com/chomookun/arch4j)
-Git source repository
+### Git source repository
+[![](https://img.shields.io/badge/Github-https://github.com/chomoomun/arch4j-green?logo=github)](https://github.com/chomookun/arch4j)
 
-### [![](https://img.shields.io/badge/Duice-https://github.com/chomookun/duice-blue?logo=github)](https://github.com/chomookun/duice)
-UI Component javascript library
+### UI Component javascript library
+[![](https://img.shields.io/badge/Duice-https://github.com/chomookun/duice-blue?logo=github)](https://github.com/chomookun/duice)
 
+---
 
 ## 📁 Main features
 
@@ -177,6 +190,7 @@ Provides metadata management functionality for Spring Batch.
 
 ![](docs/assets/image/screenshot-batch.png)
 
+---
 
 ## 📁 Sub features
 
