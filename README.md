@@ -125,29 +125,48 @@ Offers combined message (spring message + database message) module. (support i18
 
 ### 🪪 Variable
 
+Offers crypto-supported variable module.
+
+![](docs/assets/image/screenshot-variable.png)
+
+If you enter **DEC([real value)])**, saves as **ENC([encrypted value])** to protect sensitive data.
+
 
 
 ### ⌥ Code
+
+Provides database code store module.
+
+![](docs/assets/image/screenshot-code.png)
+
 
 
 
 ### ✉️ Email
 
+Provides email template module.(template engine is thymeleaf syntax)
+
+![](docs/assets/image/screenshot-email.png)
+
 
 
 ### 🔔 Alarm
 
+![](docs/assets/image/screenshot-alarm.png)
 
 
 ### 💾 Storage
 
+![](docs/assets/image/screenshot-storage.png)
 
 
 ### 💨 Execution
 
+![](docs/assets/image/screenshot-execution.png)
 
 
 ### 📦 Batch
+
 
 
 
