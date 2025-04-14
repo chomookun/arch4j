@@ -2,12 +2,13 @@ package org.chomookun.arch4j.core.storage.client.s3;
 
 import org.chomookun.arch4j.core.storage.client.StorageClient;
 import org.chomookun.arch4j.core.storage.client.StorageClientDefinition;
-import org.chomookun.arch4j.core.storage.client.file.FileStorageClient;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.StringJoiner;
 
 @Component
+@Lazy(false)
 public class S3StorageClientDefinition implements StorageClientDefinition {
 
     @Override

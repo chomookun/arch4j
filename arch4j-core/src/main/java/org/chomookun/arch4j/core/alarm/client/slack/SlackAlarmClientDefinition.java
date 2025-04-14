@@ -2,11 +2,13 @@ package org.chomookun.arch4j.core.alarm.client.slack;
 
 import org.chomookun.arch4j.core.alarm.client.AlarmClient;
 import org.chomookun.arch4j.core.alarm.client.AlarmClientDefinition;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.StringJoiner;
 
 @Component
+@Lazy(false)
 public class SlackAlarmClientDefinition implements AlarmClientDefinition {
 
     @Override

@@ -1,15 +1,14 @@
 package org.chomookun.arch4j.core.storage.client.file;
 
-import org.chomookun.arch4j.core.alarm.client.AlarmClient;
-import org.chomookun.arch4j.core.alarm.client.AlarmClientDefinition;
-import org.chomookun.arch4j.core.alarm.client.slack.SlackAlarmClient;
 import org.chomookun.arch4j.core.storage.client.StorageClient;
 import org.chomookun.arch4j.core.storage.client.StorageClientDefinition;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.StringJoiner;
 
 @Component
+@Lazy(false)
 public class FileStorageClientDefinition implements StorageClientDefinition {
 
     @Override

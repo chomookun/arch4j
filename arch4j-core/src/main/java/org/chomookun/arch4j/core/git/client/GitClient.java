@@ -28,10 +28,6 @@ public class GitClient {
         return new File(gitProperties.getLocation() + getDirectoryName(git));
     }
 
-    /**
-     * git clone
-     * @param git git info
-     */
     public void gitClone(Git git) {
         try {
             org.eclipse.jgit.api.Git.cloneRepository()
@@ -44,12 +40,6 @@ public class GitClient {
         }
     }
 
-    /**
-     * git pull
-     * @param git git info
-     * @throws IOException io exception
-     * @throws GitAPIException git api exception
-     */
     public void gitPull(Git git) throws IOException, GitAPIException {
         FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
         File gitDir = new File(getDirectory(git).getAbsolutePath() + File.separator + ".git");
