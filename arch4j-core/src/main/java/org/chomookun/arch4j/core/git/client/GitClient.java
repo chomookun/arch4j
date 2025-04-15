@@ -34,6 +34,7 @@ public class GitClient {
                     .setURI(git.getUrl())
                     .setBranch(git.getBranch())
                     .setDirectory(getDirectory(git))
+                    .setTimeout(180)
                     .call();
         } catch (GitAPIException e) {
             throw new RuntimeException(e);
