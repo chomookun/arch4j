@@ -1,0 +1,109 @@
+<div class="padding--1rem">
+    <h2>
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-comment.svg(_theme=${_theme})}" alt=""/>
+        <span data-th-text="#{core.comment.Comment}"></span>
+    </h2>
+    <!-- ================================================== -->
+    <!-- start: article comment form                        -->
+    <!-- ================================================== -->
+    <div id="_comment-form-container">
+        <form id="_comment-form" class="display--flex flex-direction--column gap--1px padding-top--1rem padding-bottom--1rem"
+              data-duice-bind="_comment.comment"
+              data-duice-execute="
+              if (_comment.comment.parentCommentId) {
+                  this.style.marginLeft='1rem';
+              } else {
+                  this.style.marginLeft='initial';
+              }
+              ">
+            <div style="height:20em;">
+                <label>
+                    <textarea data-duice-bind="_comment.comment" data-duice-property="content" class="width--100 height--100"></textarea>
+                </label>
+            </div>
+            <div class="display--flex justify-content--end gap--1px">
+                <button type="button"
+                        class="button small"
+                        onclick="_comment.cancelComment();">
+                    <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-cancel.svg(_theme=${_theme})}" alt="cancel"/>
+                    <span data-th-text="#{web.global.cancel}">Cancel</span>
+                </button>
+                <button type="button"
+                        class="button small"
+                        onclick="_comment.saveComment();">
+                    <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-save.svg(_theme=${_theme})}" alt="save"/>
+                    <span data-th-text="#{web.global.save}">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- ================================================== -->
+    <!-- end: comment form                                  -->
+    <!-- ================================================== -->
+
+    <!-- ================================================== -->
+    <!-- start: comment list                                -->
+    <!-- ================================================== -->
+    <div id="_comment-list-container" class="display--flex flex-direction--column row-gap--1rem">
+        <div data-duice-bind="_comment.comments"
+             data-duice-foreach="comment,status"
+             data-duice-recursive="commentId,parentCommentId"
+             class="display--flex flex-direction--column gap--1px"
+             data-duice-execute="this.style.marginLeft = (status.depth*1) + 'rem';">
+            <div class="display--flex gap--1rem">
+                <span>
+                    <img th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}"
+                         class="icon"
+                         data-duice-bind="comment"
+                         data-duice-property="userIcon"
+                         alt=""/>
+                    <span data-duice-bind="comment"
+                          data-duice-property="userName"></span>
+                </span>
+                <span>
+                    <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-created-at.svg(_theme=${_theme})}" alt=""/>
+                    <span data-duice-bind="comment"
+                          data-duice-property="createdAt"
+                          data-duice-format="date('yyyy-MM-dd HH:mm')"
+                          class="date"></span>
+                </span>
+            </div>
+            <div data-duice-bind="comment" data-duice-execute="this.dataset.commentId=comment.commentId;">
+                <div data-duice-bind="comment" data-duice-property="content"></div>
+                <div class="display--flex gap--1px">
+                    <button type="button" class="button small"
+                            data-duice-bind="comment"
+                            data-duice-if="return comment.canUpdate;"
+                            data-duice-execute="this.dataset.commentId = comment.commentId;"
+                            onclick="_comment.editComment(this.dataset.commentId);">
+                        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-edit.svg(_theme=${_theme})}" alt=""/>
+                        <span data-th-text="#{web.global.edit}"></span>
+                    </button>
+                    <button type="button" class="button small"
+                            data-duice-bind="comment"
+                            data-duice-if="return comment.canDelete;"
+                            data-duice-execute="this.dataset.commentId = comment.commentId;"
+                            onclick="_comment.deleteComment(this.dataset.commentId);">
+                        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-delete.svg(_theme=${_theme})}" alt=""/>
+                        <span data-th-text="#{web.global.delete}"></span>
+                    </button>
+                    <button type="button" class="button small"
+                            data-duice-bind="comment"
+                            data-duice-execute="this.dataset.commentId = comment.commentId;"
+                            onclick="_comment.replyComment(this.dataset.commentId);">
+                        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-reply.svg(_theme=${_theme})}" alt=""/>
+                        <span data-th-text="#{web.global.reply}"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="text-align--center"
+             data-duice-bind="_comment.comments"
+             data-duice-if="return _comment.comments.length === 0;">
+            <span data-th-text="#{web.global.itemNotFound(#{core.comment.Comment})}"></span>
+        </div>
+    </div>
+    <!-- ================================================== -->
+    <!-- end: comment list                                  -->
+    <!-- ================================================== -->
+</div>

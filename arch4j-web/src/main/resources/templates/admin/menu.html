@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="admin/_admin.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         const menus = new duice.ArrayProxy([]);
         const menu = new duice.ObjectProxy({
@@ -636,4 +636,4 @@
 
     <th:block th:include="admin/_common.html :: _selectRoleDialog"/>
 
-</th:block>
+</main>

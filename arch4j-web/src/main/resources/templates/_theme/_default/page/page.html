@@ -4,12 +4,12 @@
 <div>
     <div data-duice-bind="page"
          data-duice-property="content"
-         data-duice-if="return page.contentFormat === 'TEXT'">
+         data-duice-if="return page.format === 'TEXT'">
     </div>
     <duice-marked
         data-duice-bind="page"
         data-duice-property="content"
-        data-duice-if="return page.contentFormat ==='MARKDOWN'">
+        data-duice-if="return page.format ==='MARKDOWN'">
     </duice-marked>
 </div>
 <!-- ================================== -->
@@ -19,14 +19,16 @@
 <!-- ================================== -->
 <!-- start: page widgets                -->
 <!-- ================================== -->
-<div class="display--grid grid-template-columns--2 grid-gap--1em margin-top--1em">
-    <div th:each="pageWidget : ${page.pageWidgets}" class="grid-column--1 s__grid-column--2">
-       <iframe th:src="${pageWidget.url}"
-               onload="initializeWidget(this);"
-               scrolling="no"
-               frameborder="0"
-               class="border--0 width--100">
-       </iframe>
+<div class="display--grid grid-template-columns--2fr gap--1rem">
+    <div data-duice-bind="page.pageWidgets"
+         data-duice-foreach="pageWidget,status"
+         class="grid-column--span-1 s__grid-column--span-2">
+        <iframe data-duice-bind="pageWidget"
+                data-duice-execute="this.src=pageWidget.url"
+                scrolling="no"
+                frameborder="0"
+                class="border--0 width--100">
+        </iframe>
     </div>
 </div>
 <!-- ================================== -->

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 
 @Entity
 @Table(name = "core_storage")
@@ -27,5 +28,9 @@ public class StorageEntity extends BaseEntity {
     @Column(name = "storage_client_config", length = Integer.MAX_VALUE)
     @Lob
     private String storageClientConfig;
+
+    @Column(name = "sanitize_enabled", length = 1)
+    @Convert(converter = BooleanConverter.class)
+    private boolean sanitizeEnabled;
 
 }

@@ -61,13 +61,49 @@
     <!-- web.js -->
     <script th:src="@{/static/web.js?version={version}(version=${_scriptVersion})}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/static/web.css?version={version}(version=${_scriptVersion})}"/>
+    <script th:inline="javascript">
+        const _apiUrl = [[@{/api}]];
+        const _sessionTimeout = [[${_sessionTimeout}]];
+
+        const _gotoIndex = function() {
+            document.location.href = /*[[@{/}]]*/'';
+        }
+
+        const _gotoLogin = function() {
+            document.location.href = /*[[@{/admin/login}]]*/'';
+        }
+
+        const _gotoLogout = function() {
+            document.location.href = /*[[@{/admin/logout}]]*/'';
+        }
+
+        const _openMenu = function() {
+            document.querySelector('header #_header-menu').classList.toggle('open');
+            document.querySelector('nav').classList.toggle('open');
+        }
+
+        // checks session expired
+        setInterval(() => {
+            let url = `${_apiUrl}/v1/login/status`;
+            fetch(url).then(response => {
+                console.log(response);
+                if (response.status === 401 || response.status === 403) {
+                    _alert(/*[[#{web.error.SessionExpired}]]*/'').then(() => {
+                        document.location.reload();
+                    });
+                }
+            });
+        }, (_sessionTimeout + 3)*1000);
+    </script>
+</head>
+<body layout:fragment="_body">
     <style th:inline="css">
         body {
             display: grid;
             grid-template-areas:
-                    '_header _header _header'
-                    '_nav _main _aside'
-                    '_footer _footer _footer';
+                        '_header _header _header'
+                        '_nav _main _aside'
+                        '_footer _footer _footer';
             grid-template-columns: 18rem calc(100% - 18rem - 9rem) 9rem;
             grid-template-rows: auto 1fr 3rem;
         }
@@ -75,11 +111,11 @@
             body {
                 display: grid;
                 grid-template-areas:
-                        '_header'
-                        '_nav'
-                        '_main'
-                        '_aside'
-                        '_footer';
+                            '_header'
+                            '_nav'
+                            '_main'
+                            '_aside'
+                            '_footer';
                 grid-template-columns: 100%;
                 grid-template-rows: auto auto 1fr auto auto;
                 grid-gap: 0.5rem 0.5rem;
@@ -89,7 +125,7 @@
             grid-area: _header;
             display: grid;
             grid-template-areas:
-                    '_header-logo _header-menu';
+                        '_header-logo _header-menu';
             grid-template-columns: auto auto;
             border-bottom: groove 2px lightgray;
             background-color: #fafafa;
@@ -137,8 +173,8 @@
             header {
                 display: grid;
                 grid-template-areas:
-                        '_header-logo _header-menuButton'
-                        '_header-menu _header-menu';
+                            '_header-logo _header-menuButton'
+                            '_header-menu _header-menu';
             }
             header #_header-menuButton {
                 display: flex;
@@ -159,7 +195,7 @@
             grid-area: _nav;
             display: grid;
             grid-template-areas:
-                    '_nav-menu';
+                        '_nav-menu';
             padding: 1rem;
         }
         nav #_nav-menu {
@@ -230,44 +266,6 @@
             color: #888;
         }
     </style>
-    <script th:inline="javascript">
-        const _apiUrl = [[@{/api}]];
-        const _sessionTimeout = [[${_sessionTimeout}]];
-
-        const _gotoIndex = function() {
-            document.location.href = /*[[@{/}]]*/'';
-        }
-
-        const _gotoLogin = function() {
-            document.location.href = /*[[@{/admin/login}]]*/'';
-        }
-
-        const _gotoLogout = function() {
-            document.location.href = /*[[@{/admin/logout}]]*/'';
-        }
-
-        const _openMenu = function() {
-            document.querySelector('header #_header-menu').classList.toggle('open');
-            document.querySelector('nav').classList.toggle('open');
-        }
-
-        // checks session expired
-        setInterval(() => {
-            let url = `${_apiUrl}/v1/login/status`;
-            fetch(url).then(response => {
-                console.log(response);
-                if (response.status === 401 || response.status === 403) {
-                    _alert(/*[[#{web.error.SessionExpired}]]*/'').then(() => {
-                        document.location.reload();
-                    });
-                }
-            });
-        }, (_sessionTimeout + 3)*1000);
-
-    </script>
-</head>
-<body>
-
     <!-- ====================================== -->
     <!-- start: header                          -->
     <!-- ====================================== -->
@@ -289,7 +287,7 @@
             </li>
             <li sec:authorize="isAuthenticated()">
                 <span>
-                    <img class="icon border-radius--50" th:src="${_user.photo} == null ? @{/static/image/icon-user.svg} : ${_user.photo}" alt="photo"/>
+                    <img class="icon font-size--large border-radius--50" th:src="${_user.icon} == null ? @{/static/image/icon-user.svg} : ${_user.icon}" alt="icon"/>
                     <span data-th-text="${_user.name}" class="font-weight--bold"></span>
                 </span>
             </li>
@@ -426,8 +424,8 @@
     <!-- ====================================== -->
     <!-- start: main                            -->
     <!-- ====================================== -->
-    <main>
-        <th:block layout:fragment="_content"/>
+    <main layout:fragment="_main">
+<!--        <th:block layout:fragment="_content"/>-->
     </main>
     <!-- ====================================== -->
     <!-- end: main                              -->

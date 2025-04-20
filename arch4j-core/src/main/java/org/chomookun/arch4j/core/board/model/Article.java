@@ -2,15 +2,11 @@ package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
 import org.chomookun.arch4j.core.board.entity.ArticleEntity;
-import org.chomookun.arch4j.core.user.entity.UserEntity;
+import org.chomookun.arch4j.core.user.model.User;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -20,79 +16,35 @@ public class Article {
 
     private String articleId;
 
-    private LocalDateTime createdAt;
-
-    @NotBlank(message = "Title is empty")
-    private String title;
-
-    @Builder.Default
-    @NotNull(message = "Content format is empty")
-    private ContentFormat contentFormat = ContentFormat.TEXT;
-
-    @NotBlank(message = "Content is empty")
-    private String content;
-
-    @NotBlank(message = "Board ID is empty")
     private String boardId;
+
+    private LocalDateTime createdAt;
 
     private String userId;
 
-    private String userName;
+    private String title;
 
-    private String userIcon;
+    private Article.Format format;
 
-    private String password;
+    private String content;
 
-    @Builder.Default
-    private Long commentCount = 0L;
-
-    @Builder.Default
-    private Long votePositiveCount = 0L;
+    private User user;
 
     @Builder.Default
-    private Long voteNegativeCount = 0L;
+    private List<ArticleFile> articleFiles = new ArrayList<>();
 
-    @Builder.Default
-    private List<ArticleFile> files = new ArrayList<>();
+    public enum Format { TEXT, MARKDOWN }
 
-    public enum ContentFormat { TEXT, MARKDOWN }
-
-    /**
-     * article factory method
-     * @param articleEntity article entity
-     * @return article
-     */
     public static Article from(ArticleEntity articleEntity) {
         return Article.builder()
                 .articleId(articleEntity.getArticleId())
-                .createdAt(articleEntity.getCreatedAt())
-                .title(articleEntity.getTitle())
-                .contentFormat(articleEntity.getContentFormat())
-                .content(articleEntity.getContent())
                 .boardId(articleEntity.getBoardId())
+                .createdAt(articleEntity.getCreatedAt())
                 .userId(articleEntity.getUserId())
-                .commentCount(articleEntity.getCommentCount())
-                .votePositiveCount(articleEntity.getVotePositiveCount())
-                .voteNegativeCount(articleEntity.getVoteNegativeCount())
-                .userName(Optional.ofNullable(articleEntity.getUser())
-                        .map(UserEntity::getUsername)
-                        .orElse(articleEntity.getUserName()))
-                .userIcon(Optional.ofNullable(articleEntity.getUser())
-                        .map(UserEntity::getPhoto)
-                        .orElse(null))
-                .password(articleEntity.getPassword())
+                .title(articleEntity.getTitle())
+                .format(articleEntity.getFormat())
+                .content(articleEntity.getContent())
                 .build();
-    }
-
-    /**
-     * articles factory method
-     * @param articleEntities article entities
-     * @return articles
-     */
-    public static List<Article> from(List<ArticleEntity> articleEntities) {
-        return articleEntities.stream()
-                .map(Article::from)
-                .collect(Collectors.toList());
     }
 
 }

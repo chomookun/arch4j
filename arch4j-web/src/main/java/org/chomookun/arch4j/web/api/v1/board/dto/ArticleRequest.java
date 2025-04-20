@@ -14,26 +14,15 @@ import java.util.List;
 @Schema(description = "Article Request")
 public class ArticleRequest {
 
-    @Schema(description = "Article ID")
     private String articleId;
 
-    @Schema(description = "Title")
     private String title;
 
-    @Schema(description = "Content format", defaultValue = "TEXT")
-    private Article.ContentFormat contentFormat;
+    private Article.Format format;
 
-    @Schema(description = "Content")
     private String content;
 
-    @Schema(description = "Anonymous writer name")
-    private String userName;
-
-    @Schema(description = "Anonymous article password")
-    private String password;
-
     @Builder.Default
-    @Schema(description = "Attachment files")
-    private List<ArticleFileRequest> files = new ArrayList<>();
+    private List<ArticleFileRequest> articleFiles = new ArrayList<>();
 
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "board")
 @RestController
-@RequestMapping("api/v1/board")
+@RequestMapping("api/v1/boards")
 @RequiredArgsConstructor
 public class BoardRestController {
 
@@ -22,7 +22,6 @@ public class BoardRestController {
 
     @GetMapping("{boardId}")
     @PreAuthorize("@boardPermissionEvaluator.hasAccessPermission(#boardId)")
-    @Operation(summary = "get board info", description = "returns board information")
     public ResponseEntity<BoardResponse> getBoard(@PathVariable("boardId") String boardId) {
         BoardResponse boardResponse = boardService.getBoard(boardId)
                 .map(BoardResponse::from)

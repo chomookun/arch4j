@@ -1,0 +1,117 @@
+<!-- ================================================== -->
+<!-- start: title                                       -->
+<!-- ================================================== -->
+<h1 id="title">
+    <img data-duice-bind="board" data-duice-property="icon" class="icon"
+         th:src="@{/static/_theme/{_theme}/static/image/icon-board.svg(_theme=${_theme})}" alt="board"/>
+    <span data-duice-bind="board" data-duice-property="name"></span>
+</h1>
+<!-- ================================================== -->
+<!-- end: title                                         -->
+<!-- ================================================== -->
+
+<!-- ================================================== -->
+<!-- start: article content                             -->
+<!-- ================================================== -->
+<div class="display--grid grid-template-columns--12 grid-gap--1em">
+    <div class="grid-column--12">
+        <label>
+            <span data-th-text="#{core.board.Article.title}" class="font-weight--bold tag-required"></span>
+            <input type="text" data-duice-bind="article" data-duice-property="title" class="width--100 font-weight--bold font-size--larger"/>
+        </label>
+    </div>
+    <div class="grid-column--12 display--flex justify-content--space-between">
+        <div>
+            <span data-th-text="#{core.board.Article.content}" class="font-weight--bold tag-required"></span>
+        </div>
+        <div>
+            <label>
+                <input type="radio" data-duice-bind="article" data-duice-property="format" value="TEXT"/>
+                <span data-th-text="#{core.board.ContentFormat.TEXT}" class="font-weight--bold"></span>
+            </label>
+            &nbsp;
+            <label>
+                <input type="radio" data-duice-bind="article" data-duice-property="format" value="MARKDOWN"/>
+                <span data-th-text="#{core.board.ContentFormat.MARKDOWN}" class="font-weight--bold"></span>
+            </label>
+        </div>
+    </div>
+    <div class="grid-column--12">
+        <label>
+            <textarea data-duice-bind="article"
+                      data-duice-property="content"
+                      data-duice-if="return article.format==='TEXT'"
+                      oninput="this.style.height=this.scrollHeight+'px';"
+                      class="width--100 height--10_0"></textarea>
+            <duice-codemirror
+                    data-duice-bind="article"
+                    data-duice-property="content"
+                    data-duice-if="return article.format==='MARKDOWN'"
+                    data-duice-mode="markdown"
+                    class="box height--100"></duice-codemirror>
+        </label>
+    </div>
+</div>
+<!-- ================================================== -->
+<!-- end: article content                               -->
+<!-- ================================================== -->
+
+<th:block th:if="${board.isFileEnabled()}">
+<!-- ================================================== -->
+<!-- start: article file                                -->
+<!-- ================================================== -->
+<div class="display--grid grid-template-columns--12 margin-top--1em">
+    <div class="grid-column--12 font-weight--bold">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-file.svg(_theme=${_theme})}" alt="file"/>
+        <span data-th-text="#{core.board.Article.files}"></span>
+    </div>
+    <div class="grid-column--12">
+        <div data-duice-bind="article.articleFiles" data-duice-foreach="articleFile,status" class="margin-right--1em">
+            <span data-duice-bind="articleFile" data-duice-property="filename"
+                  data-duice-execute="this.dataset.fileId=articleFile.id"
+                  class="cursor--pointer font-weight--bold"
+                  onclick="downloadArticleFile(this.dataset.fileId);">
+            </span>
+            <span class="font-size--smaller" data-duice-bind="articleFile" data-duice-execute="
+                this.innerHTML = `(${articleFile.length} bytes)`;
+                ">
+            </span>
+            <span data-duice-bind="articleFile" data-duice-execute="this.dataset.index=status.index;"
+                  onclick="removeArticleFile(this.dataset.index);" class="link">
+                [<span data-th-text="#{web.global.remove}"></span>]
+            </span>
+        </div>
+    </div>
+    <div class="grid-column--12">
+        <span onclick="addArticleFile();" class="link">
+            [<span data-th-text="#{web.global.add}"></span>]
+        </span>
+    </div>
+</div>
+<!-- ================================================== -->
+<!-- end: article file                                  -->
+<!-- ================================================== -->
+</th:block>
+
+<!-- ================================================== -->
+<!-- start: button                                      -->
+<!-- ================================================== -->
+<div class="text-align--center margin-x--1em">
+    <button onclick="gotoCancel();">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-cancel.svg(_theme=${_theme})}" alt="cancel"/>
+        <span data-th-text="#{web.global.cancel}"></span>
+    </button>
+    <button onclick="deleteArticle();">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-delete.svg(_theme=${_theme})}" alt="delete"/>
+        <span data-th-text="#{web.board.deleteArticle}"></span>
+    </button>
+    <button onclick="saveArticle();">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-save.svg(_theme=${_theme})}" alt="save"/>
+        <span data-th-text="#{web.board.saveArticle}"></span>
+    </button>
+</div>
+<!-- ================================================== -->
+<!-- end: button                                        -->
+<!-- ================================================== -->
+
+

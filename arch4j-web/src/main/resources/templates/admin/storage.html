@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="admin/_admin.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         // storages
         const storageSearch = new duice.ObjectProxy({
@@ -15,12 +15,21 @@
         });
         const storages = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(storages, true);
-        const storageResourceSummary = new duice.ObjectProxy({
+        const storageResourceInfo = new duice.ObjectProxy({
             resourceId: null,
             parentStorageResource: null,
             childStorageResources: []
         });
         const storageClientDefinitions = new duice.ArrayProxy(/*[[${storageClientDefinitions}]]*/[]);
+        const storageObjectSearch = new duice.ObjectProxy({
+            storageId: null,
+            key: 'name',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _total: 0
+        });
+        const storageObjects = new duice.ArrayProxy([]);
 
         function getStorages(page) {
             if(page) {
@@ -62,32 +71,32 @@
             });
         }
 
-        function getStorageResourceSummary(storageId, resourceId) {
-            let url = new URL(`${location.pathname}/get-storage-resource-summary`, location.origin);
+        function getStorageResourceInfo(storageId, resourceId) {
+            let url = new URL(`${location.pathname}/get-storage-resource-info`, location.origin);
             url.searchParams.set('storageId', storageId);
             url.searchParams.set('resourceId', resourceId || '');
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ObjectProxy.clear(storageResourceSummary);
-                    duice.ObjectProxy.assign(storageResourceSummary, data);
+                    duice.ObjectProxy.clear(storageResourceInfo);
+                    duice.ObjectProxy.assign(storageResourceInfo, data);
                 });
         }
 
-        function refreshStorageResourceSummary() {
-            getStorageResourceSummary(storageResourceSummary.storageId, storageResourceSummary.resourceId);
+        function refreshStorageResourceInfo() {
+            getStorageResourceInfo(storageResourceInfo.storageId, storageResourceInfo.resourceId);
         }
 
         function createStorageFolder() {
             _prompt(/*[[#{web.global.enterItem(#{web.global.folder} + ' ' + #{web.global.name})}]]*/'').then(name => {
                 if (name) {
                     let url = new URL(`${location.pathname}/create-storage-folder`, location.origin);
-                    url.searchParams.set('storageId', storageResourceSummary.storageId);
-                    url.searchParams.set('parentResourceId', storageResourceSummary.resourceId);
+                    url.searchParams.set('storageId', storageResourceInfo.storageId);
+                    url.searchParams.set('parentResourceId', storageResourceInfo.resourceId);
                     url.searchParams.set('name', name);
                     _fetch(url, {method: 'POST'}).then(response => {
                         console.log(response);
-                        refreshStorageResourceSummary();
+                        refreshStorageResourceInfo();
                     });
                 }
             });
@@ -101,8 +110,8 @@
                 const files = Array.from(this.files); // FileList → 배열
                 if (files.length === 0) return;
                 const formData = new FormData();
-                formData.set('storageId', storageResourceSummary.storageId);
-                formData.set('parentResourceId', storageResourceSummary.resourceId);
+                formData.set('storageId', storageResourceInfo.storageId);
+                formData.set('parentResourceId', storageResourceInfo.resourceId);
                 files.forEach((file, index) => {
                     formData.append('files', file); // name=files 로 서버에 전송
                 });
@@ -114,20 +123,20 @@
                         return response.json();
                 }).then(result => {
                     console.debug('Upload result:', result);
-                    refreshStorageResourceSummary();
+                    refreshStorageResourceInfo();
                 });
             });
             input.click();
         }
 
         function selectAllChildResources() {
-            storageResourceSummary.childStorageResources.forEach(item => {
+            storageResourceInfo.childStorageResources.forEach(item => {
                 item._selected = !item._selected;
             });
         }
 
         async function deleteStorageResources() {
-            let selectedStorageResources =storageResourceSummary.childStorageResources.filter(item => item._selected);
+            let selectedStorageResources =storageResourceInfo.childStorageResources.filter(item => item._selected);
             if (selectedStorageResources.length === 0) {
                 await _alert(/*[[#{web.global.itemNotSelected(#{core.storage.StorageResource})}]]*/'');
                 return;
@@ -138,28 +147,69 @@
             for (let i = 0; i < selectedStorageResources.length; i++) {
                 let item = selectedStorageResources[i];
                 let url = new URL(`${location.pathname}/delete-storage-resource`, location.origin);
-                url.searchParams.set('storageId', storageResourceSummary.storageId);
+                url.searchParams.set('storageId', storageResourceInfo.storageId);
                 url.searchParams.set('resourceId', item.resourceId);
                 await _fetch(url, {method: 'DELETE'})
                     .then(response => {
                         console.debug(response);
                     });
             }
-            refreshStorageResourceSummary();
+            refreshStorageResourceInfo();
         }
 
         function downloadStorageFile(resourceId) {
             let url = new URL(`${location.pathname}/download-storage-file`, location.origin);
-            url.searchParams.set('storageId', storageResourceSummary.storageId);
+            url.searchParams.set('storageId', storageResourceInfo.storageId);
             url.searchParams.set('resourceId', resourceId);
             const link = document.createElement('a');
             link.href = url.toString();
             link.click();
         }
 
+        function getStorageObjects(page) {
+            if(Number.isFinite(parseInt(page))) {
+                storageObjectSearch._page = page;
+            }
+            let url = new URL(`${location.pathname}/get-storage-objects`, location.origin);
+            if (storageObjectSearch.key && storageObjectSearch.value) {
+                url.searchParams.append(storageObjectSearch.key, storageObjectSearch.value);
+            }
+            url.searchParams.append('_page', storageObjectSearch._page);
+            url.searchParams.append('_size', storageObjectSearch._size);
+            duice.ArrayProxy.clear(storageObjects);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    storageObjectSearch._total = data['totalElements'];
+                    duice.ArrayProxy.assign(storageObjects, data.content);
+                });
+        }
+
+        function createStorageObject() {
+            uploadDialog.open().then(() => {
+                getStorageObjects();
+            });
+        }
+
+
         // Initializes
         document.addEventListener('DOMContentLoaded',()=> {
-            getStorages();
+            let tabFolder = new duice.TabFolder();
+            tabFolder.addItem(new duice.TabItem(
+                document.getElementById('storageTabButton'),
+                document.getElementById('storageTabContent'),
+                () => {
+                    getStorages();
+                }
+            ));
+            tabFolder.addItem(new duice.TabItem(
+                document.getElementById('storageObjectTabButton'),
+                document.getElementById('storageObjectTabContent'),
+                () => {
+                    getStorageObjects();
+                }
+            ));
+            tabFolder.setActive(0);
         });
     </script>
     <style th:inline="css">
@@ -188,10 +238,27 @@
     <!-- end: title                         -->
     <!-- ================================== -->
 
+    <!-- ====================================== -->
+    <!-- start: tab index                       -->
+    <!-- ====================================== -->
+    <div id="tabIndex" class="tab">
+        <span id="storageTabButton" class="tab-item">
+            <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
+            <span data-th-text="#{core.security.Role}"></span>
+        </span>
+        <span id="storageObjectTabButton" class="tab-item">
+            <img class="icon" th:src="@{/static/image/icon-authority.svg}" alt="authority"/>
+            <span data-th-text="#{core.security.Authority}"></span>
+        </span>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: tab index                         -->
+    <!-- ====================================== -->
+
     <!-- ================================== -->
     <!-- start: storage content             -->
     <!-- ================================== -->
-    <div class="display--grid grid-template-columns--12fr gap--1rem">
+    <div id="storageTabContent" class="display--grid grid-template-columns--12fr gap--1rem">
         <div id="storageList" class="grid-column--span-5 s__grid-column--span-12">
             <!-- ================================== -->
             <!-- start: storage list                -->
@@ -233,7 +300,7 @@
                              data-duice-foreach="storage,status"
                              data-duice-selected-item-class="selected"
                              data-duice-execute="this.dataset.storageId = storage.storageId;"
-                             onclick="getStorageResourceSummary(this.dataset.storageId, null);"
+                             onclick="getStorageResourceInfo(this.dataset.storageId, null);"
                              class="storage-item link display--flex justify-content--space-between">
                             <div>
                                 <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt=""/>
@@ -276,9 +343,7 @@
             <!-- ================================== -->
         </div>
         <div class="grid-column--span-7 s__grid-column--span-12">
-            <!-- ================================== -->
-            <!-- start: storage resource summary    -->
-            <!-- ================================== -->
+
             <div class="panel">
                 <div class="panel-title">
                     <h2>
@@ -287,51 +352,54 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <div>
+                    <!-- ================================== -->
+                    <!-- start: storage resource            -->
+                    <!-- ================================== -->
+                    <div id="resourceTabContent">
                         <div class="display--flex justify-content--space-between">
                             <div>
                                 <label>
                                     <input type="checkbox" onclick="selectAllChildResources();"
-                                        data-duice-bind="storageResourceSummary.childStorageResources"
-                                        data-duice-execute="this.checked = storageResourceSummary._checkAll;"/>
+                                        data-duice-bind="storageResourceInfo.childStorageResources"
+                                        data-duice-execute="this.checked = storageResourceInfo._checkAll;"/>
                                 </label>
                                 <span class="link code"
-                                      onclick="getStorageResourceSummary(storageResourceSummary.storageId, storageResourceSummary.parentStorageResource.resourceId);">
+                                      onclick="getStorageResourceInfo(storageResourceInfo.storageId, storageResourceInfo.parentStorageResource.resourceId);">
                                     ../
                                 </span>
                             </div>
                             <div class="display--flex justify-content--end gap--1px">
                                 <button type="button" class="button small"
-                                        data-duice-bind="storageResourceSummary"
-                                        data-duice-execute="this.disabled = (storageResourceSummary.resourceId === null);"
-                                        onclick="refreshStorageResourceSummary();">
+                                        data-duice-bind="storageResourceInfo"
+                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
+                                        onclick="refreshStorageResourceInfo();">
                                     <img class="icon" th:src="@{/static/image/icon-refresh.svg}" alt="refresh"/>
                                     <span data-th-text="#{web.global.refresh}"></span>
                                 </button>
                                 <button type="button" class="button small"
-                                        data-duice-bind="storageResourceSummary"
-                                        data-duice-execute="this.disabled = (storageResourceSummary.resourceId === null);"
+                                        data-duice-bind="storageResourceInfo"
+                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
                                         onclick="createStorageFolder();">
                                     <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="upload"/>
                                     <span data-th-text="#{web.global.folder}">Folder</span>
                                 </button>
                                 <button type="button" class="button small"
-                                        data-duice-bind="storageResourceSummary"
-                                        data-duice-execute="this.disabled = (storageResourceSummary.resourceId === null);"
+                                        data-duice-bind="storageResourceInfo"
+                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
                                         onclick="uploadStorageFiles();">
                                     <img class="icon" th:src="@{/static/image/icon-upload.svg}" alt="upload"/>
                                     <span data-th-text="#{web.global.upload}"></span>
                                 </button>
                                 <button type="button" class="button small"
-                                        data-duice-bind="storageResourceSummary"
-                                        data-duice-execute="this.disabled = (storageResourceSummary.resourceId === null);"
+                                        data-duice-bind="storageResourceInfo"
+                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
                                         onclick="deleteStorageResources();">
                                     <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
                                     <span data-th-text="#{web.global.delete}"></span>
                                 </button>
                             </div>
                         </div>
-                        <div data-duice-bind="storageResourceSummary.childStorageResources" data-duice-foreach="childStorageResource,status">
+                        <div data-duice-bind="storageResourceInfo.childStorageResources" data-duice-foreach="childStorageResource,status">
                             <div class="display--flex justify-content--space-between"
                                  data-duice-bind="childStorageResource"
                                  data-duice-if="return childStorageResource.type === 'FOLDER';">
@@ -344,9 +412,9 @@
                                     <img th:src="@{/static/image/icon-storage-folder.svg}" alt="" class="icon"/>
                                     <span class="link code"
                                           data-duice-bind="childStorageResource"
-                                          data-duice-property="name"
+                                          data-duice-property="filename"
                                           data-duice-execute="this.dataset.resourceId = childStorageResource.resourceId;"
-                                          onclick="getStorageResourceSummary(storageResourceSummary.storageId, this.dataset.resourceId);">
+                                          onclick="getStorageResourceInfo(storageResourceInfo.storageId, this.dataset.resourceId);">
                                     </span>
                                 </div>
                                 <div>
@@ -362,13 +430,12 @@
                                                data-duice-property="_selected"/>
                                     </label>
                                     <img th:src="@{/static/image/icon-storage-file.svg}" alt="" class="icon font-size--larger"/>
-                                    <span class="code" data-duice-bind="childStorageResource" data-duice-property="name"></span>
-
+                                    <span class="code" data-duice-bind="childStorageResource" data-duice-property="filename"></span>
                                 </div>
                                 <div>
                                     <span class="number font-size--smaller font-style--italic"
                                           data-duice-bind="childStorageResource"
-                                          data-duice-execute="this.innerHTML = `${_formatBytes(childStorageResource.length)}`;"></span>
+                                          data-duice-execute="this.innerHTML = `${_formatBytes(childStorageResource.size)}`;"></span>
                                     &nbsp;
                                     <span class="date font-size--smaller font-style--italic"
                                           data-duice-bind="childStorageResource"
@@ -385,19 +452,254 @@
                             </div>
                         </div>
                     </div>
+                    <!-- ================================== -->
+                    <!-- end: storage resource              -->
+                    <!-- ================================== -->
                 </div>
             </div>
-            <!-- ================================== -->
-            <!-- end: storage resource summary      -->
-            <!-- ================================== -->
         </div>
     </div>
     <!-- ================================== -->
     <!-- end: storage content               -->
     <!-- ================================== -->
 
+    <!-- ================================== -->
+    <!-- start: storage object              -->
+    <!-- ================================== -->
+    <div id="storageObjectTabContent">
+        <div class="panel">
+            <div class="panel-title">
+                <h2>
+                    <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                    <span data-th-text="#{core.storage.StorageObject}+' '+#{web.global.list}"></span>
+                </h2>
+            </div>
+            <div class="panel-content">
+                <form class="display--flex justify-content--space-between">
+                    <div>
+                        <label>
+
+                        </label>
+                    </div>
+                    <div>
+                        <button type="button" class="button"
+                            onclick="getStorageObjects();">
+                            Search
+                        </button>
+                        <button type="button" class="button"
+                                onclick="createStorageObject();">
+                            Upload
+                        </button>
+                    </div>
+                </form>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>objectId</th>
+                        <th>group</th>
+                        <th>storageId</th>
+                        <th>resourceId</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-duice-bind="storageObjects"
+                        data-duice-foreach="storageObject,status">
+                        <td>
+                            <span data-duice-bind="storageObject" data-duice-property="objectId"></span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="storageObject" data-duice-property="group"></span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="storageObject" data-duice-property="storageId"></span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="storageObject" data-duice-property="resourceId"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+<!--        <div class="panel">-->
+<!--            <div class="panel-title">-->
+<!--                <h2>-->
+<!--                    <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>-->
+<!--                    <span data-th-text="|#{core.execution.Execution} #{web.global.list}|"></span>-->
+<!--                </h2>-->
+<!--            </div>-->
+<!--            <div class="panel-content">-->
+<!--                <form onsubmit="return false;" class="display&#45;&#45;flex justify-content&#45;&#45;space-between gap&#45;&#45;1px flex-wrap&#45;&#45;wrap">-->
+<!--                    <div class="display&#45;&#45;flex flex-wrap&#45;&#45;wrap gap&#45;&#45;1px">-->
+<!--                        <div class="display&#45;&#45;flex flex-wrap&#45;&#45;nowrap gap&#45;&#45;1px">-->
+<!--                            <label>-->
+<!--                                <select data-duice-bind="executionSearch" data-duice-property="key">-->
+<!--                                    <option value="taskName" th:text="#{core.execution.Execution.taskName}"></option>-->
+<!--                                </select>-->
+<!--                            </label>-->
+<!--                            <label>-->
+<!--                                <input type="text" data-duice-bind="executionSearch" data-duice-property="value"/>-->
+<!--                            </label>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="flex&#45;&#45;1 display&#45;&#45;flex gap&#45;&#45;1px justify-content&#45;&#45;end s__justify-content&#45;&#45;start">-->
+<!--                        <button class="button" type="submit" onclick="getExecutions(0);">-->
+<!--                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>-->
+<!--                            <span data-th-text="#{web.global.search}"></span>-->
+<!--                        </button>-->
+<!--                        <button class="button" type="button" onclick="resetExecutions();">-->
+<!--                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>-->
+<!--                            <span data-th-text="#{web.global.reset}"></span>-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--                <div class="overflow&#45;&#45;auto box">-->
+<!--                    <table class="table width&#45;&#45;100 border&#45;&#45;none">-->
+<!--                        <colgroup>-->
+<!--                            <col style="min-width:5em;"/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                            <col/>-->
+<!--                        </colgroup>-->
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{web.global.no}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.taskName}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.status}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.startedAt}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.endedAt}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.totalCount}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.successCount}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.failCount}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.duration}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                <span data-th-text="#{core.execution.Execution.message}"></span>-->
+<!--                            </th>-->
+<!--                            <th>-->
+<!--                                - -->
+<!--                            </th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody>-->
+<!--                        <tr data-duice-bind="executions" data-duice-foreach="execution,status" class="text-align&#45;&#45;center">-->
+<!--                            <td>-->
+<!--                            <span data-duice-bind="status"-->
+<!--                                  data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"-->
+<!--                                  class="number">-->
+<!--                            </span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <span class="code" data-duice-bind="execution" data-duice-property="taskName"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                            <span class="code badge"-->
+<!--                                  data-duice-bind="execution"-->
+<!--                                  data-duice-property="status"-->
+<!--                                  data-duice-execute="markStatus(this, execution.status);"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <span class="date" data-duice-bind="execution" data-duice-property="startedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <span class="date" data-duice-bind="execution" data-duice-property="endedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <span class="number" data-duice-bind="execution" data-duice-property="totalCount" data-duice-format="number()"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <span class="number" data-duice-bind="execution" data-duice-property="successCount" data-duice-format="number()"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <span class="number" data-duice-bind="execution" data-duice-property="failCount" data-duice-format="number()"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                        <span class="number"-->
+<!--                              data-duice-bind="execution"-->
+<!--                              data-duice-execute="-->
+<!--                              if (execution.duration) {-->
+<!--                                this.innerHTML = luxon.Duration-->
+<!--                                    .fromISO(execution.duration)-->
+<!--                                    .toFormat('hh:mm:ss');-->
+<!--                              }"></span>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <label class="display&#45;&#45;flex">-->
+<!--                            <textarea class="width&#45;&#45;100 height&#45;&#45;100 code font-size&#45;&#45;smaller"-->
+<!--                                      data-duice-bind="execution"-->
+<!--                                      data-duice-property="message"-->
+<!--                                      readonly></textarea>-->
+<!--                                </label>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <button class="button" type="button"-->
+<!--                                        data-duice-bind="execution" data-duice-execute="this.dataset.executionId = execution.executionId;"-->
+<!--                                        onclick="openExecutionDialog(this.dataset.executionId);">-->
+<!--                                    <span data-th-text="#{web.global.detail}"></span>-->
+<!--                                </button>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        <tr data-duice-bind="executions" data-duice-if="return executions.length < 1;" hidden>-->
+<!--                            <td colspan="100%" class="text-align&#45;&#45;center">-->
+<!--                                <span data-th-text="#{web.global.itemNotFound(#{core.execution.Execution})}"></span>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--                <div class="display&#45;&#45;flex justify-content&#45;&#45;space-between">-->
+<!--                    <div class="flex&#45;&#45;1">-->
+<!--                        <span data-th-text="#{web.global.total}"></span>-->
+<!--                        <span data-duice-bind="executionSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>-->
+<!--                        <span data-th-text="#{web.global.rows}"></span>-->
+<!--                    </div>-->
+<!--                    <div class="flex&#45;&#45;1 display&#45;&#45;flex justify-content&#45;&#45;center">-->
+<!--                        <duice-pagination-->
+<!--                                data-duice-bind="executionSearch"-->
+<!--                                data-duice-size-property="_size"-->
+<!--                                data-duice-page-property="_page"-->
+<!--                                data-duice-total-property="_total"-->
+<!--                                data-duice-onclick="getExecutions(this.dataset.page);"-->
+<!--                                class="number">-->
+<!--                        </duice-pagination>-->
+<!--                    </div>-->
+<!--                    <div class="flex&#45;&#45;1">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+    <!-- ================================== -->
+    <!-- end: executions                    -->
+    <!-- ================================== -->
+
     <!-- ====================================== -->
-    <!-- start: example dialog                  -->
+    <!-- start: storage dialog                  -->
     <!-- ====================================== -->
     <dialog id="storageDialog" class="dialog">
         <style th:inline="css">
@@ -585,6 +887,12 @@
                         </duice-codemirror>
                     </label>
                 </div>
+                <div class="grid-column--span-6 s__grid-column--span-12">
+                    <label>
+                        <span data-th-text="#{core.storage.Storage.sanitizeEnabled}" class="font-weight--bold"></span>
+                        <input type="checkbox" data-duice-bind="storageDialog.storage" data-duice-property="sanitizeEnabled"/>
+                    </label>
+                </div>
             </form>
             <div class="display--flex justify-content--space-between">
                 <div></div>
@@ -610,8 +918,84 @@
         </div>
     </dialog>
     <!-- ====================================== -->
-    <!-- end: example dialog                    -->
+    <!-- end: storage dialog                    -->
     <!-- ====================================== -->
 
+    <dialog id="uploadDialog" class="dialog">
+        <script>
+            const uploadDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('uploadDialog'));
+                const storageObject = new duice.ObjectProxy({
+                    group: null,
+                    storageId: 'board'
+                });
+                const formData = new FormData();
 
-</th:block>
+                function open() {
+                    for (let key of formData.keys()) {
+                        formData.delete(key);
+                    }
+                    return dialog.open();
+                }
+
+                function close() {
+                    dialog.close();
+                }
+
+                function addFiles() {
+                    let input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('multiple', 'true');
+                    input.addEventListener('change', function () {
+                        const files = Array.from(this.files); // FileList → 배열
+                        if (files.length === 0) return;
+                        files.forEach((file, index) => {
+                            formData.append('files', file); // name=files 로 서버에 전송
+                        });
+                    });
+                    input.click();
+                }
+
+                function confirm() {
+                    formData.set("group", storageObject.group);
+                    formData.set("storageId", storageObject.storageId);
+                    let url = new URL(`${location.pathname}/create-storage-object`, location.origin);
+                    _fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    }).then(() => {
+                        dialog.close();
+                    })
+                }
+
+                return {
+                    open,
+                    close,
+                    storageObject,
+                    addFiles,
+                    formData,
+                    confirm
+                };
+            })();
+        </script>
+        <div class="dialog-title">
+
+        </div>
+        <div class="dialog-content">
+            <form onsubmit="return false;">
+                <input type="text" data-duice-bind="uploadDialog.storageObject" data-duice-property="group"/>
+                <select data-duice-bind="uploadDialog.storageObject" data-duice-property="storageId">
+                    <option>board</option>
+                </select>
+                <button type="button"
+                onclick="uploadDialog.addFiles();">
+                    add file
+                </button>
+            </form>
+            <div>
+                <button type="button" onclick="uploadDialog.confirm();">Confirm</button>
+            </div>
+        </div>
+    </dialog>
+
+</main>

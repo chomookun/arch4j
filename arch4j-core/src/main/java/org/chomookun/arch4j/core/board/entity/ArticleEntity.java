@@ -5,7 +5,6 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.board.model.Article;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
-import org.chomookun.arch4j.core.user.entity.UserEntity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -32,51 +31,26 @@ public class ArticleEntity extends BaseEntity {
     @Column(name = "article_id", length = 32)
     private String articleId;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @NotBlank
-    @Column(name = "title")
-    private String title;
-
-    @NotNull
-    @Column(name = "content_format", length = 16)
-    private Article.ContentFormat contentFormat;
-
-    @NotBlank
-    @Column(name = "content", length = Integer.MAX_VALUE)
-    @Lob
-    private String content;
-
     @Column(name = "board_id", length = 32)
     private String boardId;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Column(name = "user_id", length = 32)
     private String userId;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "format", length = 16)
+    private Article.Format format;
 
-    @Column(name = "comment_count")
-    @Builder.Default
-    private Long commentCount = 0L;
-
-    @Column(name = "vote_positive_count")
-    @Builder.Default
-    private Long votePositiveCount = 0L;
-
-    @Column(name = "vote_negative_count")
-    @Builder.Default
-    private Long voteNegativeCount = 0L;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private UserEntity user;
+    @Column(name = "content", length = Integer.MAX_VALUE)
+    @Lob
+    private String content;
 
     @Converter(autoApply = true)
-    public static class ContentFormatConverter extends GenericEnumConverter<Article.ContentFormat> { }
+    public static class FormatConverter extends GenericEnumConverter<Article.Format> { }
 
 }

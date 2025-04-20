@@ -15,13 +15,9 @@ public class ArticleResponse {
 
     private String articleId;
 
+    private String boardId;
+
     private LocalDateTime createdAt;
-
-    private String title;
-
-    private Article.ContentFormat contentFormat;
-
-    private String content;
 
     private String userId;
 
@@ -29,34 +25,31 @@ public class ArticleResponse {
 
     private String userIcon;
 
-    @Builder.Default
-    private Long commentCount = 0L;
+    private String title;
+
+    private Article.Format format;
+
+    private String content;
 
     @Builder.Default
-    private Long votePositiveCount = 0L;
-
-    @Builder.Default
-    private Long voteNegativeCount = 0L;
-
-    private boolean canEdit;
-
-    @Builder.Default
-    private List<ArticleFileResponse> files = new ArrayList<>();
+    private List<ArticleFileResponse> articleFiles = new ArrayList<>();
 
     public static ArticleResponse from(Article article) {
-        return ArticleResponse.builder()
+        ArticleResponse articleResponse =  ArticleResponse.builder()
                 .articleId(article.getArticleId())
+                .boardId(article.getBoardId())
                 .createdAt(article.getCreatedAt())
-                .title(article.getTitle())
-                .contentFormat(article.getContentFormat())
-                .content(article.getContent())
                 .userId(article.getUserId())
-                .userName(article.getUserName())
-                .commentCount(article.getCommentCount())
-                .votePositiveCount(article.getVotePositiveCount())
-                .voteNegativeCount(article.getVoteNegativeCount())
-                .files(article.getFiles().stream().map(ArticleFileResponse::from).collect(Collectors.toList()))
+                .title(article.getTitle())
+                .format(article.getFormat())
+                .content(article.getContent())
+                .articleFiles(article.getArticleFiles().stream().map(ArticleFileResponse::from).collect(Collectors.toList()))
                 .build();
+        if (article.getUser() != null) {
+            articleResponse.setUserName(article.getUser().getName());
+            articleResponse.setUserIcon(article.getUser().getIcon());
+        }
+        return articleResponse;
     }
 
 }

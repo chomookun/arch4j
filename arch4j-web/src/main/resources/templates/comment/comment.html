@@ -1,0 +1,115 @@
+<th:block th:replace="|_theme/${_theme}/comment/comment.html|"/>
+<script th:inline="javascript">
+    const _comment = (() => {
+        const comments = new duice.ArrayProxy([]);
+        const comment = new duice.ObjectProxy({
+            commentId: null,
+            content: null
+        });
+        const commentFormContainerElement = document.getElementById('_comment-form-container');
+        const commentListContainerElement = document.getElementById('_comment-list-container');
+        const commentFormElement = document.getElementById('_comment-form');
+
+        let onCreateComment;
+        let onGetComments;
+        let onGetComment;
+        let onUpdateComment;
+        let onDeleteComment;
+
+        if (!_isAuthenticated) {
+            duice.ObjectProxy.setReadonlyAll(comment, true);
+        }
+
+        function configure({createComment, getComments, getComment, updateComment, deleteComment}) {
+            onCreateComment = createComment;
+            onGetComments = getComments;
+            onGetComment = getComment;
+            onUpdateComment = updateComment;
+            onDeleteComment = deleteComment;
+        }
+
+        function getComments() {
+            _callFunction(onGetComments, null).then(data => {
+                duice.ArrayProxy.assign(comments, data);
+            });
+        }
+
+        async function saveComment() {
+            if (await _confirm(/*[[#{web.global.saveItemConfirm(#{core.comment.Comment})}]]*/'') === false) {
+                return;
+            }
+            if (comment.commentId === null) {
+                _callFunction(onCreateComment, null, comment).then(() => {
+                    duice.ObjectProxy.clear(comment);
+                    restoreCommentForm();
+                    getComments();
+                });
+            } else {
+                onUpdateComment(comment).then(() => {
+                    duice.ObjectProxy.clear(comment);
+                    restoreCommentForm();
+                    getComments();
+                });
+            }
+        }
+
+        function editComment(commentId) {
+            restoreCommentForm();
+            _callFunction(onGetComment, null, commentId).then(data => {
+                duice.ObjectProxy.clear(comment);
+                duice.ObjectProxy.assign(comment, data);
+                let commentElement = commentListContainerElement.querySelector(`[data-comment-id="${commentId}"]`);
+                commentFormElement.style.marginLeft = commentElement.style.marginLeft;
+                commentElement.parentNode.insertBefore(commentFormElement, commentElement);
+                commentElement.style.display = 'none';
+            });
+        }
+
+        function replyComment(parentCommentId) {
+            restoreCommentForm();
+            comment.parentCommentId = parentCommentId;
+            let parentCommentElement = commentListContainerElement.querySelector(`[data-comment-id="${parentCommentId}"]`);
+            parentCommentElement.appendChild(commentFormElement);
+        }
+
+        async function cancelComment() {
+            restoreCommentForm();
+        }
+
+        async function deleteComment(commentId) {
+            if (await _confirm(/*[[#{web.global.deleteItemConfirm(#{core.comment.Comment})}]]*/'') === false) {
+                return;
+            }
+            _callFunction(onDeleteComment, null, commentId).then(() => {
+                restoreCommentForm();
+                getComments();
+            });
+        }
+
+        function restoreCommentForm() {
+            if (comment.commentId) {
+                let commentElement = commentListContainerElement.querySelector(`[data-comment-id="${comment.commentId}"]`);
+                console.error('commentElement', commentElement);
+                commentElement.style.display = 'block';
+                commentFormElement.dataset.commentId = '';
+            }
+            duice.ObjectProxy.clear(comment);
+            commentFormElement.style.marginLeft = 'initial';
+            commentFormContainerElement.appendChild(commentFormElement);
+        }
+
+        // returns
+        return {
+            configure,
+            comments,
+            comment,
+            getComments,
+            saveComment,
+            editComment: editComment,
+            replyComment,
+            cancelComment,
+            deleteComment
+        };
+    })();
+</script>
+

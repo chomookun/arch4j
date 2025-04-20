@@ -17,8 +17,7 @@ public class ArticleFileResponse {
 
     private String contentType;
 
-    @Builder.Default
-    private Long length = 0L;
+    private Long length;
 
     public static ArticleFileResponse from(ArticleFile articleFile) {
         return ArticleFileResponse.builder()

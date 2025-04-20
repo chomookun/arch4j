@@ -11,7 +11,7 @@ public class UserResponse {
 
     private String userId;
 
-    private String username;
+    private String name;
 
     private String email;
 
@@ -24,11 +24,11 @@ public class UserResponse {
     public static UserResponse from(User user) {
         return UserResponse.builder()
                 .userId(user.getUserId())
-                .username(user.getUsername())
+                .name(user.getName())
                 .email(user.getEmail())
                 .mobile(user.getMobile())
-                .photo(user.getPhoto())
-                .profile(user.getProfile())
+                .photo(user.getIcon())
+                .profile(user.getBio())
                 .build();
     }
 

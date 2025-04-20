@@ -25,8 +25,6 @@ class ArticleServiceTest extends CoreTestSupport {
             .content("test content")
             .boardId("test")
             .userId("test")
-            .userName("test")
-            .password("password")
             .build();
 
     ArticleFile testArticleFile = ArticleFile.builder()

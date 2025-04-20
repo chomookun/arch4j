@@ -39,10 +39,9 @@ public class PageService {
                         .build());
         pageEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
         pageEntity.setName(page.getName());
-        pageEntity.setContentFormat(page.getContentFormat());
+        pageEntity.setContentFormat(page.getFormat());
         pageEntity.setContent(page.getContent());
         pageEntity.getPageWidgets().clear();
-
         // widget
         int index = 0;
         for(PageWidget pageWidget : page.getPageWidgets()) {
@@ -54,7 +53,6 @@ public class PageService {
                     .properties(pageWidget.getProperties())
                     .build());
         }
-
         // save and return
         pageEntity = pageRepository.saveAndFlush(pageEntity);
         return Page.from(pageEntity);
@@ -65,25 +63,25 @@ public class PageService {
         List<Page> pages = pageEntityPage.getContent().stream()
                 .map(Page::from)
                 .collect(Collectors.toList());
-        fillUrl(pages);
+        populatePageWidget(pages);
         long total = pageEntityPage.getTotalElements();
         return new PageImpl<>(pages, pageable, total);
     }
 
     public Optional<Page> getPage(String pageId) {
         Page page = pageRepository.findById(pageId).map(Page::from).orElseThrow();
-        fillUrl(page);
+        populatePageWidget(page);
         return Optional.of(page);
     }
 
-    private void fillUrl(final Page page) {
+    private void populatePageWidget(final Page page) {
         page.getPageWidgets().forEach(pageWidget -> {
             pageWidget.setUrl(getPageWidgetUrl(pageWidget));
         });
     }
 
-    private void fillUrl(final List<Page> pages) {
-        pages.forEach(this::fillUrl);
+    private void populatePageWidget(final List<Page> pages) {
+        pages.forEach(this::populatePageWidget);
     }
 
     public List<PageWidgetDefinition> getPageWidgetDefinitions() {

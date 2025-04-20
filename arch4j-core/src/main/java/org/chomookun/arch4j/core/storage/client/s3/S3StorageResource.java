@@ -21,7 +21,7 @@ public class S3StorageResource implements StorageResource {
     }
 
     @Override
-    public String getName() {
+    public String getFilename() {
         return "";
     }
 
@@ -31,7 +31,7 @@ public class S3StorageResource implements StorageResource {
     }
 
     @Override
-    public long getLength() {
+    public long getSize() {
         return 0;
     }
 

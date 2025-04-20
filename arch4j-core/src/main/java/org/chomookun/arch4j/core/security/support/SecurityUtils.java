@@ -72,7 +72,7 @@ public class SecurityUtils {
 
     public static String getCurrentUserId() {
         return getUserDetails()
-                .map(UserDetailsImpl::getUsername)
+                .map(UserDetailsImpl::getUserId)
                 .orElse(null);
     }
 

@@ -32,8 +32,6 @@ public class WebControllerAdvice {
 
     private final SecurityProperties securityProperties;
 
-    private final HttpSession httpSession;
-
     /**
      * check if the request is rest controller
      * ps. @ControllerAdvice is not working for annotationTypes because of @RestController extends from @Controller
@@ -68,8 +66,9 @@ public class WebControllerAdvice {
     }
 
     @ModelAttribute("_sessionTimeout")
-    public Integer sessionTimeout() {
-        return httpSession.getMaxInactiveInterval();
+    public Integer sessionTimeout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);    // get current session
+        return (session != null) ? session.getMaxInactiveInterval() : -1;
     }
 
     @ModelAttribute("_theme")

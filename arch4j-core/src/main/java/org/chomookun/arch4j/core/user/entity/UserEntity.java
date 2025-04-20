@@ -69,15 +69,15 @@ public class UserEntity extends BaseEntity {
     @Comment("Mobile number")
     private String mobile;
 
-    @Column(name = "photo", length = 4000)
+    @Column(name = "icon", length = 4000)
     @Lob
-    @Comment("Photo")
-    private String photo;
+    @Comment("Icon")
+    private String icon;
 
-    @Column(name = "profile", length = 4000)
+    @Column(name = "bio", length = 4000)
     @Lob
-    @Comment("profile")
-    private String profile;
+    @Comment("Bio")
+    private String bio;
 
     @Column(name = "join_at")
     private Instant joinAt;

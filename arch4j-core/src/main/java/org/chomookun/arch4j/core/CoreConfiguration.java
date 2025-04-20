@@ -207,6 +207,7 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
      * @return h2 server if h2 embedded
      */
     @Bean(initMethod = "start", destroyMethod = "stop")
+    @Lazy(false)    // lazy mode not work
     public Server inMemoryH2DatabaseServer(DataSource dataSource) throws SQLException {
         if (EmbeddedDatabaseConnection.isEmbedded(dataSource)) {
             return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");

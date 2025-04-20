@@ -1,131 +1,105 @@
-<style>
-    .articles-header {
-        background-color: #fafafa;
-    }
-    .article {
-        cursor: pointer;
-    }
-    .article:hover {
-        background-color: #fafafa;
-    }
-    .dark-mode .articles-header {
-        background-color: #2d2d2d;
-    }
-    .dark-mode .article:hover {
-        background-color: #2d2d2d;
-    }
-</style>
 <!-- ================================================== -->
-<!-- start: title                                       -->
+<!-- start: board title                                 -->
 <!-- ================================================== -->
-<h1 id="title">
-    <img data-duice-bind="board" data-duice-property="icon" class="icon"
+<h1>
+    <img data-duice-bind="board"
+         data-duice-property="icon"
+         class="icon"
          th:src="@{/static/_theme/{_theme}/static/image/icon-board.svg(_theme=${_theme})}" alt="board"/>
     <span data-duice-bind="board" data-duice-property="name"></span>
 </h1>
 <!-- ================================================== -->
-<!-- end: title                                         -->
+<!-- end: board title                                   -->
 <!-- ================================================== -->
 
 <!-- ================================================== -->
-<!-- start: message                                     -->
+<!-- start: board message                               -->
 <!-- ================================================== -->
-<div id="message" class="margin-x--1em">
-    <div data-duice-bind="board" data-duice-if="return board.messageFormat==='TEXT'" data-duice-property="message"></div>
-    <duice-marked data-duice-bind="board" data-duice-if="return board.messageFormat==='MARKDOWN'" data-duice-property="message"/>
+<div class="padding--1rem">
+    <div data-duice-bind="board"
+         data-duice-if="return board.messageFormat==='TEXT'"
+         data-duice-property="message"></div>
+    <duice-marked data-duice-bind="board"
+                  data-duice-if="return board.messageFormat==='MARKDOWN'"
+                  data-duice-property="message"></duice-marked>
 </div>
 <!-- ================================================== -->
-<!-- end: message                                       -->
+<!-- end: board message                                 -->
 <!-- ================================================== -->
 
 <!-- ================================================== -->
 <!-- start: articles                                    -->
 <!-- ================================================== -->
-<div id="articles">
-    <div class="articles-header display--grid grid-template-columns--12tr font-weight--bold padding-x--1em s__display--none border-top--1">
-        <div data-th-text="#{web.global.no}" class="item-1 justify-left padding-left--1em s-grid-column-0"></div>
-        <div data-th-text="#{core.board.Article.title}" class="grid-column--8 s__grid-column--12"></div>
-        <span class="grid-column--3 padding-right--1em">
-            <span data-th-text="#{core.board.Article.userName}"></span>
-            |
-            <span data-th-text="#{core.board.Article.createdAt}"></span>
-        </span>
-    </div>
-    <div class="article display--grid grid-template-columns--12 padding-x--1em border-top--1"
-         data-duice-bind="articles"
-         data-duice-loop="article,status"
-         data-duice-execute="this.dataset.articleId=article.articleId;"
-         onclick="gotoRead(this.dataset.articleId);">
-        <div class="grid-column--1 justify-left padding-left--1em s__display--none">
-            <span data-duice-bind="status" data-duice-property="count"></span>
-        </div>
-        <div class="grid-column--8 s__grid-column--12">
-            <span>
-                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-title.svg(_theme=${_theme})}" alt="title"/>
-                <span data-duice-bind="article" data-duice-property="title" class="font-weight--bold">
-                </span>
-            </span>
-            &nbsp;
-            <span class="font-size--smaller">
-                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-comment.svg(_theme=${_theme})}" alt="comment"/>
-                <span data-duice-bind="article" data-duice-property="commentCount" data-duice-format="number(0)"></span>
-            </span>
-            &nbsp;
-            <span class="font-size--smaller">
-                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-like.svg(_theme=${_theme})}" alt="like"/>
-                <span data-duice-bind="article" data-duice-property="votePositiveCount" data-duice-format="number(0)"></span>
-            </span>
-            &nbsp;
-            <span class="font-size--smaller">
-                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-dislike.svg(_theme=${_theme})}" alt="dislike"/>
-                <span data-duice-bind="article" data-duice-property="voteNegativeCount" data-duice-format="number(0)"></span>
-            </span>
-        </div>
-        <div class="grid-column--3 padding-right--1em s__grid-column--12">
-            <span>
-                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}" alt="user"/>
-                <span data-duice-bind="article" data-duice-property="userName"></span>
-            </span>
-            &nbsp;
-            <span>
-                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-created-at.svg(_theme=${_theme})}" alt="createdAt"/>
-                <span data-duice-bind="article" data-duice-property="createdAt" data-duice-format="date('yyyy-MM-dd HH:mm')"></span>
-            </span>
-        </div>
-    </div>
-    <div class="display--grid grid-template-columns--12 padding-x--1em border-top--1" data-duice-bind="articles" data-duice-if="return articles.length===0" hidden>
-        <div class="grid-column--12 display--flex justify-content--center">
-            Data Not Found
-        </div>
-    </div>
-    <div class="display--grid grid-template-columns--3 padding--1em border-top--1">
-        <div class="grid-column--1 font-size--smaller">
-            <span data-th-text="#{web.global.total}"></span>
-            <span data-duice-bind="articleSearch" data-duice-property="_count" data-duice-format="number(0)"></span>
-            <span data-th-text="#{web.global.rows}"></span>
-        </div>
-        <div class="grid-column--1 display--flex justify-content--center">
-            <duice-pagination
-                    data-duice-bind="articleSearch"
-                    data-duice-size-property="_size"
-                    data-duice-page-property="_page"
-                    data-duice-count-property="_count"
-                    data-duice-onclick="getArticles(this.dataset.page);">
-            </duice-pagination>
-        </div>
-        <div class="grid-column--1"></div>
-    </div>
+<div class="width--100 box">
+    <table class="table width--100 border--none">
+        <colgroup>
+            <col/>
+            <col/>
+            <col style="width:10rem;"/>
+            <col style="width:10rem;"/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th data-th-text="#{web.global.no}"></th>
+            <th data-th-text="#{core.board.Article.title}"></th>
+            <th data-th-text="#{core.board.Article.createdAt}"></th>
+            <th data-th-text="#{core.board.Article.userId}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-duice-bind="articles"
+            data-duice-foreach="article,status">
+            <td class="text-align--center">
+                <span data-duice-bind="article"
+                      data-duice-property="no"
+                      data-duice-format="number(0)"
+                      class="number"></span>
+            </td>
+            <td>
+                <img th:src="@{/static/_theme/{_theme}/static/image/icon-title.svg(_theme=${_theme})}"
+                     class="icon"
+                     data-duice-bind="article"
+                     data-duice-property="userIcon"
+                     alt=""/>
+                <a href="javascript:void(0);"
+                   data-duice-bind="article"
+                   data-duice-execute="this.dataset.articleId=article.articleId;"
+                   onclick="gotoArticle(this.dataset.articleId);">
+                    <span data-duice-bind="article"
+                          data-duice-property="title"></span>
+                </a>
+            </td>
+            <td class="text-align--center">
+                <span data-duice-bind="article"
+                      data-duice-property="createdAt"
+                      data-duice-format="date('yyyy-MM-dd HH:mm')"
+                      class="date"></span>
+            </td>
+            <td class="text-align--center">
+                <img th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}"
+                     class="icon"
+                     data-duice-bind="article"
+                     data-duice-property="userIcon"
+                     alt=""/>
+                <span data-duice-bind="article"
+                      data-duice-property="userName"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
-<!-- ================================================== -->
-<!-- end: articles                                      -->
-<!-- ================================================== -->
-
-<!-- ================================================== -->
-<!-- start: button                                      -->
-<!-- ================================================== -->
-<div id="button" class="display--grid grid-template-columns--2 grid-gap--1em">
-    <div class="grid-column--1 s__grid-column--2 s__justify-self--end">
-        <form onsubmit="return false;" class="display--flex gap--1em">
+<div class="text-align--center">
+    <duice-pagination class="number"
+                      data-duice-bind="articleSearch"
+                      data-duice-size-property="_size"
+                      data-duice-page-property="_page"
+                      data-duice-total-property="_total"
+                      data-duice-onclick="getArticles(this.dataset.page);">
+    </duice-pagination>
+</div>
+<div class="display--flex justify-content--space-between">
+    <div>
+        <form onsubmit="return false;" class="display--flex gap--1px">
             <label>
                 <select data-duice-bind="articleSearch" data-duice-property="key">
                     <option value="title" data-th-text="#{core.board.Article.title}"></option>
@@ -141,13 +115,111 @@
             </button>
         </form>
     </div>
-    <div class="grid-column--1 justify-self--end s__grid-column--2">
-        <button onclick="gotoWrite();">
+    <div>
+        <button class="button" onclick="gotoArticleEdit();">
             <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-write.svg(_theme=${_theme})}" alt="write"/>
             <span data-th-text="#{web.board.writeArticle}"></span>
         </button>
     </div>
 </div>
+
+<!--    <div class="article display&#45;&#45;grid grid-template-columns&#45;&#45;12 padding-x&#45;&#45;1em border-top&#45;&#45;1"-->
+<!--         data-duice-bind="articles"-->
+<!--         data-duice-foreach="article,status"-->
+<!--         data-duice-execute="this.dataset.articleId=article.articleId;"-->
+<!--         onclick="gotoArticleRead(this.dataset.articleId);">-->
+<!--        <div class="grid-column&#45;&#45;1 justify-left padding-left&#45;&#45;1em s__display&#45;&#45;none">-->
+<!--            <span data-duice-bind="status" data-duice-property="count"></span>-->
+<!--        </div>-->
+<!--        <div class="grid-column&#45;&#45;8 s__grid-column&#45;&#45;12">-->
+<!--            <span>-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-title.svg(_theme=${_theme})}" alt="title"/>-->
+<!--                <span data-duice-bind="article" data-duice-property="title" class="font-weight&#45;&#45;bold">-->
+<!--                </span>-->
+<!--            </span>-->
+<!--            &nbsp;-->
+<!--            <span class="font-size&#45;&#45;smaller">-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-comment.svg(_theme=${_theme})}" alt="comment"/>-->
+<!--                <span data-duice-bind="article" data-duice-property="commentCount" data-duice-format="number(0)"></span>-->
+<!--            </span>-->
+<!--            &nbsp;-->
+<!--            <span class="font-size&#45;&#45;smaller">-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-like.svg(_theme=${_theme})}" alt="like"/>-->
+<!--                <span data-duice-bind="article" data-duice-property="votePositiveCount" data-duice-format="number(0)"></span>-->
+<!--            </span>-->
+<!--            &nbsp;-->
+<!--            <span class="font-size&#45;&#45;smaller">-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-dislike.svg(_theme=${_theme})}" alt="dislike"/>-->
+<!--                <span data-duice-bind="article" data-duice-property="voteNegativeCount" data-duice-format="number(0)"></span>-->
+<!--            </span>-->
+<!--        </div>-->
+<!--        <div class="grid-column&#45;&#45;3 padding-right&#45;&#45;1em s__grid-column&#45;&#45;12">-->
+<!--            <span>-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}" alt="user"/>-->
+<!--                <span data-duice-bind="article" data-duice-property="userName"></span>-->
+<!--            </span>-->
+<!--            &nbsp;-->
+<!--            <span>-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-created-at.svg(_theme=${_theme})}" alt="createdAt"/>-->
+<!--                <span data-duice-bind="article" data-duice-property="createdAt" data-duice-format="date('yyyy-MM-dd HH:mm')"></span>-->
+<!--            </span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="display&#45;&#45;grid grid-template-columns&#45;&#45;12 padding-x&#45;&#45;1em border-top&#45;&#45;1" data-duice-bind="articles" data-duice-if="return articles.length===0" hidden>-->
+<!--        <div class="grid-column&#45;&#45;12 display&#45;&#45;flex justify-content&#45;&#45;center">-->
+<!--            Data Not Found-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="display&#45;&#45;grid grid-template-columns&#45;&#45;3 padding&#45;&#45;1em border-top&#45;&#45;1">-->
+<!--        <div class="grid-column&#45;&#45;1 font-size&#45;&#45;smaller">-->
+<!--            <span data-th-text="#{web.global.total}"></span>-->
+<!--            <span data-duice-bind="articleSearch" data-duice-property="_count" data-duice-format="number(0)"></span>-->
+<!--            <span data-th-text="#{web.global.rows}"></span>-->
+<!--        </div>-->
+<!--        <div class="grid-column&#45;&#45;1 display&#45;&#45;flex justify-content&#45;&#45;center">-->
+<!--            <duice-pagination-->
+<!--                    data-duice-bind="articleSearch"-->
+<!--                    data-duice-size-property="_size"-->
+<!--                    data-duice-page-property="_page"-->
+<!--                    data-duice-count-property="_count"-->
+<!--                    data-duice-onclick="getArticles(this.dataset.page);">-->
+<!--            </duice-pagination>-->
+<!--        </div>-->
+<!--        <div class="grid-column&#45;&#45;1"></div>-->
+<!--    </div>-->
+<!--</div>-->
 <!-- ================================================== -->
-<!-- end: button                                        -->
+<!-- end: articles                                      -->
 <!-- ================================================== -->
+
+<!--&lt;!&ndash; ================================================== &ndash;&gt;-->
+<!--&lt;!&ndash; start: button                                      &ndash;&gt;-->
+<!--&lt;!&ndash; ================================================== &ndash;&gt;-->
+<!--<div id="button" class="display&#45;&#45;grid grid-template-columns&#45;&#45;2 grid-gap&#45;&#45;1em">-->
+<!--    <div class="grid-column&#45;&#45;1 s__grid-column&#45;&#45;2 s__justify-self&#45;&#45;end">-->
+<!--        <form onsubmit="return false;" class="display&#45;&#45;flex gap&#45;&#45;1em">-->
+<!--            <label>-->
+<!--                <select data-duice-bind="articleSearch" data-duice-property="key">-->
+<!--                    <option value="title" data-th-text="#{core.board.Article.title}"></option>-->
+<!--                    <option value="content" data-th-text="#{core.board.Article.content}"></option>-->
+<!--                </select>-->
+<!--            </label>-->
+<!--            <label>-->
+<!--                <input type="text" data-duice-bind="articleSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>-->
+<!--            </label>-->
+<!--            <button type="submit" onclick="getArticles();">-->
+<!--                <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-search.svg(_theme=${_theme})}" alt="search"/>-->
+<!--                <span data-th-text="#{web.global.search}"></span>-->
+<!--            </button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--    <div class="grid-column&#45;&#45;1 justify-self&#45;&#45;end s__grid-column&#45;&#45;2">-->
+<!--        <button onclick="gotoArticleEdit();">-->
+<!--            <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-write.svg(_theme=${_theme})}" alt="write"/>-->
+<!--            <span data-th-text="#{web.board.writeArticle}"></span>-->
+<!--        </button>-->
+<!--    </div>-->
+<!--</div>-->
+<!--&lt;!&ndash; ================================================== &ndash;&gt;-->
+<!--&lt;!&ndash; end: button                                        &ndash;&gt;-->
+<!--&lt;!&ndash; ================================================== &ndash;&gt;-->

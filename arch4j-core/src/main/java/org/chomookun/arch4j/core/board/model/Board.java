@@ -54,6 +54,10 @@ public class Board extends BaseModel {
     @Builder.Default
     private List<Role> commentRoles = new ArrayList<>();
 
+    private String commentProviderId;
+
+    private String commentProviderConfig;
+
     public enum MessageFormat { TEXT, MARKDOWN }
 
     public static Board from(BoardEntity boardEntity) {

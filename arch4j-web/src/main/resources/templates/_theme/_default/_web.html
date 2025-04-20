@@ -9,7 +9,7 @@
     <!-- end: _script                           -->
     <!-- ====================================== -->
     <th:block th:fragment="_script">
-    <script th:inline="javascript">
+    <script layout:fragment="_script" th:inline="javascript">
         function _openMenu() {
             document.querySelector('header #_header-menu').classList.toggle('open');
             document.querySelector('nav').classList.toggle('open');
@@ -24,13 +24,23 @@
     <!-- ====================================== -->
     <th:block th:fragment="_style">
     <link rel="stylesheet" type="text/css" th:href="@{/static/web.css?version={version}(version=${_scriptVersion})}"/>
-    <style>
+    </th:block>
+    <!-- ====================================== -->
+    <!-- end: _style                            -->
+    <!-- ====================================== -->
+</head>
+<body>
+    <!-- ====================================== -->
+    <!-- start: _header                         -->
+    <!-- ====================================== -->
+    <th:block th:fragment="_header">
+    <style th:inline="css">
         body {
             display: grid;
             grid-template-areas:
-                    '_header _header _header'
-                    '_nav _main _aside'
-                    '_footer _footer _footer';
+                '_header _header _header'
+                '_nav _main _aside'
+                '_footer _footer _footer';
             grid-template-columns: 18rem calc(100% - 18rem - 9rem) 9rem;
             grid-template-rows: auto 1fr 3rem;
         }
@@ -38,11 +48,11 @@
             body {
                 display: grid;
                 grid-template-areas:
-                        '_header'
-                        '_nav'
-                        '_main'
-                        '_aside'
-                        '_footer';
+                    '_header'
+                    '_nav'
+                    '_main'
+                    '_aside'
+                    '_footer';
                 grid-template-columns: 100%;
                 grid-template-rows: auto auto 1fr auto auto;
                 grid-gap: 0.5rem 0.5rem;
@@ -52,7 +62,7 @@
             grid-area: _header;
             display: grid;
             grid-template-areas:
-                    '_header-logo _header-menu';
+                '_header-logo _header-menu';
             grid-template-columns: auto auto;
             border-bottom: groove 2px lightgray;
             background-color: #fafafa;
@@ -100,8 +110,8 @@
             header {
                 display: grid;
                 grid-template-areas:
-                        '_header-logo _header-menuButton'
-                        '_header-menu _header-menu';
+                    '_header-logo _header-menuButton'
+                    '_header-menu _header-menu';
             }
             header #_header-menuButton {
                 display: flex;
@@ -122,7 +132,7 @@
             grid-area: _nav;
             display: grid;
             grid-template-areas:
-                    '_nav-menu';
+                '_nav-menu';
             padding: 1rem;
         }
         nav #_nav-menu {
@@ -193,16 +203,6 @@
             color: #888;
         }
     </style>
-    </th:block>
-    <!-- ====================================== -->
-    <!-- end: _style                            -->
-    <!-- ====================================== -->
-</head>
-<body>
-    <!-- ====================================== -->
-    <!-- start: _header                         -->
-    <!-- ====================================== -->
-    <th:block th:fragment="_header">
     <header>
         <div id="_header-logo">
             <span id="_brand" onclick="_gotoIndex();" class="cursor--pointer" th:utext="${_brand}">
@@ -220,8 +220,8 @@
             </li>
             <li sec:authorize="isAuthenticated()">
                 <span onclick="_gotoUser();" class="link">
-                    <img class="icon border-radius--50" th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}"
-                         data-duice-bind="_user" data-duice-property="photo" alt="user"/>
+                    <img class="icon font-size--large border-radius--50" th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}"
+                         data-duice-bind="_user" data-duice-property="icon" alt="user"/>
                     <span data-duice-bind="_user" data-duice-property="name" class="font-weight--bold"></span>
                 </span>
             </li>
@@ -271,16 +271,15 @@
             </li>
         </ul>
     </nav>
-    <main>
     </th:block>
     <!-- ====================================== -->
     <!-- end: _header                           -->
     <!-- ====================================== -->
+    <main></main>
     <!-- ====================================== -->
     <!-- start: _footer                         -->
     <!-- ====================================== -->
     <th:block th:fragment="_footer">
-    </main>
     <aside>
     </aside>
     <footer>

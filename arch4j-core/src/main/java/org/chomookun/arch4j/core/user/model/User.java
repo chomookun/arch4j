@@ -41,9 +41,9 @@ public class User extends BaseModel {
 
     private String mobile;
 
-    private String photo;
+    private String icon;
 
-    private String profile;
+    private String bio;
 
     private Instant joinAt;
 
@@ -76,8 +76,8 @@ public class User extends BaseModel {
                 .admin(userEntity.isAdmin())
                 .email(userEntity.getEmail())
                 .mobile(userEntity.getMobile())
-                .photo(userEntity.getPhoto())
-                .profile(userEntity.getProfile())
+                .icon(userEntity.getIcon())
+                .bio(userEntity.getBio())
                 .joinAt(userEntity.getJoinAt())
                 .closeAt(userEntity.getCloseAt())
                 .passwordAt(userEntity.getPasswordAt())

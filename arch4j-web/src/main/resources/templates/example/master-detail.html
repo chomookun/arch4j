@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         // defines
         const exampleSearch = new duice.ObjectProxy({
@@ -212,6 +212,7 @@
                 <select onchange="changePrefer(this.value);">
                     <option value="">Prefer DAO...</option>
                     <option value="dao=mybatis">Mybatis</option>
+                    <option value="dao=queryDsl">QueryDsl</option>
                 </select>
             </label>
         </div>
@@ -583,4 +584,4 @@
     <!-- end: content                           -->
     <!-- ====================================== -->
 
-</th:block>
+</main>

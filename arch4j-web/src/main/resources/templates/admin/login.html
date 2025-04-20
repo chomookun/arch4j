@@ -1,56 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <title>ARCH4J (Application Archetype for Java)</title>
-    <link rel="web-icon" type="image/png" th:href="@{/static/image/favicon.png}" sizes="32x32"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/nprogress/nprogress.css?version={version}(version=${_scriptVersion})}">
-    <script th:src="@{/static/nprogress/nprogress.js?version={version}(version=${_scriptVersion})}"></script>
-    <!-- duice -->
-    <script th:src="@{/static/duice/duice.js?version={version}(version=${_scriptVersion})}"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/duice/duice.css?version={version}(version=${_scriptVersion})}">
-    <link rel="stylesheet" type="text/css" th:href="@{/static/duice/duice-theme.css?version={version}(version=${_scriptVersion})}">
-    <!-- web -->
-    <script th:src="@{/static/web.js?version={version}(version=${_scriptVersion})}"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/web.css?version={version}(version=${_scriptVersion})}"/>
-    <style>
-        html {
-            width: 100%;
-            height: 100%;
-        }
-        body {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-columns: 100%;
-            grid-template-rows: 75%;
-        }
-        main {
-            justify-self: center;
-            align-self: center;
-        }
-        @media screen and (max-width: 1023px) {
-            body {
-                display: grid;
-                grid-template-columns: 100%;
-                grid-template-rows: 100%;
-            }
-        }
-        #login {
-            width: 300px;
-        }
-        #_brand,
-        #_brand * {
-            display: inline-block;
-            height: 2rem;
-            font-weight: bold;
-        }
-        .dark-mode #_brand {
-            filter: invert(0.9);
-        }
-    </style>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<body layout:fragment="_body">
     <script th:inline="javascript">
         const login = new duice.ObjectProxy({
             username: null,
@@ -92,70 +44,81 @@
             });
         }
     </script>
-</head>
-<body>
-
-<!-- ================================== -->
-<!-- start: main                        -->
-<!-- ================================== -->
-<main>
-    <!-- ================================== -->
-    <!-- start: login                       -->
-    <!-- ================================== -->
-    <div id="login" class="panel">
-        <div class="panel-title justify-content--center padding-bottom--1rem">
-            <span id="_brand" onclick="_gotoIndex();" class="cursor--pointer">
-                <img src="/static/image/arch4j-icon.svg" alt=""/><img src="/static/image/arch4j-title.svg" alt=""/>
-            </span>
-        </div>
-        <div class="panel-content">
-            <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
-                <label class="grid-column--span-12">
-                    <input type="text" autocomplete="off"
-                           data-duice-bind="login" data-duice-property="username"
-                           class="width--100 text-align--center"
-                           th:placeholder="#{web.admin.login.userId}"/>
-                </label>
-                <label class="grid-column--span-12">
-                    <input type="password" autocomplete="off"
-                           data-duice-bind="login" data-duice-property='password'
-                           class="width--100 text-align--center"
-                           th:placeholder="#{web.admin.login.password}"/>
-                </label>
-                <div class="grid-column--span-12">
-                    <button type="submit" onclick="requestLogin();" class="width--100">
-                        <img class="icon" th:src="@{/static/image/icon-login.svg}">
-                        <span data-th-text="#{web.global.login}"></span>
-                    </button>
-                </div>
-                <div class="grid-column--span-12 justify-self--center">
-                    <span data-duice-bind="login" data-duice-property="message"></span>
-                </div>
-                <div class="grid-column--span-12 justify-self--center">
+    <style>
+        #login {
+            width: 300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #_brand,
+        #_brand * {
+            display: inline-block;
+            height: 2rem;
+            font-weight: bold;
+        }
+        .dark-mode #_brand {
+            filter: invert(0.9);
+        }
+    </style>
+    <main>
+        <!-- ================================== -->
+        <!-- start: login                       -->
+        <!-- ================================== -->
+        <div id="login" class="panel">
+            <div class="panel-title justify-content--center padding-bottom--1rem">
+                <span id="_brand" onclick="_gotoIndex();" class="cursor--pointer">
+                    <img src="/static/image/arch4j-icon.svg" alt=""/><img src="/static/image/arch4j-title.svg" alt=""/>
+                </span>
+            </div>
+            <div class="panel-content">
+                <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                    <label class="grid-column--span-12">
+                        <input type="text" autocomplete="off"
+                               data-duice-bind="login" data-duice-property="username"
+                               class="width--100 text-align--center"
+                               th:placeholder="#{web.admin.login.userId}"/>
+                    </label>
+                    <label class="grid-column--span-12">
+                        <input type="password" autocomplete="off"
+                               data-duice-bind="login" data-duice-property='password'
+                               class="width--100 text-align--center"
+                               th:placeholder="#{web.admin.login.password}"/>
+                    </label>
                     <div class="grid-column--span-12">
-                        <label>
-                            <span class="icon dark-mode-switch" onclick="_toggleDarkMode();"></span>
-                        </label>
-                        &nbsp;
-                        <span class="font-size--xx-small">|</span>
-                        &nbsp;
-                        <label>
-                            <select class="font-size--smaller" onchange="_changeLanguage(this.value);">
-                                <option>language...</option>
-                                <option th:each="locale : ${_locales}" th:value="${locale.language}" th:text="${locale.displayLanguage}" th:selected="${locale.language == _locale.language}"></option>
-                            </select>
-                        </label>
+                        <button type="submit" onclick="requestLogin();" class="width--100">
+                            <img class="icon" th:src="@{/static/image/icon-login.svg}">
+                            <span data-th-text="#{web.global.login}"></span>
+                        </button>
                     </div>
-                </div>
-            </form>
+                    <div class="grid-column--span-12 justify-self--center">
+                        <span data-duice-bind="login" data-duice-property="message"></span>
+                    </div>
+                    <div class="grid-column--span-12 justify-self--center">
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span class="icon dark-mode-switch" onclick="_toggleDarkMode();"></span>
+                            </label>
+                            &nbsp;
+                            <span class="font-size--xx-small">|</span>
+                            &nbsp;
+                            <label>
+                                <select class="font-size--smaller" onchange="_changeLanguage(this.value);">
+                                    <option>language...</option>
+                                    <option th:each="locale : ${_locales}" th:value="${locale.language}" th:text="${locale.displayLanguage}" th:selected="${locale.language == _locale.language}"></option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-    <!-- ================================== -->
-    <!-- end: login                         -->
-    <!-- ================================== -->
-</main>
+        <!-- ================================== -->
+        <!-- end: login                         -->
+        <!-- ================================== -->
+    </main>
 <!-- ================================== -->
 <!-- end: main                          -->
 <!-- ================================== -->
 </body>
-</html>

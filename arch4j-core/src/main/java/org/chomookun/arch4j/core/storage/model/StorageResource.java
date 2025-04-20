@@ -8,13 +8,13 @@ public interface StorageResource extends Resource {
 
     public String getResourceId();
 
-    public String getName();
+    public String getFilename();
 
-    public Type getType();
-
-    public long getLength();
+    public long getSize();
 
     public Instant getLastModified();
+
+    public Type getType();
 
     public enum Type {
         FILE,

@@ -1,92 +1,37 @@
 package org.chomookun.arch4j.core.board;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.board.entity.ArticleCommentEntity;
-import org.chomookun.arch4j.core.board.repository.ArticleCommentRepository;
-import org.chomookun.arch4j.core.board.repository.ArticleRepository;
-import org.chomookun.arch4j.core.board.model.ArticleComment;
-import org.chomookun.arch4j.core.common.data.IdGenerator;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.chomookun.arch4j.core.comment.CommentService;
+import org.chomookun.arch4j.core.comment.model.Comment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ArticleCommentService {
 
-    private final ArticleCommentRepository articleCommentRepository;
+    private final CommentService commentService;
 
-    private final PasswordEncoder passwordEncoder;
-
-    private final ArticleRepository articleRepository;
-
-    @Transactional
-    public ArticleComment saveArticleComment(ArticleComment articleComment) {
-        ArticleCommentEntity.Pk pk = ArticleCommentEntity.Pk.builder()
-                .articleId(articleComment.getArticleId())
-                .commentId(articleComment.getCommentId())
-                .build();
-        ArticleCommentEntity articleCommentEntity = articleCommentRepository.findById(pk).orElse(
-                ArticleCommentEntity.builder()
-                        .articleId(articleComment.getArticleId())
-                        .commentId(IdGenerator.uuid())
-                        .parentCommentId(articleComment.getParentCommentId())
-                        .createdAt(LocalDateTime.now())
-                        .userId(articleComment.getUserId())
-                        .password(Optional.ofNullable(articleComment.getPassword())
-                                .map(passwordEncoder::encode)
-                                .orElse(null))
-                        .build());
-        articleCommentEntity.setUserName(articleComment.getUserName());
-        articleCommentEntity.setContentFormat(articleComment.getContentFormat());
-        articleCommentEntity.setContent(articleComment.getContent());
-        articleCommentEntity = articleCommentRepository.saveAndFlush(articleCommentEntity);
-        articleRepository.increaseCommentCount(articleComment.getArticleId());
-        return ArticleComment.from(articleCommentEntity);
+    public Comment saveArticleComment(String articleId, Comment comment) {
+        String thread = String.format("article:%s", articleId);
+        comment.setThread(thread);
+        return commentService.saveComment(comment);
     }
 
-    public List<ArticleComment> getArticleComments(String articleId) {
-        return articleCommentRepository.findAllByArticleIdOrderByCreatedAtAsc(articleId).stream()
-                .map(ArticleComment::from)
-                .collect(Collectors.toList());
+    public List<Comment> getArticleComments(String articleId) {
+        String thread = String.format("article:%s", articleId);
+        return commentService.getComments(thread);
     }
 
-    public Optional<ArticleComment> getArticleComment(String articleId, String commentId) {
-        ArticleCommentEntity.Pk pk = ArticleCommentEntity.Pk.builder()
-                .articleId(articleId)
-                .commentId(commentId)
-                .build();
-        return articleCommentRepository.findById(pk)
-                .map(ArticleComment::from);
+    public Optional<Comment> getArticleComment(String articleId, String commentId) {
+        return commentService.getComment(commentId);
     }
 
-    @Transactional
     public void deleteArticleComment(String articleId, String commentId) {
-        ArticleCommentEntity.Pk pk = ArticleCommentEntity.Pk.builder()
-                .articleId(articleId)
-                .commentId(commentId)
-                .build();
-        ArticleCommentEntity articleCommentEntity = articleCommentRepository.findById(pk).orElseThrow();
-
-        // check reply comment, update content
-        if(articleCommentRepository.findAllByArticleIdAndParentCommentId(articleId, commentId).size() > 0) {
-            articleCommentEntity.setContentFormat(ArticleComment.ContentFormat.TEXT);
-            articleCommentEntity.setContent("- This comment has bean deleted. -");
-            articleCommentRepository.saveAndFlush(articleCommentEntity);
-
-        }
-        // no reply comments, delete
-        else{
-            articleCommentRepository.delete(articleCommentEntity);
-            articleCommentRepository.flush();
-            articleRepository.decreaseCommentCount(articleId);
-        }
-
+        String thread = String.format("article:%s", articleId);
+        commentService.deleteComment(commentId);
     }
 
 }

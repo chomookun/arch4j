@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  * Example Repository
  */
 @Repository
-public interface ExampleRepository extends JpaRepository<ExampleEntity, String>, JpaSpecificationExecutor<ExampleEntity> {
+public interface ExampleRepository extends JpaRepository<ExampleEntity, String>, JpaSpecificationExecutor<ExampleEntity>, ExampleRepositoryCustom {
 
     /**
      * Finds all by example search

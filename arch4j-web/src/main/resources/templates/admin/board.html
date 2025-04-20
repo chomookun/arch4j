@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="admin/_admin.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         // board search condition
         const boardSearch = new duice.ObjectProxy({
@@ -501,7 +501,7 @@
                                             data-duice-mode="markdown"
                                             data-duice-theme="dracula"
                                             data-duice-if="return board.messageFormat==='MARKDOWN'"
-                                            class="box width--100"/>
+                                            class="box width--100"></duice-codemirror>
                                 </label>
                             </div>
                         </div>
@@ -853,4 +853,4 @@
 
     <th:block th:include="admin/_common.html :: _selectRoleDialog"/>
 
-</th:block>
+</main>

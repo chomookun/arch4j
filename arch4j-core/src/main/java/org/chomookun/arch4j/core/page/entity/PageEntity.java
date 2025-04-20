@@ -30,7 +30,7 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     private String name;
 
     @Column(name = "content_format", length = 16)
-    private Page.ContentFormat contentFormat;
+    private Page.Format contentFormat;
 
     @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
@@ -75,6 +75,6 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     }
 
     @Converter(autoApply = true)
-    public static class ContentFormatConverter extends GenericEnumConverter<Page.ContentFormat> {}
+    public static class FormatConverter extends GenericEnumConverter<Page.Format> {}
 
 }

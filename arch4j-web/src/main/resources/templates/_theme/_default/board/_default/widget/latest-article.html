@@ -1,0 +1,68 @@
+<div class="padding--3px">
+
+<!-- ====================================== -->
+<!-- start: board name                      -->
+<!-- ====================================== -->
+<h2>
+    <img data-duice-bind="board"
+         data-duice-property="icon"
+         class="icon"
+         th:src="@{/static/_theme/{_theme}/static/image/icon-board.svg(_theme=${_theme})}" alt="board"/>
+    <span data-duice-bind="board" data-duice-property="name"></span>
+</h2>
+<!-- ====================================== -->
+<!-- end: board name                        -->
+<!-- ====================================== -->
+
+<!-- ====================================== -->
+<!-- start: articles                        -->
+<!-- ====================================== -->
+<div class="width--100 box overflow-x--auto">
+    <table class="table width--100 border--none">
+        <colgroup>
+            <col style="width:10rem;"/>
+            <col/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th data-th-text="#{core.board.Article.createdAt}"></th>
+            <th data-th-text="#{core.board.Article.title}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-duice-bind="articles"
+            data-duice-foreach="article,status">
+            <td class="text-align--center">
+                <span data-duice-bind="article"
+                      data-duice-property="createdAt"
+                      data-duice-format="date('yyyy-MM-dd HH:mm')"
+                      class="date"></span>
+            </td>
+            <td>
+                <img th:src="@{/static/_theme/{_theme}/static/image/icon-title.svg(_theme=${_theme})}"
+                     class="icon"
+                     data-duice-bind="article"
+                     data-duice-property="userIcon"
+                     alt=""/>
+                <a href="javascript:void(0);"
+                   data-duice-bind="article"
+                   data-duice-execute="this.dataset.articleId=article.articleId;"
+                   onclick="gotoArticle(this.dataset.articleId);">
+                    <span data-duice-bind="article"
+                          data-duice-property="title"></span>
+                </a>
+            </td>
+        </tr>
+        <tr data-duice-bind="articles" data-duice-if="return articles.length === 0;">
+            <td colspan="100%"  class="text-align--center">
+                <span data-th-text="#{web.global.itemNotFound(#{core.board.Article})}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- ====================================== -->
+<!-- end: article                           -->
+<!-- ====================================== -->
+
+</div>

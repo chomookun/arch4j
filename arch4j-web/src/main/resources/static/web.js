@@ -81,7 +81,7 @@ const _deleteCookie = function(name) {
  * @private
  */
 const _startProgress = function() {
-    if(window['NProgress']) {
+    if(window['NProgress'] && window.self === window.top) {
         NProgress.start();
     }
 }
@@ -91,7 +91,7 @@ const _startProgress = function() {
  * @private
  */
 const _stopProgress = function() {
-    if(window['NProgress']) {
+    if(window['NProgress'] && window.self === window.top) {
         NProgress.done();
     }
 }
@@ -502,16 +502,35 @@ const _deleteUrlSearchParams = function(_properties) {
 };
 
 /**
+ * call function
+ * @param fn
+ * @param context
+ * @param args
+ * @returns {Promise<never>|*|Promise<Awaited<unknown>>}
+ * @private
+ */
+const _callFunction = function(fn, context, ...args) {
+    try {
+        const result = fn.call(context, ...args);
+        return (result && typeof result.then === 'function')
+            ? result
+            : Promise.resolve(result);
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+/**
  * initialize
  * @type {(function(*): void)|*}
  * @private
  */
 const _initialize = (function() {
-    let initialized = false;
+    const initializedMap = new WeakMap();
     return function(callback) {
         function handler(event) {
-            if (initialized) return;
-            initialized = true;
+            if (initializedMap.has(callback)) return;
+            initializedMap.set(callback, true);
             callback(event);
         }
         document.addEventListener('DOMContentLoaded', handler);
@@ -519,4 +538,3 @@ const _initialize = (function() {
         window.addEventListener('pageshow', handler);
     };
 })();
-

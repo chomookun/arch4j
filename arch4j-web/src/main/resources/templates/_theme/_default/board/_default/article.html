@@ -1,0 +1,103 @@
+<!-- ================================================== -->
+<!-- start: board title                                 -->
+<!-- ================================================== -->
+<h1>
+    <img data-duice-bind="board"
+         data-duice-property="icon"
+         class="icon"
+         th:src="@{/static/_theme/{_theme}/static/image/icon-board.svg(_theme=${_theme})}" alt="board"/>
+    <span data-duice-bind="board" data-duice-property="name"></span>
+</h1>
+<!-- ================================================== -->
+<!-- end: board title                                   -->
+<!-- ================================================== -->
+
+<!-- ================================================== -->
+<!-- start: article header                              -->
+<!-- ================================================== -->
+<div class="padding--1rem">
+    <h2>
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-title.svg(_theme=${_theme})}" alt="title"/>
+        <span data-duice-bind="article" data-duice-property="title"></span>
+    </h2>
+    <div class="display--flex gap--1rem">
+        <span>
+            <img th:src="@{/static/_theme/{_theme}/static/image/icon-user.svg(_theme=${_theme})}"
+                 class="icon"
+                 data-duice-bind="article"
+                 data-duice-property="userIcon"
+                 alt=""/>
+            <span data-duice-bind="article"
+                  data-duice-property="userName"></span>
+        </span>
+        <span>
+             <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-created-at.svg(_theme=${_theme})}" alt=""/>
+            <span data-duice-bind="article"
+                  data-duice-property="createdAt"
+                  data-duice-format="date('yyyy-MM-dd HH:mm')"
+                  class="date"></span>
+        </span>
+    </div>
+</div>
+<!-- ================================================== -->
+<!-- end: article header                                -->
+<!-- ================================================== -->
+
+<!-- ================================================== -->
+<!-- start: article body                                -->
+<!-- ================================================== -->
+<div class="padding--1rem">
+    <div class="grid-column--12 padding-y--1em s__padding-y--0">
+        <div data-duice-bind="article"
+             data-duice-if="return article.format === 'TEXT'"
+             data-duice-property="content"></div>
+        <duice-marked data-duice-bind="article"
+                      data-duice-if="return article.format ==='MARKDOWN'"
+                      data-duice-property="content"></duice-marked>
+    </div>
+</div>
+<!-- ================================================== -->
+<!-- end: article body                                  -->
+<!-- ================================================== -->
+
+<!-- ================================================== -->
+<!-- start: article file                                -->
+<!-- ================================================== -->
+<th:block th:if="${board.isFileEnabled()}">
+<div class="display--grid grid-template-columns--12 margin-top--1em">
+    <div class="grid-column--12 font-weight--bold">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-file.svg(_theme=${_theme})}" alt="file"/>
+        <span data-th-text="#{core.board.Article.files}"></span>
+    </div>
+    <div class="grid-column--12">
+        <div data-duice-bind="article.articleFiles" data-duice-foreach="articleFile,status" class="margin-right--1em">
+            <span data-duice-bind="articleFile" data-duice-property="filename"
+                  data-duice-execute="this.dataset.fileId=articleFile.fileId"
+                  class="cursor--pointer font-size--smaller font-weight--bold"
+                  onclick="downloadArticleFile(this.dataset.fileId);">
+            </span>
+            <span class="font-size--smaller" data-duice-bind="articleFile" data-duice-execute="
+                this.innerHTML = `(${articleFile.length} bytes)`;
+                ">
+            </span>
+        </div>
+    </div>
+</div>
+</th:block>
+<!-- ================================================== -->
+<!-- end: article file                                  -->
+<!-- ================================================== -->
+
+<!-- ================================================== -->
+<!-- start: button area                                 -->
+<!-- ================================================== -->
+<div class="display--flex justify-content--center gap--1px">
+    <button onclick="gotoBoard();">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-list.svg(_theme=${_theme})}" alt=""/>
+        <span data-th-text="#{web.board.listArticle}"></span>
+    </button>
+    <button onclick="gotoArticleEdit();">
+        <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-edit.svg(_theme=${_theme})}" alt=""/>
+        <span data-th-text="#{web.board.editArticle}"></span>
+    </button>
+</div>

@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="admin/_admin.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         // user search condition
         const userSearch = new duice.ObjectProxy({
@@ -356,8 +356,8 @@
                                     <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (userSearch._page * userSearch._size) + status.count"></span>
                                 </td>
                                 <td>
-                                    <img data-duice-bind="user" data-duice-property="photo"
-                                         th:src="@{/static/image/icon-null.svg}" class="icon" alt="photo"/>
+                                    <img data-duice-bind="user" data-duice-property="icon"
+                                         th:src="@{/static/image/icon-null.svg}" class="icon" alt="icon"/>
                                     <span data-duice-bind="user"
                                           data-duice-property="username"
                                           data-duice-execute="this.classList.toggle('tag-system-required', user.systemRequired);"
@@ -494,16 +494,16 @@
                         </div>
                         <div class="grid-column--span-2 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.user.User.photo}" class="font-weight--bold"></span><br>
+                                <span data-th-text="#{core.user.User.icon}" class="font-weight--bold"></span><br>
                                 <img th:src="@{/static/image/icon-null.svg}" data-duice-bind="user"
-                                     data-duice-property="photo" data-duice-editable="true" data-duice-size="64,64"
-                                     style="width:64px; height:64px;" alt="photo"/>
+                                     data-duice-property="icon" data-duice-editable="true" data-duice-size="64,64"
+                                     style="width:64px; height:64px;" alt="icon"/>
                             </label>
                         </div>
                         <div class="grid-column--span-10 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.user.User.profile}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="user" data-duice-property="profile" rows="3" class="width--100"></textarea>
+                                <span data-th-text="#{core.user.User.bio}" class="font-weight--bold"></span>
+                                <textarea data-duice-bind="user" data-duice-property="bio" rows="3" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
@@ -845,4 +845,4 @@
 
     <th:block th:include="admin/_common.html :: _selectRoleDialog"/>
 
-</th:block>
+</main>

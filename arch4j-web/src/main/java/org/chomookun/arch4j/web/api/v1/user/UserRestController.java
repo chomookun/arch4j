@@ -45,8 +45,8 @@ public class UserRestController {
         User user = userService.getUser(currentUserId).orElseThrow();
         user.setUsername(userRequest.getUsername());
         user.setMobile(userRequest.getMobile());
-        user.setPhoto(userRequest.getPhoto());
-        user.setProfile(userRequest.getProfile());
+        user.setIcon(userRequest.getPhoto());
+        user.setBio(userRequest.getProfile());
         user = userService.saveUser(user);
         return ResponseEntity.ok(UserResponse.from(user));
     }

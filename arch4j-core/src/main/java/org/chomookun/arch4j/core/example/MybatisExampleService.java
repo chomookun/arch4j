@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Mybatis example service
+ */
 @Service
 @RequiredArgsConstructor
 public class MybatisExampleService {

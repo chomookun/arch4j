@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         const git = new duice.ObjectProxy({
             content: [[${content}]]
         });
     </script>
     <th:block th:replace="|_theme/${_theme}/git/git.html|"/>
-</th:block>
+</main>

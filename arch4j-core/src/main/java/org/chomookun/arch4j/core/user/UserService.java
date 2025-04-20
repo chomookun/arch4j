@@ -61,8 +61,8 @@ public class UserService {
         userEntity.setStatus(user.getStatus());
         userEntity.setEmail(user.getEmail());
         userEntity.setMobile(user.getMobile());
-        userEntity.setPhoto(user.getPhoto());
-        userEntity.setProfile(user.getProfile());
+        userEntity.setIcon(user.getIcon());
+        userEntity.setBio(user.getBio());
         //roles
         userEntity.getUserRoles().clear();
         for(Role role : user.getRoles()) {

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_web.html">
+<main layout:fragment="_main">
+    <script th:inline="javascript">
+        const boardId = /*[[${board.boardId}]]*/'';
+        const board = new duice.ObjectProxy({});
+        const articleId = new URL(location.href).searchParams.get('articleId');
+        const articlePassword = /*[[${articlePassword}]]*/'';
+        const article = new duice.ObjectProxy({
+            format: 'TEXT',
+            articleFiles:[]
+        });
+        const files = [];
+
+        const getBoard = function() {
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}`, location.origin);
+            _fetch(url).then(response => response.json()).then(data => {
+                duice.ObjectProxy.assign(board, data);
+            });
+        }
+
+        const getArticle = function(articleId) {
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
+            _fetch(url).then(response => response.json()).then(data => {
+                duice.ObjectProxy.clear(article);
+                duice.ObjectProxy.assign(article, data);
+                if(articlePassword) {
+                    article.password = articlePassword;
+                    article.passwordConfirm = articlePassword;
+                    duice.ObjectProxy.setReadonly(article, 'password' ,true);
+                    duice.ObjectProxy.setReadonly(article, 'passwordConfirm', true);
+                }
+            });
+        }
+
+        const addArticleFile = function() {
+            let input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.addEventListener('change', function () {
+                let file = this.files[0];
+                let articleFile = {
+                    filename: file.name,
+                    length: file.size
+                }
+                article.articleFiles.push(articleFile);
+                files.push(file);
+            });
+            input.click();
+        }
+
+        const removeArticleFile = function(index) {
+            article.articleFiles.splice(index,1);
+        }
+
+        const saveArticle = function() {
+            _confirm(/*[[#{web.global.saveItemConfirm(#{core.board.Article})}]]*/'').then(result => {
+                if(result) {
+                    let url;
+                    let method;
+                    // modify article
+                    if(articleId) {
+                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
+                        method = 'PUT';
+                    }
+                    // create article
+                    else{
+                        url =new URL(`${_apiUrl}/v1/boards/${boardId}/articles`, location.origin);
+                        method = 'POST';
+                    }
+                    let formData = new FormData();
+                    formData.append('article', JSON.stringify(article));
+                    files.forEach(file => {
+                        formData.append("files", file);
+                    });
+                    _fetch(url, {
+                        method: method,
+                        body: formData
+                    }).then(response => {
+                        if(response.ok) {
+                            _alert(/*[[#{web.global.saveItemComplete(#{core.board.Article})}]]*/'').then(()=>{
+                                if(articlePassword) {
+                                    history.go(-2);
+                                }else{
+                                    history.back();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        const deleteArticle = function() {
+            _confirm(/*[[#{web.global.deleteItemConfirm(#{core.board.Article})}]]*/'').then(result => {
+                if(result) {
+                    let url = `${_apiUrl}/v1/board/${boardId}/article/${articleId}`;
+                    _fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(article)
+                    }).then(response=> {
+                        if(response.ok) {
+                            _alert(/*[[#{web.global.deleteItemComplete(#{core.board.Article})}]]*/'').then(()=>{
+                                gotoBoard();
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // initializes
+        _initialize(() => {
+            getBoard();
+            if (articleId) {
+                getArticle(articleId);
+            }
+        });
+    </script>
+    <th:block th:replace="|_theme/${_theme}/board/${board.skin}/article-edit.html|"/>
+</main>

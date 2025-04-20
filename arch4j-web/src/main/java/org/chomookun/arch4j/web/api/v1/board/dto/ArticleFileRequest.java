@@ -16,7 +16,6 @@ public class ArticleFileRequest {
 
     private String contentType;
 
-    @Builder.Default
-    private Long length = 0L;
+    private Long length;
 
 }

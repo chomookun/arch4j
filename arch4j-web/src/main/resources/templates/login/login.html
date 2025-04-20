@@ -2,72 +2,73 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="_web-headless.html">
-<th:block layout:fragment="_content">
+      layout:decorate="_web.html">
+<body layout:fragment="_body">
     <script th:inline="javascript">
-    const login = new duice.ObjectProxy({
-        username: null,
-        password: null,
-        rememberMe: false,
-        message: null
-    });
-
-    /**
-     * Process login
-     * @returns {Promise<boolean>}
-     */
-    const processLogin = async function() {
-        if(_isEmpty(login.username)){
-            await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.username})}]]*/'');
-            duice.ObjectProxy.focus(login, 'username');
-            return false;
-        }
-        if(_isEmpty(login.password)){
-            await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
-            duice.ObjectProxy.focus(login, 'password');
-            return false;
-        }
-        // request login
-        let url = new URL(`${window.location.pathname}/process`, document.location.origin);
-        let payload = new URLSearchParams();
-        payload.append('username', login.username);
-        payload.append('password', login.password);
-        payload.append('remember-me', login.rememberMe);
-        _fetch(url, {
-            method: 'POST',
-            body: payload
-        }, true).then(async function (response) {
-            if (response.ok) {
-                document.location.href = document.location.origin;
-            } else {
-                let json = await response.json();
-                login.message = json.message;
-                duice.ObjectProxy.focus(login, 'usernmae');
-            }
+        // defines
+        const login = new duice.ObjectProxy({
+            username: null,
+            password: null,
+            rememberMe: false,
+            message: null
         });
-    }
 
-    /**
-     * Go to join page
-     */
-    const gotoJoin = function() {
-        _gotoJoin();
-    }
+        /**
+         * Process login
+         * @returns {Promise<boolean>}
+         */
+        const processLogin = async function() {
+            if(_isEmpty(login.username)){
+                await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.username})}]]*/'');
+                duice.ObjectProxy.focus(login, 'username');
+                return false;
+            }
+            if(_isEmpty(login.password)){
+                await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.password})}]]*/'');
+                duice.ObjectProxy.focus(login, 'password');
+                return false;
+            }
+            // request login
+            let url = new URL(`${window.location.pathname}/process`, document.location.origin);
+            let payload = new URLSearchParams();
+            payload.append('username', login.username);
+            payload.append('password', login.password);
+            payload.append('remember-me', login.rememberMe);
+            _fetch(url, {
+                method: 'POST',
+                body: payload
+            }, true).then(async function (response) {
+                if (response.ok) {
+                    document.location.href = document.location.origin;
+                } else {
+                    let json = await response.json();
+                    login.message = json.message;
+                    duice.ObjectProxy.focus(login, 'usernmae');
+                }
+            });
+        }
 
-    /**
-     * Go to reset password page
-     */
-    const gotoResetPassword = function() {
-        document.location.href = /*[[@{/login/reset-password}]]*/'';
-    }
+        /**
+         * Go to join page
+         */
+        const gotoJoin = function() {
+            _gotoJoin();
+        }
 
-    /**
-     * Login with Google
-     */
-    const loginWithGoogle = function() {
-        alert("not ready yet");
-    }
+        /**
+         * Go to reset password page
+         */
+        const gotoResetPassword = function() {
+            document.location.href = /*[[@{/login/reset-password}]]*/'';
+        }
+
+        /**
+         * Login with Google
+         */
+        const loginWithGoogle = function() {
+            alert("not ready yet");
+        }
     </script>
     <th:block th:replace="|_theme/${_theme}/login/login.html|"/>
-</th:block>
+</body>
 

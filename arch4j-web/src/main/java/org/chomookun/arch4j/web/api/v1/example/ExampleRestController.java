@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.example.ExampleService;
 import org.chomookun.arch4j.core.example.MybatisExampleService;
+import org.chomookun.arch4j.core.example.QueryDslExampleService;
 import org.chomookun.arch4j.core.example.model.Example;
 import org.chomookun.arch4j.core.example.model.ExampleItem;
 import org.chomookun.arch4j.core.example.model.ExampleSearch;
@@ -40,6 +41,8 @@ public class ExampleRestController {
 
     private final MybatisExampleService mybatisExampleService;
 
+    private final QueryDslExampleService queryDslExampleService;
+
     @Operation(summary = "Returns list of example")
     @Parameter(name = "pageable", hidden = true) @PageableAsQueryParam
     @Parameter(name = "Prefer", schema = @Schema(allowableValues = {"dao-mybatis"}))
@@ -61,6 +64,7 @@ public class ExampleRestController {
         // switch by prefer header
         Page<Example> examplePage = switch (Optional.ofNullable(prefer).orElse("")) {
             case "dao=mybatis" -> mybatisExampleService.getExamples(exampleSearch, pageable);
+            case "dao=queryDsl" -> queryDslExampleService.getExamples(exampleSearch, pageable);
             default -> exampleService.getExamples(exampleSearch, pageable);
         };
         List<ExampleResponse> exampleResponses = examplePage.stream()

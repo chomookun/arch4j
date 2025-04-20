@@ -21,7 +21,7 @@ class ArticleRestControllerTest extends WebTestSupport {
     ArticleRequest testArticleRequest = ArticleRequest.builder()
             .articleId(null)
             .title("test title")
-            .contentFormat(Article.ContentFormat.TEXT)
+            .format(Article.Format.TEXT)
             .content("test content")
             .build();
 

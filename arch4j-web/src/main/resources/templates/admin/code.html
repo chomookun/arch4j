@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="admin/_admin.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
         // code search condition
         const codeSearch = new duice.ObjectProxy({
@@ -447,4 +447,4 @@
     <!-- end: code content                  -->
     <!-- ================================== -->
 
-</th:block>
+</main>

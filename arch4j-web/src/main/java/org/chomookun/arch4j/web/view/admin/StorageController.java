@@ -2,11 +2,14 @@ package org.chomookun.arch4j.web.view.admin;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.storage.StorageObjectService;
+import org.chomookun.arch4j.core.storage.StorageResourceService;
 import org.chomookun.arch4j.core.storage.StorageService;
 import org.chomookun.arch4j.core.storage.client.StorageClientDefinitionRegistry;
 import org.chomookun.arch4j.core.storage.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,10 @@ import java.util.List;
 public class StorageController {
 
     private final StorageService storageService;
+
+    private final StorageResourceService storageResourceService;
+
+    private final StorageObjectService storageObjectService;
 
     @GetMapping
     public ModelAndView index() {
@@ -66,10 +73,10 @@ public class StorageController {
         storageService.deleteStorage(storageId);
     }
 
-    @GetMapping("get-storage-resource-summary")
+    @GetMapping("get-storage-resource-info")
     @ResponseBody
-    public StorageResourceSummary getStorageResourceSummary(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId) {
-        return storageService.getStorageResourceSummary(storageId, resourceId);
+    public StorageResourceInfo getStorageResourceInfo(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId) {
+        return storageResourceService.getStorageResourceInfo(storageId, resourceId);
     }
 
     @PostMapping("create-storage-folder")
@@ -79,7 +86,7 @@ public class StorageController {
             @RequestParam("parentResourceId") String parentResourceId,
             @RequestParam("name") String name
     ) {
-        StorageResource storageResource = storageService.createStorageFolder(storageId, parentResourceId, name);
+        StorageResource storageResource = storageResourceService.createStorageFolder(storageId, parentResourceId, name);
         return StorageResourceInfo.from(storageResource);
     }
 
@@ -93,7 +100,7 @@ public class StorageController {
         List<StorageResourceInfo> storageResourceInfos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String name = multipartFile.getOriginalFilename();
-            StorageResource storageResource = storageService.createStorageFile(storageId, parentResourceId, name, multipartFile.getInputStream());
+            StorageResource storageResource = storageResourceService.createStorageFile(storageId, parentResourceId, name, multipartFile.getInputStream());
             storageResourceInfos.add(StorageResourceInfo.from(storageResource));
         }
         return storageResourceInfos;
@@ -103,10 +110,10 @@ public class StorageController {
     @ResponseBody
     @Transactional
     public void deleteStorageResource(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId) {
-        StorageResource storageResource = storageService.getStorageResource(storageId, resourceId);
+        StorageResource storageResource = storageResourceService.getStorageResource(storageId, resourceId);
         switch (storageResource.getType()) {
-            case FOLDER -> storageService.deleteStorageFolder(storageId, storageResource.getResourceId());
-            case FILE -> storageService.deleteStorageFile(storageId, storageResource.getResourceId());
+            case FOLDER -> storageResourceService.deleteStorageFolder(storageId, storageResource.getResourceId());
+            case FILE -> storageResourceService.deleteStorageFile(storageId, storageResource.getResourceId());
             default -> throw new RuntimeException("Unknown resource type: " + storageResource.getType());
         }
     }
@@ -114,9 +121,9 @@ public class StorageController {
     @GetMapping("download-storage-file")
     @ResponseBody
     public void getStorageFile(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId, HttpServletResponse response) {
-        StorageResource storageResource = storageService.getStorageResource(storageId, resourceId);
+        StorageResource storageResource = storageResourceService.getStorageResource(storageId, resourceId);
         response.setContentType("application/octet-stream");
-        String encodedFilename = URLEncoder.encode(storageResource.getName(), StandardCharsets.UTF_8)
+        String encodedFilename = URLEncoder.encode(storageResource.getFilename(), StandardCharsets.UTF_8)
                 .replaceAll("\\+", "%20");
         response.setHeader("Content-Disposition",String.format("attachment; filename=\"%s\";", encodedFilename));
         try (InputStream inputStream = storageResource.getInputStream()) {
@@ -125,6 +132,33 @@ public class StorageController {
         }catch(Exception e){
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("get-storage-objects")
+    @ResponseBody
+    public Page<StorageObject> getStorageObjects(
+            @RequestParam(value = "storageId", required = false) String storageId,
+            @PageableDefault Pageable pageable
+    ) {
+        StorageObjectSearch storageObjectSearch = StorageObjectSearch.builder()
+                .storageId(storageId)
+                .build();
+        return storageObjectService.getStorageObjects(storageObjectSearch, pageable);
+    }
+
+    @PostMapping("create-storage-object")
+    @ResponseBody
+    public List<StorageObject> createStorageObject(
+            @RequestParam("group") String group,
+            @RequestParam("storageId") String storageId,
+            @RequestPart(value = "files", required = false) MultipartFile[] multipartFiles
+    ) {
+        List<StorageObject> storageObjects = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            StorageObject storageObject = storageObjectService.createStorageObject(group, storageId, multipartFile);
+            storageObjects.add(storageObject);
+        }
+        return storageObjects;
     }
 
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_web.html">
+<body layout:fragment="_body">
+    <script th:inline="javascript">
+        const boardId = /*[[${board.boardId}]]*/'';
+        const pageSize = /*[[${pageable.pageSize}]]*/'';
+        const board = new duice.ObjectProxy([[${board}]]);
+        const articles = new duice.ArrayProxy([]);
+
+        const getArticles = function() {
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles`, location.origin);
+            url.searchParams.append('_page', '0');
+            url.searchParams.append('_size', pageSize);
+            _fetch(url)
+                .then(async response => {
+                    return response.json();
+                }).then(data => {
+                duice.ArrayProxy.clear(articles);
+                duice.ArrayProxy.assign(articles, data);
+            });
+        }
+
+        const gotoBoard = function() {
+            let url = `${_rootUrl}/board/${boardId}`;
+            _openLink(url, '_parent');
+        }
+
+        const gotoRead = function(articleId) {
+            let url = `${_rootUrl}/board/${boardId}/article-read?articleId=${articleId}`;
+            _openLink(url, '_parent');
+        }
+
+        // on load
+        document.addEventListener('DOMContentLoaded', event => {
+            getArticles();
+        });
+    </script>
+    <th:block th:replace="|_theme/${_theme}/board/${board.skin}/widget/latest-article.html|"/>
+</body>

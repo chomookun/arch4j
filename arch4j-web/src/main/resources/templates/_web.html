@@ -64,15 +64,14 @@
     <!-- web.js -->
     <script th:src="@{/static/web.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:inline="javascript">
-        const _rootUrl = [[@{/}]].replace('/','');
-        const _apiUrl = [[@{/api}]];
-        const _securityPolicy = [[${_securityPolicy}]];
-        const _sessionTimeout = [[${_sessionTimeout}]];
-        const _isAuthenticated = [[${#authorization.expression('isAuthenticated()')}]];
+        const _apiUrl = /*[[@{/api}]]*/'';
+        const _securityPolicy = /*[[${_securityPolicy}]]*/'';
+        const _sessionTimeout = /*[[${_sessionTimeout}]]*/'';
+        const _isAuthenticated = /*[[${#authorization.expression('isAuthenticated()')}]]*/'';
         const _user = new duice.ObjectProxy({
-            userId: [[${_user.userId}]],
-            name: [[${_user.name}]],
-            photo: [[${_user.photo}]]
+            userId: /*[[${_user.userId}]]*/'',
+            name: /*[[${_user.name}]]*/'',
+            icon: /*[[${_user.icon}]]*/''
         });
         const _locales = new duice.ArrayProxy([[${_locales}]]);
         const _menus = new duice.ArrayProxy([]);
@@ -81,28 +80,28 @@
          * Go to index page
          */
         const _gotoIndex = function() {
-            document.location.href = [[@{/}]];
+            document.location.href = location.origin;
         }
 
         /**
          * Go to login page
          */
         const _gotoLogin = function() {
-            document.location.href = [[@{/login}]];
+            document.location.href = `${location.origin}/login`;
         }
 
         /**
          * Go to logout page
          */
         const _gotoLogout = function() {
-            document.location.href = [[@{/logout}]];
+            document.location.href = `${location.origin}/logout`;
         }
 
         /**
          * Go to join page
          */
         const _gotoJoin = function() {
-            document.location.href = [[@{/join}]];
+            document.location.href = `${location.origin}/join`;
         }
 
         /**
@@ -152,7 +151,7 @@
         const _webSocketClient = new WebSocketClient('/ws');
 
         // Listen DOMContentLoaded event
-        document.addEventListener('DOMContentLoaded', event => {
+        _initialize(() => {
             _getMenus();
             _webSocketClient.connect();
         });
@@ -160,6 +159,15 @@
         // Listen beforeunload event
         window.addEventListener('beforeunload', () => {
             _webSocketClient.disconnect();
+        });
+
+        // resizes iframe height
+        window.addEventListener('message', e => {
+            document.querySelectorAll('iframe').forEach(iframe => {
+                if (iframe.contentWindow === e.source) {
+                    iframe.style.height = e.data.height + 'px';
+                }
+            });
         });
     </script>
 
@@ -179,7 +187,7 @@
     <!-- start: fragment::_style                        -->
     <!-- ============================================== -->
 </head>
-<body>
+<body layout:fragment="_body">
     <!-- ============================================== -->
     <!-- start: fragment::_header                       -->
     <!-- ============================================== -->
@@ -191,7 +199,7 @@
     <!-- ============================================== -->
     <!-- start: fragment::_content                      -->
     <!-- ============================================== -->
-    <div layout:fragment="_content"></div>
+    <main layout:fragment="_main"></main>
     <!-- ============================================== -->
     <!-- end: fragment::_content                        -->
     <!-- ============================================== -->

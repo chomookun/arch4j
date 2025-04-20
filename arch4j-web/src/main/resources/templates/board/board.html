@@ -3,8 +3,9 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <script th:inline="javascript">
+        // defines
         const boardId = [[${board.boardId}]];
         const board = new duice.ObjectProxy({});
         const articleSearch = new duice.ObjectProxy({
@@ -12,12 +13,12 @@
             value: null,
             _page: 0,
             _size: /*[[${board.pageSize}]]*/'',
-            _count: 0
+            _total: -1
         });
         const articles = new duice.ArrayProxy([]);
 
         const getBoard = function() {
-            let url = new URL(`${_apiUrl}/v1/board/${boardId}`, document.location.origin);
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}`, location.origin);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -29,34 +30,38 @@
             if(page) {
                 articleSearch._page = page;
             }
-            let url = new URL(`${_apiUrl}/v1/board/${boardId}/article`, document.location.origin);
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles`, location.origin);
             if(articleSearch.key && articleSearch.value) {
-                url.searchParams.append(articleSearch.key, articleSearch.value);
+                url.searchParams.set(articleSearch.key, articleSearch.value);
             }
-            url.searchParams.append('_page', articleSearch._page);
-            url.searchParams.append('_size', articleSearch._size);
+            url.searchParams.set('_page', articleSearch._page);
+            url.searchParams.set('_size', articleSearch._size);
             _fetch(url)
-            .then(async response => {
-                articleSearch._count = _parseTotalCount(response);
+            .then(response => {
+                articleSearch._total = _parseTotalCount(response);
                 return response.json();
             }).then(data => {
+                data.forEach((it,index) => {
+                    it.no = articleSearch._total - (articleSearch._page * articleSearch._size) - index;
+                });
                 duice.ArrayProxy.clear(articles);
                 duice.ArrayProxy.assign(articles, data);
             });
         }
 
-        const gotoRead = function(articleId) {
-            document.location.href = `${_rootUrl}/board/${boardId}/article-read?articleId=${articleId}`;
+        const gotoArticle = function(articleId) {
+            location.href = `${_rootUrl}/board/${boardId}/article?articleId=${articleId}`;
         }
 
-        const gotoWrite = function() {
-            document.location.href = `${_rootUrl}/board/${boardId}/article-write`;
+        const gotoArticleEdit = function() {
+            location.href = `${_rootUrl}/board/${boardId}/article/edit`;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // initializes
+        _initialize(() => {
             getBoard();
             getArticles();
         });
     </script>
     <th:block th:replace="|_theme/${_theme}/board/${board.skin}/board.html|"/>
-</th:block>
+</main>

@@ -36,7 +36,6 @@ public class BoardService {
         boardEntity.setMessage(board.getMessage());
         boardEntity.setSkin(board.getSkin());
         boardEntity.setPageSize(board.getPageSize());
-
         // access policy
         boardEntity.getAccessBoardRoleEntities().clear();
         board.getAccessRoles().forEach(accessRole -> {
@@ -47,7 +46,6 @@ public class BoardService {
                     .build();
             boardEntity.getAccessBoardRoleEntities().add(boardRoleEntity);
         });
-
         // read policy
         boardEntity.getReadBoardRoleEntities().clear();
         board.getReadRoles().forEach(readRole -> {
@@ -58,7 +56,6 @@ public class BoardService {
                     .build();
             boardEntity.getReadBoardRoleEntities().add(boardRoleEntity);
         });
-
         // write policy
         boardEntity.getWriteBoardRoleEntities().clear();
         board.getWriteRoles().forEach(writeRole -> {
@@ -69,7 +66,6 @@ public class BoardService {
                     .build();
             boardEntity.getWriteBoardRoleEntities().add(boardRoleEntity);
         });
-
         // file
         boardEntity.setFileEnabled(board.isFileEnabled());
         boardEntity.setFileSizeLimit(board.getFileSizeLimit());
@@ -82,7 +78,6 @@ public class BoardService {
                     .build();
             boardEntity.getFileBoardRoleEntities().add(boardRoleEntity);
         });
-
         // comment
         boardEntity.setCommentEnabled(board.isCommentEnabled());
         boardEntity.getCommentBoardRoleEntities().clear();
@@ -94,10 +89,8 @@ public class BoardService {
                     .build();
             boardEntity.getCommentBoardRoleEntities().add(boardRoleEntity);
         });
-
         // save
         BoardEntity savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
-
         // return
         return this.getBoard(savedBoardEntity.getBoardId())
                 .orElseThrow();
