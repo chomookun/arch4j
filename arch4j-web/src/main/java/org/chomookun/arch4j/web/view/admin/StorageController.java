@@ -152,10 +152,11 @@ public class StorageController {
             @RequestParam("group") String group,
             @RequestParam("storageId") String storageId,
             @RequestPart(value = "files", required = false) MultipartFile[] multipartFiles
-    ) {
+    ) throws IOException {
         List<StorageObject> storageObjects = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            StorageObject storageObject = storageObjectService.createStorageObject(group, storageId, multipartFile);
+            String filename = multipartFile.getOriginalFilename();
+            StorageObject storageObject = storageObjectService.createStorageObject(group, filename, multipartFile.getInputStream(), storageId);
             storageObjects.add(storageObject);
         }
         return storageObjects;

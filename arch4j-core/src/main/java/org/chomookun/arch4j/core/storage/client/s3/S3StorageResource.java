@@ -21,26 +21,6 @@ public class S3StorageResource implements StorageResource {
     }
 
     @Override
-    public String getFilename() {
-        return "";
-    }
-
-    @Override
-    public Type getType() {
-        return null;
-    }
-
-    @Override
-    public long getSize() {
-        return 0;
-    }
-
-    @Override
-    public Instant getLastModified() {
-        return null;
-    }
-
-    @Override
     public boolean exists() {
         return false;
     }
@@ -83,6 +63,21 @@ public class S3StorageResource implements StorageResource {
     @Override
     public String getDescription() {
         return "";
+    }
+
+    @Override
+    public long getSize() {
+        return 0;
+    }
+
+    @Override
+    public Instant getLastModified() {
+        return null;
+    }
+
+    @Override
+    public Type getType() {
+        return null;
     }
 
     @Override
