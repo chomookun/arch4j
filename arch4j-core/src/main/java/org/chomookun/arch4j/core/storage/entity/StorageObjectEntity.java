@@ -20,8 +20,11 @@ public class StorageObjectEntity extends BaseEntity {
     @Column(name = "object_id")
     private String objectId;
 
-    @Column(name = "group")
-    private String group;
+    @Column(name = "ref_type", length = 32, nullable = false)
+    private String refType;
+
+    @Column(name = "ref_id", length = 128, nullable = false)
+    private String refId;
 
     @Column(name = "filename")
     private String filename;

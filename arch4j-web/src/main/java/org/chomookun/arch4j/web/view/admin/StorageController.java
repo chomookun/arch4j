@@ -90,9 +90,9 @@ public class StorageController {
         return StorageResourceInfo.from(storageResource);
     }
 
-    @PostMapping("upload-storage-files")
+    @PostMapping("upload-storage-resources")
     @ResponseBody
-    public List<StorageResourceInfo> createStorageFiles(
+    public List<StorageResourceInfo> uploadStorageResources(
             @RequestParam("storageId") String storageId,
             @RequestParam("parentResourceId") String parentResourceId,
             @RequestParam("files") MultipartFile[] multipartFiles
@@ -118,9 +118,9 @@ public class StorageController {
         }
     }
 
-    @GetMapping("download-storage-file")
+    @GetMapping("download-storage-resource")
     @ResponseBody
-    public void getStorageFile(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId, HttpServletResponse response) {
+    public void downloadStorageResource(@RequestParam("storageId") String storageId, @RequestParam("resourceId") String resourceId, HttpServletResponse response) {
         StorageResource storageResource = storageResourceService.getStorageResource(storageId, resourceId);
         response.setContentType("application/octet-stream");
         String encodedFilename = URLEncoder.encode(storageResource.getFilename(), StandardCharsets.UTF_8)
@@ -146,20 +146,47 @@ public class StorageController {
         return storageObjectService.getStorageObjects(storageObjectSearch, pageable);
     }
 
-    @PostMapping("create-storage-object")
+    @PostMapping("upload-storage-object")
     @ResponseBody
-    public List<StorageObject> createStorageObject(
-            @RequestParam("group") String group,
+    @Transactional
+    public List<StorageObject> uploadStorageObject(
+            @RequestParam("refType") String refType,
+            @RequestParam("refId") String refId,
             @RequestParam("storageId") String storageId,
             @RequestPart(value = "files", required = false) MultipartFile[] multipartFiles
     ) throws IOException {
         List<StorageObject> storageObjects = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String filename = multipartFile.getOriginalFilename();
-            StorageObject storageObject = storageObjectService.createStorageObject(group, filename, multipartFile.getInputStream(), storageId);
+            StorageObject storageObject = storageObjectService.createStorageObject(refType, refId, multipartFile, storageId);
             storageObjects.add(storageObject);
         }
         return storageObjects;
+    }
+
+    @GetMapping("download-storage-object")
+    @ResponseBody
+    public void downloadStorageObject(
+            @RequestParam("objectId") String objectId,
+            HttpServletResponse response
+    ) {
+        StorageObject storageObject = storageObjectService.getStorageObject(objectId);
+        response.setContentType("application/octet-stream");
+        String encodedFilename = URLEncoder.encode(storageObject.getFilename(), StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition",String.format("attachment; filename=\"%s\";", encodedFilename));
+        try (InputStream inputStream = storageResourceService.getStorageResource(storageObject.getStorageId(), storageObject.getResourceId()).getInputStream()) {
+            StreamUtils.copy(inputStream, response.getOutputStream());
+            response.flushBuffer();
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("delete-storage-object")
+    @ResponseBody
+    @Transactional
+    public void deleteStorageObject(@RequestParam("objectId") String objectId) {
+        storageObjectService.deleteStorageObject(objectId);
     }
 
 }

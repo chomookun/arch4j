@@ -13,7 +13,9 @@ public class StorageObject {
 
     private String objectId;
 
-    private String group;
+    private String refType;
+
+    private String refId;
 
     private String filename;
 
@@ -28,7 +30,8 @@ public class StorageObject {
     public static StorageObject from(StorageObjectEntity storageObjectEntity) {
         return StorageObject.builder()
                 .objectId(storageObjectEntity.getObjectId())
-                .group(storageObjectEntity.getGroup())
+                .refType(storageObjectEntity.getRefType())
+                .refId(storageObjectEntity.getRefId())
                 .filename(storageObjectEntity.getFilename())
                 .size(storageObjectEntity.getSize())
                 .lastModified(storageObjectEntity.getLastModified())

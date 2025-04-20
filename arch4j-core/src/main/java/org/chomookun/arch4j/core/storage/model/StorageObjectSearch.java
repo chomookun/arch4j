@@ -7,7 +7,9 @@ import lombok.Getter;
 @Getter
 public class StorageObjectSearch {
 
-    private String group;
+    private String refType;
+
+    private String refId;
 
     private String filename;
 

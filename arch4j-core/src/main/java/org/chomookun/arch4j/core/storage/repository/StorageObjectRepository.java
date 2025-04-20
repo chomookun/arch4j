@@ -19,9 +19,9 @@ public interface StorageObjectRepository extends JpaRepository<StorageObjectEnti
 
     default Page<StorageObjectEntity> findAll(StorageObjectSearch storageFileSearch, Pageable pageable) {
         Specification<StorageObjectEntity> specification = Specification.where(null);
-        if (storageFileSearch.getGroup() != null) {
+        if (storageFileSearch.getRefType() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get(StorageObjectEntity_.group), storageFileSearch.getGroup()));
+                    criteriaBuilder.equal(root.get(StorageObjectEntity_.refType), storageFileSearch.getRefType()));
         }
         if (storageFileSearch.getFilename() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
@@ -35,10 +35,10 @@ public interface StorageObjectRepository extends JpaRepository<StorageObjectEnti
         return findAll(specification, finalPageable);
     }
 
-    default List<StorageObjectEntity> findAllByGroup(String group) {
+    default List<StorageObjectEntity> findAllByRef(String refType, String refId) {
         Specification<StorageObjectEntity> specification = Specification.where(null);
         specification = specification.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(StorageObjectEntity_.group), group));
+                criteriaBuilder.equal(root.get(StorageObjectEntity_.refType), refType));
         return findAll(specification);
     }
 

@@ -157,8 +157,8 @@
             refreshStorageResourceInfo();
         }
 
-        function downloadStorageFile(resourceId) {
-            let url = new URL(`${location.pathname}/download-storage-file`, location.origin);
+        function downloadStorageResource(resourceId) {
+            let url = new URL(`${location.pathname}/download-storage-resource`, location.origin);
             url.searchParams.set('storageId', storageResourceInfo.storageId);
             url.searchParams.set('resourceId', resourceId);
             const link = document.createElement('a');
@@ -185,12 +185,39 @@
                 });
         }
 
-        function createStorageObject() {
+        function uploadStorageObject() {
             uploadDialog.open().then(() => {
                 getStorageObjects();
             });
         }
 
+        function downloadStorageObject(objectId) {
+            let url = new URL(`${location.pathname}/download-storage-object`, location.origin);
+            url.searchParams.set('objectId', objectId);
+            const link = document.createElement('a');
+            link.href = url.toString();
+            link.click();
+        }
+
+        function checkAllStorageObjects() {
+            storageObjects.forEach(item => {
+                item._selected = !item._selected;
+            });
+        }
+
+        async function deleteCheckedStorageObjects() {
+            if (!await _confirm(/*[[#{web.global.deleteItemConfirm(#{core.storage.StorageObject})}]]*/'')) {
+                return false;
+            }
+            let url = new URL(`${location.pathname}/delete-storage-object`, location.origin);
+            let checkedStorageObjects = storageObjects.filter(item => item._selected);
+            for (let i = 0; i < checkedStorageObjects.length; i++) {
+                let objectId = checkedStorageObjects[i].objectId;
+                url.searchParams.set('objectId', objectId);
+                await _fetch(url, {method: 'DELETE'}).then();
+            }
+            getStorageObjects();
+        }
 
         // Initializes
         document.addEventListener('DOMContentLoaded',()=> {
@@ -445,7 +472,7 @@
                                     <button class="button small"
                                             data-duice-bind="childStorageResource"
                                             data-duice-execute="this.dataset.resourceId = childStorageResource.resourceId;"
-                                            onclick="downloadStorageFile(this.dataset.resourceId);">
+                                            onclick="downloadStorageResource(this.dataset.resourceId);">
                                         <img class="icon" th:src="@{/static/image/icon-download.svg}" alt=""/>
                                     </button>
                                 </div>
@@ -464,7 +491,7 @@
     <!-- ================================== -->
 
     <!-- ================================== -->
-    <!-- start: storage object              -->
+    <!-- start: storage objects             -->
     <!-- ================================== -->
     <div id="storageObjectTabContent">
         <div class="panel">
@@ -487,215 +514,78 @@
                             Search
                         </button>
                         <button type="button" class="button"
-                                onclick="createStorageObject();">
+                                onclick="uploadStorageObject();">
                             Upload
+                        </button>
+                        <button type="button" class="button"
+                                onclick="deleteCheckedStorageObjects();">
+                            Delete
                         </button>
                     </div>
                 </form>
                 <table>
                     <thead>
                     <tr>
+                        <th>
+                            <label>
+                                <input type="checkbox" onclick="checkAllStorageObjects();"/>
+                            </label>
+                        </th>
                         <th>objectId</th>
-                        <th>group</th>
+                        <th>refType</th>
+                        <th>refId</th>
+                        <th>filename</th>
+                        <th>size</th>
                         <th>storageId</th>
                         <th>resourceId</th>
+                        <th>-</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr data-duice-bind="storageObjects"
                         data-duice-foreach="storageObject,status">
                         <td>
-                            <span data-duice-bind="storageObject" data-duice-property="objectId"></span>
+                            <label>
+                                <input type="checkbox" data-duice-bind="storageObject" data-duice-property="_selected"/>
+                            </label>
                         </td>
                         <td>
-                            <span data-duice-bind="storageObject" data-duice-property="group"></span>
+                            <span class="code" data-duice-bind="storageObject" data-duice-property="objectId"></span>
                         </td>
                         <td>
-                            <span data-duice-bind="storageObject" data-duice-property="storageId"></span>
+                            <span class="code" data-duice-bind="storageObject" data-duice-property="refType"></span>
                         </td>
                         <td>
-                            <span data-duice-bind="storageObject" data-duice-property="resourceId"></span>
+                            <span class="code" data-duice-bind="storageObject" data-duice-property="refId"></span>
+                        </td>
+                        <td>
+                            <span class="code" data-duice-bind="storageObject" data-duice-property="filename"></span>
+                        </td>
+                        <td>
+                            <span class="number" data-duice-bind="storageObject" data-duice-property="size"></span>
+                        </td>
+                        <td>
+                            <span class="code" data-duice-bind="storageObject" data-duice-property="storageId"></span>
+                        </td>
+                        <td>
+                            <span class="code" data-duice-bind="storageObject" data-duice-property="resourceId"></span>
+                        </td>
+                        <td>
+                            <button type="button" class="button small"
+                                data-duice-bind="storageObject"
+                                data-duice-execute="this.dataset.objectId = storageObject.objectId;"
+                                onclick="downloadStorageObject(this.dataset.objectId);">
+                                Download
+                            </button>
                         </td>
                     </tr>
                     </tbody>
-
                 </table>
             </div>
         </div>
-<!--        <div class="panel">-->
-<!--            <div class="panel-title">-->
-<!--                <h2>-->
-<!--                    <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>-->
-<!--                    <span data-th-text="|#{core.execution.Execution} #{web.global.list}|"></span>-->
-<!--                </h2>-->
-<!--            </div>-->
-<!--            <div class="panel-content">-->
-<!--                <form onsubmit="return false;" class="display&#45;&#45;flex justify-content&#45;&#45;space-between gap&#45;&#45;1px flex-wrap&#45;&#45;wrap">-->
-<!--                    <div class="display&#45;&#45;flex flex-wrap&#45;&#45;wrap gap&#45;&#45;1px">-->
-<!--                        <div class="display&#45;&#45;flex flex-wrap&#45;&#45;nowrap gap&#45;&#45;1px">-->
-<!--                            <label>-->
-<!--                                <select data-duice-bind="executionSearch" data-duice-property="key">-->
-<!--                                    <option value="taskName" th:text="#{core.execution.Execution.taskName}"></option>-->
-<!--                                </select>-->
-<!--                            </label>-->
-<!--                            <label>-->
-<!--                                <input type="text" data-duice-bind="executionSearch" data-duice-property="value"/>-->
-<!--                            </label>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="flex&#45;&#45;1 display&#45;&#45;flex gap&#45;&#45;1px justify-content&#45;&#45;end s__justify-content&#45;&#45;start">-->
-<!--                        <button class="button" type="submit" onclick="getExecutions(0);">-->
-<!--                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>-->
-<!--                            <span data-th-text="#{web.global.search}"></span>-->
-<!--                        </button>-->
-<!--                        <button class="button" type="button" onclick="resetExecutions();">-->
-<!--                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>-->
-<!--                            <span data-th-text="#{web.global.reset}"></span>-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--                <div class="overflow&#45;&#45;auto box">-->
-<!--                    <table class="table width&#45;&#45;100 border&#45;&#45;none">-->
-<!--                        <colgroup>-->
-<!--                            <col style="min-width:5em;"/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                            <col/>-->
-<!--                        </colgroup>-->
-<!--                        <thead>-->
-<!--                        <tr>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{web.global.no}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.taskName}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.status}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.startedAt}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.endedAt}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.totalCount}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.successCount}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.failCount}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.duration}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                <span data-th-text="#{core.execution.Execution.message}"></span>-->
-<!--                            </th>-->
-<!--                            <th>-->
-<!--                                - -->
-<!--                            </th>-->
-<!--                        </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody>-->
-<!--                        <tr data-duice-bind="executions" data-duice-foreach="execution,status" class="text-align&#45;&#45;center">-->
-<!--                            <td>-->
-<!--                            <span data-duice-bind="status"-->
-<!--                                  data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"-->
-<!--                                  class="number">-->
-<!--                            </span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <span class="code" data-duice-bind="execution" data-duice-property="taskName"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                            <span class="code badge"-->
-<!--                                  data-duice-bind="execution"-->
-<!--                                  data-duice-property="status"-->
-<!--                                  data-duice-execute="markStatus(this, execution.status);"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <span class="date" data-duice-bind="execution" data-duice-property="startedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <span class="date" data-duice-bind="execution" data-duice-property="endedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <span class="number" data-duice-bind="execution" data-duice-property="totalCount" data-duice-format="number()"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <span class="number" data-duice-bind="execution" data-duice-property="successCount" data-duice-format="number()"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <span class="number" data-duice-bind="execution" data-duice-property="failCount" data-duice-format="number()"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                        <span class="number"-->
-<!--                              data-duice-bind="execution"-->
-<!--                              data-duice-execute="-->
-<!--                              if (execution.duration) {-->
-<!--                                this.innerHTML = luxon.Duration-->
-<!--                                    .fromISO(execution.duration)-->
-<!--                                    .toFormat('hh:mm:ss');-->
-<!--                              }"></span>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <label class="display&#45;&#45;flex">-->
-<!--                            <textarea class="width&#45;&#45;100 height&#45;&#45;100 code font-size&#45;&#45;smaller"-->
-<!--                                      data-duice-bind="execution"-->
-<!--                                      data-duice-property="message"-->
-<!--                                      readonly></textarea>-->
-<!--                                </label>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <button class="button" type="button"-->
-<!--                                        data-duice-bind="execution" data-duice-execute="this.dataset.executionId = execution.executionId;"-->
-<!--                                        onclick="openExecutionDialog(this.dataset.executionId);">-->
-<!--                                    <span data-th-text="#{web.global.detail}"></span>-->
-<!--                                </button>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                        <tr data-duice-bind="executions" data-duice-if="return executions.length < 1;" hidden>-->
-<!--                            <td colspan="100%" class="text-align&#45;&#45;center">-->
-<!--                                <span data-th-text="#{web.global.itemNotFound(#{core.execution.Execution})}"></span>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </div>-->
-<!--                <div class="display&#45;&#45;flex justify-content&#45;&#45;space-between">-->
-<!--                    <div class="flex&#45;&#45;1">-->
-<!--                        <span data-th-text="#{web.global.total}"></span>-->
-<!--                        <span data-duice-bind="executionSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>-->
-<!--                        <span data-th-text="#{web.global.rows}"></span>-->
-<!--                    </div>-->
-<!--                    <div class="flex&#45;&#45;1 display&#45;&#45;flex justify-content&#45;&#45;center">-->
-<!--                        <duice-pagination-->
-<!--                                data-duice-bind="executionSearch"-->
-<!--                                data-duice-size-property="_size"-->
-<!--                                data-duice-page-property="_page"-->
-<!--                                data-duice-total-property="_total"-->
-<!--                                data-duice-onclick="getExecutions(this.dataset.page);"-->
-<!--                                class="number">-->
-<!--                        </duice-pagination>-->
-<!--                    </div>-->
-<!--                    <div class="flex&#45;&#45;1">-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
     </div>
     <!-- ================================== -->
-    <!-- end: executions                    -->
+    <!-- end: storage objects               -->
     <!-- ================================== -->
 
     <!-- ====================================== -->
@@ -926,7 +816,8 @@
             const uploadDialog = (() => {
                 const dialog = new duice.Dialog(document.getElementById('uploadDialog'));
                 const storageObject = new duice.ObjectProxy({
-                    group: null,
+                    refType: null,
+                    refId: null,
                     storageId: 'board'
                 });
                 const formData = new FormData();
@@ -957,9 +848,10 @@
                 }
 
                 function confirm() {
-                    formData.set("group", storageObject.group);
+                    formData.set("refType", storageObject.refType);
+                    formData.set("refId", storageObject.refId);
                     formData.set("storageId", storageObject.storageId);
-                    let url = new URL(`${location.pathname}/create-storage-object`, location.origin);
+                    let url = new URL(`${location.pathname}/upload-storage-object`, location.origin);
                     _fetch(url, {
                         method: 'POST',
                         body: formData
@@ -983,7 +875,8 @@
         </div>
         <div class="dialog-content">
             <form onsubmit="return false;">
-                <input type="text" data-duice-bind="uploadDialog.storageObject" data-duice-property="group"/>
+                <input type="text" data-duice-bind="uploadDialog.storageObject" data-duice-property="refType"/>
+                <input type="text" data-duice-bind="uploadDialog.storageObject" data-duice-property="refId"/>
                 <select data-duice-bind="uploadDialog.storageObject" data-duice-property="storageId">
                     <option>board</option>
                 </select>

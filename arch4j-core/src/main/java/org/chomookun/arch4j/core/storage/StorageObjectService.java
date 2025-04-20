@@ -28,29 +28,23 @@ public class StorageObjectService {
 
     private final StorageObjectRepository storageObjectRepository;
 
-    private final StorageService storageService;
-
     private final StorageResourceService storageResourceService;
 
-    /**
-     * Creates storage object
-     * @param group group
-     * @param filename filename
-     * @param inputStream inputStream
-     * @param storageId storage id
-     * @return created storage object
-     */
-    public StorageObject createStorageObject(String group, String filename, InputStream inputStream, String storageId) {
+    public StorageObject createStorageObject(String refType, String refId, MultipartFile multipartFile, String storageId) throws IOException {
         // creates resource
         String parentResourceId = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now());
         String encodedFilename = IdGenerator.uuid();
+        String filename = multipartFile.getOriginalFilename();
+        Long size = multipartFile.getSize();
+        InputStream inputStream = multipartFile.getInputStream();
         StorageResource storageResource = storageResourceService.createStorageFile(storageId, parentResourceId, encodedFilename, inputStream);
         // saves object info
         StorageObjectEntity storageObjectEntity = StorageObjectEntity.builder()
                 .objectId(IdGenerator.uuid())
-                .group(group)
-                .storageId(storageId)
+                .refType(refType)
+                .refId(refId)
                 .filename(filename)
+                .size(size)
                 .storageId(storageId)
                 .resourceId(storageResource.getResourceId())
                 .build();
@@ -69,6 +63,7 @@ public class StorageObjectService {
         storageObjectRepository.flush();
     }
 
+
     /**
      * Gets storage object page by search condition
      * @param storageObjectSearch storage object search condition
@@ -84,8 +79,8 @@ public class StorageObjectService {
         return new PageImpl<>(storageObjects, pageable, total);
     }
 
-    public List<StorageObject> getStorageObjects(String group) {
-        return storageObjectRepository.findAllByGroup(group).stream()
+    public List<StorageObject> getStorageObjects(String refType, String refId) {
+        return storageObjectRepository.findAllByRef(refType, refId).stream()
                 .map(StorageObject::from)
                 .collect(Collectors.toList());
     }
