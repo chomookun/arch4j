@@ -25,7 +25,7 @@ public interface StorageObjectRepository extends JpaRepository<StorageObjectEnti
         }
         if (storageFileSearch.getFilename() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get(StorageObjectEntity_.name), "%" + storageFileSearch.getFilename() + "%"));
+                    criteriaBuilder.like(root.get(StorageObjectEntity_.filename), "%" + storageFileSearch.getFilename() + "%"));
         }
         Sort sort = pageable.getSort()
                 .and(Sort.by(StorageObjectEntity_.LAST_MODIFIED).descending());
