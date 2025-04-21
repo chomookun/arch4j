@@ -17,15 +17,19 @@ import java.util.List;
 @Repository
 public interface StorageObjectRepository extends JpaRepository<StorageObjectEntity, String>, JpaSpecificationExecutor<StorageObjectEntity> {
 
-    default Page<StorageObjectEntity> findAll(StorageObjectSearch storageFileSearch, Pageable pageable) {
+    default Page<StorageObjectEntity> findAll(StorageObjectSearch storageObjectSearch, Pageable pageable) {
         Specification<StorageObjectEntity> specification = Specification.where(null);
-        if (storageFileSearch.getRefType() != null) {
+        if (storageObjectSearch.getRefType() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get(StorageObjectEntity_.refType), storageFileSearch.getRefType()));
+                    criteriaBuilder.equal(root.get(StorageObjectEntity_.refType), "%" + storageObjectSearch.getRefType() + "%"));
         }
-        if (storageFileSearch.getFilename() != null) {
+        if (storageObjectSearch.getRefId() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get(StorageObjectEntity_.filename), "%" + storageFileSearch.getFilename() + "%"));
+                    criteriaBuilder.equal(root.get(StorageObjectEntity_.refId), "%" + storageObjectSearch.getRefId() + "%"));
+        }
+        if (storageObjectSearch.getFilename() != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(root.get(StorageObjectEntity_.filename), "%" + storageObjectSearch.getFilename() + "%"));
         }
         Sort sort = pageable.getSort()
                 .and(Sort.by(StorageObjectEntity_.LAST_MODIFIED).descending());

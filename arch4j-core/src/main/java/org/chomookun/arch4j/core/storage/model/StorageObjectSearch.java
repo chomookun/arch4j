@@ -13,6 +13,4 @@ public class StorageObjectSearch {
 
     private String filename;
 
-    private String storageId;
-
 }

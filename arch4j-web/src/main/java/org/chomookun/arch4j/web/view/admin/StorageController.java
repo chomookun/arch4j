@@ -137,11 +137,15 @@ public class StorageController {
     @GetMapping("get-storage-objects")
     @ResponseBody
     public Page<StorageObject> getStorageObjects(
-            @RequestParam(value = "storageId", required = false) String storageId,
+            @RequestParam(value = "refType", required = false) String refType,
+            @RequestParam(value = "refId", required = false) String refId,
+            @RequestParam(value = "filename", required = false) String filename,
             @PageableDefault Pageable pageable
     ) {
         StorageObjectSearch storageObjectSearch = StorageObjectSearch.builder()
-                .storageId(storageId)
+                .refType(refType)
+                .refId(refId)
+                .filename(filename)
                 .build();
         return storageObjectService.getStorageObjects(storageObjectSearch, pageable);
     }
@@ -157,7 +161,7 @@ public class StorageController {
     ) throws IOException {
         List<StorageObject> storageObjects = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            StorageObject storageObject = storageObjectService.createStorageObject(refType, refId, multipartFile, storageId);
+            StorageObject storageObject = storageObjectService.uploadStorageObject(refType, refId, multipartFile, storageId);
             storageObjects.add(storageObject);
         }
         return storageObjects;
@@ -169,17 +173,7 @@ public class StorageController {
             @RequestParam("objectId") String objectId,
             HttpServletResponse response
     ) {
-        StorageObject storageObject = storageObjectService.getStorageObject(objectId);
-        response.setContentType("application/octet-stream");
-        String encodedFilename = URLEncoder.encode(storageObject.getFilename(), StandardCharsets.UTF_8)
-                .replaceAll("\\+", "%20");
-        response.setHeader("Content-Disposition",String.format("attachment; filename=\"%s\";", encodedFilename));
-        try (InputStream inputStream = storageResourceService.getStorageResource(storageObject.getStorageId(), storageObject.getResourceId()).getInputStream()) {
-            StreamUtils.copy(inputStream, response.getOutputStream());
-            response.flushBuffer();
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
+        storageObjectService.downloadStorageObject(objectId, response);
     }
 
     @DeleteMapping("delete-storage-object")

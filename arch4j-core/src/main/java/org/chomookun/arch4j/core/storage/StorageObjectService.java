@@ -1,5 +1,6 @@
 package org.chomookun.arch4j.core.storage;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.storage.entity.StorageObjectEntity;
@@ -11,13 +12,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +32,7 @@ public class StorageObjectService {
 
     private final StorageResourceService storageResourceService;
 
-    public StorageObject createStorageObject(String refType, String refId, MultipartFile multipartFile, String storageId) throws IOException {
+    public StorageObject uploadStorageObject(String refType, String refId, MultipartFile multipartFile, String storageId) throws IOException {
         // creates resource
         String parentResourceId = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now());
         String encodedFilename = IdGenerator.uuid();
@@ -52,10 +54,27 @@ public class StorageObjectService {
         return StorageObject.from(savedStorageObjectEntity);
     }
 
-    /**
-     * Deletes storage object
-     * @param objectId object id
-     */
+    public void downloadStorageObject(String objectId, HttpServletResponse response) {
+        StorageObjectEntity storageObjectEntity = storageObjectRepository.findById(objectId).orElseThrow();
+        String storageId = storageObjectEntity.getStorageId();
+        String resourceId = storageObjectEntity.getResourceId();
+        StorageResource storageResource = storageResourceService.getStorageResource(storageId, resourceId);
+        // gets resource input stream
+        try (InputStream inputStream = storageResource.getInputStream()) {
+            // sets response headers
+            response.setContentType("application/octet-stream");
+            String filename = storageObjectEntity.getFilename();
+            String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8)
+                    .replaceAll("\\+", "%20");
+            response.setHeader("Content-Disposition",String.format("attachment; filename=\"%s\";", encodedFilename));
+            // writes stream
+            StreamUtils.copy(inputStream, response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteStorageObject(String objectId) {
         StorageObjectEntity storageObjectEntity = storageObjectRepository.findById(objectId).orElseThrow();
         storageResourceService.deleteStorageFile(storageObjectEntity.getStorageId(), storageObjectEntity.getResourceId());
@@ -63,13 +82,6 @@ public class StorageObjectService {
         storageObjectRepository.flush();
     }
 
-
-    /**
-     * Gets storage object page by search condition
-     * @param storageObjectSearch storage object search condition
-     * @param pageable pageable
-     * @return page of storage objects
-     */
     public Page<StorageObject> getStorageObjects(StorageObjectSearch storageObjectSearch, Pageable pageable) {
         Page<StorageObjectEntity> storageObjectEntityPage = storageObjectRepository.findAll(storageObjectSearch, pageable);
         List<StorageObject> storageObjects = storageObjectEntityPage.getContent().stream()

@@ -22,9 +22,9 @@
         });
         const storageClientDefinitions = new duice.ArrayProxy(/*[[${storageClientDefinitions}]]*/[]);
         const storageObjectSearch = new duice.ObjectProxy({
-            storageId: null,
-            key: 'name',
-            value: null,
+            refType: null,
+            refId: null,
+            filename: null,
             _page: 0,
             _size: 20,
             _total: 0
@@ -171,8 +171,14 @@
                 storageObjectSearch._page = page;
             }
             let url = new URL(`${location.pathname}/get-storage-objects`, location.origin);
-            if (storageObjectSearch.key && storageObjectSearch.value) {
-                url.searchParams.append(storageObjectSearch.key, storageObjectSearch.value);
+            if (storageObjectSearch.refType) {
+                url.searchParams.set('refType', storageObjectSearch.refType);
+            }
+            if (storageObjectSearch.refId) {
+                url.searchParams.set('refId', storageObjectSearch.refId);
+            }
+            if (storageObjectSearch.filename) {
+                url.searchParams.set('filename', storageObjectSearch.filename);
             }
             url.searchParams.append('_page', storageObjectSearch._page);
             url.searchParams.append('_size', storageObjectSearch._size);
@@ -270,12 +276,12 @@
     <!-- ====================================== -->
     <div id="tabIndex" class="tab">
         <span id="storageTabButton" class="tab-item">
-            <img class="icon" th:src="@{/static/image/icon-role.svg}" alt="role"/>
-            <span data-th-text="#{core.security.Role}"></span>
+            <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
+            <span data-th-text="#{core.storage.Storage}"></span>
         </span>
         <span id="storageObjectTabButton" class="tab-item">
-            <img class="icon" th:src="@{/static/image/icon-authority.svg}" alt="authority"/>
-            <span data-th-text="#{core.security.Authority}"></span>
+            <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storageObject"/>
+            <span data-th-text="#{core.storage.StorageObject}"></span>
         </span>
     </div>
     <!-- ====================================== -->
@@ -502,24 +508,51 @@
                 </h2>
             </div>
             <div class="panel-content">
-                <form class="display--flex justify-content--space-between">
-                    <div>
-                        <label>
-
-                        </label>
+                <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                    <div class="display--flex gap--1px">
+                        <div>
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="storageObjectSearch"
+                                       data-duice-property="refType"
+                                       th:placeholder="#{core.storage.StorageObject.refType}"
+                                       style="min-width:10rem;"/>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="storageObjectSearch"
+                                       data-duice-property="refId"
+                                       th:placeholder="#{core.storage.StorageObject.refId}"
+                                       style="min-width:15rem;"/>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="storageObjectSearch"
+                                       data-duice-property="filename"
+                                       th:placeholder="#{core.storage.StorageObject.filename}"
+                                       style="min-width:15rem;"/>
+                            </label>
+                        </div>
                     </div>
                     <div>
-                        <button type="button" class="button"
+                        <button type="submit" class="button"
                             onclick="getStorageObjects();">
-                            Search
+                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                            <span data-th-text="#{web.global.search}"></span>
                         </button>
                         <button type="button" class="button"
                                 onclick="uploadStorageObject();">
-                            Upload
+                            <img class="icon" th:src="@{/static/image/icon-upload.svg}" alt="upload"/>
+                            <span data-th-text="#{web.global.upload}"></span>
                         </button>
                         <button type="button" class="button"
                                 onclick="deleteCheckedStorageObjects();">
-                            Delete
+                            <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                            <span data-th-text="#{web.global.delete}"></span>
                         </button>
                     </div>
                 </form>
@@ -531,26 +564,29 @@
                                 <input type="checkbox" onclick="checkAllStorageObjects();"/>
                             </label>
                         </th>
-                        <th>objectId</th>
-                        <th>refType</th>
-                        <th>refId</th>
-                        <th>filename</th>
-                        <th>size</th>
-                        <th>storageId</th>
-                        <th>resourceId</th>
+                        <th>No</th>
+                        <th data-th-text="#{core.storage.StorageObject.refType}">Reference Type</th>
+                        <th data-th-text="#{core.storage.StorageObject.refId}">Reference ID</th>
+                        <th data-th-text="#{core.storage.StorageObject.filename}">Filename</th>
+                        <th data-th-text="#{core.storage.StorageObject.size}">Size</th>
+                        <th data-th-text="#{core.storage.Storage.storageId}">Storage ID</th>
+                        <th data-th-text="#{core.storage.StorageResource.resourceId}">Resource ID</th>
                         <th>-</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr data-duice-bind="storageObjects"
                         data-duice-foreach="storageObject,status">
-                        <td>
+                        <td class="text-align--center">
                             <label>
                                 <input type="checkbox" data-duice-bind="storageObject" data-duice-property="_selected"/>
                             </label>
                         </td>
-                        <td>
-                            <span class="code" data-duice-bind="storageObject" data-duice-property="objectId"></span>
+                        <td class="text-align--center">
+                            <span data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML = storageObjectSearch._total - (storageObjectSearch._page * storageObjectSearch._size + status.index);"
+                                  class="number">
+                            </span>
                         </td>
                         <td>
                             <span class="code" data-duice-bind="storageObject" data-duice-property="refType"></span>
@@ -561,8 +597,10 @@
                         <td>
                             <span class="code" data-duice-bind="storageObject" data-duice-property="filename"></span>
                         </td>
-                        <td>
-                            <span class="number" data-duice-bind="storageObject" data-duice-property="size"></span>
+                        <td class="text-align--right">
+                            <span class="number"
+                                  data-duice-bind="storageObject"
+                                  data-duice-execute="this.innerHTML = `${_formatBytes(storageObject.size)}`;" ></span>
                         </td>
                         <td>
                             <span class="code" data-duice-bind="storageObject" data-duice-property="storageId"></span>
@@ -570,17 +608,34 @@
                         <td>
                             <span class="code" data-duice-bind="storageObject" data-duice-property="resourceId"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <button type="button" class="button small"
                                 data-duice-bind="storageObject"
                                 data-duice-execute="this.dataset.objectId = storageObject.objectId;"
                                 onclick="downloadStorageObject(this.dataset.objectId);">
-                                Download
+                                <img class="icon" th:src="@{/static/image/icon-download.svg}" alt="download"/>
                             </button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
+
+                <div class="display--flex justify-content--space-between">
+                    <div>
+                        <span data-th-text="#{web.global.total}"></span>
+                        <span data-duice-bind="storageObjectSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                        <span data-th-text="#{web.global.rows}"></span>
+                    </div>
+                    <duice-pagination
+                            data-duice-bind="storageObjectSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-total-property="_total"
+                            data-duice-onclick="getStorageObjects(this.dataset.page);">
+                    </duice-pagination>
+                    <div></div>
+                </div>
+
             </div>
         </div>
     </div>
