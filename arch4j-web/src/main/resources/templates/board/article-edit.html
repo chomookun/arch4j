@@ -7,11 +7,11 @@
     <script th:inline="javascript">
         const boardId = /*[[${board.boardId}]]*/'';
         const board = new duice.ObjectProxy({});
-        const articleId = new URL(location.href).searchParams.get('articleId');
-        const articlePassword = /*[[${articlePassword}]]*/'';
+        const articleId = /*[[${articleId}]]*/'';
         const article = new duice.ObjectProxy({
+            articleId: null,
             format: 'TEXT',
-            articleFiles:[]
+            articleFiles: []
         });
         const files = [];
 
@@ -24,35 +24,30 @@
 
         const getArticle = function(articleId) {
             let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
-            _fetch(url).then(response => response.json()).then(data => {
-                duice.ObjectProxy.clear(article);
-                duice.ObjectProxy.assign(article, data);
-                if(articlePassword) {
-                    article.password = articlePassword;
-                    article.passwordConfirm = articlePassword;
-                    duice.ObjectProxy.setReadonly(article, 'password' ,true);
-                    duice.ObjectProxy.setReadonly(article, 'passwordConfirm', true);
-                }
-            });
+            _fetch(url).then(response => response.json())
+                .then(data => {
+                    duice.ObjectProxy.clear(article);
+                    duice.ObjectProxy.assign(article, data);
+                });
         }
 
-        const addArticleFile = function() {
-            let input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.addEventListener('change', function () {
-                let file = this.files[0];
-                let articleFile = {
-                    filename: file.name,
-                    length: file.size
-                }
-                article.articleFiles.push(articleFile);
-                files.push(file);
-            });
-            input.click();
-        }
-
-        const removeArticleFile = function(index) {
-            article.articleFiles.splice(index,1);
+        const uploadArticleFiles = async function(files) {
+            console.log(files);
+            const fileResponses = [];
+            for (const file of files) {
+                console.log(file);
+                let formData = new FormData();
+                formData.set("file", file);
+                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/files`, location.origin);
+                await _fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json()).then(data => {
+                    console.log(data);
+                    fileResponses.push(data);
+                });
+            }
+            return fileResponses;
         }
 
         const saveArticle = function() {
@@ -61,8 +56,8 @@
                     let url;
                     let method;
                     // modify article
-                    if(articleId) {
-                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
+                    if(article.articleId) {
+                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${article.articleId}`, location.origin);
                         method = 'PUT';
                     }
                     // create article
@@ -70,22 +65,14 @@
                         url =new URL(`${_apiUrl}/v1/boards/${boardId}/articles`, location.origin);
                         method = 'POST';
                     }
-                    let formData = new FormData();
-                    formData.append('article', JSON.stringify(article));
-                    files.forEach(file => {
-                        formData.append("files", file);
-                    });
                     _fetch(url, {
+                        headers: {'Content-Type': 'application/json'},
                         method: method,
-                        body: formData
+                        body: JSON.stringify(article)
                     }).then(response => {
                         if(response.ok) {
                             _alert(/*[[#{web.global.saveItemComplete(#{core.board.Article})}]]*/'').then(()=>{
-                                if(articlePassword) {
-                                    history.go(-2);
-                                }else{
-                                    history.back();
-                                }
+                                history.back();
                             });
                         }
                     });
@@ -117,7 +104,7 @@
         // initializes
         _initialize(() => {
             getBoard();
-            if (articleId) {
+            if (new URL(location.href).searchParams.has('articleId')) {
                 getArticle(articleId);
             }
         });

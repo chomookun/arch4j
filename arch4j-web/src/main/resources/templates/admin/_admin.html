@@ -31,6 +31,8 @@
     <link rel="stylesheet" type="text/css" th:href="@{/static/duice/duice-theme.css?version={version}(version=${_scriptVersion})}">
     <!-- duice-pagination -->
     <script th:src="@{/static/duice-plugin/duice-pagination.js?version={version}(version=${_scriptVersion})}"></script>
+    <!-- duice-files-->
+    <script th:src="@{/static/duice-plugin/duice-files.js?version={version}(version=${_scriptVersion})}"></script>
     <!-- duice-marked -->
     <link rel="stylesheet" type="text/css" th:href="@{/static/prism/prism.css?version={version}(version=${_scriptVersion})}">
     <script th:src="@{/static/marked/marked.min.js?version={version}(version=${_scriptVersion})}"></script>
@@ -62,7 +64,7 @@
     <script th:src="@{/static/web.js?version={version}(version=${_scriptVersion})}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/static/web.css?version={version}(version=${_scriptVersion})}"/>
     <script th:inline="javascript">
-        const _apiUrl = [[@{/api}]];
+        const _apiUrl = /*[[${_apiUrl}]]*/'';
         const _sessionTimeout = [[${_sessionTimeout}]];
 
         const _gotoIndex = function() {

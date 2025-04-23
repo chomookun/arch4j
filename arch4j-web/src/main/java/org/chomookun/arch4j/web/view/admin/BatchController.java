@@ -6,6 +6,7 @@ import org.chomookun.arch4j.core.batch.model.JobExecution;
 import org.chomookun.arch4j.core.batch.model.Job;
 import org.chomookun.arch4j.core.batch.model.JobInstance;
 import org.chomookun.arch4j.core.batch.model.JobSearch;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/batch")
 @PreAuthorize("hasAuthority('admin.batch')")
 @RequiredArgsConstructor

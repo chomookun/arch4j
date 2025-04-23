@@ -3,6 +3,7 @@ package org.chomookun.arch4j.web.api.v1.board.dto;
 import lombok.Builder;
 import lombok.Data;
 import org.chomookun.arch4j.core.board.model.Article;
+import org.chomookun.arch4j.web.api.v1.storage.dto.StorageFileResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ArticleResponse {
     private String content;
 
     @Builder.Default
-    private List<ArticleFileResponse> articleFiles = new ArrayList<>();
+    private List<StorageFileResponse> articleFiles = new ArrayList<>();
 
     public static ArticleResponse from(Article article) {
         ArticleResponse articleResponse =  ArticleResponse.builder()
@@ -43,7 +44,7 @@ public class ArticleResponse {
                 .title(article.getTitle())
                 .format(article.getFormat())
                 .content(article.getContent())
-                .articleFiles(article.getArticleFiles().stream().map(ArticleFileResponse::from).collect(Collectors.toList()))
+                .articleFiles(article.getArticleFiles().stream().map(StorageFileResponse::from).collect(Collectors.toList()))
                 .build();
         if (article.getUser() != null) {
             articleResponse.setUserName(article.getUser().getName());

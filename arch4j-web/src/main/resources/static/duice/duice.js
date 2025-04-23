@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.9
+ * duice - v0.3.14
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -154,6 +154,23 @@ var duice = (function (exports) {
         catch (ignore) { }
         // return default
         return undefined;
+    }
+    /**
+     * Calls function
+     * @param fn function
+     * @param context context
+     * @param args arguments
+     */
+    function callFunction(fn, context, ...args) {
+        try {
+            const result = fn.call(context, ...args);
+            return (result && typeof result.then === 'function')
+                ? result
+                : Promise.resolve(result);
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
     }
     /**
      * Runs code
@@ -2747,7 +2764,7 @@ var duice = (function (exports) {
             this.getHtmlElement().setAttribute('autocomplete', 'off');
         }
         /**
-         * Gets element value
+         * Sets element value
          * @param value element value
          */
         setValue(value) {
@@ -3823,6 +3840,7 @@ var duice = (function (exports) {
     exports.TabItem = TabItem;
     exports.TextareaElementFactory = TextareaElementFactory;
     exports.assert = assert;
+    exports.callFunction = callFunction;
     exports.debug = debug;
     exports.findVariable = findVariable;
     exports.getElementAttribute = getElementAttribute;

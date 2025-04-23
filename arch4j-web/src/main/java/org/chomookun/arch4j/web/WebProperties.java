@@ -29,4 +29,15 @@ public final class WebProperties {
     @NotNull
     private final String index;
 
+    private final String apiUrl;
+
+    @NotNull
+    private final Admin admin;
+
+    @Getter
+    @AllArgsConstructor
+    public static final class Admin {
+        private final boolean enabled;
+    }
+
 }

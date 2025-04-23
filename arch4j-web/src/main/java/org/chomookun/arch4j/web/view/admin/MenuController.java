@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.menu.model.Menu;
 import org.chomookun.arch4j.core.menu.MenuService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/menu")
 @PreAuthorize("hasAuthority('admin.menu')")
 @RequiredArgsConstructor

@@ -6,6 +6,7 @@ import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.model.UserSearch;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/user")
 @PreAuthorize("hasAuthority('admin.user')")
 @RequiredArgsConstructor

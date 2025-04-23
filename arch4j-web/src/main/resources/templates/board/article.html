@@ -32,21 +32,22 @@
                 });
         }
 
-        const downloadArticleFile = function(fileId) {
-            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/files/${fileId}`);
+        const downloadArticleFile = function(articleFile) {
+            console.log(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/files/${articleFile.fileId}`);
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/files/${articleFile.fileId}`, location.origin);
             let link = document.createElement('a');
             link.href = url.toString();
             link.click();
         }
 
         const gotoArticleEdit = function() {
-            let url = new URL(`${_rootUrl}/board/${boardId}/article/edit`, location.origin);
+            let url = new URL(`${location.pathname}/edit`, location.origin);
             url.searchParams.set('articleId', articleId);
             location.href = url.toString();
         }
 
         const gotoBoard = function() {
-            location.href = `${_rootUrl}/board/${boardId}`;
+            location.href = `${location.origin}/board/${boardId}`;
         }
 
         // initializes

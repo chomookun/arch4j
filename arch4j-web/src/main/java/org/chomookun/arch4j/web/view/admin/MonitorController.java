@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/monitor")
 @PreAuthorize("hasAuthority('admin.monitor')")
 @RequiredArgsConstructor

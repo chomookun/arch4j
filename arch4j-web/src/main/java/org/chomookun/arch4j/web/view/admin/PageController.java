@@ -5,6 +5,7 @@ import org.chomookun.arch4j.core.page.model.Page;
 import org.chomookun.arch4j.core.page.model.PageSearch;
 import org.chomookun.arch4j.core.page.PageService;
 import org.chomookun.arch4j.core.page.model.PageWidget;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.validation.Valid;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/page")
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('admin.page')")

@@ -50,11 +50,14 @@
         }
 
         const gotoArticle = function(articleId) {
-            location.href = `${_rootUrl}/board/${boardId}/article?articleId=${articleId}`;
+            let url = new URL(`${location.pathname}/article`, location.origin);
+            url.searchParams.set('articleId', articleId);
+            location.href = url.toString();
         }
 
         const gotoArticleEdit = function() {
-            location.href = `${_rootUrl}/board/${boardId}/article/edit`;
+            let url = new URL(`${location.pathname}/article/edit`, location.origin);
+            location.href = url.toString();
         }
 
         // initializes

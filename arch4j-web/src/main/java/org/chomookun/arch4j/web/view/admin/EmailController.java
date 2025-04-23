@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.email.EmailService;
 import org.chomookun.arch4j.core.email.model.Email;
 import org.chomookun.arch4j.core.email.model.EmailSearch;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.validation.Valid;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/email")
 @PreAuthorize("hasAuthority('admin.email')")
 @RequiredArgsConstructor

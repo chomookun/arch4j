@@ -8,23 +8,28 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import java.time.Instant;
 
 @Entity
-@Table(name = "core_storage_object")
+@Table(
+        name = "core_storage_file",
+        indexes = {
+                @Index(name = "idx_storage_object_ref", columnList = "ref_type, ref_id")
+        }
+)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StorageObjectEntity extends BaseEntity {
+public class StorageFileEntity extends BaseEntity {
 
     @Id
-    @Column(name = "object_id")
-    private String objectId;
+    @Column(name = "file_id", length = 32)
+    private String fileId;
 
-    @Column(name = "ref_type", length = 32, nullable = false)
-    private String refType;
+    @Column(name = "target_type", length = 32)
+    private String targetType;
 
-    @Column(name = "ref_id", length = 128, nullable = false)
-    private String refId;
+    @Column(name = "target_id", length = 128)
+    private String targetId;
 
     @Column(name = "filename")
     private String filename;
@@ -32,8 +37,8 @@ public class StorageObjectEntity extends BaseEntity {
     @Column(name = "size")
     private Long size;
 
-    @Column(name = "last_modified")
-    private Instant lastModified;
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     @Column(name = "storage_id", length = 32)
     private String storageId;

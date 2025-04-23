@@ -29,8 +29,4 @@ public class StorageEntity extends BaseEntity {
     @Lob
     private String storageClientConfig;
 
-    @Column(name = "sanitize_enabled", length = 1)
-    @Convert(converter = BooleanConverter.class)
-    private boolean sanitizeEnabled;
-
 }

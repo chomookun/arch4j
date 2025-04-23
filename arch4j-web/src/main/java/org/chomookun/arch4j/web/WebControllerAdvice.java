@@ -91,6 +91,11 @@ public class WebControllerAdvice {
         return webProperties.getTitle();
     }
 
+    @ModelAttribute("_apiUrl")
+    public String apiUrl() {
+        return webProperties.getApiUrl();
+    }
+
     @ModelAttribute("_locales")
     public List<Map<String,String>> locales() {
         return coreProperties.getSupportedLocales().stream()

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.storage.client.StorageClient;
 import org.chomookun.arch4j.core.storage.client.StorageClientFactory;
 import org.chomookun.arch4j.core.storage.model.Storage;
+import org.chomookun.arch4j.core.storage.model.StorageFile;
 import org.chomookun.arch4j.core.storage.model.StorageResource;
 import org.chomookun.arch4j.core.storage.model.StorageResourceInfo;
 import org.springframework.stereotype.Service;
@@ -54,31 +55,35 @@ public class StorageResourceService {
         return storageResourceInfo;
     }
 
-    public StorageResource getStorageResource(String storageId, String resourceId) {
+    public Optional<StorageResource> getStorageResource(String storageId, String resourceId) {
         Storage storage = storageService.getStorage(storageId).orElseThrow();
         StorageClient storageClient = StorageClientFactory.getStorageClient(storage);
-        return storageClient.getResource(resourceId);
+        return Optional.ofNullable(storageClient.getResource(resourceId));
     }
 
-    public StorageResource createStorageFolder(String storageId, String parentResourceId, String name) {
+    public Optional<StorageResource> getStorageResource(StorageFile storageFile) {
+        return getStorageResource(storageFile.getStorageId(), storageFile.getResourceId());
+    }
+
+    public StorageResource createStorageResourceFolder(String storageId, String parentResourceId, String name) {
         Storage storage = storageService.getStorage(storageId).orElseThrow();
         StorageClient storageClient = StorageClientFactory.getStorageClient(storage);
         return storageClient.createFolderResource(parentResourceId, name);
     }
 
-    public StorageResource createStorageFile(String storageId, String parentResourceId, String name, InputStream inputStream) {
+    public StorageResource createStorageResourceFile(String storageId, String parentResourceId, String name, InputStream inputStream) {
         Storage storage = storageService.getStorage(storageId).orElseThrow();
         StorageClient storageClient = StorageClientFactory.getStorageClient(storage);
         return storageClient.createFileResource(parentResourceId, name, inputStream);
     }
 
-    public void deleteStorageFolder(String storageId, String resourceId) {
+    public void deleteStorageResourceFolder(String storageId, String resourceId) {
         Storage storage = storageService.getStorage(storageId).orElseThrow();
         StorageClient storageClient = StorageClientFactory.getStorageClient(storage);
         storageClient.deleteFolderResource(resourceId);
     }
 
-    public void deleteStorageFile(String storageId, String resourceId) {
+    public void deleteStorageResourceFile(String storageId, String resourceId) {
         Storage storage = storageService.getStorage(storageId).orElseThrow();
         StorageClient storageClient = StorageClientFactory.getStorageClient(storage);
         storageClient.deleteFileResource(resourceId);

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.arch4j.core.execution.model.ExecutionSearch;
 import org.chomookun.arch4j.core.execution.ExecutionService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/execution")
 @PreAuthorize("hasAuthority('admin.execution')")
 @RequiredArgsConstructor

@@ -23,6 +23,11 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
+    /**
+     * Saves board
+     * @param board board
+     * @return saved board
+     */
     @Transactional
     public Board saveBoard(Board board) {
         BoardEntity boardEntity = boardRepository.findById(board.getBoardId())

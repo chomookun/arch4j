@@ -6,7 +6,7 @@ import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 @RequiredArgsConstructor
 class StorageResourceServiceTest extends CoreTestSupport {
 
-    final StorageObjectService storageResourceService;
+    final StorageFileService storageResourceService;
 
     void saveStorageResource() {
 

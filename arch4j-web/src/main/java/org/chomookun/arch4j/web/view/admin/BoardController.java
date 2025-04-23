@@ -5,6 +5,7 @@ import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.board.model.BoardSearch;
 import org.chomookun.arch4j.core.board.BoardService;
 import org.chomookun.arch4j.web.WebProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/board")
 @PreAuthorize("hasAuthority('admin.board')")
 @RequiredArgsConstructor

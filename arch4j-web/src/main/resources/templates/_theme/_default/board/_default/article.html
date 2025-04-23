@@ -69,19 +69,13 @@
         <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-file.svg(_theme=${_theme})}" alt="file"/>
         <span data-th-text="#{core.board.Article.files}"></span>
     </div>
-    <div class="grid-column--12">
-        <div data-duice-bind="article.articleFiles" data-duice-foreach="articleFile,status" class="margin-right--1em">
-            <span data-duice-bind="articleFile" data-duice-property="filename"
-                  data-duice-execute="this.dataset.fileId=articleFile.fileId"
-                  class="cursor--pointer font-size--smaller font-weight--bold"
-                  onclick="downloadArticleFile(this.dataset.fileId);">
-            </span>
-            <span class="font-size--smaller" data-duice-bind="articleFile" data-duice-execute="
-                this.innerHTML = `(${articleFile.length} bytes)`;
-                ">
-            </span>
-        </div>
-    </div>
+    <duice-files
+            data-duice-bind="article.articleFiles"
+            data-duice-filename-property="filename"
+            data-duice-size-property="size"
+            data-duice-on-click="downloadArticleFile"
+            class="code font-size--smaller">
+    </duice-files>
 </div>
 </th:block>
 <!-- ================================================== -->

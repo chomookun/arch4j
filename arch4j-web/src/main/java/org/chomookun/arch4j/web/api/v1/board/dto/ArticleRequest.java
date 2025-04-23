@@ -3,6 +3,7 @@ package org.chomookun.arch4j.web.api.v1.board.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.chomookun.arch4j.core.board.model.Article;
+import org.chomookun.arch4j.web.api.v1.storage.dto.StorageFileRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,6 @@ public class ArticleRequest {
     private String content;
 
     @Builder.Default
-    private List<ArticleFileRequest> articleFiles = new ArrayList<>();
+    private List<StorageFileRequest> articleFiles = new ArrayList<>();
 
 }

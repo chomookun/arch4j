@@ -98,3 +98,7 @@ web:
   favicon: /static/image/arch4j-icon.svg
   title: ARCH4J (Application Archetype for Java)
   index: git/arch4j/README.md
+  apiUrl: /api
+  admin:
+    enabled: true
+

@@ -9,6 +9,7 @@ import org.chomookun.arch4j.core.security.model.AuthoritySearch;
 import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.security.model.RoleSearch;
 import org.chomookun.arch4j.core.user.model.User;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/security")
 @PreAuthorize("hasAuthority('admin.security')")
 @RequiredArgsConstructor

@@ -2,6 +2,7 @@ package org.chomookun.arch4j.core.board.model;
 
 import lombok.*;
 import org.chomookun.arch4j.core.board.entity.ArticleEntity;
+import org.chomookun.arch4j.core.storage.model.StorageFile;
 import org.chomookun.arch4j.core.user.model.User;
 
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class Article {
     private User user;
 
     @Builder.Default
-    private List<ArticleFile> articleFiles = new ArrayList<>();
+    private List<StorageFile> articleFiles = new ArrayList<>();
 
     public enum Format { TEXT, MARKDOWN }
 

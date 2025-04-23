@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.code.model.Code;
 import org.chomookun.arch4j.core.code.model.CodeSearch;
 import org.chomookun.arch4j.core.code.CodeService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/code")
 @PreAuthorize("hasAuthority('admin.code')")
 @RequiredArgsConstructor

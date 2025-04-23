@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class StorageObjectSearch {
+public class StorageFileSearch {
 
-    private String refType;
+    private String targetType;
 
-    private String refId;
+    private String targetId;
 
     private String filename;
 

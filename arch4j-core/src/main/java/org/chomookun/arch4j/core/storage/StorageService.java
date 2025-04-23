@@ -28,7 +28,6 @@ public class StorageService {
         storageEntity.setName(storage.getName());
         storageEntity.setStorageClientId(storage.getStorageClientId());
         storageEntity.setStorageClientConfig(storage.getStorageClientConfig());
-        storageEntity.setSanitizeEnabled(storage.isSanitizeEnabled());
         StorageEntity savedStorageEntity = storageRepository.saveAndFlush(storageEntity);
         return Storage.from(savedStorageEntity);
     }

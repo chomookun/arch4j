@@ -115,7 +115,7 @@ html {
     position: sticky;
     top: 0;
 }
-.table > tbody > tr.selected{
+.table > tbody > .selected{
     background-color: var(--duice-table-tbody-hover-background);
 }
 

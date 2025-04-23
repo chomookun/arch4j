@@ -205,11 +205,11 @@ values
 
 -- core_storage
 insert into `core_storage`
-    (`storage_id`,`name`,`storage_client_id`,`storage_client_config`)
+    (`storage_id`,`system_required`,`name`,`storage_client_id`,`storage_client_config`)
 values
-    ('board','Board Storage','LOCAL','location=${user.home}/.arch4j/board'),
-    ('batch','Batch Storage','LOCAL','location=${user.home}/.arch4j/batch'),
-    ('test','Test Storage','LOCAL', 'location=${user.home}/.arch4j/test');
+    ('board', 'Y','Board Storage','LOCAL','location=${user.home}/.arch4j/board'),
+    ('batch', null,'Batch Storage','LOCAL','location=${user.home}/.arch4j/batch'),
+    ('test', null,'Test Storage','LOCAL', 'location=${user.home}/.arch4j/test');
 
 -- core_board
 insert into `core_board` (

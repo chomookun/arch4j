@@ -43,6 +43,8 @@ public class ArticleController {
             @RequestParam(value = "articleId", required = false) String articleId
     ) {
         ModelAndView modelAndView = new ModelAndView("board/article-edit");
+        articleId = articleId == null ? articleService.generateArticleId() : articleId; // new article (draft id)
+        modelAndView.addObject("articleId", articleId);
         Board board = boardService.getBoard(boardId).orElseThrow();
         modelAndView.addObject("board", board);
         return modelAndView;

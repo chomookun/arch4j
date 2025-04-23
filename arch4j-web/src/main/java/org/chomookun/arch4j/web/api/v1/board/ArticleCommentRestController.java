@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/v1/boards/{boardId}/articles/{articleId}/comments")
 @RequiredArgsConstructor
-public class BoardArticleCommentRestController {
+public class ArticleCommentRestController {
 
     private final ArticleCommentService articleCommentService;
 

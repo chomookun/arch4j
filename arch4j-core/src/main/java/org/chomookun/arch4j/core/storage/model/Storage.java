@@ -24,8 +24,6 @@ public class Storage extends BaseModel {
 
     private String storageClientConfig;
 
-    private boolean sanitizeEnabled;
-
     /**
      * Factory method from storage entity
      * @param storageEntity storage entity
@@ -37,7 +35,6 @@ public class Storage extends BaseModel {
                 .name(storageEntity.getName())
                 .storageClientId(storageEntity.getStorageClientId())
                 .storageClientConfig(storageEntity.getStorageClientConfig())
-                .sanitizeEnabled(storageEntity.isSanitizeEnabled())
                 .build();
     }
 
