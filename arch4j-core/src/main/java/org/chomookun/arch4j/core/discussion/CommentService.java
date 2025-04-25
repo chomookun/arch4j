@@ -1,9 +1,9 @@
-package org.chomookun.arch4j.core.comment;
+package org.chomookun.arch4j.core.discussion;
 
 import lombok.AllArgsConstructor;
-import org.chomookun.arch4j.core.comment.entity.CommentEntity;
-import org.chomookun.arch4j.core.comment.model.Comment;
-import org.chomookun.arch4j.core.comment.repository.CommentRepository;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity;
+import org.chomookun.arch4j.core.discussion.model.Comment;
+import org.chomookun.arch4j.core.discussion.repository.CommentRepository;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.user.UserService;
 import org.springframework.stereotype.Service;

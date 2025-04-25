@@ -29,19 +29,10 @@ public class ArticleService {
 
     private final ArticleFileService articleFileService;
 
-    /**
-     * Generates article id
-     * @return article id
-     */
     public String generateArticleId() {
         return IdGenerator.uuid();
     }
 
-    /**
-     * Saves article
-     * @param article article
-     * @return saved article
-     */
     @Transactional
     public Article saveArticle(Article article) {
         ValidationUtil.validate(article);
@@ -76,12 +67,6 @@ public class ArticleService {
         return getArticle(savedArticleEntity.getArticleId()).orElseThrow();
     }
 
-    /**
-     * Gets articles
-     * @param articleSearch article search
-     * @param pageable pageable
-     * @return page of articles
-     */
     public Page<Article> getArticles(ArticleSearch articleSearch, Pageable pageable) {
         Page<ArticleEntity> articleEntityPage = articleRepository.findAll(articleSearch, pageable);
         List<Article> articles = articleEntityPage.getContent().stream()
@@ -92,13 +77,10 @@ public class ArticleService {
         return new PageImpl<>(articles, pageable, total);
     }
 
-    /**
-     * Gets article details
-     * @param articleId article id
-     * @return article details
-     */
     public Optional<Article> getArticle(String articleId) {
-        Article article = articleRepository.findById(articleId).map(Article::from).orElse(null);
+        Article article = articleRepository.findById(articleId)
+                .map(Article::from)
+                .orElse(null);
         if (article != null) {
             populateArticle(article);
             List<StorageFile> files = articleFileService.getArticleFiles(article.getArticleId());
@@ -107,20 +89,12 @@ public class ArticleService {
         return Optional.ofNullable(article);
     }
 
-    /**
-     * Populates article details
-     * @param article article
-     */
     private void populateArticle(Article article) {
         if (article.getUserId() != null) {
              userService.getUser(article.getUserId()).ifPresent(article::setUser);
         }
     }
 
-    /**
-     * Deletes article
-     * @param articleId article id
-     */
     @Transactional
     public void deleteArticle(String articleId) {
         articleRepository.deleteById(articleId);

@@ -6,9 +6,9 @@ public interface StorageClientDefinition extends Aware {
 
     String getStorageClientId();
 
-    String getStorageClientName();
+    String getName();
 
-    String getStorageClientConfigTemplate();
+    String getConfigTemplate();
 
     Class<? extends StorageClient> getClassType();
 

@@ -24,11 +24,6 @@ public class Storage extends BaseModel {
 
     private String storageClientConfig;
 
-    /**
-     * Factory method from storage entity
-     * @param storageEntity storage entity
-     * @return storage
-     */
     public static Storage from(StorageEntity storageEntity) {
         return Storage.builder()
                 .storageId(storageEntity.getStorageId())

@@ -25,7 +25,6 @@ class BoardServiceTest extends CoreTestSupport {
                 .name("test board")
                 .message("test message")
                 .fileEnabled(true)
-                .commentEnabled(true)
                 .build();
         Arrays.asList("ADMIN","invalid").forEach(roleId -> {
             testBoard.getAccessRoles().add(Role.builder()
@@ -35,12 +34,6 @@ class BoardServiceTest extends CoreTestSupport {
                     .roleId(roleId)
                     .build());
             testBoard.getWriteRoles().add(Role.builder()
-                    .roleId(roleId)
-                    .build());
-            testBoard.getFileRoles().add(Role.builder()
-                    .roleId(roleId)
-                    .build());
-            testBoard.getCommentRoles().add(Role.builder()
                     .roleId(roleId)
                     .build());
         });

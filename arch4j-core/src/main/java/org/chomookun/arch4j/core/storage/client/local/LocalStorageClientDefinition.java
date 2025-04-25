@@ -17,12 +17,12 @@ public class LocalStorageClientDefinition implements StorageClientDefinition {
     }
 
     @Override
-    public String getStorageClientName() {
+    public String getName() {
         return "Local File System";
     }
 
     @Override
-    public String getStorageClientConfigTemplate() {
+    public String getConfigTemplate() {
         StringJoiner template = new StringJoiner("\n");
         template.add("location=[root directory]");
         return template.toString();

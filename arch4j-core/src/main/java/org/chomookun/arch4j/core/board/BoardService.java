@@ -23,11 +23,6 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    /**
-     * Saves board
-     * @param board board
-     * @return saved board
-     */
     @Transactional
     public Board saveBoard(Board board) {
         BoardEntity boardEntity = boardRepository.findById(board.getBoardId())
@@ -41,7 +36,12 @@ public class BoardService {
         boardEntity.setMessage(board.getMessage());
         boardEntity.setSkin(board.getSkin());
         boardEntity.setPageSize(board.getPageSize());
-        // access policy
+        boardEntity.setFileEnabled(board.isFileEnabled());
+        boardEntity.setStorageId(board.getStorageId());
+        boardEntity.setFileSizeLimit(board.getFileSizeLimit());
+        boardEntity.setDiscussionEnabled(board.isDiscussionEnabled());
+        boardEntity.setDiscussionId(board.getDiscussionId());
+        // access roles
         boardEntity.getAccessBoardRoleEntities().clear();
         board.getAccessRoles().forEach(accessRole -> {
             BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
@@ -51,7 +51,7 @@ public class BoardService {
                     .build();
             boardEntity.getAccessBoardRoleEntities().add(boardRoleEntity);
         });
-        // read policy
+        // read roles
         boardEntity.getReadBoardRoleEntities().clear();
         board.getReadRoles().forEach(readRole -> {
             BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
@@ -61,7 +61,7 @@ public class BoardService {
                     .build();
             boardEntity.getReadBoardRoleEntities().add(boardRoleEntity);
         });
-        // write policy
+        // write roles
         boardEntity.getWriteBoardRoleEntities().clear();
         board.getWriteRoles().forEach(writeRole -> {
             BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
@@ -71,34 +71,10 @@ public class BoardService {
                     .build();
             boardEntity.getWriteBoardRoleEntities().add(boardRoleEntity);
         });
-        // file
-        boardEntity.setFileEnabled(board.isFileEnabled());
-        boardEntity.setFileSizeLimit(board.getFileSizeLimit());
-        boardEntity.getFileBoardRoleEntities().clear();
-        board.getFileRoles().forEach(fileRole -> {
-            BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
-                    .boardId(boardEntity.getBoardId())
-                    .roleId(fileRole.getRoleId())
-                    .type("FILE")
-                    .build();
-            boardEntity.getFileBoardRoleEntities().add(boardRoleEntity);
-        });
-        // comment
-        boardEntity.setCommentEnabled(board.isCommentEnabled());
-        boardEntity.getCommentBoardRoleEntities().clear();
-        board.getCommentRoles().forEach(commentRole -> {
-            BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
-                    .boardId(boardEntity.getBoardId())
-                    .roleId(commentRole.getRoleId())
-                    .type("COMMENT")
-                    .build();
-            boardEntity.getCommentBoardRoleEntities().add(boardRoleEntity);
-        });
         // save
         BoardEntity savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
         // return
-        return this.getBoard(savedBoardEntity.getBoardId())
-                .orElseThrow();
+        return this.getBoard(savedBoardEntity.getBoardId()).orElseThrow();
     }
 
     public Optional<Board> getBoard(String boardId) {

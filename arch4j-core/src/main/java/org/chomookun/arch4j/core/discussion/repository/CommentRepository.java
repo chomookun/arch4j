@@ -1,7 +1,7 @@
-package org.chomookun.arch4j.core.comment.repository;
+package org.chomookun.arch4j.core.discussion.repository;
 
-import org.chomookun.arch4j.core.comment.entity.CommentEntity;
-import org.chomookun.arch4j.core.comment.entity.CommentEntity_;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity_;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;

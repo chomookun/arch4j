@@ -5,12 +5,15 @@ import org.chomookun.arch4j.core.board.model.Article;
 import org.chomookun.arch4j.core.board.ArticleService;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.board.BoardService;
-import org.chomookun.arch4j.core.security.support.SecurityUtils;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.chomookun.arch4j.core.discussion.DiscussionService;
+import org.chomookun.arch4j.core.discussion.model.Discussion;
+import org.chomookun.arch4j.core.discussion.provider.DiscussionProvider;
+import org.chomookun.arch4j.core.discussion.provider.DiscussionProviderFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Properties;
 
 @Controller
 @RequestMapping("/board/{boardId}/article")
@@ -21,7 +24,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    private final PasswordEncoder passwordEncoder;
+    private final DiscussionService discussionService;
 
     @GetMapping
     public ModelAndView index(
@@ -31,9 +34,25 @@ public class ArticleController {
         Board board = boardService.getBoard(boardId).orElseThrow();
         Article article = articleService.getArticle(articleId).orElseThrow();
         ModelAndView modelAndView = new ModelAndView("board/article");
+        modelAndView.addObject("boardId", boardId);
+        modelAndView.addObject("articleId", articleId);
         modelAndView.addObject("_title", article.getTitle());
         modelAndView.addObject("board", board);
         modelAndView.addObject("article", article);
+        // discussion
+        if (board.isDiscussionEnabled()) {
+            Discussion discussion = discussionService.getDiscussion(board.getDiscussionId()).orElseThrow();
+            DiscussionProvider discussionProvider = DiscussionProviderFactory.getDiscussionProvider(discussion);
+            modelAndView.addObject("discussionProvider", discussionProvider);
+//            Properties discussionConfig = discussionProvider.getConfig();
+//            discussionConfig.put("site", "https://arch4j.chomookun.org");   // for test
+//            String discussionUri = "/board/" + boardId + "/article/" + articleId;
+//            String discussionIdentifier = String.format("board:article:%s", articleId);
+//            modelAndView.addObject("discussionConfig", discussionConfig);
+//            modelAndView.addObject("discussionUri", discussionUri);
+//            modelAndView.addObject("discussionIdentifier", discussionIdentifier);
+        }
+        // returns
         return modelAndView;
     }
 
@@ -44,70 +63,11 @@ public class ArticleController {
     ) {
         ModelAndView modelAndView = new ModelAndView("board/article-edit");
         articleId = articleId == null ? articleService.generateArticleId() : articleId; // new article (draft id)
+        modelAndView.addObject("boardId", boardId);
         modelAndView.addObject("articleId", articleId);
         Board board = boardService.getBoard(boardId).orElseThrow();
         modelAndView.addObject("board", board);
         return modelAndView;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    @RequestMapping(value = "edit", method = {RequestMethod.GET, RequestMethod.POST})
-//    @PreAuthorize("@boardPermissionEvaluator.hasWritePermission(#boardId)")
-//    public ModelAndView index(
-//            @PathVariable("boardId") String boardId,
-//            @RequestParam(value = "articleId", required = false) String articleId,
-//            @RequestParam(value = "password", required = false) String password
-//    ){
-//        ModelAndView modelAndView = new ModelAndView("board/article-write.html");
-//        // get board info
-//        Board board = boardService.getBoard(boardId).orElseThrow();
-//        modelAndView.addObject("board", board);
-//        // when edit article
-//        if(articleId != null) {
-//            // get article
-//            Article article = articleService.getArticle(articleId).orElseThrow();
-//            modelAndView.addObject("article", article);
-//            // when writer is anonymous and password is defined.
-//            if(article.getUserId() == null) {
-//                // password not found
-//                if(password == null) {
-//                    modelAndView.setViewName("board/check-password.html");
-//                    return modelAndView;
-//                }
-//                //check password
-//                if(!passwordEncoder.matches(password, article.getPassword())) {
-//                    throw new RuntimeException("password not matches");
-//                }
-//                // append password
-//                modelAndView.addObject("articlePassword", password);
-//            }
-//            // writer is authenticated user, check same with current user
-//            else{
-//                // check authenticated
-//                if(!SecurityUtils.isAuthenticated()) {
-//                    throw new RuntimeException("not authenticated");
-//                }
-//                // check article writer
-//                if(!article.getUserId().equals(SecurityUtils.getCurrentUserId())){
-//                    throw new RuntimeException("not writer");
-//                }
-//            }
-//        }
-//        // return
-//        return modelAndView;
-//    }
-
 
 }

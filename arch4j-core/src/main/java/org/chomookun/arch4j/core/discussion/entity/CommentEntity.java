@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.comment.entity;
+package org.chomookun.arch4j.core.discussion.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

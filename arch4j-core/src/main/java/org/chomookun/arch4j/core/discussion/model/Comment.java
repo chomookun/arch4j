@@ -1,7 +1,7 @@
-package org.chomookun.arch4j.core.comment.model;
+package org.chomookun.arch4j.core.discussion.model;
 
 import lombok.*;
-import org.chomookun.arch4j.core.comment.entity.CommentEntity;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity;
 
 import java.time.Instant;
 

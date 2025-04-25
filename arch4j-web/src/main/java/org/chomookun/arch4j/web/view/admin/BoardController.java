@@ -35,7 +35,7 @@ public class BoardController {
 
     @GetMapping
     public ModelAndView index() throws IOException {
-        ModelAndView modelAndView = new ModelAndView("admin/board.html");
+        ModelAndView modelAndView = new ModelAndView("admin/board");
         modelAndView.addObject("skinNames", getSkinNames());
         return modelAndView;
     }

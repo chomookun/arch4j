@@ -19,7 +19,7 @@ class BoardRepositoryTest extends CoreTestSupport {
 
     private BoardEntity getTestBoardEntity() {
         BoardEntity boardEntity = BoardEntity.builder()
-                .boardId("test-board")
+                .storageId("test-board")
                 .name("Test board")
                 .build();
         Arrays.asList("role-1","role-2").forEach(roleId -> {

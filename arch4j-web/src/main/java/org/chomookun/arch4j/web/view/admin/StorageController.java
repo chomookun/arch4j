@@ -166,7 +166,7 @@ public class StorageController {
         List<StorageFile> storageObjects = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             // upload
-            StorageFile storageFile = storageFileService.uploadStorageFile(multipartFile, storageId);
+            StorageFile storageFile = storageFileService.uploadStorageFile(multipartFile, storageId, targetType);
             // attach
             storageFileService.attachStorageFile(storageFile.getFileId(), targetType, targetId);
             // adds to result

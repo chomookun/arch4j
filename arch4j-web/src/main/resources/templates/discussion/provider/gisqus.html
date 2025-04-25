@@ -1,0 +1,16 @@
+<script th:inline="javascript"
+        src="https://giscus.app/client.js"
+        th:data-repo="${discussionProvider.config['repo']}"
+        th:data-repo-id="${discussionProvider.config['repo-id']}"
+        th:data-category="${discussionProvider.config['category']}"
+        th:data-category-id="${discussionProvider.config['category-id']}"
+        data-mapping="url"
+        th:data-strict="${discussionProvider.config['strict']}"
+        th:data-reactions-enabled="${discussionProvider.config['reactions-enabled']}"
+        th:data-emit-metadata="${discussionProvider.config['emit-metadata']}"
+        th:data-input-position="${discussionProvider.config['input-position']}"
+        data-theme="preferred_color_scheme"
+        th:data-lang="${_locale.language}"
+        crossorigin="anonymous"
+        async>
+</script>

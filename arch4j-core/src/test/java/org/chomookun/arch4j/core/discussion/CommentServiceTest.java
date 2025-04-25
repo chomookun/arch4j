@@ -2,9 +2,8 @@ package org.chomookun.arch4j.core.discussion;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.comment.CommentService;
-import org.chomookun.arch4j.core.comment.entity.CommentEntity;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.junit.jupiter.api.Test;

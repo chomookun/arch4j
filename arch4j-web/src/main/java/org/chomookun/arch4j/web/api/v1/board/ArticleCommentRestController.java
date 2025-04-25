@@ -3,10 +3,10 @@ package org.chomookun.arch4j.web.api.v1.board;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.ArticleCommentService;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
-import org.chomookun.arch4j.web.api.v1.comment.dto.CommentRequest;
-import org.chomookun.arch4j.web.api.v1.comment.dto.CommentResponse;
+import org.chomookun.arch4j.web.api.v1.discussion.dto.CommentRequest;
+import org.chomookun.arch4j.web.api.v1.discussion.dto.CommentResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class ArticleCommentRestController {
     @PostMapping
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<CommentResponse> createArticleComment(
+    public ResponseEntity<CommentResponse> createComment(
             @PathVariable("boardId") String boardId,
             @PathVariable("articleId") String articleId,
             @RequestBody CommentRequest commentRequest

@@ -1,8 +1,8 @@
-package org.chomookun.arch4j.web.api.v1.comment.dto;
+package org.chomookun.arch4j.web.api.v1.discussion.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 
 import java.time.Instant;
 
@@ -16,7 +16,7 @@ public class CommentResponse {
 
     private String thread;
 
-    private String parentCommentId;
+    private String parenCommentId;
 
     private String userId;
 
@@ -35,7 +35,7 @@ public class CommentResponse {
                 .commentId(comment.getCommentId())
                 .createdAt(comment.getCreatedAt())
                 .thread(comment.getThread())
-                .parentCommentId(comment.getParentCommentId())
+                .parenCommentId(comment.getParentCommentId())
                 .userId(comment.getUserId())
                 .userName(comment.getUserName())
                 .userIcon(comment.getUserIcon())

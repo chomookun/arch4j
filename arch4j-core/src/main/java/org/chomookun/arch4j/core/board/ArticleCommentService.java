@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.core.board;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.comment.CommentService;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.CommentService;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

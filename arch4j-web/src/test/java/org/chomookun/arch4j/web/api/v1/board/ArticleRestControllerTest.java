@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ArticleRestControllerTest extends WebTestSupport {
 
     ArticleRequest testArticleRequest = ArticleRequest.builder()
-            .articleId(null)
+            .id(null)
             .title("test title")
             .format(Article.Format.TEXT)
             .content("test content")

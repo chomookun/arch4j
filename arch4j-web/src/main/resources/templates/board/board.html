@@ -6,8 +6,10 @@
 <main layout:fragment="_main">
     <script th:inline="javascript">
         // defines
-        const boardId = [[${board.boardId}]];
-        const board = new duice.ObjectProxy({});
+        const boardId = /*[[${boardId}]]*/'';
+        const board = new duice.ObjectProxy({
+            id: null
+        });
         const articleSearch = new duice.ObjectProxy({
             key: 'title',
             value: null,

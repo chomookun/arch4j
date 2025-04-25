@@ -7,7 +7,7 @@
     <script th:inline="javascript">
         // board search condition
         const boardSearch = new duice.ObjectProxy({
-            key: 'boardId',
+            key: 'id',
             value: null,
             _page: 0,
             _size: 20,
@@ -17,19 +17,17 @@
         const boards = new duice.ArrayProxy([]);
         // board
         const board = new duice.ObjectProxy({
-            boardId: null,
+            id: null,
             messageFormat: 'TEXT',
             accessRoles: [],
             readRoles: [],
-            writeRoles: [],
-            fileRoles: [],
-            commentRoles: []
+            writeRoles: []
         });
         duice.ObjectProxy.setDisabledAll(board, true);
         duice.ObjectProxy.onPropertyChanging(board, async event => {
-            if (event.getProperty() === 'boardId') {
-                if (!await validateBoardId(event.getValue())) {
-                    duice.ObjectProxy.focus(board, 'boardId');
+            if (event.getProperty() === 'id') {
+                if (!await validateId(event.getValue())) {
+                    duice.ObjectProxy.focus(board, 'id');
                     return false;
                 }
             }
@@ -57,38 +55,28 @@
                     duice.ArrayProxy.assign(boards, data.content);
                     boardSearch._total = data.totalElements;
                     // select current item
-                    duice.ArrayProxy.selectItem(boards, boards.findIndex(item => item.boardId === board.boardId));
+                    duice.ArrayProxy.selectItem(boards, boards.findIndex(item => item.id === board.id));
                 });
         }
 
-        /**
-         * resets boards
-         */
         function resetBoards() {
             duice.ObjectProxy.reset(boardSearch);
             getBoards();
         }
 
-        /**
-         * gets board
-         * @param boardId board id
-         */
-        function getBoard(boardId) {
+        function getBoard(id) {
             let url = new URL(`${location.pathname}/get-board`, location.origin);
-            url.searchParams.append('boardId', boardId);
+            url.searchParams.append('id', id);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(board, data);
                     duice.ObjectProxy.setDisabledAll(board, false);
-                    duice.ObjectProxy.setReadonly(board, 'boardId', true);
+                    duice.ObjectProxy.setReadonly(board, 'id', true);
                     board._new = false;
                 });
         }
 
-        /**
-         * creates board
-         */
         function createBoard() {
             duice.ObjectProxy.clear(board);
             duice.ObjectProxy.assign(board, {
@@ -98,33 +86,28 @@
                 pageSize: 10,
                 fileEnabled: true,
                 fileSizeLimit: 1,
-                commentEnabled: true
+                discussionEnabled: true
             });
             duice.ObjectProxy.setDisabledAll(board, false);
-            duice.ObjectProxy.setReadonly(board, 'boardId', false);
-            duice.ObjectProxy.focus(board, 'boardId');
+            duice.ObjectProxy.setReadonly(board, 'id', false);
+            duice.ObjectProxy.focus(board, 'id');
         }
 
-        /**
-         * validates board id
-         * @param boardId
-         * @returns {Promise<boolean>}
-         */
-        async function validateBoardId(boardId) {
+        async function validateId(id) {
             // check blank
-            if (!boardId) {
-                await _alert(/*[[#{web.global.itemEmpty(#{core.board.Board.boardId})}]]*/'');
-                duice.ObjectProxy.focus(board, 'boardId');
+            if (!id) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.board.Board.id})}]]*/'');
+                duice.ObjectProxy.focus(board, 'id');
                 return false;
             }
             // check duplicated id
             let url = new URL(`${location.pathname}/get-board`, location.origin);
-            url.searchParams.append('boardId', boardId);
+            url.searchParams.append('id', id);
             let response = await _fetch(url, {}, true);
             if (response.ok) {
                 let board = await response.json();
                 if (board) {
-                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.board.Board.boardId})}]]*/'');
+                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.board.Board.id})}]]*/'');
                     return false;
                 }
             }
@@ -139,7 +122,7 @@
         async function saveBoard() {
             // if new, checks id
             if (board._new) {
-                if (!await validateBoardId(board.boardId)) {
+                if (!await validateId(board.id)) {
                     return false;
                 }
             }
@@ -162,7 +145,7 @@
                     }).then(response => response.json())
                     .then(data => {
                         _alert(/*[[#{web.global.saveItemComplete(#{core.board.Board})}]]*/'').then(() => {
-                            getBoard(data.boardId);
+                            getBoard(data.id);
                             getBoards();
                         });
                     });
@@ -177,7 +160,7 @@
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.board.Board})}]]*/'').then(result => {
                 if (result) {
                     let url = new URL(`${location.pathname}/delete-board`, location.origin);
-                    url.searchParams.append('boardId', board.boardId);
+                    url.searchParams.append('id', board.id);
                     _fetch(url).then(response => {
                         if (response.ok) {
                             _alert(/*[[#{web.global.deleteItemComplete(#{core.board.Board})}]]*/'').then(() => {
@@ -190,11 +173,7 @@
             });
         }
 
-        /**
-         * adds board access role
-         * @returns {Promise<void>}
-         */
-        async function addBoardAccessRole() {
+        async function addAccessRole() {
             let disabledRoleIds = [];
             board.accessRoles.forEach(role => {
                 disabledRoleIds.push(role.roleId);
@@ -205,19 +184,11 @@
             });
         }
 
-        /**
-         * removes board access role
-         * @param index row index
-         */
-        function removeBoardAccessRole(index) {
+        function removeAccessRole(index) {
             board.accessRoles.splice(index, 1);
         }
 
-        /**
-         * adds board read role
-         * @returns {Promise<void>}
-         */
-        async function addBoardReadRole() {
+        async function addReadRole() {
             let disabledRoleIds = [];
             board.readRoles.forEach(role => {
                 disabledRoleIds.push(role.roleId);
@@ -228,19 +199,11 @@
             });
         }
 
-        /**
-         * removes board read role
-         * @param index row index
-         */
-        function removeBoardReadRole(index) {
+        function removeReadRole(index) {
             board.readRoles.splice(index, 1);
         }
 
-        /**
-         * adds board write role
-         * @returns {Promise<void>}
-         */
-        async function addBoardWriteRole() {
+        async function addWriteRole() {
             let disabledRoleIds = [];
             board.writeRoles.forEach(role => {
                 disabledRoleIds.push(role.roleId);
@@ -251,71 +214,18 @@
             });
         }
 
-        /**
-         * removes board write role
-         * @param index row index
-         */
-        function removeBoardWriteRole(index) {
+        function removeWriteRole(index) {
             board.writeRoles.splice(index, 1);
         }
 
-        /**
-         * adds board comment role
-         * @returns {Promise<void>}
-         */
-        async function addBoardCommentRole() {
-            let disabledRoleIds = [];
-            board.commentRoles.forEach(role => {
-                disabledRoleIds.push(role.roleId);
-            });
-            let selectedRoles = await _selectRoleDialog.open({disabledRoleIds:disabledRoleIds});
-            selectedRoles.forEach(role => {
-                board.commentRoles.push(role);
-            });
-        }
-
-        /**
-         * removes board comment role
-         * @param index row index
-         */
-        function removeBoardCommentRole(index) {
-            board.commentRoles.splice(index, 1);
-        }
-
-        /**
-         * adds board file role
-         * @returns {Promise<void>}
-         */
-        async function addBoardFileRole() {
-            let disabledRoleIds = [];
-            board.fileRoles.forEach(role => {
-                disabledRoleIds.push(role.roleId);
-            });
-            let selectedRoles = await _selectRoleDialog.open({disabledRoleIds:disabledRoleIds});
-            selectedRoles.forEach(role => {
-                board.fileRoles.push(role);
-            });
-        }
-
-        /**
-         * removes board file role
-         * @param index row index
-         */
-        function removeBoardFileRole(index) {
-            board.fileRoles.splice(index, 1);
-        }
-
-        /**
-         * opens board
-         */
         function openBoard() {
             let urlPrefix = /*[[@{/board/}]]*/'';
-            let url = new URL(urlPrefix + board.boardId, document.location.origin);
+            let url = new URL(urlPrefix + board.id, document.location.origin);
             window.open(url,'_blank');
         }
 
         // DOM content loaded listener
-        document.addEventListener('DOMContentLoaded',()=> {
+        _initialize(() =>{
             getBoards();
         });
     </script>
@@ -351,7 +261,7 @@
                         <div class="white-space--nowrap">
                             <label>
                                 <select data-duice-bind="boardSearch" data-duice-property="key">
-                                    <option value="boardId" th:text="#{core.board.Board.boardId}"></option>
+                                    <option value="id" th:text="#{core.board.Board.boardId}"></option>
                                     <option value="name" th:text="#{core.board.Board.name}"></option>
                                 </select>
                             </label>
@@ -388,14 +298,14 @@
                         <tr data-duice-bind="boards"
                             data-duice-foreach="board,status"
                             data-duice-selected-item-class="selected"
-                            data-duice-execute="this.dataset.boardId=board.boardId;"
-                            onclick="getBoard(this.dataset.boardId);"
+                            data-duice-execute="this.dataset.id=board.id;"
+                            onclick="getBoard(this.dataset.id);"
                             class="cursor--pointer">
                             <td data-duice-bind="status" data-duice-execute="this.innerHTML = (boardSearch._page * boardSearch._size) + status.count;"
                                 class="text-align--center"></td>
                             <td>
                                 <img th:src="@{/static/image/icon-null.svg}" data-duice-bind="board" data-duice-property="icon" class="icon" alt="icon"/>
-                                <span data-duice-bind="board" data-duice-property="boardId" class="code"></span>
+                                <span data-duice-bind="board" data-duice-property="id" class="code"></span>
                             </td>
                             <td data-duice-bind="board" data-duice-property="name"></td>
                         </tr>
@@ -445,7 +355,7 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.board.Board.boardId}" class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="board" data-duice-property="boardId" class="width--100 code"/>
+                            <input type="text" data-duice-bind="board" data-duice-property="id" class="width--100 code"/>
                         </label>
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.board.Board.name}" class="font-weight--bold tag-required"></span>
@@ -482,12 +392,12 @@
                             <div>
                                 <label>
                                     <input type="radio" data-duice-bind="board" data-duice-property="messageFormat" value="TEXT"/>
-                                    <span data-th-text="#{core.board.ContentFormat.TEXT}"></span>
+                                    <span data-th-text="#{core.board.Board.messageFormat.TEXT}"></span>
                                 </label>
                                 &nbsp;
                                 <label>
                                     <input type="radio" data-duice-bind="board" data-duice-property="messageFormat" value="MARKDOWN"/>
-                                    <span data-th-text="#{core.board.ContentFormat.MARKDOWN}"></span>
+                                    <span data-th-text="#{core.board.Board.messageFormat.MARKDOWN}"></span>
                                 </label>
                             </div>
                             <div>
@@ -506,6 +416,24 @@
                             </div>
                         </div>
                         <div class="grid-column--span-12">
+                            <label class="width--100">
+                                <input type="checkbox" data-duice-bind="board" data-duice-property="fileEnabled"/>
+                                <span data-th-text="#{core.board.Board.fileEnabled}" class="font-weight--bold"></span>
+                            </label>
+                            <br/>
+                            <label class="width--100">
+                                <span data-th-text="#{core.board.Board.fileSizeLimit}" class="font-weight--bold"></span>
+                                <input type="number" data-duice-bind="board" data-duice-property="fileSizeLimit"/>
+                                <span class="font-size--smaller font-weight--bold">MB</span>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label class="width--100">
+                                <input type="checkbox" data-duice-bind="board" data-duice-property="discussionEnabled"/>
+                                <span data-th-text="#{core.board.Board.discussionEnabled}" class="font-weight--bold"></span>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
                             <span data-th-text="#{core.board.Board.accessRoles}" class="font-weight--bold"></span>
                             <table class="table width--100">
                                 <colgroup>
@@ -516,7 +444,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addBoardAccessRole();">
+                                        <button class="button small" type="button" onclick="addAccessRole();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -532,7 +460,7 @@
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeBoardAccessRole(this.dataset.index);">
+                                                onclick="removeAccessRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                         </button>
                                     </td>
@@ -573,7 +501,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addBoardReadRole();">
+                                        <button class="button small" type="button" onclick="addReadRole();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -589,7 +517,7 @@
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeBoardReadRole(this.dataset.index);">
+                                                onclick="removeReadRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                         </button>
                                     </td>
@@ -630,7 +558,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addBoardWriteRole();">
+                                        <button class="button small" type="button" onclick="addWriteRole();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -646,7 +574,7 @@
                                         <button class="button small" type="button"
                                                 data-duice-bind="role"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeBoardWriteRole(this.dataset.index);">
+                                                onclick="removeWriteRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                         </button>
                                     </td>
@@ -675,144 +603,12 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="grid-column--span-12">
-                            <label class="width--100">
-                                <input type="checkbox" data-duice-bind="board" data-duice-property="fileEnabled"/>
-                                <span data-th-text="#{core.board.Board.fileEnabled}" class="font-weight--bold"></span>
-                            </label>
-                            <br/>
-                            <label class="width--100">
-                                <span data-th-text="#{core.board.Board.fileSizeLimit}" class="font-weight--bold"></span>
-                                <input type="number" data-duice-bind="board" data-duice-property="fileSizeLimit"/>
-                                <span class="font-size--smaller font-weight--bold">MB</span>
-                            </label>
-                            <br/>
-                            <span data-th-text="#{core.board.Board.fileRoles}" class="font-weight--bold"></span>
-                            <table class="table width--100">
-                                <colgroup>
-                                    <col style="width:3em;"/>
-                                    <col style="width:15em;"/>
-                                    <col/>
-                                    <col/>
-                                    <col/>
-                                </colgroup>
-                                <thead>
-                                <tr>
-                                    <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addBoardFileRole();">
-                                            <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
-                                        </button>
-                                    </th>
-                                    <th data-th-text="#{core.security.Role.roleId}"></th>
-                                    <th data-th-text="#{core.security.Role.name}"></th>
-                                    <th data-th-text="#{core.security.Role.anonymous}" class="text-align--center"></th>
-                                    <th data-th-text="#{core.security.Role.authenticated}" class="text-align--center"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr data-duice-bind="board.fileRoles" data-duice-foreach="role,status">
-                                    <td class="text-align--center">
-                                        <button class="button small" type="button"
-                                                data-duice-bind="role"
-                                                data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeBoardFileRole(this.dataset.index);">
-                                            <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
-                                    </td>
-                                    <td>
-                                        <span data-duice-bind="role" data-duice-property="name"></span>
-                                    </td>
-                                    <td class="text-align--center">
-                                        <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="anonymous" onclick="return false;"/>
-                                        </label>
-                                    </td>
-                                    <td class="text-align--center">
-                                        <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="authenticated" onclick="return false;"/>
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr data-duice-bind="board.fileRoles"
-                                    data-duice-if="return (board.fileRoles.length < 1);"
-                                    hidden>
-                                    <td colspan="100%" class="text-align--center">No Data</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="grid-column--span-12">
-                            <label class="width--100">
-                                <input type="checkbox" data-duice-bind="board" data-duice-property="commentEnabled"/>
-                                <span data-th-text="#{core.board.Board.commentEnabled}" class="font-weight--bold"></span>
-                            </label>
-                            <br/>
-                            <span data-th-text="#{core.board.Board.commentRoles}" class="font-weight--bold"></span>
-                            <table class="table width--100">
-                                <colgroup>
-                                    <col style="width:3em;"/>
-                                    <col style="width:15em;"/>
-                                    <col/>
-                                    <col/>
-                                    <col/>
-                                </colgroup>
-                                <thead>
-                                <tr>
-                                    <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addBoardCommentRole();">
-                                            <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
-                                        </button>
-                                    </th>
-                                    <th data-th-text="#{core.security.Role.roleId}"></th>
-                                    <th data-th-text="#{core.security.Role.name}"></th>
-                                    <th data-th-text="#{core.security.Role.anonymous}" class="text-align--center"></th>
-                                    <th data-th-text="#{core.security.Role.authenticated}" class="text-align--center"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr data-duice-bind="board.commentRoles" data-duice-foreach="role,status">
-                                    <td class="text-align--center">
-                                        <button class="button small" type="button"
-                                                data-duice-bind="role"
-                                                data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeBoardCommentRole(this.dataset.index);">
-                                            <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
-                                    </td>
-                                    <td>
-                                        <span data-duice-bind="role" data-duice-property="name"></span>
-                                    </td>
-                                    <td class="text-align--center">
-                                        <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="anonymous" onclick="return false;"/>
-                                        </label>
-                                    </td>
-                                    <td class="text-align--center">
-                                        <label>
-                                            <input type="checkbox" data-duice-bind="role" data-duice-property="authenticated" onclick="return false;"/>
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr data-duice-bind="board.commentRoles"
-                                    data-duice-if="return (board.commentRoles.length < 1);"
-                                    hidden>
-                                    <td colspan="100%" class="text-align--center">No Data</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </form>
                     <div class="display--flex justify-content--space-between">
                         <div>
                             <button class="button" type="button" onclick="openBoard();"
                                     data-duice-bind="board"
-                                    data-duice-execute="(board.boardId && !board._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(board.id && !board._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-open.svg}" alt="open"/>
                                 <span data-th-text="#{web.admin.board.openBoard}"></span>
                             </button>
@@ -821,14 +617,14 @@
                             <button class="button" type="button" onclick="deleteBoard();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.board:edit'')')}?'locked'"
                                     data-duice-bind="board"
-                                    data-duice-execute="(board.boardId && !board._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(board.id && !board._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
                                 <span data-th-text="#{web.global.delete}"></span>
                             </button>
                             <button class="button" type="button" onclick="saveBoard();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.board:edit'')')}?'locked'"
                                     data-duice-bind="board"
-                                    data-duice-execute="(board.boardId || board._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(board.id || board._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
                                 <span data-th-text="#{web.global.save}"></span>
                             </button>

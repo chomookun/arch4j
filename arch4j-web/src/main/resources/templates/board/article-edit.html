@@ -5,11 +5,11 @@
       layout:decorate="_web.html">
 <main layout:fragment="_main">
     <script th:inline="javascript">
-        const boardId = /*[[${board.boardId}]]*/'';
+        const boardId = /*[[${board.id}]]*/'';
         const board = new duice.ObjectProxy({});
-        const articleId = /*[[${articleId}]]*/'';
+        const id = /*[[${id}]]*/'';
         const article = new duice.ObjectProxy({
-            articleId: null,
+            id: null,
             format: 'TEXT',
             articleFiles: []
         });
@@ -22,8 +22,8 @@
             });
         }
 
-        const getArticle = function(articleId) {
-            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
+        const getArticle = function() {
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${id}`, location.origin);
             _fetch(url).then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.clear(article);
@@ -38,7 +38,7 @@
                 console.log(file);
                 let formData = new FormData();
                 formData.set("file", file);
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/files`, location.origin);
+                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${id}/files`, location.origin);
                 await _fetch(url, {
                     method: 'POST',
                     body: formData
@@ -56,8 +56,8 @@
                     let url;
                     let method;
                     // modify article
-                    if(article.articleId) {
-                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${article.articleId}`, location.origin);
+                    if(article.id) {
+                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${article.id}`, location.origin);
                         method = 'PUT';
                     }
                     // create article
@@ -83,7 +83,7 @@
         const deleteArticle = function() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.board.Article})}]]*/'').then(result => {
                 if(result) {
-                    let url = `${_apiUrl}/v1/board/${boardId}/article/${articleId}`;
+                    let url = `${_apiUrl}/v1/board/${boardId}/article/${id}`;
                     _fetch(url, {
                         method: 'DELETE',
                         headers: {

@@ -36,9 +36,9 @@ public class StorageFileService {
     private final StorageResourceService storageResourceService;
 
     @Transactional
-    public StorageFile uploadStorageFile(MultipartFile multipartFile, String storageId) throws IOException {
+    public StorageFile uploadStorageFile(MultipartFile multipartFile, String storageId, String targetType) throws IOException {
         // creates resource
-        String parentResourceId = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now());
+        String parentResourceId = targetType + '/' + DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now());
         String encodedFilename = IdGenerator.uuid();
         String filename = multipartFile.getOriginalFilename();
         Long size = multipartFile.getSize();

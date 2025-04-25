@@ -7,8 +7,7 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 @Entity

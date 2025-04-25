@@ -9,7 +9,7 @@ import org.chomookun.arch4j.core.board.model.Board;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardResponse {
 
-    private String boardId;
+    private String id;
 
     private String name;
 
@@ -39,7 +39,7 @@ public class BoardResponse {
 
     public static BoardResponse from(Board board) {
         return BoardResponse.builder()
-                .boardId(board.getBoardId())
+                .id(board.getBoardId())
                 .name(board.getName())
                 .icon(board.getIcon())
                 .messageFormat(board.getMessageFormat())
@@ -47,7 +47,6 @@ public class BoardResponse {
                 .skin(board.getSkin())
                 .pageSize(board.getPageSize())
                 .fileEnabled(board.isFileEnabled())
-                .commentEnabled(board.isCommentEnabled())
                 .build();
     }
 
