@@ -32,6 +32,8 @@ public class GitService {
         gitEntity.setName(git.getName());
         gitEntity.setUrl(git.getUrl());
         gitEntity.setBranch(git.getBranch());
+        gitEntity.setDiscussionEnabled(git.isDiscussionEnabled());
+        gitEntity.setDiscussionId(git.getDiscussionId());
         gitEntity.setNote(git.getNote());
         GitEntity savedGitEntity = gitRepository.saveAndFlush(gitEntity);
         return Git.from(savedGitEntity);

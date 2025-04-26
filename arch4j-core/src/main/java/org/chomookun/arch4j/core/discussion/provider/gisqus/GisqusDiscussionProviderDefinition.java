@@ -23,9 +23,8 @@ public class GisqusDiscussionProviderDefinition extends DiscussionProviderDefini
         repo-id=[repo id]
         category=[discussion category]
         category-id=[discussion category id]
-        strict=0
-        reactions-enabled=1
-        emit-metadata=0
+        theme-light=light
+        theme-dart=dark
         """;
     }
 

@@ -20,7 +20,8 @@ class CommentServiceTest extends CoreTestSupport {
     void saveComment() {
         // when
         Comment comment = Comment.builder()
-                .thread("test-thread")
+                .targetType("board.article")
+                .targetId(IdGenerator.uuid())
                 .content("test-content")
                 .build();
         Comment savedComment = commentService.saveComment(comment);
@@ -33,14 +34,14 @@ class CommentServiceTest extends CoreTestSupport {
         // given
         CommentEntity commentEntity = CommentEntity.builder()
                 .commentId(IdGenerator.uuid())
-                .discussionId("test")
-                .thread("test-thread")
+                .targetType("board.article")
+                .targetId(IdGenerator.uuid())
                 .content("test-content")
                 .build();
         entityManager.persist(commentEntity);
         entityManager.flush();
         // when
-        List<Comment> comments = commentService.getComments(commentEntity.getThread());
+        List<Comment> comments = commentService.getComments(commentEntity.getTargetType(), commentEntity.getTargetId());
         // then
         log.info("comments: {}", comments);
     }

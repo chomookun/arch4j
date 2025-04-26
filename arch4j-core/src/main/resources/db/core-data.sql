@@ -219,13 +219,11 @@ insert into `core_discussion`
     (`discussion_id`,`name`,`discussion_provider_id`,`discussion_provider_config`)
 values
     ('e355926fdadc41f49bf93afe76af1496','Default','default',''),
-    ('7eddf209186d487ab58e30a090944d79','Gisqus','gisqus','repo=chomookun/arch4j
+    ('7eddf209186d487ab58e30a090944d79','Gisqus','gisqus',
+'repo=chomookun/arch4j
 repo-id=R_kgDOJKtMwQ
 category=Giscus
-category-id=DIC_kwDOJKtMwc4CpdiQ
-strict=0
-reactions-enabled=1
-emit-metadata=0
+category-id=DIC_kwDOJKtMwc4Cpe0A
 ');
 
 -- core_board

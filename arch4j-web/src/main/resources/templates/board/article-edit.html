@@ -5,11 +5,11 @@
       layout:decorate="_web.html">
 <main layout:fragment="_main">
     <script th:inline="javascript">
-        const boardId = /*[[${board.id}]]*/'';
+        const boardId = /*[[${boardId}]]*/'';
+        const articleId = /*[[${articleId}]]*/'';
         const board = new duice.ObjectProxy({});
-        const id = /*[[${id}]]*/'';
         const article = new duice.ObjectProxy({
-            id: null,
+            articleId: null,
             format: 'TEXT',
             articleFiles: []
         });
@@ -23,7 +23,7 @@
         }
 
         const getArticle = function() {
-            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${id}`, location.origin);
+            let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
             _fetch(url).then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.clear(article);
@@ -38,7 +38,7 @@
                 console.log(file);
                 let formData = new FormData();
                 formData.set("file", file);
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${id}/files`, location.origin);
+                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/files`, location.origin);
                 await _fetch(url, {
                     method: 'POST',
                     body: formData
@@ -56,8 +56,8 @@
                     let url;
                     let method;
                     // modify article
-                    if(article.id) {
-                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${article.id}`, location.origin);
+                    if(article.articleId) {
+                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
                         method = 'PUT';
                     }
                     // create article
@@ -83,7 +83,7 @@
         const deleteArticle = function() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.board.Article})}]]*/'').then(result => {
                 if(result) {
-                    let url = `${_apiUrl}/v1/board/${boardId}/article/${id}`;
+                    let url = `${_apiUrl}/v1/board/${boardId}/article/${articleId}`;
                     _fetch(url, {
                         method: 'DELETE',
                         headers: {

@@ -73,10 +73,10 @@ public class ArticleRestController {
                 .boardId(boardId)
                 .build();
         // file
-        List<StorageFile> files = articleRequest.getArticleFiles().stream()
+        List<StorageFile> articleFiles = articleRequest.getArticleFiles().stream()
                 .map(StorageFileRequest::toModel)
                 .collect(Collectors.toList());
-        article.setArticleFiles(files);
+        article.setArticleFiles(articleFiles);
         // save
         Article savedArticle = articleService.saveArticle(article);
         return ResponseEntity.ok(ArticleResponse.from(savedArticle));
@@ -95,10 +95,10 @@ public class ArticleRestController {
         article.setFormat(articleRequest.getFormat());
         article.setContent(articleRequest.getContent());
         // file
-        List<StorageFile> files = articleRequest.getArticleFiles().stream()
+        List<StorageFile> articleFiles = articleRequest.getArticleFiles().stream()
                 .map(StorageFileRequest::toModel)
                 .collect(Collectors.toList());
-        article.setArticleFiles(files);
+        article.setArticleFiles(articleFiles);
         // save article
         Article savedArticle = articleService.saveArticle(article);
         return ResponseEntity.ok(ArticleResponse.from(savedArticle));

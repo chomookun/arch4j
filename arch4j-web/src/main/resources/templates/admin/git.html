@@ -30,6 +30,7 @@
             }
             return true;
         });
+        const discussions = /*[[${discussions}]]*/'';
 
         function getGits(page) {
             if(page) {
@@ -301,6 +302,24 @@
                             <span>branch</span>
                             <input class="code width--100" type="text" data-duice-bind="git" data-duice-property="branch"/>
                         </label>
+                        <div class="grid-column--span-12">
+                            <label class="width--100">
+                                <input type="checkbox" data-duice-bind="git" data-duice-property="discussionEnabled"/>
+                                <span data-th-text="#{core.git.Git.discussionEnabled}" class="font-weight--bold"></span>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.discussion.Discussion}" class="font-weight--bold"></span>
+                                <select data-duice-bind="git"
+                                        data-duice-property="discussionId"
+                                        data-duice-option="discussions"
+                                        data-duice-option-value-property="discussionId"
+                                        data-duice-option-text-property="name">
+                                    <option data-th-text="|#{web.global.select}...|"></option>
+                                </select>
+                            </label>
+                        </div>
                         <label class="grid-column--span-12">
                             <span data-th-text="#{core.git.Git.note}" class="font-weight--bold"></span>
                             <textarea data-duice-bind="git" data-duice-property="note" rows="5" class="width--100"></textarea>
@@ -312,7 +331,7 @@
                             <button class="button"
                                     type="button"
                                     onclick="deleteGit();"
-                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.gits.edit'')')}?'locked'"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.git:edit'')')}?'locked'"
                                     data-duice-bind="git"
                                     data-duice-execute="(git.gitId && !git._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
@@ -321,7 +340,7 @@
                             <button class="button"
                                     type="button"
                                     onclick="saveGit();"
-                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.gits.edit'')')}?'locked'"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.git:edit'')')}?'locked'"
                                     data-duice-bind="git"
                                     data-duice-execute="(git.gitId || git._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>

@@ -9,4 +9,47 @@
         });
     </script>
     <th:block th:replace="|_theme/${_theme}/git/git.html|"/>
+
+    <th:block th:if="${discussionProvider != null}">
+        <br/>
+        <th:block th:replace="${discussionProvider.viewName}"/>
+        <script th:inline="javascript">
+            if (window._comment) {
+                _comment.configure({
+                    createComment: function(comment) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
+                        return _fetch(url, {
+                            headers: {'Content-Type': 'application/json'},
+                            method: 'POST',
+                            body: JSON.stringify(comment)
+                        }).then(response => response.json());
+                    },
+                    getComments: function() {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
+                        return _fetch(url).then(response => response.json());
+                    },
+                    getComment: function(commentId) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${commentId}`, location.origin);
+                        return _fetch(url).then(response => response.json());
+                    },
+                    updateComment: function(comment) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${comment.commentId}`, location.origin);
+                        return _fetch(url, {
+                            headers: {'Content-Type': 'application/json'},
+                            method: 'PUT',
+                            body: JSON.stringify(comment)
+                        }).then(response => response.json());
+                    },
+                    deleteComment: function(commentId) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${commentId}`, location.origin);
+                        return _fetch(url, {
+                            method: 'DELETE',
+                            headers: {'Content-Type': 'application/json'}
+                        }).then();
+                    }
+                });
+            }
+        </script>
+    </th:block>
+
 </main>

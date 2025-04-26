@@ -42,15 +42,11 @@ public class ArticleController {
         // discussion
         if (board.isDiscussionEnabled()) {
             Discussion discussion = discussionService.getDiscussion(board.getDiscussionId()).orElseThrow();
+            modelAndView.addObject("discussion", discussion);
             DiscussionProvider discussionProvider = DiscussionProviderFactory.getDiscussionProvider(discussion);
             modelAndView.addObject("discussionProvider", discussionProvider);
-//            Properties discussionConfig = discussionProvider.getConfig();
-//            discussionConfig.put("site", "https://arch4j.chomookun.org");   // for test
-//            String discussionUri = "/board/" + boardId + "/article/" + articleId;
-//            String discussionIdentifier = String.format("board:article:%s", articleId);
-//            modelAndView.addObject("discussionConfig", discussionConfig);
-//            modelAndView.addObject("discussionUri", discussionUri);
-//            modelAndView.addObject("discussionIdentifier", discussionIdentifier);
+            String commentTarget = String.format("board.article:%s", articleId);
+            modelAndView.addObject("commentTarget", commentTarget);
         }
         // returns
         return modelAndView;

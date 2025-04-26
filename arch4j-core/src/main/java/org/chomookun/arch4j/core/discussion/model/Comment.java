@@ -13,9 +13,11 @@ public class Comment {
 
     private String commentId;
 
-    private Instant createdAt;
+    private String targetType;
 
-    private String thread;
+    private String targetId;
+
+    private Instant createdAt;
 
     private String parentCommentId;
 
@@ -30,8 +32,9 @@ public class Comment {
     public static Comment from(CommentEntity commentEntity) {
         return Comment.builder()
                 .commentId(commentEntity.getCommentId())
+                .targetType(commentEntity.getTargetType())
+                .targetId(commentEntity.getTargetId())
                 .createdAt(commentEntity.getCreatedAt())
-                .thread(commentEntity.getThread())
                 .parentCommentId(commentEntity.getParentCommentId())
                 .userId(commentEntity.getUserId())
                 .content(commentEntity.getContent())

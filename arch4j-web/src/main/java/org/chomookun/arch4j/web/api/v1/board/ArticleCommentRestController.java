@@ -24,10 +24,22 @@ public class ArticleCommentRestController {
 
     private final ArticleCommentService articleCommentService;
 
+    @GetMapping
+    public ResponseEntity<List<CommentResponse>> getArticleComments(
+            @PathVariable("boardId") String boardId,
+            @PathVariable("articleId") String articleId
+    ) {
+        List<CommentResponse> commentResponses = articleCommentService.getArticleComments(articleId).stream()
+                .map(CommentResponse::from)
+                .map(this::populateCommentResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(commentResponses);
+    }
+
     @PostMapping
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<CommentResponse> createComment(
+    public ResponseEntity<CommentResponse> createArticleComment(
             @PathVariable("boardId") String boardId,
             @PathVariable("articleId") String articleId,
             @RequestBody CommentRequest commentRequest
@@ -41,30 +53,6 @@ public class ArticleCommentRestController {
         CommentResponse savedCommentResponse = CommentResponse.from(savedComment);
         populateCommentResponse(savedCommentResponse);
         return ResponseEntity.ok(savedCommentResponse);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CommentResponse>> getArticleComments(
-            @PathVariable("boardId") String boardId,
-            @PathVariable("articleId") String articleId
-    ) {
-        List<CommentResponse> commentResponses = articleCommentService.getArticleComments(articleId).stream()
-                .map(CommentResponse::from)
-                .map(this::populateCommentResponse)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(commentResponses);
-    }
-
-    @GetMapping("{commentId}")
-    public ResponseEntity<CommentResponse> getArticleComment(
-            @PathVariable("boardId") String boardId,
-            @PathVariable("articleId") String articleId,
-            @PathVariable("commentId") String commentId
-    ) {
-        Comment comment = articleCommentService.getArticleComment(articleId, commentId).orElseThrow();
-        CommentResponse commentResponse = CommentResponse.from(comment);
-        populateCommentResponse(commentResponse);
-        return ResponseEntity.ok(commentResponse);
     }
 
     @PutMapping("{commentId}")
@@ -82,6 +70,18 @@ public class ArticleCommentRestController {
         CommentResponse savedCommentResponse = CommentResponse.from(savedComment);
         populateCommentResponse(savedCommentResponse);
         return ResponseEntity.ok(savedCommentResponse);
+    }
+
+    @GetMapping("{commentId}")
+    public ResponseEntity<CommentResponse> getArticleComment(
+            @PathVariable("boardId") String boardId,
+            @PathVariable("articleId") String articleId,
+            @PathVariable("commentId") String commentId
+    ) {
+        Comment comment = articleCommentService.getArticleComment(articleId, commentId).orElseThrow();
+        CommentResponse commentResponse = CommentResponse.from(comment);
+        populateCommentResponse(commentResponse);
+        return ResponseEntity.ok(commentResponse);
     }
 
     @DeleteMapping("{commentId}")

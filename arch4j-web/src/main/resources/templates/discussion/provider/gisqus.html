@@ -1,16 +1,30 @@
-<script th:inline="javascript"
-        src="https://giscus.app/client.js"
-        th:data-repo="${discussionProvider.config['repo']}"
-        th:data-repo-id="${discussionProvider.config['repo-id']}"
-        th:data-category="${discussionProvider.config['category']}"
-        th:data-category-id="${discussionProvider.config['category-id']}"
-        data-mapping="url"
-        th:data-strict="${discussionProvider.config['strict']}"
-        th:data-reactions-enabled="${discussionProvider.config['reactions-enabled']}"
-        th:data-emit-metadata="${discussionProvider.config['emit-metadata']}"
-        th:data-input-position="${discussionProvider.config['input-position']}"
-        data-theme="preferred_color_scheme"
-        th:data-lang="${_locale.language}"
-        crossorigin="anonymous"
-        async>
+<!-- Giscus -->
+<div id="giscus-container"></div>
+<script th:inline="javascript">
+    // term
+    const term = /*[[${commentTarget}]]*/'';
+    // theme
+    const themeLight = /*[[${discussionProvider.config['theme-light'] ?: 'light'}]]*/'';
+    const themeDark = /*[[${discussionProvider.config['theme-dark'] ?: 'dark'}]]*/'';
+    const theme = _isDarkMode() ? themeDark : themeLight;
+    // script element
+    const giscusScript = document.createElement('script');
+    giscusScript.setAttribute('data-repo', /*[[${discussionProvider.config['repo']}]]*/ '');
+    giscusScript.setAttribute('data-repo-id', /*[[${discussionProvider.config['repo-id']}]]*/ '');
+    giscusScript.setAttribute('data-category', /*[[${discussionProvider.config['category']}]]*/ '');
+    giscusScript.setAttribute('data-category-id', /*[[${discussionProvider.config['category-id']}]]*/ '');
+    giscusScript.setAttribute('data-mapping', 'specific');
+    giscusScript.setAttribute('data-term', term);
+    giscusScript.setAttribute('data-strict', '1');
+    giscusScript.setAttribute('data-reactions-enabled', '1');
+    giscusScript.setAttribute('data-emit-metadata', '0');
+    giscusScript.setAttribute('data-input-position', 'bottom');
+    giscusScript.setAttribute('data-theme', theme);
+    giscusScript.setAttribute('data-lang', /*[[${_locale.language}]]*/'en');
+    giscusScript.setAttribute('crossorigin', 'anonymous');
+    giscusScript.async = true;
+    giscusScript.src = 'https://giscus.app/client.js';
+    document.getElementById('giscus-container').appendChild(giscusScript);
 </script>
+
+

@@ -12,9 +12,11 @@ public class CommentResponse {
 
     private String commentId;
 
-    private Instant createdAt;
+    private String targetType;
 
-    private String thread;
+    private String targetId;
+
+    private Instant createdAt;
 
     private String parenCommentId;
 
@@ -33,8 +35,9 @@ public class CommentResponse {
     public static CommentResponse from(Comment comment) {
         return CommentResponse.builder()
                 .commentId(comment.getCommentId())
+                .targetType(comment.getTargetType())
+                .targetId(comment.getTargetId())
                 .createdAt(comment.getCreatedAt())
-                .thread(comment.getThread())
                 .parenCommentId(comment.getParentCommentId())
                 .userId(comment.getUserId())
                 .userName(comment.getUserName())

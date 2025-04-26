@@ -13,11 +13,13 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, String>, JpaSpecificationExecutor<CommentEntity> {
 
-    default List<CommentEntity> findAllByThread(String thread) {
+    default List<CommentEntity> findAllByTarget(String targetType, String targetId) {
         // where
         Specification<CommentEntity> specification = Specification.where(null);
         specification = specification.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(CommentEntity_.thread), thread));
+                criteriaBuilder.equal(root.get(CommentEntity_.targetType), targetType));
+        specification = specification.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(CommentEntity_.targetId), targetId));
         // sort
         Sort sort = Sort.by(CommentEntity_.CREATED_AT).ascending();
         return findAll(specification, sort);

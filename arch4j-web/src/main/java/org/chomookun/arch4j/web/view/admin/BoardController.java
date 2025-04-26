@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.board.model.BoardSearch;
 import org.chomookun.arch4j.core.board.BoardService;
+import org.chomookun.arch4j.core.discussion.DiscussionService;
+import org.chomookun.arch4j.core.discussion.model.Discussion;
+import org.chomookun.arch4j.core.discussion.model.DiscussionSearch;
 import org.chomookun.arch4j.web.WebProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
@@ -20,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -31,12 +35,17 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    private final DiscussionService discussionService;
+
     private final WebProperties webProperties;
 
     @GetMapping
     public ModelAndView index() throws IOException {
         ModelAndView modelAndView = new ModelAndView("admin/board");
         modelAndView.addObject("skinNames", getSkinNames());
+        // discussions
+        List<Discussion> discussions = discussionService.getDiscussions(DiscussionSearch.builder().build(), Pageable.unpaged()).getContent();
+        modelAndView.addObject("discussions", discussions);
         return modelAndView;
     }
 
