@@ -34,7 +34,7 @@ class RoleServiceTest extends CoreTestSupport {
     }
 
     @Test
-    void saveRoleToMerge() {
+    void saveRoleForMerge() {
         // given
         RoleEntity roleEntity = RoleEntity.builder()
                 .roleId(IdGenerator.uuid())

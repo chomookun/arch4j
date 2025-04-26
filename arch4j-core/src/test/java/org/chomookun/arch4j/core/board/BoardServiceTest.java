@@ -51,10 +51,8 @@ class BoardServiceTest extends CoreTestSupport {
     void saveBoard() {
         // given
         Board testBoard = getTestBoard();
-
         // when
         boardService.saveBoard(testBoard);
-
         // then
         BoardEntity boardEntity = entityManager.find(BoardEntity.class, testBoard.getBoardId());
         assertNotNull(boardEntity);
@@ -65,10 +63,8 @@ class BoardServiceTest extends CoreTestSupport {
     void getBoard() {
         // given
         Board testBoard = saveTestBoard();
-
         // when
         Board board = boardService.getBoard(testBoard.getBoardId()).orElseThrow();
-
         // then
         assertNotNull(board);
     }
@@ -78,10 +74,8 @@ class BoardServiceTest extends CoreTestSupport {
     void deleteBoard() {
         // given
         Board testBoard = saveTestBoard();
-
         // when
         boardService.deleteBoard(testBoard.getBoardId());
-
         // then
         assertNull(entityManager.find(BoardEntity.class, testBoard.getBoardId()));
     }
