@@ -326,7 +326,12 @@
                         <div class="grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.variable.Variable.value}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="variable" data-duice-property="value" rows="5" class="width--100"></textarea>
+                                <duice-codemirror
+                                        class="code box"
+                                        data-duice-bind="variable"
+                                        data-duice-property="value"
+                                        data-duice-theme="dracula">
+                                </duice-codemirror>
                             </label>
                         </div>
                     </form>

@@ -2,7 +2,6 @@ package org.chomookun.arch4j.web.api.v1.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.model.*;
@@ -74,10 +73,10 @@ public class ArticleRestController {
                 .boardId(boardId)
                 .build();
         // file
-        List<StorageFile> files = articleRequest.getArticleFiles().stream()
+        List<StorageFile> articleFiles = articleRequest.getArticleFiles().stream()
                 .map(StorageFileRequest::toModel)
                 .collect(Collectors.toList());
-        article.setArticleFiles(files);
+        article.setArticleFiles(articleFiles);
         // save
         Article savedArticle = articleService.saveArticle(article);
         return ResponseEntity.ok(ArticleResponse.from(savedArticle));
@@ -96,10 +95,10 @@ public class ArticleRestController {
         article.setFormat(articleRequest.getFormat());
         article.setContent(articleRequest.getContent());
         // file
-        List<StorageFile> files = articleRequest.getArticleFiles().stream()
+        List<StorageFile> articleFiles = articleRequest.getArticleFiles().stream()
                 .map(StorageFileRequest::toModel)
                 .collect(Collectors.toList());
-        article.setArticleFiles(files);
+        article.setArticleFiles(articleFiles);
         // save article
         Article savedArticle = articleService.saveArticle(article);
         return ResponseEntity.ok(ArticleResponse.from(savedArticle));
@@ -119,9 +118,7 @@ public class ArticleRestController {
     @GetMapping("{articleId}")
     @Operation(summary = "get article")
     public ResponseEntity<ArticleResponse> getArticle(
-            @Parameter(description = "board ID")
             @PathVariable("boardId")String boardId,
-            @Parameter(description = "article ID")
             @PathVariable("articleId")String articleId
     ) {
         Article article = articleService.getArticle(articleId).orElseThrow();
@@ -132,34 +129,12 @@ public class ArticleRestController {
     @DeleteMapping("{articleId}")
     @Transactional
     public ResponseEntity<Void> deleteArticle(
-            @Parameter(description = "board ID")
             @PathVariable("boardId") String boardId,
-            @Parameter(description = "article ID")
             @PathVariable("articleId") String articleId
     ) {
         Article article = articleService.getArticle(articleId).orElseThrow();
         articleService.deleteArticle(article.getArticleId());
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("{articleId}/file/{fileId}")
-//    public ResponseEntity<Void> getArticleFile(
-//            @Parameter(description = "board ID")
-//            @PathVariable("boardId") String boardId,
-//            @Parameter(description = "article ID")
-//            @PathVariable("articleId") String articleId,
-//            @Parameter(description = "file ID")
-//            @PathVariable("fileId") String fileId,
-//            HttpServletResponse response
-//    ) {
-//        ArticleFile articleFile = articleService.getArticleFile(articleId, fileId).orElseThrow();
-//        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\";", articleFile.getFilename()));
-//        try (InputStream inputStream = articleService.getArticleFileInputStream(articleFile)) {
-//            StreamUtils.copy(inputStream, response.getOutputStream());
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//        return ResponseEntity.ok().build();
-//    }
 
 }

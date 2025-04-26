@@ -3,6 +3,8 @@ package org.chomookun.arch4j.web.api.v1.board;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.ArticleFileService;
+import org.chomookun.arch4j.core.board.BoardService;
+import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.storage.StorageResourceService;
 import org.chomookun.arch4j.core.storage.model.StorageFile;
 import org.chomookun.arch4j.core.storage.model.StorageResource;
@@ -25,7 +27,9 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class ArticleFileRestController {
 
-    private final ArticleFileService boardFileService;
+    private final BoardService boardService;
+
+    private final ArticleFileService articleFileService;
 
     private final StorageResourceService storageResourceService;
 
@@ -36,7 +40,8 @@ public class ArticleFileRestController {
             @PathVariable("articleId") String articleId,
             @RequestPart("file") MultipartFile multipartFile
     ) throws IOException{
-        StorageFile storageFile = boardFileService.createArticleFile(boardId, multipartFile);
+        Board board = boardService.getBoard(boardId).orElseThrow();
+        StorageFile storageFile = articleFileService.createArticleFile(articleId, multipartFile, board.getStorageId());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("{fileId}")
                 .buildAndExpand(storageFile.getFileId())
@@ -52,7 +57,7 @@ public class ArticleFileRestController {
             @PathVariable("articleId") String articleId,
             @PathVariable("fileId") String fileId
     ) throws IOException {
-        StorageFile storageFile = boardFileService.getArticleFile(boardId, fileId).orElseThrow();
+        StorageFile storageFile = articleFileService.getArticleFile(boardId, fileId).orElseThrow();
         String filename = storageFile.getFilename();
         MediaType mediaType = MediaTypeFactory
                 .getMediaType(filename)

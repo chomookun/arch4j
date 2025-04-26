@@ -1,7 +1,5 @@
 package org.chomookun.arch4j.core.storage.client;
 
-import org.chomookun.arch4j.core.alarm.client.AlarmClient;
-import org.chomookun.arch4j.core.alarm.model.Alarm;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.chomookun.arch4j.core.storage.model.Storage;
 import org.springframework.core.env.MapPropertySource;

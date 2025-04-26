@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.core.board;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.comment.CommentService;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.CommentService;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,17 +12,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ArticleCommentService {
 
+    private static final String TARGET_TYPE = "board.article";
+
     private final CommentService commentService;
 
     public Comment saveArticleComment(String articleId, Comment comment) {
-        String thread = String.format("article:%s", articleId);
-        comment.setThread(thread);
+        comment.setTargetType(TARGET_TYPE);
+        comment.setTargetId(articleId);
         return commentService.saveComment(comment);
     }
 
     public List<Comment> getArticleComments(String articleId) {
-        String thread = String.format("article:%s", articleId);
-        return commentService.getComments(thread);
+        return commentService.getComments(TARGET_TYPE, articleId);
     }
 
     public Optional<Comment> getArticleComment(String articleId, String commentId) {
@@ -30,7 +31,6 @@ public class ArticleCommentService {
     }
 
     public void deleteArticleComment(String articleId, String commentId) {
-        String thread = String.format("article:%s", articleId);
         commentService.deleteComment(commentId);
     }
 

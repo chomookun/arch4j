@@ -3,10 +3,10 @@ package org.chomookun.arch4j.web.api.v1.board;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.ArticleCommentService;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
-import org.chomookun.arch4j.web.api.v1.comment.dto.CommentRequest;
-import org.chomookun.arch4j.web.api.v1.comment.dto.CommentResponse;
+import org.chomookun.arch4j.web.api.v1.discussion.dto.CommentRequest;
+import org.chomookun.arch4j.web.api.v1.discussion.dto.CommentResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,18 @@ import java.util.stream.Collectors;
 public class ArticleCommentRestController {
 
     private final ArticleCommentService articleCommentService;
+
+    @GetMapping
+    public ResponseEntity<List<CommentResponse>> getArticleComments(
+            @PathVariable("boardId") String boardId,
+            @PathVariable("articleId") String articleId
+    ) {
+        List<CommentResponse> commentResponses = articleCommentService.getArticleComments(articleId).stream()
+                .map(CommentResponse::from)
+                .map(this::populateCommentResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(commentResponses);
+    }
 
     @PostMapping
     @Transactional
@@ -43,30 +55,6 @@ public class ArticleCommentRestController {
         return ResponseEntity.ok(savedCommentResponse);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CommentResponse>> getArticleComments(
-            @PathVariable("boardId") String boardId,
-            @PathVariable("articleId") String articleId
-    ) {
-        List<CommentResponse> commentResponses = articleCommentService.getArticleComments(articleId).stream()
-                .map(CommentResponse::from)
-                .map(this::populateCommentResponse)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(commentResponses);
-    }
-
-    @GetMapping("{commentId}")
-    public ResponseEntity<CommentResponse> getArticleComment(
-            @PathVariable("boardId") String boardId,
-            @PathVariable("articleId") String articleId,
-            @PathVariable("commentId") String commentId
-    ) {
-        Comment comment = articleCommentService.getArticleComment(articleId, commentId).orElseThrow();
-        CommentResponse commentResponse = CommentResponse.from(comment);
-        populateCommentResponse(commentResponse);
-        return ResponseEntity.ok(commentResponse);
-    }
-
     @PutMapping("{commentId}")
     @Transactional
     @PreAuthorize("isAuthenticated()")
@@ -82,6 +70,18 @@ public class ArticleCommentRestController {
         CommentResponse savedCommentResponse = CommentResponse.from(savedComment);
         populateCommentResponse(savedCommentResponse);
         return ResponseEntity.ok(savedCommentResponse);
+    }
+
+    @GetMapping("{commentId}")
+    public ResponseEntity<CommentResponse> getArticleComment(
+            @PathVariable("boardId") String boardId,
+            @PathVariable("articleId") String articleId,
+            @PathVariable("commentId") String commentId
+    ) {
+        Comment comment = articleCommentService.getArticleComment(articleId, commentId).orElseThrow();
+        CommentResponse commentResponse = CommentResponse.from(comment);
+        populateCommentResponse(commentResponse);
+        return ResponseEntity.ok(commentResponse);
     }
 
     @DeleteMapping("{commentId}")

@@ -336,7 +336,12 @@
                         <div class="grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.email.Email.content}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="email" data-duice-property="content" rows="5" class="width--100"></textarea>
+                                <duice-codemirror
+                                        class="code box"
+                                        data-duice-bind="email"
+                                        data-duice-property="content"
+                                        data-duice-theme="dracula">
+                                </duice-codemirror>
                             </label>
                         </div>
                     </form>

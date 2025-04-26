@@ -3,7 +3,6 @@ package org.chomookun.arch4j.web.view.board;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.board.BoardService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +18,10 @@ public class BoardController {
 
     @GetMapping
 //    @PreAuthorize("@boardPermissionEvaluator.hasAccessPermission(#boardId)")
-    public ModelAndView board(@PathVariable("boardId")String boardId) {
+    public ModelAndView index(@PathVariable("boardId")String boardId) {
         Board board = boardService.getBoard(boardId).orElseThrow();
         ModelAndView modelAndView = new ModelAndView("board/board");
+        modelAndView.addObject("boardId", boardId);
         modelAndView.addObject("_title", board.getName());
         modelAndView.addObject("board", board);
         return modelAndView;

@@ -25,13 +25,23 @@ public class Board extends BaseModel {
 
     private String icon;
 
-    private MessageFormat messageFormat;
-
     private String message;
+
+    private MessageFormat messageFormat;
 
     private String skin;
 
     private Integer pageSize;
+
+    private boolean fileEnabled;
+
+    private String storageId;
+
+    private Integer fileSizeLimit;
+
+    private boolean discussionEnabled;
+
+    private String discussionId;
 
     @Builder.Default
     private List<Role> accessRoles = new ArrayList<>();
@@ -42,24 +52,13 @@ public class Board extends BaseModel {
     @Builder.Default
     private List<Role> writeRoles = new ArrayList<>();
 
-    private boolean fileEnabled;
-
-    private Integer fileSizeLimit;
-
-    @Builder.Default
-    private List<Role> fileRoles = new ArrayList<>();
-
-    private boolean commentEnabled;
-
-    @Builder.Default
-    private List<Role> commentRoles = new ArrayList<>();
-
-    private String commentProviderId;
-
-    private String commentProviderConfig;
-
     public enum MessageFormat { TEXT, MARKDOWN }
 
+    /**
+     * Factory method
+     * @param boardEntity board entity
+     * @return board model
+     */
     public static Board from(BoardEntity boardEntity) {
         Board board = Board.builder()
                 .systemRequired(boardEntity.isSystemRequired())
@@ -72,8 +71,12 @@ public class Board extends BaseModel {
                 .message(boardEntity.getMessage())
                 .skin(boardEntity.getSkin())
                 .pageSize(boardEntity.getPageSize())
+                .fileEnabled(boardEntity.isFileEnabled())
+                .storageId(boardEntity.getStorageId())
+                .fileSizeLimit(boardEntity.getFileSizeLimit())
+                .discussionEnabled(boardEntity.isDiscussionEnabled())
+                .discussionId(boardEntity.getDiscussionId())
                 .build();
-
         // access policy
         List<Role> accessRoles = boardEntity.getAccessBoardRoleEntities().stream()
                 .map(BoardRoleEntity::getRoleEntity)
@@ -81,7 +84,6 @@ public class Board extends BaseModel {
                 .map(Role::from)
                 .collect(Collectors.toList());
         board.setAccessRoles(accessRoles);
-
         // read policy
         List<Role> readRoles = boardEntity.getReadBoardRoleEntities().stream()
                 .map(BoardRoleEntity::getRoleEntity)
@@ -89,7 +91,6 @@ public class Board extends BaseModel {
                 .map(Role::from)
                 .collect(Collectors.toList());
         board.setReadRoles(readRoles);
-
         // write policy
         List<Role> writeRoles = boardEntity.getWriteBoardRoleEntities().stream()
                 .map(BoardRoleEntity::getRoleEntity)
@@ -97,26 +98,6 @@ public class Board extends BaseModel {
                 .map(Role::from)
                 .collect(Collectors.toList());
         board.setWriteRoles(writeRoles);
-
-        // file
-        board.setFileEnabled(boardEntity.isFileEnabled());
-        board.setFileSizeLimit(boardEntity.getFileSizeLimit());
-        List<Role> fileRoles = boardEntity.getFileBoardRoleEntities().stream()
-                .map(BoardRoleEntity::getRoleEntity)
-                .filter(Objects::nonNull)
-                .map(Role::from)
-                .collect(Collectors.toList());
-        board.setFileRoles(fileRoles);
-
-        // comment
-        board.setCommentEnabled(boardEntity.isCommentEnabled());
-        List<Role> commentRoles = boardEntity.getCommentBoardRoleEntities().stream()
-                .map(BoardRoleEntity::getRoleEntity)
-                .filter(Objects::nonNull)
-                .map(Role::from)
-                .collect(Collectors.toList());
-        board.setCommentRoles(commentRoles);
-
         // return
         return board;
     }

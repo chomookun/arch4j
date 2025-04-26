@@ -5,9 +5,9 @@
       layout:decorate="_web.html">
 <main layout:fragment="_main">
     <script th:inline="javascript">
-        const boardId = /*[[${board.boardId}]]*/'';
-        const board = new duice.ObjectProxy({});
+        const boardId = /*[[${boardId}]]*/'';
         const articleId = /*[[${articleId}]]*/'';
+        const board = new duice.ObjectProxy({});
         const article = new duice.ObjectProxy({
             articleId: null,
             format: 'TEXT',
@@ -22,7 +22,7 @@
             });
         }
 
-        const getArticle = function(articleId) {
+        const getArticle = function() {
             let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
             _fetch(url).then(response => response.json())
                 .then(data => {
@@ -57,7 +57,7 @@
                     let method;
                     // modify article
                     if(article.articleId) {
-                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${article.articleId}`, location.origin);
+                        url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}`, location.origin);
                         method = 'PUT';
                     }
                     // create article

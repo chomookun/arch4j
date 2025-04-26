@@ -11,7 +11,7 @@ import java.time.Instant;
 @Table(
         name = "core_storage_file",
         indexes = {
-                @Index(name = "idx_storage_object_ref", columnList = "ref_type, ref_id")
+                @Index(name = "idx_core_storage_file_target", columnList = "target_type, target_id")
         }
 )
 @Data

@@ -6,9 +6,9 @@
 <main layout:fragment="_main">
     <script th:inline="javascript">
         // defines
-        const boardId = /*[[${board.boardId}]]*/'';
+        const boardId = /*[[${boardId}]]*/'';
+        const articleId = /*[[${articleId}]]*/'';
         const board = new duice.ObjectProxy({});
-        const articleId = new URL(location.href).searchParams.get('articleId');
         const article = new duice.ObjectProxy({
             articleFiles:[]
         });
@@ -54,52 +54,53 @@
         _initialize(() => {
             getBoard();
             getArticle();
-            _comment.getComments();
+            if (window._comment) {
+                _comment.getComments();
+            }
         });
     </script>
     <th:block th:replace="|_theme/${_theme}/board/${board.skin}/article.html|"/>
 
-    <hr/>
-
-    <th:block th:replace="|comment/comment.html|"/>
-    <script th:inline="javascript">
-        _comment.configure({
-            createComment: function(comment) {
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
-                return _fetch(url, {
-                    headers: {'Content-Type': 'application/json'},
-                    method: 'POST',
-                    body: JSON.stringify(comment)
-                }).then(response => response.json());
-            },
-            getComments: function() {
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
-                return _fetch(url).then(response => response.json());
-            },
-            getComment: function(commentId) {
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${commentId}`, location.origin);
-                return _fetch(url).then(response => response.json());
-            },
-            updateComment: function(comment) {
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${comment.commentId}`, location.origin);
-                return _fetch(url, {
-                    headers: {'Content-Type': 'application/json'},
-                    method: 'PUT',
-                    body: JSON.stringify(comment)
-                }).then(response => response.json());
-            },
-            deleteComment: function(commentId) {
-                let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${commentId}`, location.origin);
-                return _fetch(url, {
-                    method: 'DELETE',
-                    headers: {'Content-Type': 'application/json'}
-                }).then();
+    <th:block th:if="${discussionProvider != null}">
+        <br/>
+        <th:block th:replace="|${discussionProvider.viewName}|"/>
+        <script th:inline="javascript">
+            if (window._comment) {
+                _comment.configure({
+                    createComment: function(comment) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
+                        return _fetch(url, {
+                            headers: {'Content-Type': 'application/json'},
+                            method: 'POST',
+                            body: JSON.stringify(comment)
+                        }).then(response => response.json());
+                    },
+                    getComments: function() {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
+                        return _fetch(url).then(response => response.json());
+                    },
+                    getComment: function(commentId) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${commentId}`, location.origin);
+                        return _fetch(url).then(response => response.json());
+                    },
+                    updateComment: function(comment) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${comment.commentId}`, location.origin);
+                        return _fetch(url, {
+                            headers: {'Content-Type': 'application/json'},
+                            method: 'PUT',
+                            body: JSON.stringify(comment)
+                        }).then(response => response.json());
+                    },
+                    deleteComment: function(commentId) {
+                        let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments/${commentId}`, location.origin);
+                        return _fetch(url, {
+                            method: 'DELETE',
+                            headers: {'Content-Type': 'application/json'}
+                        }).then();
+                    }
+                });
             }
-        });
-    </script>
-
-    <hr/>
-
-    <th:block th:replace="|comment/provider/disqus.html|"/>
+        </script>
+    </th:block>
 
 </main>

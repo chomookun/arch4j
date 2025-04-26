@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.web.api.v1.comment.dto;
+package org.chomookun.arch4j.web.api.v1.discussion.dto;
 
 import lombok.*;
 

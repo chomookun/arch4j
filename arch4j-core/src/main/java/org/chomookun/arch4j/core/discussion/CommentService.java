@@ -1,9 +1,9 @@
-package org.chomookun.arch4j.core.comment;
+package org.chomookun.arch4j.core.discussion;
 
 import lombok.AllArgsConstructor;
-import org.chomookun.arch4j.core.comment.entity.CommentEntity;
-import org.chomookun.arch4j.core.comment.model.Comment;
-import org.chomookun.arch4j.core.comment.repository.CommentRepository;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity;
+import org.chomookun.arch4j.core.discussion.model.Comment;
+import org.chomookun.arch4j.core.discussion.repository.CommentRepository;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.user.UserService;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,8 @@ public class CommentService {
         if (comment.getCommentId() == null) {
             commentEntity = CommentEntity.builder()
                     .commentId(IdGenerator.uuid())
-                    .thread(comment.getThread())
+                    .targetType(comment.getTargetType())
+                    .targetId(comment.getTargetId())
                     .createdAt(Instant.now())
                     .userId(comment.getUserId())
                     .parentCommentId(comment.getParentCommentId())
@@ -43,8 +44,8 @@ public class CommentService {
         return savedComment;
     }
 
-    public List<Comment> getComments(String thread) {
-        return commentRepository.findAllByThread(thread).stream()
+    public List<Comment> getComments(String targetType, String targetId) {
+        return commentRepository.findAllByTarget(targetType, targetId).stream()
                 .map(Comment::from)
                 .map(this::populateComment)
                 .collect(Collectors.toList());

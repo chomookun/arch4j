@@ -16,16 +16,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ArticleFileService {
 
-    private static final String STORAGE_ID = "board";
-
-    private static final String TARGET_TYPE = "board:article";
+    private static final String TARGET_TYPE = "board.article";
 
     private final BoardService boardService;
 
     private final StorageFileService storageFileService;
 
-    public StorageFile createArticleFile(String articleId, MultipartFile multipartFile) throws IOException {
-        return storageFileService.uploadStorageFile(multipartFile, STORAGE_ID);
+    public StorageFile createArticleFile(String articleId, MultipartFile multipartFile, String storageId) throws IOException {
+        return storageFileService.uploadStorageFile(multipartFile, storageId, TARGET_TYPE);
     }
 
     public void attachArticleFile(String articleId, String fileId) {

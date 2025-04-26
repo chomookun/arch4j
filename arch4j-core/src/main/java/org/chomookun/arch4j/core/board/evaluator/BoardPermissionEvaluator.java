@@ -39,22 +39,4 @@ public class BoardPermissionEvaluator {
         return hasWritePermission(board);
     }
 
-    public boolean hasFilePermission(Board board) {
-        return SecurityUtils.hasPermission(board.getFileRoles());
-    }
-
-    public boolean hasFilePermission(String boardId) {
-        Board board = boardService.getBoard(boardId).orElseThrow();
-        return hasFilePermission(board);
-    }
-
-    public boolean hasCommentPermission(Board board) {
-        return SecurityUtils.hasPermission(board.getCommentRoles());
-    }
-
-    public boolean hasCommentPermission(String boardId) {
-        Board board = boardService.getBoard(boardId).orElseThrow();
-        return hasCommentPermission(board);
-    }
-
 }

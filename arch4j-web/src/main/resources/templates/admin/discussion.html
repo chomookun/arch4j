@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<main layout:fragment="_main">
+    <script th:inline="javascript">
+        // discussion search condition
+        const discussionSearch = new duice.ObjectProxy({
+            key: 'name',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _total: 0
+        });
+        const discussions = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(discussions, true);
+        // discussion
+        const discussion = new duice.ObjectProxy({
+            discussionId: null
+        });
+        duice.ObjectProxy.setDisabledAll(discussions, true);
+        const discussionProviderDefinitions = new duice.ArrayProxy(/*[[${discussionProviderDefinitions}]]*/[]);
+
+        function getDiscussions(page) {
+            if(page) {
+                discussionSearch._page = page;
+            }
+            let url = new URL(`${window.location.pathname}/get-discussions`, document.location.origin);
+            if (discussionSearch.key && discussionSearch.value) {
+                url.searchParams.append(discussionSearch.key, discussionSearch.value);
+            }
+            url.searchParams.append('_page', discussionSearch._page);
+            url.searchParams.append('_size', discussionSearch._size);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.clear(discussions);
+                    duice.ArrayProxy.assign(discussions, data.content);
+                    discussionSearch._total = data['totalElements'];
+                    // select current item
+                    duice.ArrayProxy.selectItem(discussions, discussions.findIndex(item => item.discussionId === discussion.discussionId));
+                });
+        }
+
+        function resetDiscussions() {
+            duice.ObjectProxy.reset(discussionSearch);
+            getDiscussions();
+        }
+
+        function getDiscussion(discussionId) {
+            let url = new URL(`${window.location.pathname}/get-discussion`, location.origin);
+            url.searchParams.append('discussionId', discussionId);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ObjectProxy.assign(discussion, data);
+                    duice.ObjectProxy.setDisabledAll(discussion, false);
+                    duice.ObjectProxy.setReadonly(discussion, 'discussionId', true);
+                    discussion._new = false;
+                });
+        }
+
+        function createDiscussion() {
+            duice.ObjectProxy.clear(discussion);
+            duice.ObjectProxy.assign(discussion, {});
+            duice.ObjectProxy.setDisabledAll(discussion, false);
+            duice.ObjectProxy.focus(discussion, 'name');
+        }
+
+        async function saveDiscussion() {
+            // validates
+            if(_isEmpty(discussion.name)) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.discussion.Discussion.name})}]]*/'');
+                duice.ObjectProxy.focus(discussion, 'name');
+                return false;
+            }
+            // call save
+            _confirm(/*[[#{web.global.saveItemConfirm(#{core.discussion.Discussion})}]]*/'').then(result => {
+                if (result) {
+                    let url = new URL(`${window.location.pathname}/save-discussion`, location.origin);
+                    _fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(discussion)
+                    }).then(response => {
+                        if (response.ok) {
+                            _alert(/*[[#{web.global.saveItemComplete(#{core.discussion.Discussion})}]]*/'').then(() => {
+                                getDiscussions();
+                                getDiscussion(discussion.discussionId);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteDiscussion() {
+            _confirm(/*[[#{web.global.deleteItemConfirm(#{core.discussion.Discussion})}]]*/'').then(result => {
+                if (result) {
+                    let url = new URL(`${window.location.pathname}/delete-discussion`, document.location.origin);
+                    url.searchParams.append('discussionId', discussion.discussionId);
+                    _fetch(url).then(response => {
+                        if (response.ok) {
+                            _alert(/*[[#{web.global.deleteItemComplete(#{core.discussion.Discussion})}]]*/'').then(() => {
+                                getDiscussions();
+                                duice.ObjectProxy.clear(discussion);
+                            });
+                        }
+                    })
+                }
+            });
+        }
+
+        // Initializes
+        _initialize(() => {
+            getDiscussions();
+        });
+    </script>
+
+    <!-- ====================================== -->
+    <!-- start: title                           -->
+    <!-- ====================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-discussion.svg}" alt="discussion"/>
+        <span data-th-text="#{web.admin.discussion}"></span>
+    </h1>
+    <!-- ====================================== -->
+    <!-- end: title                             -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: discussion content                -->
+    <!-- ====================================== -->
+    <div id="discussionContent" class="display--grid grid-template-columns--12fr gap--1rem">
+        <div class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ====================================== -->
+            <!-- start: discussion list                   -->
+            <!-- ====================================== -->
+            <div id="discussionList" class="panel">
+                <div class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                        <span data-th-text="|#{core.discussion.Discussion} #{web.global.list}|"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1rem">
+                        <div class="display--flex gap--1px">
+                            <div class="display--flex flex-wrap--nowrap gap--1px">
+                                <label>
+                                    <select data-duice-bind="discussionSearch" data-duice-property="key">
+                                        <option value="discussionId" th:text="#{core.discussion.Discussion.discussionId}"></option>
+                                        <option value="name" th:text="#{core.discussion.Discussion.name}"></option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <input type="text" data-duice-bind="discussionSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                            <button class="button" type="submit" onclick="getDiscussions();">
+                                <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                                <span data-th-text="#{web.global.search}">Search</span>
+                            </button>
+                            <button class="button" type="button" onclick="resetDiscussions();">
+                                <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                                <span data-th-text="#{web.global.reset}">Reset</span>
+                            </button>
+                        </div>
+                    </form>
+                    <table class="table width--100">
+                        <colgroup>
+                            <col style="width:5rem;"/>
+                            <col/>
+                            <col style="width:20rem;"/>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                            <th data-th-text="#{core.discussion.Discussion.name}"></th>
+                            <th data-th-text="#{core.discussion.Discussion.discussionProviderId}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-duice-bind="discussions"
+                            data-duice-foreach="discussion,status"
+                            data-duice-selected-item-class="selected"
+                            data-duice-execute="this.dataset.discussionId=discussion.discussionId;"
+                            onclick="getDiscussion(this.dataset.discussionId);"
+                            class="cursor--pointer">
+                            <td class="text-align--center">
+                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (discussionSearch._page * discussionSearch._size) + status.count" class="number"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="discussion" data-duice-property="name"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="discussion" data-duice-property="discussionProviderId" class="code"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="discussions"
+                            data-duice-execute="if(discussions.length === 0) this.hidden=false;" hidden>
+                            <td colspan="100%" class="text-align--center">No Data</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="display--flex justify-content--space-between">
+                        <div>
+                            <span data-th-text="#{web.global.total}"></span>
+                            <span data-duice-bind="discussionSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                            <span data-th-text="#{web.global.rows}"></span>
+                        </div>
+                        <duice-pagination
+                                data-duice-bind="discussionSearch"
+                                data-duice-size-property="_size"
+                                data-duice-page-property="_page"
+                                data-duice-total-property="_total"
+                                data-duice-onclick="getDiscussions(this.dataset.page);">
+                        </duice-pagination>
+                        <div class="display--flex justify-content--end">
+                            <button class="button" type="button" onclick="createDiscussion();">
+                                <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
+                                <span data-th-text="#{web.global.create}"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ====================================== -->
+            <!-- end: discussion list                     -->
+            <!-- ====================================== -->
+        </div>
+        <div class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ====================================== -->
+            <!-- start: discussion detail                 -->
+            <!-- ====================================== -->
+            <div class="panel">
+                <div class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                        <span data-th-text="|#{core.discussion.Discussion} #{web.global.detail}|"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.discussion.Discussion.name}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="discussion" data-duice-property="name" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.discussion.Discussion.discussionProviderId}" class="font-weight--bold tag-required"></span>
+                                <select data-duice-bind="discussion" data-duice-property="discussionProviderId"
+                                        data-duice-option="discussionProviderDefinitions"
+                                        data-duice-option-value-property="discussionProviderId"
+                                        data-duice-option-text-property="name"
+                                        class="width--100">
+                                    <option data-th-text="|#{web.global.select}...|"></option>
+                                </select>
+
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.discussion.Discussion.discussionProviderConfig}" class="font-weight--bold"></span>
+                                <duice-codemirror
+                                        class="code box"
+                                        data-duice-bind="discussion"
+                                        data-duice-property="discussionProviderConfig"
+                                        data-duice-theme="dracula">
+                                </duice-codemirror>
+                            </label>
+                        </div>
+                    </form>
+                    <div class="display--flex justify-content--space-between">
+                        <div></div>
+                        <div class="display--flex justify-content--end gap--1px">
+                            <button class="button" type="button" onclick="deleteDiscussion();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.discussion:edit'')')}?'locked'"
+                                    data-duice-bind="discussion"
+                                    data-duice-execute="(discussion.discussionId && !discussion._new) ? this.disabled=false : this.disabled=true;">
+                                <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                                <span data-th-text="#{web.global.delete}"></span>
+                            </button>
+                            <button class="button" type="button" onclick="saveDiscussion();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.discussion:edit'')')}?'locked'"
+                                    data-duice-bind="discussion"
+                                    data-duice-execute="(discussion.discussionId || discussion._new) ? this.disabled=false : this.disabled=true;">
+                                <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
+                                <span data-th-text="#{web.global.save}"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-align--right font-size--xx-small font-style--italic">
+                        Last Updated At
+                        <span data-duice-bind="discussion" data-duice-property="systemUpdatedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                        By
+                        <span data-duice-bind="discussion" data-duice-property="systemUpdatedBy"></span>
+                    </div>
+                </div>
+            </div>
+            <!-- ====================================== -->
+            <!-- end: discussion detail                   -->
+            <!-- ====================================== -->
+        </div>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: discussion content                  -->
+    <!-- ====================================== -->
+
+</main>

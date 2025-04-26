@@ -593,8 +593,7 @@
                         <div class="grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.security.Role.note}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="role" data-duice-property="note" rows="5"
-                                          class="width--100"></textarea>
+                                <textarea data-duice-bind="role" data-duice-property="note" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
@@ -827,7 +826,7 @@
                         <div class="grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.security.Authority.note}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="authority" data-duice-property="note" rows="5" class="width--100"></textarea>
+                                <textarea data-duice-bind="authority" data-duice-property="note" class="width--100"></textarea>
                             </label>
                         </div>
                     </form>
@@ -1077,7 +1076,7 @@
             <div class="display--flex justify-content--space-between">
                 <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
-                    <span data-duice-bind="selectAuthorityDialog.authoritySearch" data-duice-property="_count" data-duice-format="number(0)"></span>
+                    <span data-duice-bind="selectAuthorityDialog.authoritySearch" data-duice-property="_total" data-duice-format="number(0)"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
                 <duice-pagination
@@ -1106,7 +1105,7 @@
                     <tbody>
                     <tr data-duice-bind="selectAuthorityDialog.selectedAuthorities" data-duice-foreach="authority,status">
                         <td class="text-align--center">
-                            <button class="button" type="button"
+                            <button class="button small" type="button"
                                     data-duice-bind="authority"
                                     data-duice-execute="this.dataset.index = status.index;"
                                     onclick="selectAuthorityDialog.deselectAuthority(this.dataset.index);">

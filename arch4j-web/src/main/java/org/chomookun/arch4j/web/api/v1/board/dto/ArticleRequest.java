@@ -15,7 +15,7 @@ import java.util.List;
 @Schema(description = "Article Request")
 public class ArticleRequest {
 
-    private String articleId;
+    private String id;
 
     private String title;
 

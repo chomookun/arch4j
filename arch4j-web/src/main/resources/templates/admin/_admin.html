@@ -376,12 +376,6 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/storage}" th:classappend="!${#authorization.expression('hasAuthority(''admin.storage'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
-                    <span data-th-text="#{web.admin.storage}"></span>
-                </a>
-            </li>
-            <li>
                 <a th:href="@{/admin/execution}" th:classappend="!${#authorization.expression('hasAuthority(''admin.execution'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-execution.svg}" alt="execution"/>
                     <span data-th-text="#{web.admin.execution}"></span>
@@ -391,6 +385,18 @@
                 <a th:href="@{/admin/batch}" th:classappend="!${#authorization.expression('hasAuthority(''admin.batch'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-batch.svg}" alt="batch"/>
                     <span data-th-text="#{web.admin.batch}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/storage}" th:classappend="!${#authorization.expression('hasAuthority(''admin.storage'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
+                    <span data-th-text="#{web.admin.storage}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/discussion}" th:classappend="!${#authorization.expression('hasAuthority(''admin.discussion'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-discussion.svg}" alt="storage"/>
+                    <span data-th-text="#{web.admin.discussion}"></span>
                 </a>
             </li>
             <li>

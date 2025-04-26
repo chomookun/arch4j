@@ -385,8 +385,7 @@
                                           data-duice-execute="this.innerHTML=user.roles.length;"></span>
                                 </td>
                             </tr>
-                            <tr data-duice-bind="users" data-duice-execute="if(users.length === 0) this.hidden=false;"
-                                hidden>
+                            <tr data-duice-bind="users" data-duice-if="return users.length === 0;" hidden>
                                 <td colspan="100%" class="text-align--center">
                                     <span data-th-text="#{web.global.itemNotFound(#{core.user.User})}"></span>
                                 </td>
@@ -503,7 +502,7 @@
                         <div class="grid-column--span-10 s__grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.user.User.bio}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="user" data-duice-property="bio" rows="3" class="width--100"></textarea>
+                                <textarea data-duice-bind="user" data-duice-property="bio" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
@@ -587,8 +586,7 @@
                                         </td>
                                     </tr>
                                     <tr data-duice-bind="user.roles"
-                                        data-duice-execute="if(user.roles.length === 0) this.hidden=false;"
-                                        hidden>
+                                        data-duice-if="return user.roles.length === 0;" hidden>
                                         <td colspan="100%" class="text-align--center">
                                             <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
                                         </td>

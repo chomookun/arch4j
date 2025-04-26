@@ -17,12 +17,12 @@ public class S3StorageClientDefinition implements StorageClientDefinition {
     }
 
     @Override
-    public String getStorageClientName() {
+    public String getName() {
         return "AWS S3 Storage (Not available yet)";
     }
 
     @Override
-    public String getStorageClientConfigTemplate() {
+    public String getConfigTemplate() {
         StringJoiner template = new StringJoiner("\n");
         template.add("bucket=[bucket]");
         return template.toString();

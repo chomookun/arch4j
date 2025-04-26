@@ -25,9 +25,9 @@ public class StorageClientDefinitionRegistry implements BeanPostProcessor {
         return bean;
     }
 
-    public static Optional<StorageClientDefinition> getStorageClientDefinition(String id) {
+    public static Optional<StorageClientDefinition> getStorageClientDefinition(String type) {
         return storageClientDefinitions.stream()
-                .filter(item -> Objects.equals(item.getStorageClientId(), id))
+                .filter(item -> Objects.equals(item.getStorageClientId(), type))
                 .findFirst();
     }
 

@@ -35,12 +35,12 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
     @Lob
     private String icon;
 
-    @Column(name = "message_format", length = 16)
-    private Board.MessageFormat messageFormat;
-
     @Column(name = "message", length = 4000)
     @Lob
     private String message;
+
+    @Column(name = "message_format", length = 16)
+    private Board.MessageFormat messageFormat;
 
     @Column(name = "skin")
     private String skin;
@@ -52,12 +52,18 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
     @Convert(converter= BooleanConverter.class)
     private boolean fileEnabled;
 
+    @Column(name = "storage_id", length = 32)
+    private String storageId;
+
     @Column(name = "file_size_limit")
     private Integer fileSizeLimit;
 
-    @Column(name = "comment_enabled", length = 1)
+    @Column(name = "discussion_enabled", length = 1)
     @Convert(converter= BooleanConverter.class)
-    private boolean commentEnabled;
+    private boolean discussionEnabled;
+
+    @Column(name = "discussion_id", length = 32)
+    private String discussionId;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "board_id", updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.chomookun.arch4j.core.discussion.DiscussionService;
+import org.chomookun.arch4j.core.discussion.model.Discussion;
+import org.chomookun.arch4j.core.discussion.provider.DiscussionProvider;
+import org.chomookun.arch4j.core.discussion.provider.DiscussionProviderFactory;
 import org.chomookun.arch4j.core.git.model.Git;
 import org.chomookun.arch4j.core.git.client.GitClient;
 import org.chomookun.arch4j.core.git.GitProperties;
@@ -46,28 +50,25 @@ public class GitController {
 
     private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
+    private final DiscussionService discussionService;
+
     @GetMapping("{gitId}/**")
     public Object getMarkdown(@PathVariable("gitId")String gitId, HttpServletRequest request) throws IOException {
-
         // parse request uri
         String requestUri = request.getRequestURI();
         String[] requestUriArray = requestUri.split("/");
         String[] filePathArray = new String[requestUriArray.length - 3];
         System.arraycopy(requestUriArray, 3, filePathArray, 0, filePathArray.length);
-
         // get git info
         Git git = gitService.getGit(gitId).orElseThrow();
-
         // get requested git resource
         Resource resource = getResource(git, String.join("/", filePathArray));
         if(!resource.exists()) {
             throw new RuntimeException("resource not found");
         }
-
         // parse media type
         MediaType mediaType = MediaTypeFactory.getMediaType(resource.getFilename())
                 .orElse(MediaType.APPLICATION_OCTET_STREAM);
-
         // in case image, send image bytes
         if(mediaType.getType().equals("image")){
             byte[] imageBytes = FileUtils.readFileToByteArray(resource.getFile());
@@ -78,14 +79,13 @@ public class GitController {
                     .headers(headers)
                     .body(byteArrayResource);
         }
-
         // switch locale markdown
         if(filePathArray[filePathArray.length-1].endsWith(".md")) {
             Locale locale = localeResolver.resolveLocale(request);
             String[] localeFilePathArray = Arrays.copyOf(filePathArray, filePathArray.length);
             String fileName = localeFilePathArray[localeFilePathArray.length-1];
             String localeFileName = FilenameUtils.getBaseName(fileName) +
-                    "_" + locale.getLanguage() +
+                    "." + locale.getLanguage() +
                     "." + FilenameUtils.getExtension(fileName);
             localeFilePathArray[localeFilePathArray.length-1] = localeFileName;
             Resource localeResource = getResource(git, String.join("/", localeFilePathArray));
@@ -93,11 +93,20 @@ public class GitController {
                 resource = localeResource;
             }
         }
-
-        // return model and view
-        ModelAndView modelAndView = new ModelAndView("git/git.html");
+        // model and view
+        ModelAndView modelAndView = new ModelAndView("git/git");
         String content = FileUtils.readFileToString(resource.getFile(), StandardCharsets.UTF_8);
         modelAndView.addObject("content", content);
+        // discussion
+        if (git.isDiscussionEnabled()) {
+            Discussion discussion = discussionService.getDiscussion(git.getDiscussionId()).orElseThrow();
+            modelAndView.addObject("discussion", discussion);
+            DiscussionProvider discussionProvider = DiscussionProviderFactory.getDiscussionProvider(discussion);
+            modelAndView.addObject("discussionProvider", discussionProvider);
+            String commentTarget = String.format("git.%s:%s", git.getGitId(), request.getRequestURI());
+            modelAndView.addObject("commentTarget", commentTarget);
+        }
+        // returns
         return modelAndView;
     }
 

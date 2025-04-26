@@ -2,9 +2,8 @@ package org.chomookun.arch4j.core.discussion;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.comment.CommentService;
-import org.chomookun.arch4j.core.comment.entity.CommentEntity;
-import org.chomookun.arch4j.core.comment.model.Comment;
+import org.chomookun.arch4j.core.discussion.entity.CommentEntity;
+import org.chomookun.arch4j.core.discussion.model.Comment;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,8 @@ class CommentServiceTest extends CoreTestSupport {
     void saveComment() {
         // when
         Comment comment = Comment.builder()
-                .thread("test-thread")
+                .targetType("board.article")
+                .targetId(IdGenerator.uuid())
                 .content("test-content")
                 .build();
         Comment savedComment = commentService.saveComment(comment);
@@ -34,14 +34,14 @@ class CommentServiceTest extends CoreTestSupport {
         // given
         CommentEntity commentEntity = CommentEntity.builder()
                 .commentId(IdGenerator.uuid())
-                .discussionId("test")
-                .thread("test-thread")
+                .targetType("board.article")
+                .targetId(IdGenerator.uuid())
                 .content("test-content")
                 .build();
         entityManager.persist(commentEntity);
         entityManager.flush();
         // when
-        List<Comment> comments = commentService.getComments(commentEntity.getThread());
+        List<Comment> comments = commentService.getComments(commentEntity.getTargetType(), commentEntity.getTargetId());
         // then
         log.info("comments: {}", comments);
     }

@@ -1,6 +1,9 @@
 package org.chomookun.arch4j.web.view.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.discussion.DiscussionService;
+import org.chomookun.arch4j.core.discussion.model.Discussion;
+import org.chomookun.arch4j.core.discussion.model.DiscussionSearch;
 import org.chomookun.arch4j.core.git.model.Git;
 import org.chomookun.arch4j.core.git.model.GitSearch;
 import org.chomookun.arch4j.core.git.GitService;
@@ -15,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @Controller
 @ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/git")
@@ -24,9 +29,15 @@ public class GitController {
 
     private final GitService gitService;
 
+    private final DiscussionService discussionService;
+
     @GetMapping
     public ModelAndView index() {
-        return new ModelAndView("admin/git.html");
+        ModelAndView modelAndView = new ModelAndView("admin/git");
+        // discussions
+        List<Discussion> discussions = discussionService.getDiscussions(DiscussionSearch.builder().build(), Pageable.unpaged()).getContent();
+        modelAndView.addObject("discussions", discussions);
+        return modelAndView;
     }
 
     @GetMapping("get-gits")
