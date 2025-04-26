@@ -261,7 +261,7 @@
                 </div>
                 <div class="panel-content">
                     <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1rem">
-                        <div class="white-space--nowrap">
+                        <div class="display--flex gap--1px">
                             <label>
                                 <select data-duice-bind="pageSearch" data-duice-property="key">
                                     <option value="pageId" th:text="#{core.page.Page.pageId}"></option>
@@ -273,7 +273,7 @@
                                        th:placeholder="#{web.global.keyword}"/>
                             </label>
                         </div>
-                        <div class="text-align--right s__text-align--left">
+                        <div class="display--flex gap--1px">
                             <button class="button" type="submit" onclick="getPages();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -385,7 +385,8 @@
                                         data-duice-property="content"
                                         data-duice-mode="markdown"
                                         data-duice-theme="dracula"
-                                        data-duice-if="return page.contentFormat==='MARKDOWN'"/>
+                                        data-duice-if="return page.contentFormat==='MARKDOWN'">
+                                </duice-codemirror>
                             </label>
                         </div>
                         <div class="grid-column--span-12 display--grid grid-template-columns--12fr gap--1rem">
@@ -453,7 +454,7 @@
                                 <span data-th-text="#{web.admin.page.openPage}"></span>
                             </button>
                         </div>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button"
                                     type="button"
                                     onclick="deletePage();"

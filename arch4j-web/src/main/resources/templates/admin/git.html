@@ -194,18 +194,20 @@
                 <div class="panel-content">
                     <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap">
                         <div>
-                            <label>
-                                <select data-duice-bind="gitSearch" data-duice-property="key">
-                                    <option value="gitId" th:text="#{core.git.Git.gitId}"></option>
-                                    <option value="name" th:text="#{core.git.Git.name}"></option>
-                                </select>
-                            </label>
-                            <label>
-                                <input type="text" data-duice-bind="gitSearch" data-duice-property="value"
-                                       th:placeholder="#{web.global.keyword}"/>
-                            </label>
+                            <div class="display--flex gap--1px flex-wrap--nowrap">
+                                <label>
+                                    <select data-duice-bind="gitSearch" data-duice-property="key">
+                                        <option value="gitId" th:text="#{core.git.Git.gitId}"></option>
+                                        <option value="name" th:text="#{core.git.Git.name}"></option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <input type="text" data-duice-bind="gitSearch" data-duice-property="value"
+                                           th:placeholder="#{web.global.keyword}"/>
+                                </label>
+                            </div>
                         </div>
-                        <div class="flex--1 text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button" type="submit" onclick="getGits();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -299,7 +301,7 @@
                             <input class="code width--100" type="text" data-duice-bind="git" data-duice-property="url"/>
                         </label>
                         <label class="grid-column--span-12">
-                            <span>branch</span>
+                            <span data-th-text="#{core.git.Git.branch}" class="font-weight--bold">branch</span>
                             <input class="code width--100" type="text" data-duice-bind="git" data-duice-property="branch"/>
                         </label>
                         <div class="grid-column--span-12">
@@ -322,12 +324,12 @@
                         </div>
                         <label class="grid-column--span-12">
                             <span data-th-text="#{core.git.Git.note}" class="font-weight--bold"></span>
-                            <textarea data-duice-bind="git" data-duice-property="note" rows="5" class="width--100"></textarea>
+                            <textarea data-duice-bind="git" data-duice-property="note" class="width--100"></textarea>
                         </label>
                     </form>
                     <div class="display--flex justify-content--space-between gap--1rem">
                         <div></div>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button"
                                     type="button"
                                     onclick="deleteGit();"

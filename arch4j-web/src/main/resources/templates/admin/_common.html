@@ -139,7 +139,7 @@
     <div class="dialog-content">
         <form onsubmit="return false;" class="display--flex flex-wrap--wrap gap--1rem justify-content--space-between">
             <div>
-                <div class="white-space--nowrap">
+                <div class="display--flex gap--1px flex-wrap--nowrap">
                     <label>
                         <select data-duice-bind="_selectRoleDialog.roleSearch" data-duice-property="key">
                             <option value="roleId" th:text="#{core.security.Role.roleId}"></option>
@@ -151,7 +151,7 @@
                     </label>
                 </div>
             </div>
-            <div class="white-space--nowrap text-align--right s__text-align--left">
+            <div class="display--flex justify-content--end gap--1px flex-wrap--nowrap">
                 <button class="button" onclick="_selectRoleDialog.getRoles();">
                     <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                     <span data-th-text="#{web.global.search}">Search</span>
@@ -217,8 +217,10 @@
                     </td>
                 </tr>
                 <tr data-duice-bind="_selectRoleDialog.roles"
-                    data-duice-execute="if(_selectRoleDialog.roles.length === 0) this.hidden=false;" hidden>
-                    <td colspan="100%" class="text-align--center">No Data</td>
+                    data-duice-if="return _selectRoleDialog.roles.length === 0;" hidden>
+                    <td colspan="100%" class="text-align--center">
+                        <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -286,8 +288,10 @@
                     </td>
                 </tr>
                 <tr data-duice-bind="_selectRoleDialog.selectedRoles"
-                    data-duice-execute="if(_selectRoleDialog.selectedRoles.length === 0) this.hidden=false;" hidden>
-                    <td colspan="100%" class="text-align--center">No Data</td>
+                    data-duice-if="return _selectRoleDialog.selectedRoles.length === 0;" hidden>
+                    <td colspan="100%" class="text-align--center">
+                        <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
+                    </td>
                 </tr>
                 </tbody>
             </table>

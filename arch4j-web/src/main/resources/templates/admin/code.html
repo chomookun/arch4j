@@ -359,7 +359,7 @@
                         <div class="grid-column--span-12">
                             <label>
                                 <span data-th-text="#{core.code.Code.note}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="code" data-duice-property="note" rows="5" class="width--100"></textarea>
+                                <textarea data-duice-bind="code" data-duice-property="note" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
@@ -373,7 +373,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button type="button" class="small" onclick="addCodeItem();">
+                                        <button type="button" class="button small" onclick="addCodeItem();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -384,7 +384,7 @@
                                 <tbody>
                                 <tr data-duice-bind="code.codeItems" data-duice-foreach="codeItem,status">
                                     <td class="text-align--center">
-                                        <button type="button" class="small"
+                                        <button type="button" class="button small"
                                                 data-duice-bind="codeItem"
                                                 data-duice-execute="this.dataset.index=status.index;"
                                                 onclick="removeCodeItem(this.dataset.index);">

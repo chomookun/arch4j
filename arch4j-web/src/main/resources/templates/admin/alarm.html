@@ -303,9 +303,10 @@
                                 <span data-duice-bind="alarm" data-duice-property="name"></span>
                             </td>
                         </tr>
-                        <tr data-duice-bind="alarms"
-                            data-duice-execute="if(alarms.length === 0) this.hidden=false;" hidden>
-                            <td colspan="100%" class="text-align--center">No Data</td>
+                        <tr data-duice-bind="alarms" data-duice-if="return alarms.length === 0;" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.alarm.Alarm})}"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
