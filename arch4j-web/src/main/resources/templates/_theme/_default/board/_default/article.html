@@ -54,6 +54,9 @@
         <duice-marked data-duice-bind="article"
                       data-duice-if="return article.format ==='MARKDOWN'"
                       data-duice-property="content"></duice-marked>
+        <div data-duice-bind="article"
+             data-duice-if="return article.format === 'HTML'"
+             data-duice-execute="this.innerHTML = DOMPurify.sanitize(article.content);"></div>
     </div>
 </div>
 <!-- ================================================== -->

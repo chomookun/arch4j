@@ -17,9 +17,9 @@ public class PageResponse {
 
     private String name;
 
-    private Page.Format format;
-
     private String content;
+
+    private Page.ContentFormat contentFormat;
 
     @Builder.Default
     private List<PageWidgetResponse> pageWidgets = new ArrayList<>();
@@ -28,8 +28,8 @@ public class PageResponse {
         return PageResponse.builder()
                 .pageId(page.getPageId())
                 .name(page.getName())
-                .format(page.getFormat())
                 .content(page.getContent())
+                .contentFormat(page.getContentFormat())
                 .pageWidgets(page.getPageWidgets().stream()
                         .map(PageWidgetResponse::from)
                         .toList())

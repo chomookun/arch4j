@@ -29,12 +29,12 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     @Column(name = "name")
     private String name;
 
-    @Column(name = "content_format", length = 16)
-    private Page.Format contentFormat;
-
     @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
+
+    @Column(name = "content_format", length = 16)
+    private Page.ContentFormat contentFormat;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "page_id", updatable = false)
@@ -75,6 +75,6 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     }
 
     @Converter(autoApply = true)
-    public static class FormatConverter extends GenericEnumConverter<Page.Format> {}
+    public static class ContentFormatConverter extends GenericEnumConverter<Page.ContentFormat> {}
 
 }

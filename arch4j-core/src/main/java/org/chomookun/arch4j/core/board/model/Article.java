@@ -34,7 +34,7 @@ public class Article {
     @Builder.Default
     private List<StorageFile> articleFiles = new ArrayList<>();
 
-    public enum Format { TEXT, MARKDOWN }
+    public enum Format { TEXT, MARKDOWN, HTML }
 
     public static Article from(ArticleEntity articleEntity) {
         return Article.builder()

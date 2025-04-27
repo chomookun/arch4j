@@ -39,7 +39,7 @@ public class PageService {
                         .build());
         pageEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
         pageEntity.setName(page.getName());
-        pageEntity.setContentFormat(page.getFormat());
+        pageEntity.setContentFormat(page.getContentFormat());
         pageEntity.setContent(page.getContent());
         pageEntity.getPageWidgets().clear();
         // widget

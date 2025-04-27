@@ -27,6 +27,10 @@
     <script th:src="@{/static/randomColor/randomColor.js?version={version}(version=${_scriptVersion})}"></script>
     <!-- fontawesome -->
     <link rel="stylesheet" th:href="@{/static/fontawesome/css/all.min.css?version={version}(version=${_scriptVersion})}"/>
+
+    <!-- DOMPurify-->
+    <script th:src="@{/static/dompurify/purify.js?version={version}(version=${_scriptVersion})}"></script>
+
     <!-- duice -->
     <script th:src="@{/static/duice/duice.js?version={version}(version=${_scriptVersion})}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/static/duice/duice.css?version={version}(version=${_scriptVersion})}">
@@ -40,6 +44,9 @@
     <script th:src="@{/static/marked/marked.min.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:src="@{/static/prism/prism.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:src="@{/static/duice-plugin/duice-marked.js?version={version}(version=${_scriptVersion})}"></script>
+    <!-- duice-ckeditor-->
+    <script th:src="@{/static/ckeditor/ckeditor.js?version={version}(version=${_scriptVersion})}"></script>
+    <script th:src="@{/static/duice-plugin/duice-ckeditor.js?version={version}(version=${_scriptVersion})}"></script>
     <!-- duice-codemirror -->
     <link rel="stylesheet" type="text/css" th:href="@{/static/codemirror/codemirror.css?version={version}(version=${_scriptVersion})}">
     <script th:src="@{/static/codemirror/codemirror.js?version={version}(version=${_scriptVersion})}"></script>

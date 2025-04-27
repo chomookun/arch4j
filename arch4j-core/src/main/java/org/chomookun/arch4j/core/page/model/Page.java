@@ -20,15 +20,14 @@ public class Page extends BaseModel {
 
     private String name;
 
-    @Builder.Default
-    private Format format = Format.TEXT;
-
     private String content;
+
+    private ContentFormat contentFormat;
 
     @Builder.Default
     private List<PageWidget> pageWidgets = new ArrayList<>();
 
-    public enum Format { TEXT, MARKDOWN }
+    public enum ContentFormat { TEXT, MARKDOWN, HTML }
 
     public static Page from(PageEntity pageEntity) {
         return Page.builder()
@@ -37,8 +36,8 @@ public class Page extends BaseModel {
                 .systemUpdatedBy(pageEntity.getSystemUpdatedBy())
                 .pageId(pageEntity.getPageId())
                 .name(pageEntity.getName())
-                .format(pageEntity.getContentFormat())
                 .content(pageEntity.getContent())
+                .contentFormat(pageEntity.getContentFormat())
                 .pageWidgets(pageEntity.getPageWidgets().stream()
                         .map(PageWidget::from)
                         .collect(Collectors.toList()))

@@ -57,7 +57,6 @@ public class EntityCommand {
 
     @ShellMethod(key = "entity generate-ddl", value = "Generate DDL command")
     public void generateDdl(@ShellOption(defaultValue = ShellOption.NULL, arity = Integer.MAX_VALUE) List<String> entityNames) {
-
         // selects dialect
         Map<String,String> dialectOptions = new LinkedHashMap<String,String>() {{
             put("h2", org.hibernate.dialect.H2Dialect.class.getName());
@@ -70,7 +69,6 @@ public class EntityCommand {
         }};
         String dialectAnswer = InteractiveUtil.askSelect("Select JPA Dialect", dialectOptions);
         String dialectClassName = dialectOptions.get(dialectAnswer);
-
         // creates metadata
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .applySetting("hibernate.dialect", dialectClassName)
@@ -85,7 +83,6 @@ public class EntityCommand {
             metadataSources.addAnnotatedClass(entityType.getJavaType());
         }
         Metadata metadata = metadataSources.buildMetadata();
-
         // finds specified table
         Stream<EntityType<?>> stream = entityManager.getMetamodel().getEntities().stream();
         if (entityNames != null && !entityNames.isEmpty()) {
@@ -96,7 +93,6 @@ public class EntityCommand {
             PersistentClass persistentClass = metadata.getEntityBinding(entityClass.getName());
             return persistentClass.getTable();
         }).toList();
-
         // creates table creation ddl
         JdbcEnvironment jdbcEnvironment = Optional.ofNullable(registry.getService(JdbcEnvironment.class)).orElseThrow();
         SqlStringGenerationContext sqlStringGenerationContext = SqlStringGenerationContextImpl.fromConfigurationMap(
@@ -105,7 +101,6 @@ public class EntityCommand {
         Dialect dialect = metadata.getDatabase().getDialect();
         StandardTableExporter tableExporter = new StandardTableExporter(dialect);
         StandardIndexExporter indexExporter = new StandardIndexExporter(dialect);
-
         for (Table table : tables) {
             // print table sql
             String[] tableSql = tableExporter.getSqlCreateStrings(table, metadata, sqlStringGenerationContext);
