@@ -7,13 +7,14 @@
     <script th:inline="javascript">
         // user search condition
         const userSearch = new duice.ObjectProxy({
-            key: 'username',
+            key: 'name',
             value: null,
             status: null,
             admin: null,
             _page: 0,
             _size: 20,
-            _total: 0
+            _total: 0,
+            _status: null
         });
         // user list
         const users = new duice.ArrayProxy([]);
@@ -21,6 +22,9 @@
         // user
         const user = new duice.ObjectProxy({
             userId: null,
+            name: null,
+            username: null,
+            password: null,
             roles:[]
         });
         duice.ObjectProxy.setDisabledAll(user, true);
@@ -28,9 +32,9 @@
         duice.ObjectProxy.setReadonly(user, 'closeAt', true);
         duice.ObjectProxy.setReadonly(user, 'passwordAt', true);
         duice.ObjectProxy.onPropertyChanging(user, async event => {
-            if (event.getProperty() === 'userId') {
-                if (!await validateUsername(event.getValue())) {
-                    duice.ObjectProxy.focus(user, 'userId');
+            if (event.getProperty() === 'username') {
+                if (!await validateLoginId(event.getValue())) {
+                    duice.ObjectProxy.focus(user, 'username');
                     return false;
                 }
             }
@@ -38,7 +42,7 @@
         });
 
         /**
-         * gets users
+         * Gets users
          * @param page page
          */
         function getUsers(page) {
@@ -57,20 +61,21 @@
             }
             url.searchParams.append('_page', userSearch._page);
             url.searchParams.append('_size', userSearch._size);
+            users.length = 0;
+            userSearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(users);
+                    userSearch._status = data.content.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(users, data.content);
                     userSearch._total = data['totalElements'];
-
                     // select current item
                     duice.ArrayProxy.selectItem(users, users.findIndex(e => e.userId === user.userId));
                 });
         }
 
         /**
-         * resets users
+         * Resets users
          */
         function resetUsers() {
             duice.ObjectProxy.reset(userSearch);
@@ -78,7 +83,7 @@
         }
 
         /**
-         * gets specified user
+         * Gets specified user
          * @param userId user id
          */
         function getUser(userId) {
@@ -89,7 +94,7 @@
                 .then(data => {
                     duice.ObjectProxy.assign(user, data);
                     duice.ObjectProxy.setDisabledAll(user, false);
-                    duice.ObjectProxy.setReadonly(user, 'userId', true);
+                    duice.ObjectProxy.setReadonly(user, 'username', true);
                     user._new = false;
                 });
         }
@@ -104,16 +109,16 @@
                 status: 'ACTIVE'
             });
             duice.ObjectProxy.setDisabledAll(user, false);
-            duice.ObjectProxy.setReadonly(user, 'userId', false);
-            duice.ObjectProxy.focus(user, 'userId');
+            duice.ObjectProxy.setReadonly(user, 'username', false);
+            duice.ObjectProxy.focus(user, 'username');
         }
 
         /**
-         * validates username
+         * validates login id
          * @param username
          * @returns {Promise<boolean>}
          */
-        async function validateUsername(username) {
+        async function validateLoginId(username) {
             // check blank
             if (!username) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.username})}]]*/'');
@@ -121,8 +126,8 @@
                 return false;
             }
             // check duplicated id
-            let url = new URL(`${window.location.pathname}/get-user`, window.location.origin);
-            url.searchParams.append('userId', username);
+            let url = new URL(`${location.pathname}/get-user-by-login-id`, location.origin);
+            url.searchParams.append('username', username);
             let response = await _fetch(url, {}, true);
             if (response.ok) {
                 let user = await response.json();
@@ -146,7 +151,7 @@
                 duice.ObjectProxy.focus(user, 'username');
                 return false;
             }
-            // checks name
+            // checks user name
             if (_isEmpty(user.name)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.user.User.name})}]]*/'');
                 duice.ObjectProxy.focus(user, 'name');
@@ -179,18 +184,16 @@
             // call save
             _confirm(/*[[#{web.global.saveItemConfirm(#{core.user.User})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(`${window.location.pathname}/save-user`, window.location.origin);
+                    let url = new URL(`${location.pathname}/save-user`, location.origin);
                     _fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(user)
                     }).then(response => response.json())
-                        .then(data => {
+                        .then(savedUser => {
                             _alert(/*[[#{web.global.saveItemComplete(#{core.user.User})}]]*/'').then(() => {
                                 getUsers();
-                                getUser(data.userId);
+                                getUser(savedUser.userId);
                             });
                         });
                 }
@@ -203,7 +206,7 @@
         function deleteUser() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.user.User})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(`${window.location.pathname}/delete-user`, document.location.origin);
+                    let url = new URL(`${location.pathname}/delete-user`, location.origin);
                     url.searchParams.append('userId', user.userId);
                     _fetch(url).then(response => {
                         if (response.ok) {
@@ -226,11 +229,12 @@
             user.roles.forEach(role => {
                 disabledRoleIds.push(role.roleId);
             });
-            console.error("disabledRoleIds", disabledRoleIds);
             let selectedRoles = await _selectRoleDialog.open({disabledRoleIds:disabledRoleIds});
-            selectedRoles.forEach(role => {
-                user.roles.push(role);
-            });
+            if (selectedRoles) {
+                selectedRoles.forEach(role => {
+                    user.roles.push(role);
+                });
+            }
         }
 
         /**
@@ -293,8 +297,8 @@
                             <div class="display--flex flex-wrap--nowrap gap--1px">
                                 <label>
                                     <select data-duice-bind="userSearch" data-duice-property="key">
-                                        <option value="username" th:text="#{core.user.User.username}"></option>
                                         <option value="name" th:text="#{core.user.User.name}"></option>
+                                        <option value="username" th:text="#{core.user.User.username}"></option>
                                     </select>
                                 </label>
                                 <label>
@@ -385,7 +389,12 @@
                                           data-duice-execute="this.innerHTML=user.roles.length;"></span>
                                 </td>
                             </tr>
-                            <tr data-duice-bind="users" data-duice-if="return users.length === 0;" hidden>
+                            <tr data-duice-bind="userSearch" data-duice-if="return userSearch._status === 'loading';" class="text-align--center" hidden>
+                                <td colspan="100%">
+                                    <span class="loading"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="userSearch" data-duice-if="return userSearch._status === 'empty';" hidden>
                                 <td colspan="100%" class="text-align--center">
                                     <span data-th-text="#{web.global.itemNotFound(#{core.user.User})}"></span>
                                 </td>
@@ -545,7 +554,7 @@
                                             <button type="button" class="button small"
                                                     onclick="addUserRole();"
                                                     data-duice-bind="user"
-                                                    data-duice-execute="(user.userId || user._new) ? this.disabled=false : this.disabled=true;">
+                                                    data-duice-execute="(!user.userId && !user._new) ? this.disabled = true : this.disabled = false;">
                                                 <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                             </button>
                                         </th>
@@ -601,14 +610,14 @@
                             <button class="button" type="button" onclick="changeUserPassword();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.user:edit'')')}?'locked'"
                                     data-duice-bind="user"
-                                    data-duice-execute="(user.userId && !user._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="user.userId ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-password.svg}" alt="password"/>
                                 <span data-th-text="#{web.admin.user.changePassword}"></span>
                             </button>
                             <button class="button" type="button" onclick="generateSecurityToken();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.user:edit'')')}?'locked'"
                                     data-duice-bind="user"
-                                    data-duice-execute="(user.userId && !user._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="user.userId ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-token.svg}" alt="password"/>
                                 <span data-th-text="#{web.admin.user.generateSecurityToken}"></span>
                             </button>
@@ -617,14 +626,14 @@
                             <button class="button" type="button" onclick="deleteUser();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.user:edit'')')}?'locked'"
                                     data-duice-bind="user"
-                                    data-duice-execute="(user.userId && !user._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="user.userId ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
                                 <span data-th-text="#{web.global.delete}"></span>
                             </button>
                             <button class="button" type="button" onclick="saveUser();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.user:edit'')')}?'locked'"
                                     data-duice-bind="user"
-                                    data-duice-execute="(user.userId || user._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(!user._new && !user.userId) ? this.disabled = true : this.disabled = false;">
                                 <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
                                 <span data-th-text="#{web.global.save}"></span>
                             </button>
@@ -703,9 +712,7 @@
                             let url = new URL(`${location.pathname}/change-user-password`, location.origin);
                             _fetch(url, {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
+                                headers: {'Content-Type': 'application/json'},
                                 body: JSON.stringify(data)
                             }).then(response => {
                                 if (response.ok) {
@@ -773,11 +780,6 @@
                     securityToken: null
                 });
 
-                /**
-                 * Opens
-                 * @param userId
-                 * @returns {Promise<*>}
-                 */
                 async function open(userId) {
                     duice.ObjectProxy.clear(data);
                     data.userId = userId;

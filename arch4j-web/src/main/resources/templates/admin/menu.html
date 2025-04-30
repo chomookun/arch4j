@@ -4,34 +4,38 @@
       layout:decorate="admin/_admin.html">
 <main layout:fragment="_main">
     <script th:inline="javascript">
+        const menuSearch = new duice.ObjectProxy({
+            _status: null
+        });
         const menus = new duice.ArrayProxy([]);
         const menu = new duice.ObjectProxy({
             menuId: null,
             name: null,
             parentMenu: {},
-            viewMenuRoles: [],
-            linkMenuRoles: []
+            viewRoles: [],
+            linkRoles: []
         });
         duice.ObjectProxy.setDisabledAll(menu, true);
 
         /**
-         * gets menus
+         * Gets menus
          */
         function getMenus() {
             let url = new URL(`${location.pathname}/get-menus`, location.origin);
+            menus.lenght = 0;
+            menuSearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(menus);
+                    menuSearch._status = data.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(menus, data);
-
                     // select current item
-                    duice.ArrayProxy.selectItem(menus, menus.findIndex(item => item.menuId === menu.menuId));
+                    duice.ArrayProxy.selectItem(menus, menus.findIndex(it => it.menuId === menu.menuId));
                 });
         }
 
         /**
-         * gets menu
+         * Gets menu
          * @param menuId menu id
          */
         function getMenu(menuId) {
@@ -62,7 +66,7 @@
                 _new: true
             });
             duice.ObjectProxy.setDisabledAll(menu, false);
-            duice.ObjectProxy.focus(menu, 'menuName');
+            duice.ObjectProxy.focus(menu, 'name');
         }
 
         /**
@@ -97,10 +101,9 @@
             // check menu name
             if(_isEmpty(menu.name)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.menu.Menu.name})}]]*/'');
-                duice.ObjectProxy.focus(menu, 'menuName');
+                duice.ObjectProxy.focus(menu, 'name');
                 return;
             }
-
             // calls save
             _confirm(/*[[#{web.global.saveItemConfirm(#{core.menu.Menu})}]]*/'').then(result => {
                 if(result) {
@@ -143,9 +146,9 @@
         }
 
         /**
-         * select parent menu id
+         * select parent menu
          */
-        function selectParentMenuId() {
+        function selectParentMenu() {
             let disabledMenuIds = [ menu.menuId ];
             selectMenuDialog.open(disabledMenuIds).then(selectedMenu => {
                 menu.parentMenuId = selectedMenu.menuId;
@@ -154,40 +157,40 @@
         }
 
         /**
-         * adds view menu role
+         * Adds view menu role
          * @returns {Promise<void>}
          */
-        async function addViewMenuRole() {
+        async function addViewRole() {
             let disabledRoleIds = [];
-            menu.viewMenuRoles.forEach(role=>{
-                disabledRoleIds.push(role.roleId);
+            menu.viewRoles.forEach(role=>{
+                disabledRoleIds.push(role.menuId);
             });
-            let selectedRoles = await _selectRoleDialog.open({disabledRoleIds:disabledRoleIds});
+            let selectedRoles = await _selectRoleDialog.open(disabledRoleIds);
             selectedRoles.forEach(role => {
-                menu.viewMenuRoles.push(role);
+                menu.viewRoles.push(role);
             });
         }
 
         /**
-         * removes view menu role
+         * Removes view menu role
          * @param index row index
          */
-        function removeViewMenuRole(index) {
-            menu.viewMenuRoles.splice(index, 1);
+        function removeViewRole(index) {
+            menu.viewRoles.splice(index, 1);
         }
 
         /**
          * adds link menu role
          * @returns {Promise<void>}
          */
-        async function addMenuLinkRole() {
+        async function addLinkRole() {
             let disabledRoleIds = [];
-            menu.linkMenuRoles.forEach(role=>{
-                disabledRoleIds.push(role.roleId);
+            menu.linkRoles.forEach(role=>{
+                disabledRoleIds.push(role.menuId);
             });
-            let selectedRoles = await _selectRoleDialog.open({disabledRoleIds:disabledRoleIds});
+            let selectedRoles = await _selectRoleDialog.open(disabledRoleIds);
             selectedRoles.forEach(role => {
-                menu.linkMenuRoles.push(role);
+                menu.linkRoles.push(role);
             });
         }
 
@@ -195,8 +198,8 @@
          * removes link menu role
          * @param index row index
          */
-        function removeLinkMenuRole(index) {
-            menu.linkMenuRoles.splice(index, 1);
+        function removeLinkRole(index) {
+            menu.linkRoles.splice(index, 1);
         }
 
         /**
@@ -270,10 +273,15 @@
                             <span data-duice-bind="menu" data-duice-property="name"></span>
                         </div>
                     </div>
+                    <div data-duice-bind="menuSearch"
+                        data-duice-if="return menuSearch._status === 'loading';"
+                        class="text-align--center">
+                        <span class="loading"></span>
+                    </div>
                 </div>
                 <div class="text-align--right">
                     <button class="button" type="button" onclick="createMenu();">
-                        <img class="icon" th:src="@{/static/image/icon-create.svg}"/>
+                        <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                         <span data-th-text="#{web.global.create}"></span>
                     </button>
                 </div>
@@ -308,7 +316,7 @@
                                 <label>
                                     <input data-duice-bind="menu" data-duice-property="parentMenuName"/>
                                 </label>
-                                <button class="button" type="button" onclick="selectParentMenuId();"
+                                <button class="button" type="button" onclick="selectParentMenu();"
                                         data-duice-bind="menu"
                                         data-duice-execute="(menu.menuId || menu._new) ? this.disabled=false : this.disabled=true;">
                                     <img class="icon" th:src="@{/static/image/icon-search.svg}" alt=""/>
@@ -355,13 +363,13 @@
                             </label>
                         </div>
                         <div class="grid-column--span-12">
-                            <span data-th-text="#{core.menu.Menu.note}" class="font-weight--bold"></span>
+                            <span data-th-text="#{core.menu.Menu.description}" class="font-weight--bold"></span>
                             <label class="display--flex">
-                                <textarea data-duice-bind="menu" data-duice-property="note" class="width--100"></textarea>
+                                <textarea data-duice-bind="menu" data-duice-property="description" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
-                            <span data-th-text="#{core.menu.Menu.viewMenuRoles}" class="font-weight--bold"></span>
+                            <span data-th-text="#{core.menu.Menu.viewRoles}" class="font-weight--bold"></span>
                             <table class="width--100">
                                 <colgroup>
                                     <col style="width:3em;"/>
@@ -373,7 +381,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addViewMenuRole();">
+                                        <button class="button small" type="button" onclick="addViewRole();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -384,36 +392,36 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="menu.viewMenuRoles" data-duice-foreach="menuRole,status">
+                                <tr data-duice-bind="menu.viewRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
-                                                data-duice-bind="menuRole"
+                                                data-duice-bind="role"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeViewMenuRole(this.dataset.index);">
+                                                onclick="removeViewRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}"/>
                                         </button>
                                     </td>
                                     <td>
-                                    <span data-duice-bind="menuRole" data-duice-property="roleId"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
+                                    <span data-duice-bind="role" data-duice-property="roleId"
+                                          data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
                                           class="code"></span>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="menuRole" data-duice-property="name"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleName"></span>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="anonymous" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="role" data-duice-property="anonymous" onclick="return false;"/>
                                         </label>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="authenticated" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="role" data-duice-property="authenticated" onclick="return false;"/>
                                         </label>
                                     </td>
                                 </tr>
-                                <tr data-duice-bind="menu.viewMenuRoles"
-                                    data-duice-if="return (menu.viewMenuRoles.length < 1);">
+                                <tr data-duice-bind="menu.viewRoles"
+                                    data-duice-if="return menu.viewRoles.length < 1;" hidden>
                                     <td colspan="100%" class="text-align--center">
                                         <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
                                     </td>
@@ -422,7 +430,7 @@
                             </table>
                         </div>
                         <div class="grid-column--span-12">
-                            <span data-th-text="#{core.menu.Menu.linkMenuRoles}" class="font-weight--bold"></span>
+                            <span data-th-text="#{core.menu.Menu.linkRoles}" class="font-weight--bold"></span>
                             <table class="width--100">
                                 <colgroup>
                                     <col style="width:3em;"/>
@@ -434,7 +442,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-align--center">
-                                        <button class="button small" type="button" onclick="addMenuLinkRole();">
+                                        <button class="button small" type="button" onclick="addLinkRole();">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                         </button>
                                     </th>
@@ -445,37 +453,37 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr data-duice-bind="menu.linkMenuRoles" data-duice-foreach="menuRole,status">
+                                <tr data-duice-bind="menu.linkRoles" data-duice-foreach="role,status">
                                     <td class="text-align--center">
                                         <button class="button small" type="button"
-                                                data-duice-bind="menuRole"
+                                                data-duice-bind="role"
                                                 data-duice-execute="this.dataset.index=status.index;"
-                                                onclick="removeLinkMenuRole(this.dataset.index);">
+                                                onclick="removeLinkRole(this.dataset.index);">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                         </button>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="menuRole"
+                                        <span data-duice-bind="role"
                                               data-duice-property="roleId"
-                                              data-duice-execute="this.classList.toggle('tag-system-required', menuRole.systemRequired);"
+                                              data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
                                               class="code"></span>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="menuRole" data-duice-property="name"></span>
+                                        <span data-duice-bind="role" data-duice-property="roleName"></span>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="anonymous" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="role" data-duice-property="anonymous" onclick="return false;"/>
                                         </label>
                                     </td>
                                     <td class="text-align--center">
                                         <label>
-                                            <input type="checkbox" data-duice-bind="menuRole" data-duice-property="authenticated" onclick="return false;"/>
+                                            <input type="checkbox" data-duice-bind="role" data-duice-property="authenticated" onclick="return false;"/>
                                         </label>
                                     </td>
                                 </tr>
-                                <tr data-duice-bind="menu.linkMenuRoles"
-                                    data-duice-if="return (menu.linkMenuRoles.length < 1);">
+                                <tr data-duice-bind="menu.linkRoles"
+                                    data-duice-if="return menu.linkRoles.length < 1;" hidden>
                                     <td colspan="100%" class="text-align--center">
                                         <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
                                     </td>
@@ -576,7 +584,7 @@
 
                 /**
                  * select menu
-                 * @param menuId selected menu id
+                 * @param id selected menu id
                  */
                 function selectMenu(menuId) {
                     let selectedMenu = menus.filter(menu => {
@@ -607,7 +615,7 @@
                 <div class="overflow-x--scroll">
                     <div data-duice-bind="selectMenuDialog.menus" data-duice-foreach="menu,status" data-duice-recursive="menuId,parentMenuId"
                          data-duice-execute="
-                    this.dataset.menuId = menu.menuId;
+                    this.dataset.id = menu.id;
                     if(menu.parentMenuId) {
                         this.style.marginLeft='1rem';
                     }
@@ -620,7 +628,7 @@
                             this.style.pointerEvents = 'none';
                         }
                         " onclick="selectMenuDialog.selectMenu(this.dataset.menuId);">
-                                <img data-duice-bind="menu" data-duice-property="icon" class="icon" th:src="@{/static/image/icon-null.svg}"/>
+                                <img data-duice-bind="menu" data-duice-property="icon" class="icon" th:src="@{/static/image/icon-null.svg}" alt="menu"/>
                                 <span data-duice-bind="menu" data-duice-property="name"></span>
                             </a>
                         </div>

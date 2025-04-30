@@ -28,9 +28,9 @@ public interface AlarmRepository extends JpaRepository<AlarmEntity,String>, JpaS
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(AlarmEntity_.ALARM_ID), '%'+ alarmSearch.getAlarmId() + '%'));
         }
-        if(alarmSearch.getName() != null) {
+        if(alarmSearch.getAlarmName() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get(AlarmEntity_.NAME), '%' + alarmSearch.getName() + '%'));
+                    criteriaBuilder.like(root.get(AlarmEntity_.ALARM_NAME), '%' + alarmSearch.getAlarmName() + '%'));
         }
         // sort
         Sort sort = pageable.getSort().and(Sort.by(AlarmEntity_.SYSTEM_REQUIRED).descending());

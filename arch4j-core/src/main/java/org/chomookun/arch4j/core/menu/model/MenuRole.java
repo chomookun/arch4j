@@ -1,9 +1,7 @@
 package org.chomookun.arch4j.core.menu.model;
 
-import jakarta.persistence.Converter;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
 import org.chomookun.arch4j.core.security.model.Role;
 
@@ -19,9 +17,6 @@ public class MenuRole extends Role {
     private Type type;
 
     public enum Type { VIEW, LINK }
-
-    @Converter(autoApply = true)
-    public static class TypeConverter extends GenericEnumConverter<Type> {}
 
     /**
      * menu role factory method
@@ -42,7 +37,7 @@ public class MenuRole extends Role {
                 .name(role.getName())
                 .anonymous(role.isAnonymous())
                 .authenticated(role.isAuthenticated())
-                .note(role.getNote())
+                .description(role.getDescription())
                 .authorities(role.getAuthorities())
                 .build();
     }

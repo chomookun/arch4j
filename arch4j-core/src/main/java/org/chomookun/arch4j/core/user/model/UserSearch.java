@@ -8,8 +8,6 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSearch {
 
-    private String userId;
-
     private String username;
 
     private String name;

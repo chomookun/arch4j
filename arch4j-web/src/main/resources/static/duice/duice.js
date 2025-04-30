@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.14
+ * duice - v0.3.15
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -3098,6 +3098,11 @@ var duice = (function (exports) {
                 let propertyChangingEvent = new PropertyChangingEvent(element, data, this.getProperty(), this.getValue(), this.getIndex());
                 this.notifyObservers(propertyChangingEvent);
             }, true);
+            // register as option observer
+            if (this.option) {
+                let optionArray = findVariable(this.getContext(), this.option);
+                getProxyHandler(optionArray).addObserver(this);
+            }
         }
         /**
          * Overrides render

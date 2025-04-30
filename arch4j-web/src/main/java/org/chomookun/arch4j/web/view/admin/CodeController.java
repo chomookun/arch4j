@@ -24,7 +24,7 @@ public class CodeController {
 
     @GetMapping
     public ModelAndView index() {
-        return new ModelAndView("admin/code.html");
+        return new ModelAndView("admin/code");
     }
 
     @GetMapping("get-codes")
@@ -35,8 +35,8 @@ public class CodeController {
 
     @GetMapping("get-code")
     @ResponseBody
-    public Code getCode(@RequestParam("codeId")String codeId) {
-        return codeService.getCode(codeId)
+    public Code getCode(@RequestParam("id")String id) {
+        return codeService.getCode(id)
                 .orElseThrow();
     }
 
@@ -52,8 +52,8 @@ public class CodeController {
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.code:edit')")
     @Transactional
-    public void deleteCode(@RequestParam("codeId")String codeId) {
-        codeService.deleteCode(codeId);
+    public void deleteCode(@RequestParam("id")String id) {
+        codeService.deleteCode(id);
     }
 
 }

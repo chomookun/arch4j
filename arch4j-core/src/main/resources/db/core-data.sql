@@ -36,14 +36,14 @@ values
     ('admin.discussion','Y','Admin Discussion Access Authority'),
     ('admin.discussion:edit','Y','Admin Discussion Edit Authority'),
     ('actuator','Y','Actuator Access Authority'),
-    ('h2-console','Y','Actuator Access Authority'),
+    ('h2-console','Y','H2 Console Access Authority'),
     ('springdoc','Y','API Docs Docs Access Authority'),
     ('example', 'Y','Example Access Authority'),
     ('example:edit', 'Y', 'Example Edit Authority');
 
 -- core_role
 insert into `core_role`
-    (`role_id`,`system_required`,`name`,`anonymous`, `authenticated`, `note`)
+    (`role_id`,`system_required`,`name`,`anonymous`, `authenticated`, `description`)
 values
     ('DEFAULT','Y','Default Role','Y','Y','Default Role'),
     ('USER','Y','User Role','N','Y','User Role'),
@@ -191,14 +191,14 @@ values
 insert into `core_code_i18n`
     (`code_id`, `language`, `name`)
 values
-    ('core.example.Example.code', 'ko', '코드');
+    ('core.example.Example.code', 'ko', '예제코드');
 
 -- core_code_item
 insert into `core_code_item`
-    (`code_id`,`item_id`,`name`,`sort`)
+    (`code_id`,`item_id`,`name`,`sort`, `enabled`)
 values
-    ('core.example.Example.code','STUDENT','Student',1),
-    ('core.example.Example.code','TEACHER','Teacher',2);
+    ('core.example.Example.code','STUDENT','Student',1, 'Y'),
+    ('core.example.Example.code','TEACHER','Teacher',2, 'Y');
 
 -- core_code_item_i18n
 insert into `core_code_item_i18n`
@@ -230,7 +230,7 @@ category-id=DIC_kwDOJKtMwc4Cpe0A
 -- core_board
 insert into `core_board` (
     `board_id`,
-    `name`,
+    `board_name`,
     `icon`,
     `message_format`,
     `message`,
@@ -285,7 +285,7 @@ insert into `core_board` (
 insert into `core_board_i18n` (
     `board_id`,
     `language`,
-    `name`,
+    `board_name`,
     `message`
 ) values (
      'anonymous',
@@ -654,7 +654,7 @@ insert into `core_email` (`email_id`,`name`,`subject`,`content`) values
     ('verification','Verification Email', 'Verification Answer: [[${answer}]]', 'Verification Answer: [[${answer}]]');
 
 -- core_alarm
-insert into `core_alarm` (`alarm_id`,`name`) values
+insert into `core_alarm` (`alarm_id`,`alarm_name`) values
     ('test','Test Alarm');
 
 -- core_example

@@ -19,10 +19,10 @@ import java.util.List;
 @Table(
     name = "core_user",
     indexes = {
-        @Index(name = "ix_username", columnList = "username"),
-        @Index(name = "ix_name", columnList = "name"),
-        @Index(name = "ix_email", columnList = "email"),
-        @Index(name = "ix_mobile", columnList = "mobile"),
+            @Index(name = "ix_login_id", columnList = "login_id"),
+            @Index(name = "ix_email", columnList = "email"),
+            @Index(name = "ix_mobile", columnList = "mobile"),
+            @Index(name = "ix_name", columnList = "user_name")
     }
 )
 @Comment("User information")
@@ -39,16 +39,16 @@ public class UserEntity extends BaseEntity {
     @Comment("User ID")
     private String userId;
 
-    @Column(name = "username", unique = true, length = 128)
+    @Column(name = "username", unique = true, nullable = false, length = 128)
     @Comment("Username")
     private String username;
 
-    @Column(name = "password", length = 256)
+    @Column(name = "password", nullable = false, length = 256)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Comment("Password")
     private String password;
 
-    @Column(name = "name", length = 128)
+    @Column(name = "name", nullable = false, length = 128)
     @Comment("Name")
     private String name;
 

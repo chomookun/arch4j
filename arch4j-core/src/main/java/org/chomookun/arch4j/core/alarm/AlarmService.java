@@ -42,9 +42,9 @@ public class AlarmService {
                         .alarmId(alarm.getAlarmId())
                         .build());
         alarmEntity.setSystemUpdatedAt(LocalDateTime.now());
-        alarmEntity.setName(alarm.getName());
-        alarmEntity.setAlarmClientId(alarm.getAlarmClientId());
-        alarmEntity.setAlarmClientConfig(alarm.getAlarmClientConfig());
+        alarmEntity.setAlarmName(alarm.getAlarmName());
+        alarmEntity.setClientId(alarm.getClientId());
+        alarmEntity.setClientConfig(alarm.getClientConfig());
         // saves
         AlarmEntity savedAlarmEntity = alarmRepository.saveAndFlush(alarmEntity);
         entityManager.refresh(savedAlarmEntity);
@@ -86,25 +86,12 @@ public class AlarmService {
     }
 
     /**
-     * Sends alarm
+     * Tests alarm
      * @param alarm alarm
-     * @param subject subject
-     * @param content content
      */
-    public void sendAlarm(Alarm alarm, String subject, String content) {
+    public void testAlarm(Alarm alarm) {
         AlarmClient alarmClient = AlarmClientFactory.getAlarmClient(alarm);
-        alarmClient.sendMessage(subject, content);
-    }
-
-    /**
-     * Sends alarm by alarm id
-     * @param alarmId alarm id
-     * @param subject subject
-     * @param content content
-     */
-    public void sendAlarm(String alarmId, String subject, String content) {
-        Alarm alarm = getAlarm(alarmId).orElseThrow();
-        sendAlarm(alarm, subject, content);
+        alarmClient.sendMessage("test subject", "test content");
     }
 
 }

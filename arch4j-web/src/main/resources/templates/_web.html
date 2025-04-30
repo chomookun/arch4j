@@ -77,11 +77,8 @@
         const _securityPolicy = /*[[${_securityPolicy}]]*/'';
         const _sessionTimeout = /*[[${_sessionTimeout}]]*/'';
         const _isAuthenticated = /*[[${#authorization.expression('isAuthenticated()')}]]*/'';
-        const _user = new duice.ObjectProxy({
-            userId: /*[[${_user.userId}]]*/'',
-            name: /*[[${_user.name}]]*/'',
-            icon: /*[[${_user.icon}]]*/''
-        });
+
+        const _user = new duice.ObjectProxy(/*[[${_user}]]*/{});
         const _locales = new duice.ArrayProxy([[${_locales}]]);
         const _menus = new duice.ArrayProxy([]);
 

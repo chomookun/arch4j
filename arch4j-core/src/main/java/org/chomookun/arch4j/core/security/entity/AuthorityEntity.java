@@ -5,8 +5,6 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "core_authority")
@@ -24,13 +22,8 @@ public class AuthorityEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "note", length = 4000)
+    @Column(name = "description", length = 4000)
     @Lob
-    private String note;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "authority_id", updatable = false)
-    @Builder.Default
-    private List<RoleAuthorityEntity> roleAuthorities = new ArrayList<>();
+    private String description;
 
 }

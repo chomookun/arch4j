@@ -1,11 +1,9 @@
 package org.chomookun.arch4j.core.menu.model;
 
-import jakarta.persistence.Converter;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
 
 import java.util.ArrayList;
@@ -33,18 +31,15 @@ public class Menu extends BaseModel {
 
     private Integer sort;
 
-    private String note;
+    private String description;
 
     @Builder.Default
-    private List<MenuRole> viewMenuRoles = new ArrayList<>();
+    private List<MenuRole> viewRoles = new ArrayList<>();
 
     @Builder.Default
-    private List<MenuRole> linkMenuRoles = new ArrayList<>();
+    private List<MenuRole> linkRoles = new ArrayList<>();
 
     public enum Target { SELF, BLANK }
-
-    @Converter(autoApply = true)
-    public static class TargetConverter extends GenericEnumConverter<Target> {}
 
     /**
      * menu factory method
@@ -63,13 +58,13 @@ public class Menu extends BaseModel {
                 .target(menuEntity.getTarget())
                 .icon(menuEntity.getIcon())
                 .sort(menuEntity.getSort())
-                .note(menuEntity.getNote())
+                .description(menuEntity.getDescription())
                 .build();
-        menu.setViewMenuRoles(menuEntity.getMenuRoles().stream()
+        menu.setViewRoles(menuEntity.getMenuRoleEntities().stream()
                 .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.VIEW)
                 .map(MenuRole::from)
                 .toList());
-        menu.setLinkMenuRoles(menuEntity.getMenuRoles().stream()
+        menu.setLinkRoles(menuEntity.getMenuRoleEntities().stream()
                 .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.LINK)
                 .map(MenuRole::from)
                 .toList());

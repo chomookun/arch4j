@@ -3,6 +3,7 @@ package org.chomookun.arch4j.core.menu;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity_;
 import org.chomookun.arch4j.core.menu.model.MenuRole;
@@ -34,10 +35,14 @@ public class MenuService {
      */
     @Transactional
     public Menu saveMenu(Menu menu) {
-        final MenuEntity menuEntity = menuRepository.findById(menu.getMenuId()).orElse(
-                MenuEntity.builder()
-                        .menuId(menu.getMenuId())
-                        .build());
+        MenuEntity menuEntity;
+        if (menu.getMenuId() == null) {
+            menuEntity = MenuEntity.builder()
+                    .menuId(IdGenerator.uuid())
+                    .build();
+        } else {
+            menuEntity = menuRepository.findById(menu.getMenuId()).orElseThrow();
+        }
         menuEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
         menuEntity.setParentMenuId(menu.getParentMenuId());
         menuEntity.setName(menu.getName());
@@ -45,25 +50,25 @@ public class MenuService {
         menuEntity.setTarget(menu.getTarget());
         menuEntity.setIcon(menu.getIcon());
         menuEntity.setSort(menu.getSort());
-        menuEntity.setNote(menu.getNote());
-        menuEntity.getMenuRoles().clear();
+        menuEntity.setDescription(menu.getDescription());
+        menuEntity.getMenuRoleEntities().clear();
         // view roles
-        menu.getViewMenuRoles().forEach(viewRole -> {
+        menu.getViewRoles().forEach(viewRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
                     .menuId(menuEntity.getMenuId())
                     .roleId(viewRole.getRoleId())
                     .type(MenuRole.Type.VIEW)
                     .build();
-            menuEntity.getMenuRoles().add(menuRoleEntity);
+            menuEntity.getMenuRoleEntities().add(menuRoleEntity);
         });
         // link roles
-        menu.getLinkMenuRoles().forEach(linkRole -> {
+        menu.getLinkRoles().forEach(linkRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
                     .menuId(menuEntity.getMenuId())
                     .roleId(linkRole.getRoleId())
                     .type(MenuRole.Type.LINK)
                     .build();
-            menuEntity.getMenuRoles().add(menuRoleEntity);
+            menuEntity.getMenuRoleEntities().add(menuRoleEntity);
         });
         // saves and returns
         MenuEntity savedMenu = menuRepository.saveAndFlush(menuEntity);
@@ -99,7 +104,8 @@ public class MenuService {
      */
     @Transactional
     public void deleteMenu(String menuId) {
-        menuRepository.deleteById(menuId);
+        MenuEntity menuEntity = menuRepository.findById(menuId).orElseThrow();
+        menuRepository.delete(menuEntity);
         menuRepository.flush();
     }
 

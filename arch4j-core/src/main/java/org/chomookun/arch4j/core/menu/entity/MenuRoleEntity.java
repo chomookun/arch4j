@@ -54,6 +54,10 @@ public class MenuRoleEntity extends BaseEntity {
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private RoleEntity roleEntity;
 
+    /**
+     * Type converter for MenuRole.Type
+     */
+    @Converter(autoApply = true)
     public static class TypeConverter extends GenericEnumConverter<MenuRole.Type> {}
 
 }

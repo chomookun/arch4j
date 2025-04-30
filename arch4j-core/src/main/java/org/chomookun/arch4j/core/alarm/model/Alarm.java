@@ -14,11 +14,11 @@ public class Alarm extends BaseModel {
 
     private String alarmId;
 
-    private String name;
+    private String alarmName;
 
-    private String alarmClientId;
+    private String clientId;
 
-    private String alarmClientConfig;
+    private String clientConfig;
 
     /**
      * Alarm factory method
@@ -31,9 +31,9 @@ public class Alarm extends BaseModel {
                 .systemUpdatedAt(alarmEntity.getSystemUpdatedAt())
                 .systemUpdatedBy(alarmEntity.getSystemUpdatedBy())
                 .alarmId(alarmEntity.getAlarmId())
-                .name(alarmEntity.getName())
-                .alarmClientId(alarmEntity.getAlarmClientId())
-                .alarmClientConfig(alarmEntity.getAlarmClientConfig())
+                .alarmName(alarmEntity.getAlarmName())
+                .clientId(alarmEntity.getClientId())
+                .clientConfig(alarmEntity.getClientConfig())
                 .build();
     }
 

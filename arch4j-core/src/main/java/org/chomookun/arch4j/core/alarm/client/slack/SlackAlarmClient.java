@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 @Slf4j
-@Component
 public class SlackAlarmClient extends AlarmClient {
 
     private final String url;
@@ -44,18 +43,17 @@ public class SlackAlarmClient extends AlarmClient {
         }};
         blocks.add(block);
         payload.put("blocks", blocks);
-
+        // call
         RequestEntity<Map<String,Object>> requestEntity = RequestEntity
                 .post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload);
-
+        // response
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         if (!responseEntity.getStatusCode().is2xxSuccessful() && !responseEntity.getStatusCode().is3xxRedirection()) {
             throw new RuntimeException(responseEntity.getStatusCode() + "-" + responseEntity.getBody());
         }
-
-        log.info("== response:{}", responseEntity);
+        log.debug("== response:{}", responseEntity);
     }
 
 }

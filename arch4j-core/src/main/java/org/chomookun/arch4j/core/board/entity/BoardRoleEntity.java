@@ -41,13 +41,7 @@ public class BoardRoleEntity extends BaseEntity {
     private String type;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(
-            name = "role_id",
-            referencedColumnName = "role_id",
-            insertable = false,
-            updatable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
+    @JoinColumn(name = "role_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private RoleEntity roleEntity;
 
 

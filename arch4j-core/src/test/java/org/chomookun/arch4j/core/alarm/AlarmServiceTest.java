@@ -21,12 +21,10 @@ class AlarmServiceTest extends CoreTestSupport {
         // given
         Alarm alarm = Alarm.builder()
                 .alarmId(IdGenerator.uuid())
-                .name("test")
+                .alarmName("test")
                 .build();
-
         // when
         Alarm savedAlarm = alarmService.saveAlarm(alarm);
-
         // then
         assertNotNull(entityManager.find(AlarmEntity.class, savedAlarm.getAlarmId()));
     }
@@ -37,22 +35,20 @@ class AlarmServiceTest extends CoreTestSupport {
         // given
         AlarmEntity alarmEntity = AlarmEntity.builder()
                 .alarmId(IdGenerator.uuid())
-                .name("test")
+                .alarmName("test")
                 .build();
         entityManager.persist(alarmEntity);
-
         // when
         Alarm alarm = Alarm.builder()
                 .alarmId(alarmEntity.getAlarmId())
-                .name("changed")
+                .alarmName("changed")
                 .build();
         alarmService.saveAlarm(alarm);
-
         // then
         assertEquals(
                 "changed",
                 entityManager.find(AlarmEntity.class, alarm.getAlarmId())
-                        .getName()
+                        .getAlarmName()
         );
     }
 
@@ -62,7 +58,7 @@ class AlarmServiceTest extends CoreTestSupport {
         // given
         AlarmEntity alarmEntity = AlarmEntity.builder()
                 .alarmId("test_alarm")
-                .name("test alarm")
+                .alarmName("test alarm")
                 .build();
         entityManager.persist(alarmEntity);
 
@@ -79,7 +75,7 @@ class AlarmServiceTest extends CoreTestSupport {
         // given
         AlarmEntity alarmEntity = AlarmEntity.builder()
                 .alarmId("test_alarm")
-                .name("test alarm")
+                .alarmName("test alarm")
                 .build();
         entityManager.persist(alarmEntity);
 

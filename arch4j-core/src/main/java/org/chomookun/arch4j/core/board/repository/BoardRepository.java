@@ -19,9 +19,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, String>, Jpa
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(BoardEntity_.BOARD_ID), '%' + boardSearch.getBoardId() + '%'));
         }
-        if(boardSearch.getName() != null) {
+        if(boardSearch.getBoardName() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get(BoardEntity_.NAME), '%' + boardSearch.getName() + '%'));
+                    criteriaBuilder.like(root.get(BoardEntity_.BOARD_NAME), '%' + boardSearch.getBoardName() + '%'));
         }
         return findAll(specification, pageable);
     }

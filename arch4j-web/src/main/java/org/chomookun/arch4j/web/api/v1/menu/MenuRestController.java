@@ -32,9 +32,9 @@ public class MenuRestController {
     @GetMapping
     public ResponseEntity<List<MenuResponse>> getMenus() {
         List<MenuResponse> menuResponses = menuService.getMenus().stream()
-                .filter(menu -> SecurityUtils.hasPermission(menu.getViewMenuRoles()))
+                .filter(menu -> SecurityUtils.hasPermission(menu.getViewRoles()))
                 .peek(menu -> {
-                    if (!SecurityUtils.hasPermission(menu.getLinkMenuRoles())) {
+                    if (!SecurityUtils.hasPermission(menu.getLinkRoles())) {
                         menu.setLink(null);
                         menu.setTarget(null);
                     }

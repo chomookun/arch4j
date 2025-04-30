@@ -45,15 +45,15 @@ public class RoleService {
         roleEntity.setName(role.getName());
         roleEntity.setAnonymous(role.isAnonymous());
         roleEntity.setAuthenticated(role.isAuthenticated());
-        roleEntity.setNote(role.getNote());
+        roleEntity.setDescription(role.getDescription());
         // authorities
-        roleEntity.getRoleAuthorities().clear();
+        roleEntity.getAuthorities().clear();
         role.getAuthorities().forEach(authority -> {
             RoleAuthorityEntity roleAuthorityEntity = RoleAuthorityEntity.builder()
                     .roleId(roleEntity.getRoleId())
                     .authorityId(authority.getAuthorityId())
                     .build();
-            roleEntity.getRoleAuthorities().add(roleAuthorityEntity);
+            roleEntity.getAuthorities().add(roleAuthorityEntity);
         });
         // save
         RoleEntity savedRoleEntity = roleRepository.saveAndFlush(roleEntity);
@@ -76,7 +76,8 @@ public class RoleService {
      * @param roleId role id
      */
     public void deleteRole(String roleId) {
-        roleRepository.deleteById(roleId);
+        RoleEntity roleEntity = roleRepository.findById(roleId).orElseThrow();
+        roleRepository.delete(roleEntity);
         roleRepository.flush();
     }
 

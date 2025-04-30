@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -40,12 +41,12 @@ public class CodeService {
                     .codeId(code.getCodeId())
                     .build());
         codeEntity.setName(code.getName());
-        codeEntity.setNote(code.getNote());
+        codeEntity.setDescription(code.getDescription());
         // code item (insert/update)
         AtomicInteger sort = new AtomicInteger();
-        code.getCodeItems().forEach(codeItem -> {
-            CodeItemEntity codeItemEntity = codeEntity.getCodeItems().stream()
-                    .filter(item -> item.getItemId().equals(codeItem.getItemId()))
+        code.getItems().forEach(codeItem -> {
+            CodeItemEntity codeItemEntity = codeEntity.getCodeItemEntities().stream()
+                    .filter(it -> Objects.equals(it.getItemId(), codeItem.getItemId()))
                     .findFirst()
                     .orElse(null);
             if(codeItemEntity == null) {
@@ -53,14 +54,15 @@ public class CodeService {
                         .codeId(codeEntity.getCodeId())
                         .itemId(codeItem.getItemId())
                         .build();
-                codeEntity.getCodeItems().add(codeItemEntity);
+                codeEntity.getCodeItemEntities().add(codeItemEntity);
             }
             codeItemEntity.setName(codeItem.getName());
             codeItemEntity.setSort(sort.getAndIncrement());
+            codeItemEntity.setEnabled(codeItem.isEnabled());
         });
         // code item (remove)
-        codeEntity.getCodeItems().removeIf(codeItemEntity ->
-                code.getCodeItems().stream()
+        codeEntity.getCodeItemEntities().removeIf(codeItemEntity ->
+                code.getItems().stream()
                         .noneMatch(codeItem -> codeItem.getItemId().equals(codeItemEntity.getItemId())));
         // save
         CodeEntity savedCodeEntity = codeRepository.saveAndFlush(codeEntity);
@@ -70,21 +72,21 @@ public class CodeService {
 
     /**
      * Gets code
-     * @param codeId code id
+     * @param id code id
      * @return code
      */
-    public Optional<Code> getCode(String codeId) {
-        return codeRepository.findById(codeId)
+    public Optional<Code> getCode(String id) {
+        return codeRepository.findById(id)
                 .map(Code::from);
     }
 
     /**
      * Deletes code
-     * @param codeId code id
+     * @param id code id
      */
     @Transactional
-    public void deleteCode(String codeId) {
-        codeRepository.deleteById(codeId);
+    public void deleteCode(String id) {
+        codeRepository.deleteById(id);
         codeRepository.flush();
     }
 

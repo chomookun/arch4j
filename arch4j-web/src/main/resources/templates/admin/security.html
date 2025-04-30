@@ -11,7 +11,8 @@
             value: null,
             _page: 0,
             _size: 20,
-            _total: -1
+            _total: 0,
+            _status: null
         });
         // role list
         const roles = new duice.ArrayProxy([]);
@@ -24,7 +25,7 @@
         });
         duice.ObjectProxy.setDisabledAll(role, true);
         duice.ObjectProxy.onPropertyChanging(roles, async event => {
-            if (event.getProperty() === 'id') {
+            if (event.getProperty() === 'roleId') {
                 if (!await validateRoleId(event.getValue())) {
                     duice.ObjectProxy.focus(role, 'roleId');
                     return false;
@@ -32,19 +33,24 @@
             }
             return true;
         });
+
         // authority search condition
         const authoritySearch = new duice.ObjectProxy({
             key: 'authorityId',
             value: null,
             _page: 0,
             _size: 20,
-            _total: 0
+            _total: 0,
+            _status: null
         });
         // authority list
         const authorities = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(authorities, true);
         // authority
-        const authority = new duice.ObjectProxy({});
+        const authority = new duice.ObjectProxy({
+            authorityId: null,
+            name: null
+        });
         duice.ObjectProxy.setDisabledAll(authority, true);
         duice.ObjectProxy.onPropertyChanging(authority, async event => {
             if(event.getProperty() === 'authorityId') {
@@ -69,10 +75,12 @@
             }
             url.searchParams.append('_page', roleSearch._page);
             url.searchParams.append('_size', roleSearch._size);
+            roles.length = 0;
+            roleSearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(roles);
+                    roleSearch._status = data.content.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(roles, data.content);
                     roleSearch._total= data['totalElements'];
                     // select current item
@@ -156,7 +164,7 @@
                     return false;
                 }
             }
-            // checks name
+            // checks role name
             if (_isEmpty(role.name)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.security.Role.name})}]]*/'');
                 duice.ObjectProxy.focus(role, 'name');
@@ -168,9 +176,7 @@
                     let url = new URL(`${window.location.pathname}/save-role`, document.location.origin);
                     _fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(role)
                     }).then(response => {
                         if (response.ok) {
@@ -190,7 +196,7 @@
         function deleteRole() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.security.Role})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(`${window.location.pathname}/delete-role`, document.location.origin);
+                    let url = new URL(`${location.pathname}/delete-role`, location.origin);
                     url.searchParams.append('roleId', roles.roleId);
                     _fetch(url).then(response => {
                         if (response.ok) {
@@ -241,14 +247,18 @@
             }
             url.searchParams.append('_page', authoritySearch._page);
             url.searchParams.append('_size', authoritySearch._size);
+            authorities.length = 0;
+            authoritySearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(authorities);
+                    authoritySearch._status = data.content.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(authorities, data.content);
                     authoritySearch._total = data['totalElements'];
                     // select current item
                     duice.ArrayProxy.selectItem(authorities, authorities.findIndex(item => item.authorityId === authority.authorityId));
+                }).finally(() => {
+                    authoritySearch._status = null;
                 });
         }
 
@@ -322,7 +332,7 @@
          * @returns {Promise<boolean>}
          */
         async function saveAuthority() {
-            // if new, checks id
+            // if new, checks authority id
             if (authority._new) {
                 if (!await validateAuthorityId(authority.authorityId)) {
                     return false;
@@ -337,12 +347,10 @@
             // call save
             _confirm(/*[[#{web.global.saveItemConfirm(#{core.security.Authority})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(`${window.location.pathname}/save-authority`, document.location.origin);
+                    let url = new URL(`${window.location.pathname}/save-authority`, location.origin);
                     _fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(authority)
                     }).then(response => {
                         if (response.ok) {
@@ -362,7 +370,7 @@
         function deleteAuthority() {
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.security.Authority})}]]*/'').then(result => {
                 if (result) {
-                    let url = new URL(`${window.location.pathname}/delete-authority`, document.location.origin);
+                    let url = new URL(`${location.pathname}/delete-authority`, location.origin);
                     url.searchParams.append('authorityId', authority.authorityId);
                     _fetch(url).then(response => {
                         if (response.ok) {
@@ -377,7 +385,7 @@
         }
 
         // DOM content loaded listener
-        document.addEventListener('DOMContentLoaded',() => {
+        _initialize(() => {
             let tabFolder = new duice.TabFolder();
             tabFolder.addItem(new duice.TabItem(
                 document.getElementById('roleTabButton'),
@@ -492,8 +500,8 @@
                                     data-duice-bind="roles"
                                 data-duice-foreach="role,status"
                                 data-duice-selected-item-class="selected"
-                                data-duice-execute="this.dataset.id=role.roleId;"
-                                onclick="getRole(this.dataset.id);">
+                                data-duice-execute="this.dataset.roleId=role.roleId;"
+                                onclick="getRole(this.dataset.roleId);">
                                 <td class="text-align--center">
                                     <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (roleSearch._page * roleSearch._size) + status.count;"></span>
                                 </td>
@@ -519,7 +527,12 @@
                                     <span class="number badge border-radius--1em" data-duice-bind="role" data-duice-execute="this.innerHTML = role.authorities.length;"></span>
                                 </td>
                             </tr>
-                            <tr data-duice-bind="roles" data-duice-execute="if(roles.length === 0) this.hidden=false;" hidden>
+                            <tr data-duice-bind="roleSearch" data-duice-if="return roleSearch._status === 'loading';" hidden>
+                                <td colspan="100%" class="text-align--center">
+                                    <span class="loading"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="roleSearch" data-duice-if="return roleSearch._status === 'empty';" hidden>
                                 <td colspan="100%" class="text-align--center">
                                     <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
                                 </td>
@@ -592,8 +605,8 @@
                         </div>
                         <div class="grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.security.Role.note}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="role" data-duice-property="note" class="width--100"></textarea>
+                                <span data-th-text="#{core.security.Role.description}" class="font-weight--bold"></span>
+                                <textarea data-duice-bind="role" data-duice-property="description" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
@@ -659,14 +672,14 @@
                             <button class="button" type="button" onclick="deleteRole();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.security:edit'')')}?'locked'"
                                     data-duice-bind="role"
-                                    data-duice-execute="(role.roleId && !role._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="role.roleId ? this.disabled = false : this.disabled = true;">
                                 <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
                                 <span data-th-text="#{web.global.delete}"></span>
                             </button>
                             <button class="button" type="submit" onclick="saveRole();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.security:edit'')')}?'locked'"
                                     data-duice-bind="role"
-                                    data-duice-execute="(role.roleId || role._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(role.roleId || role._new) ? this.disabled = false : this.disabled = true;">
                                 <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
                                 <span data-th-text="#{web.global.save}"></span>
                             </button>
@@ -750,8 +763,8 @@
                                 data-duice-bind="authorities"
                                 data-duice-foreach="authority,status"
                                 data-duice-selected-item-class="selected"
-                                data-duice-execute="this.dataset.id=authority.authorityId;"
-                                onclick="getAuthority(this.dataset.id);">
+                                data-duice-execute="this.dataset.authorityId=authority.authorityId;"
+                                onclick="getAuthority(this.dataset.authorityId);">
                                 <td class="text-align--center">
                                     <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (authoritySearch._page * authoritySearch._size) + status.count"></span>
                                 </td>
@@ -764,7 +777,12 @@
                                     <span data-duice-bind="authority" data-duice-property="name"></span>
                                 </td>
                             </tr>
-                            <tr data-duice-bind="authorities" data-duice-execute="if(authorities.length === 0) this.hidden=false;" hidden>
+                            <tr data-duice-bind="authoritySearch" data-duice-if="return authoritySearch._status === 'loading';" hidden>
+                                <td colspan="100%" class="text-align--center">
+                                    <span class="loading"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="authoritySearch" data-duice-if="return authoritySearch._status === 'empty';" hidden>
                                 <td colspan="100%" class="text-align--center">
                                     <span data-th-text="#{web.global.itemNotFound(#{core.security.Authority})}"></span>
                                 </td>
@@ -825,8 +843,8 @@
                         </div>
                         <div class="grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.security.Authority.note}" class="font-weight--bold"></span>
-                                <textarea data-duice-bind="authority" data-duice-property="note" class="width--100"></textarea>
+                                <span data-th-text="#{core.security.Authority.description}" class="font-weight--bold"></span>
+                                <textarea data-duice-bind="authority" data-duice-property="description" class="width--100"></textarea>
                             </label>
                         </div>
                     </form>
@@ -878,7 +896,7 @@
         <script th:inline="javascript">
             const selectAuthorityDialog = (() => {
                 const dialog = new duice.Dialog(document.getElementById('selectAuthorityDialog'));
-                const options = {
+                const option = {
                     disabledAuthorityIds: []
                 };
                 const authoritySearch = new duice.ObjectProxy({
@@ -886,7 +904,8 @@
                     value: null,
                     _page: 0,
                     _size: 5,
-                    _total: -1
+                    _total: 0,
+                    _status: null
                 });
                 const authorities = new duice.ArrayProxy([]);
                 const selectedAuthorities = new duice.ArrayProxy([]);
@@ -895,8 +914,8 @@
                  * open
                  * @param alreadySelectedAuthorityIds
                  */
-                async function open({disabledAuthorityIds = []}) {
-                    options.disabledAuthorityIds = disabledAuthorityIds;
+                async function open({disabledAuthorityIds}) {
+                    option.disabledAuthorityIds = disabledAuthorityIds || [];
                     duice.ObjectProxy.reset(authoritySearch);
                     duice.ArrayProxy.clear(selectedAuthorities);
                     getAuthorities(0);
@@ -917,19 +936,21 @@
                     }
                     url.searchParams.set('_page', authoritySearch._page);
                     url.searchParams.set('_size', authoritySearch._size);
+                    authorities.length = 0;
+                    authoritySearch._status = 'loading';
                     _fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            duice.ArrayProxy.clear(authorities);
+                            authoritySearch._status = data.content.length < 1 ? 'empty' : null;
                             duice.ArrayProxy.assign(authorities, data.content);
                             authoritySearch._total = data['totalElements'];
                             // check already selected
                             authorities.forEach(authority => {
-                                if(options.disabledAuthorityIds.includes(authority['authorityId'])){
+                                if(option.disabledAuthorityIds.includes(authority['authorityId'])){
                                     authority['_selected'] = true;
                                 }
-                                selectedAuthorities.forEach(element => {
-                                    if(element.id === authority['authorityId']) {
+                                selectedAuthorities.forEach(it => {
+                                    if(it.id === authority['authorityId']) {
                                         authority['_selected'] = true;
                                     }
                                 });
@@ -952,9 +973,9 @@
                 function selectAuthority(index) {
                     let authority = JSON.parse(JSON.stringify(authorities[index]));
                     selectedAuthorities.push(authority);
-                    authorities.forEach(element => {
-                        if(element.authorityId === authority.authorityId) {
-                            element['_selected'] = true;
+                    authorities.forEach(it => {
+                        if(it.authorityId === authority.authorityId) {
+                            it['_selected'] = true;
                             return false;
                         }
                     });
@@ -967,9 +988,9 @@
                 async function deselectAuthority(index) {
                     let authority = selectedAuthorities[index];
                     selectedAuthorities.splice(index, 1);
-                    authorities.forEach(element => {
-                        if(element.authorityId === authority.authorityId) {
-                            element['_selected'] = false;
+                    authorities.forEach(it => {
+                        if(it.authorityId === authority.authorityId) {
+                            it['_selected'] = false;
                             return false;
                         }
                     });
@@ -1066,9 +1087,17 @@
                             <span data-duice-bind="authority" data-duice-property="name"></span>
                         </td>
                     </tr>
-                    <tr data-duice-bind="selectAuthorityDialog.authorities"
-                        data-duice-execute="if(selectAuthorityDialog.authorities.length === 0) this.hidden=false;" hidden>
-                        <td colspan="100%" class="text-align--center">No Data</td>
+                    <tr data-duice-bind="selectAuthorityDialog.authoritySearch"
+                        data-duice-if="return selectAuthorityDialog.authoritySearch._status === 'loading';" hidden>
+                        <td class="text-align--center">
+                            <span class="loading"></span>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="selectAuthorityDialog.authoritySearch"
+                        data-duice-if="return selectAuthorityDialog.authoritySearch._status === 'empty';" hidden>
+                        <td colspan="100%" class="text-align--center">
+                            <span data-th-text="#{web.global.itemNotFound(#{core.security.Authority})}"></span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -1123,8 +1152,10 @@
                         </td>
                     </tr>
                     <tr data-duice-bind="selectAuthorityDialog.selectedAuthorities"
-                        data-duice-execute="if(selectAuthorityDialog.selectedAuthorities.length === 0) this.hidden=false;" hidden>
-                        <td colspan="100%" class="text-align--center">No Data</td>
+                        data-duice-if="return selectAuthorityDialog.selectedAuthorities.length === 0;" hidden>
+                        <td colspan="100%" class="text-align--center">
+                            <span data-th-text="#{web.global.itemNotSelected(#{core.security.Authority})}"></span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

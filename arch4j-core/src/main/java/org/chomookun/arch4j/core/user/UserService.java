@@ -55,14 +55,15 @@ public class UserService {
                     .build();
         }
         userEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
-        userEntity.setUsername(user.getUsername());
         userEntity.setName(user.getName());
+        userEntity.setUsername(user.getUsername());
         userEntity.setAdmin(user.isAdmin());
         userEntity.setStatus(user.getStatus());
         userEntity.setEmail(user.getEmail());
         userEntity.setMobile(user.getMobile());
         userEntity.setIcon(user.getIcon());
         userEntity.setBio(user.getBio());
+        userEntity.setExpireAt(user.getExpireAt());
         //roles
         userEntity.getUserRoles().clear();
         for(Role role : user.getRoles()) {

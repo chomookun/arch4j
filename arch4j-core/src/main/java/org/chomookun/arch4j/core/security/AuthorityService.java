@@ -42,7 +42,7 @@ public class AuthorityService {
                     .build());
         authorityEntity.setSystemUpdatedAt(LocalDateTime.now());
         authorityEntity.setName(authority.getName());
-        authorityEntity.setNote(authority.getNote());
+        authorityEntity.setDescription(authority.getDescription());
         // save
         AuthorityEntity savedAuthorityEntity = authorityRepository.saveAndFlush(authorityEntity);
         entityManager.refresh(savedAuthorityEntity);
@@ -64,7 +64,8 @@ public class AuthorityService {
      * @param authorityId authority id
      */
     public void deleteAuthority(String authorityId) {
-        authorityRepository.deleteById(authorityId);
+        AuthorityEntity authorityEntity = authorityRepository.findById(authorityId).orElseThrow();
+        authorityRepository.delete(authorityEntity);
         authorityRepository.flush();
     }
 

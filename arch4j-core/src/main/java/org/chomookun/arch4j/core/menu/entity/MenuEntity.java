@@ -3,6 +3,7 @@ package org.chomookun.arch4j.core.menu.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
@@ -48,27 +49,27 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
     @Column(name = "sort")
     private Integer sort;
 
-    @Column(name = "note", length = 4000)
+    @Column(name = "description", length = 4000)
     @Lob
-    private String note;
+    private String description;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_menu_id", referencedColumnName = "menu_id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_menu_id", insertable = false, updatable = false)
     private MenuEntity parentMenu;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "menu_id", updatable = false)
+    @JoinColumn(referencedColumnName = "menu_id", name = "menu_id", insertable = false, updatable = false)
     @Builder.Default
-    private List<MenuRoleEntity> menuRoles = new ArrayList<>();
+    private List<MenuRoleEntity> menuRoleEntities = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "menu_id", updatable = false)
+    @JoinColumn(referencedColumnName = "menu_id", name = "menu_id", updatable = false)
     @Builder.Default
-    private List<MenuI18nEntity> menuI18ns = new ArrayList<>();
+    private List<MenuI18nEntity> menuI18nEntities = new ArrayList<>();
 
     @Override
     public List<MenuI18nEntity> provideI18nEntities() {
-        return this.menuI18ns;
+        return this.menuI18nEntities;
     }
 
     @Override
@@ -92,6 +93,12 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
                 .whenI18n(MenuI18nEntity::getName)
                 .get();
     }
+
+    /**
+     * Target converter
+     */
+    @Converter(autoApply = true)
+    public static class TargetConverter extends GenericEnumConverter<Menu.Target> {}
 
 
 }

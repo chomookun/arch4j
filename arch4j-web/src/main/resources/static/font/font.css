@@ -1,32 +1,47 @@
-/* nanum-gothic-regular - korean_latin */
 @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nanum Gothic';
+    font-family: 'Noto Sans';
+    src: url('NotoSans-SemiBold.woff2') format('woff2');
+    font-weight: 600;
     font-style: normal;
-    font-weight: 400;
-    src: url('nanum-gothic-v23-korean_latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
 }
-/* nanum-gothic-700 - korean_latin */
+
 @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nanum Gothic';
+    font-family: 'Noto Sans';
+    src: url('NotoSans-Regular.woff2') format('woff2');
+    font-weight: normal;
     font-style: normal;
-    font-weight: 700;
-    src: url('nanum-gothic-v23-korean_latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
 }
-/* nanum-gothic-coding-regular - latin */
+
 @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nanum Gothic Coding';
+    font-family: 'Noto Sans Mono';
+    src: url('NotoSansMono-SemiBold.woff2') format('woff2');
+    font-weight: 600;
     font-style: normal;
-    font-weight: 400;
-    src: url('nanum-gothic-coding-v21-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
 }
-/* nanum-gothic-coding-700 - latin */
+
 @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Nanum Gothic Coding';
+    font-family: 'Noto Sans KR';
+    src: url('NotoSansKR-SemiBold.woff2') format('woff2');
+    font-weight: 600;
     font-style: normal;
-    font-weight: 700;
-    src: url('nanum-gothic-coding-v21-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Mono';
+    src: url('NotoSansMono-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('NotoSansKR-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }

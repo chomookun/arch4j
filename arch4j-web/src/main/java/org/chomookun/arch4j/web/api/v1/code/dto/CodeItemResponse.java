@@ -13,8 +13,6 @@ public class CodeItemResponse {
 
     private String name;
 
-    private String value;
-
     static CodeItemResponse from(CodeItem codeItem) {
         return CodeItemResponse.builder()
                 .itemId(codeItem.getItemId())

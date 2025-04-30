@@ -1,7 +1,10 @@
 package org.chomookun.arch4j.web.view.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.alarm.AlarmMessageService;
 import org.chomookun.arch4j.core.alarm.model.Alarm;
+import org.chomookun.arch4j.core.alarm.model.AlarmMessage;
+import org.chomookun.arch4j.core.alarm.model.AlarmMessageSearch;
 import org.chomookun.arch4j.core.alarm.model.AlarmSearch;
 import org.chomookun.arch4j.core.alarm.AlarmService;
 import org.chomookun.arch4j.core.alarm.client.AlarmClientDefinitionRegistry;
@@ -16,6 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
 
+import java.util.Map;
+
 @Controller
 @ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
 @RequestMapping("admin/alarm")
@@ -25,10 +30,13 @@ public class AlarmController {
 
     private final AlarmService alarmService;
 
+    private final AlarmMessageService alarmMessageService;
+
     @GetMapping
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView("admin/alarm.html");
         modelAndView.addObject("alarmClientDefinitions", AlarmClientDefinitionRegistry.getAlarmClientDefinitions());
+        modelAndView.addObject("alarmMessageStatuses", AlarmMessage.Status.values());
         return modelAndView;
     }
 
@@ -64,7 +72,22 @@ public class AlarmController {
     @PostMapping("test-alarm")
     @ResponseBody
     public void testAlarm(@RequestBody Alarm alarm) {
-        alarmService.sendAlarm(alarm,"Test Subject", "Test Content");
+        alarmService.testAlarm(alarm);
+    }
+
+    @PostMapping("send-alarm-message")
+    @ResponseBody
+    public void sendAlarmMessage(@RequestBody Map<String, String> payload) {
+        String alarmId = payload.get("alarmId");
+        String subject = payload.get("subject");
+        String content = payload.get("content");
+        alarmMessageService.sendAlarmMessage(alarmId, subject, content);
+    }
+
+    @GetMapping("get-alarm-messages")
+    @ResponseBody
+    public Page<AlarmMessage> getAlarmMessages(AlarmMessageSearch alarmMessageSearch, Pageable pageable) {
+        return alarmMessageService.getAlarmMessages(alarmMessageSearch, pageable);
     }
 
 }

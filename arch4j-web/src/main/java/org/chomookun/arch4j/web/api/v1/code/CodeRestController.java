@@ -34,12 +34,12 @@ public class CodeRestController {
     @GetMapping
     public ResponseEntity<List<CodeResponse>> getCodes(
             @RequestParam(value = "codeId", required = false) String codeId,
-            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "codeName", required = false) String codeName,
             @PageableDefault Pageable pageable
     ) {
         CodeSearch codeSearch = CodeSearch.builder()
                 .codeId(codeId)
-                .name(name)
+                .name(codeName)
                 .build();
         Page<Code> codePage = codeService.getCodes(codeSearch, pageable);
         List<CodeResponse> codeResponses = codePage.stream()

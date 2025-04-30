@@ -12,17 +12,17 @@ import java.util.StringJoiner;
 public class SlackAlarmClientDefinition implements AlarmClientDefinition {
 
     @Override
-    public String getAlarmClientId() {
+    public String getClientId() {
         return "SLACK";
     }
 
     @Override
-    public String getAlarmClientName() {
+    public String getClientName() {
         return "Slack";
     }
 
     @Override
-    public String getAlarmClientConfigTemplate() {
+    public String getConfigTemplate() {
         StringJoiner template = new StringJoiner("\n");
         template.add("url=url");
         template.add("insecure=true|false (default is false)");

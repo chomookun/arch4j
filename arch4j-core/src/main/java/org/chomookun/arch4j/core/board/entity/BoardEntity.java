@@ -2,7 +2,6 @@ package org.chomookun.arch4j.core.board.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Where;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
@@ -28,8 +27,8 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
     @Column(name = "board_id", length = 64)
     private String boardId;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "board_name")
+    private String boardName;
 
     @Column(name = "icon", length = 4000)
     @Lob
@@ -67,42 +66,17 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "board_id", updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Where(clause = "type = 'ACCESS'")
     @Builder.Default
-    private List<BoardRoleEntity> accessBoardRoleEntities = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "board_id", updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Where(clause = "type = 'READ'")
-    @Builder.Default
-    private List<BoardRoleEntity> readBoardRoleEntities = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "board_id", updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Where(clause = "type = 'WRITE'")
-    @Builder.Default
-    private List<BoardRoleEntity> writeBoardRoleEntities = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "board_id", updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Where(clause = "type = 'FILE'")
-    @Builder.Default
-    private List<BoardRoleEntity> fileBoardRoleEntities = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "board_id", updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Where(clause = "type = 'COMMENT'")
-    @Builder.Default
-    private List<BoardRoleEntity> commentBoardRoleEntities = new ArrayList<>();
+    private List<BoardRoleEntity> boardRoleEntities = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "board_id", updatable = false)
     @Builder.Default
-    private List<BoardI18nEntity> i18ns = new ArrayList<>();
+    private List<BoardI18nEntity> boardI18nEntities = new ArrayList<>();
 
     @Override
     public List<BoardI18nEntity> provideI18nEntities() {
-        return this.i18ns;
+        return this.boardI18nEntities;
     }
 
     @Override
@@ -113,17 +87,17 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
                 .build();
     }
 
-    public void setName(String name) {
-        I18nSetter.of(this, this.name)
-                .whenDefault(() -> this.name = name)
-                .whenI18n(i18nEntity -> i18nEntity.setName(name))
+    public void setBoardName(String name) {
+        I18nSetter.of(this, this.boardName)
+                .whenDefault(() -> this.boardName = name)
+                .whenI18n(i18nEntity -> i18nEntity.setBoardName(name))
                 .set();
     }
 
-    public String getName() {
-        return I18nGetter.of(this, this.name)
-                .whenDefault(() -> this.name)
-                .whenI18n(BoardI18nEntity::getName)
+    public String getBoardName() {
+        return I18nGetter.of(this, this.boardName)
+                .whenDefault(() -> this.boardName)
+                .whenI18n(BoardI18nEntity::getBoardName)
                 .get();
     }
 

@@ -19,6 +19,7 @@
         // alarm
         const alarm = new duice.ObjectProxy({
             alarmId: null,
+            alarmName: null
         });
         duice.ObjectProxy.setDisabledAll(alarm, true);
         duice.ObjectProxy.onPropertyChanging(alarm, async event => {
@@ -42,6 +43,17 @@
         });
         // alarm client definitions
         const alarmClientDefinitions = new duice.ArrayProxy(/*[[${alarmClientDefinitions}]]*/[]);
+
+        // alarm message
+        const alarmMessageSearch = new duice.ObjectProxy({
+            alarmId: null,
+            status: null,
+            _page: 0,
+            _size: 20,
+            _total: 0
+        });
+        const alarmMessages = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(alarmMessages);
 
         /**
          * Gets alarms
@@ -145,7 +157,7 @@
                 }
             }
             // checks name
-            if(_isEmpty(alarm.name)) {
+            if(_isEmpty(alarm.alarmName)) {
                 await _alert(/*[[#{web.global.itemEmpty(#{core.alarm.Alarm.name})}]]*/'');
                 duice.ObjectProxy.focus(alarm, 'name');
                 return false;
@@ -205,19 +217,69 @@
                         body: JSON.stringify(alarm)
                     }).then(response => {
                         if (response.ok) {
-                            _alert(/*[[#{web.global.sendItemComplete(#{web.global.test} + ' ' + #{core.alarm.Alarm})}]]*/'').then(() => {
-                                getAlarms();
-                                getAlarm(alarm.alarmId);
-                            });
+                            _alert(/*[[#{web.global.sendItemComplete(#{web.global.test} + ' ' + #{core.alarm.Alarm})}]]*/'').then();
                         }
                     });
                 }
             });
         }
 
+        /**
+         * Sends alarm message
+         */
+        function sendAlarmMessage() {
+            sendAlarmMessageDialog.open({alarmId: alarm.alarmId});
+        }
+
+        /**
+         * Gets alarm messages
+         * @param page page
+         */
+        function getAlarmMessages(page) {
+            if (Number.isFinite(page)){
+                alarmMessageSearch._page = page;
+            }
+            let url = new URL(`${location.pathname}/get-alarm-messages`, location.origin);
+            if (alarmMessageSearch.alarmId) {
+                url.searchParams.set('alarmId', alarmMessageSearch.alarmId);
+            }
+            if (alarmMessageSearch.status) {
+                url.searchParams.set('status', alarmMessageSearch.status);
+            }
+            _fetch(url).then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.clear(alarmMessages);
+                    duice.ArrayProxy.assign(alarmMessages, data.content);
+                    alarmMessageSearch._total = data['totalElements'];
+                });
+        }
+
+        /**
+         * Resets alarm messages
+         */
+        function resetAlarmMessages() {
+            duice.ObjectProxy.reset(alarmMessageSearch);
+            getAlarmMessages();
+        }
+
         // Initializes
-        document.addEventListener('DOMContentLoaded',()=> {
-            getAlarms();
+        _initialize(() => {
+            const tabFolder = new duice.TabFolder();
+            const alarmTabItem = new duice.TabItem(
+                document.getElementById('alarmTabButton'),
+                document.getElementById('alarmTabContent'),
+                () => {
+                    getAlarms();
+                });
+            const alarmMessageTabItem = new duice.TabItem(
+                document.getElementById('alarmMessageTabButton'),
+                document.getElementById('alarmMessageTabContent'),
+                () => {
+                    getAlarmMessages();
+                });
+            tabFolder.addItem(alarmTabItem);
+            tabFolder.addItem(alarmMessageTabItem);
+            tabFolder.setActive(0);
         });
     </script>
 
@@ -233,9 +295,26 @@
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: alarm content                   -->
+    <!-- start: tab index                       -->
     <!-- ====================================== -->
-    <div id="alarmContent" class="display--grid grid-template-columns--12fr gap--1em">
+    <div id="tabIndex" class="tab">
+        <span id="alarmTabButton" class="tab-item">
+            <img class="icon" src="/static/image/icon-storage.svg" alt="storage"/>
+            <span data-th-text="#{core.alarm.Alarm}"></span>
+        </span>
+        <span id="alarmMessageTabButton" class="tab-item">
+            <img class="icon" src="/static/image/icon-file.svg" alt="storageFile"/>
+            <span data-th-text="#{core.alarm.AlarmMessage}"></span>
+        </span>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: tab index                         -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: alarm tab content               -->
+    <!-- ====================================== -->
+    <div id="alarmTabContent" class="display--grid grid-template-columns--12fr gap--1em">
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
             <!-- start: alarm list                      -->
@@ -254,7 +333,7 @@
                                 <label>
                                     <select data-duice-bind="alarmSearch" data-duice-property="key">
                                         <option value="alarmId" th:text="#{core.alarm.Alarm.alarmId}"></option>
-                                        <option value="name" th:text="#{core.alarm.Alarm.name}"></option>
+                                        <option value="alarmName" th:text="#{core.alarm.Alarm.alarmName}"></option>
                                     </select>
                                 </label>
                                 <label>
@@ -283,7 +362,7 @@
                         <tr>
                             <th data-th-text="#{web.global.no}" class="text-align--center"></th>
                             <th data-th-text="#{core.alarm.Alarm.alarmId}"></th>
-                            <th data-th-text="#{core.alarm.Alarm.name}"></th>
+                            <th data-th-text="#{core.alarm.Alarm.alarmName}"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -300,7 +379,7 @@
                                 <span data-duice-bind="alarm" data-duice-property="alarmId" class="code"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="alarm" data-duice-property="name"></span>
+                                <span data-duice-bind="alarm" data-duice-property="alarmName"></span>
                             </td>
                         </tr>
                         <tr data-duice-bind="alarms" data-duice-if="return alarms.length === 0;" hidden>
@@ -357,42 +436,58 @@
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.alarm.Alarm.name}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="alarm" data-duice-property="name" class="width--100"/>
+                                <span data-th-text="#{core.alarm.Alarm.alarmName}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="alarm" data-duice-property="alarmName" class="width--100"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.alarm.Alarm.alarmClientId}" class="font-weight--bold"></span>
-                                <select data-duice-bind="alarm" data-duice-property="alarmClientId"
+                                <span data-th-text="#{core.alarm.Alarm.clientId}" class="font-weight--bold"></span>
+                                <select data-duice-bind="alarm" data-duice-property="clientId"
                                         data-duice-option="alarmClientDefinitions"
-                                        data-duice-option-value-property="alarmClientId"
-                                        data-duice-option-text-property="alarmClientName"
+                                        data-duice-option-value-property="clientId"
+                                        data-duice-option-text-property="clientName"
                                         class="width--100">
                                     <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
                                 </select>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
-                            <label>
-                                <span data-th-text="#{core.alarm.Alarm.alarmClientConfig}" class="font-weight--bold"></span>
-                                <duice-codemirror
-                                        class="code box"
-                                        data-duice-bind="alarm"
-                                        data-duice-property="alarmClientConfig"
-                                        data-duice-theme="dracula">
-                                </duice-codemirror>
-                            </label>
+                            <div class="display--flex justify-content--space-between">
+                                <div>
+                                    <span data-th-text="#{core.alarm.Alarm.clientConfig}" class="font-weight--bold"></span>
+                                </div>
+                                <div>
+                                    <button class="button small" type="button" onclick="testAlarm();"
+                                            th:classappend="!${#authorization.expression('hasAuthority(''admin.alarm:edit'')')}?'locked'"
+                                            data-duice-bind="alarm"
+                                            data-duice-execute="(alarm.alarmId && !alarm._new) ? this.disabled=false : this.disabled=true;">
+                                        <img class="icon" th:src="@{/static/image/icon-test.svg}" alt="test"/>
+                                        <span data-th-text="#{web.global.test}"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label>
+                                    <duice-codemirror
+                                            class="code box"
+                                            data-duice-bind="alarm"
+                                            data-duice-property="clientConfig"
+                                            data-duice-theme="dracula">
+                                    </duice-codemirror>
+                                </label>
+                            </div>
                         </div>
                     </form>
                     <div class="display--flex justify-content--space-between">
                         <div class="display--flex gap--1px">
-                            <button class="button" type="button" onclick="testAlarm();"
+                            <button class="button" type="button"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.alarm:edit'')')}?'locked'"
                                     data-duice-bind="alarm"
-                                    data-duice-execute="(alarm.alarmId && !alarm._new) ? this.disabled=false : this.disabled=true;">
-                                <img class="icon" th:src="@{/static/image/icon-test.svg}" alt="test"/>
-                                <span data-th-text="#{web.global.test}"></span>
+                                    data-duice-execute="(alarm.alarmId && !alarm._new) ? this.disabled=false : this.disabled=true;"
+                                    onclick="sendAlarmMessage();">
+                                <img class="icon" th:src="@{/static/image/icon-send.svg}" alt="send"/>
+                                <span data-th-text="#{web.global.send}"></span>
                             </button>
                         </div>
                         <div class="display--flex justify-content--end gap--1px">
@@ -426,7 +521,225 @@
         </div>
     </div>
     <!-- ====================================== -->
-    <!-- end: alarm content                     -->
+    <!-- end: alarm tab content                 -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: alarm message tab content       -->
+    <!-- ====================================== -->
+    <div id="alarmMessageTabContent">
+        <div class="panel">
+            <div class="panel-title">
+                <h2>
+                    <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                    <span data-th-text="#{core.alarm.AlarmMessage}+' '+#{web.global.list}"></span>
+                </h2>
+            </div>
+            <div class="panel-content">
+                <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1rem">
+                    <div class="display--flex gap--1px">
+                        <label>
+                            <select data-duice-bind="alarmMessageSearch"
+                                    data-duice-property="alarmId"
+                                    data-duice-option="alarms"
+                                    data-duice-option-value-property="alarmId"
+                                    data-duice-option-text-property="alarmName">
+                                <option value="" data-th-text="|#{core.alarm.Alarm}...|"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <select data-duice-bind="alarmMessageSearch"
+                                    data-duice-property="status">
+                                <option value="" data-th-text="|#{core.alarm.AlarmMessage.status}...|"></option>
+                                <option th:each="status : ${alarmMessageStatuses}"
+                                        th:value="${status}"
+                                        th:text="${status}"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="display--flex justify-content--end gap--1px">
+                        <button type="submit" class="button" onclick="getAlarmMessages();">
+                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                            <span data-th-text="#{web.global.search}"></span>
+                        </button>
+                        <button type="button" class="button" onclick="resetAlarmMessages();">
+                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                            <span data-th-text="#{web.global.reset}"></span>
+                        </button>
+                    </div>
+                </form>
+                <div>
+                    <table class="table width--100">
+                        <colgroup>
+                            <col style="width:5rem;"/>
+                            <col style="width:20rem;"/>
+                            <col/>
+                            <col style="width:12rem;"/>
+                            <col style="width:12rem;"/>
+                            <col style="width:10rem;"/>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th data-th-text="#{web.global.no}"></th>
+                            <th data-th-text="#{core.alarm.AlarmMessage.alarmName}"></th>
+                            <th data-th-text="#{core.alarm.AlarmMessage.subject}"></th>
+                            <th data-th-text="#{core.alarm.AlarmMessage.submittedAt}"></th>
+                            <th data-th-text="#{core.alarm.AlarmMessage.sentAt}"></th>
+                            <th data-th-text="#{core.alarm.AlarmMessage.status}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-duice-bind="alarmMessages" data-duice-foreach="alarmMessage,status">
+                            <td class="text-align--center">
+                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = alarmMessageSearch._total - (alarmMessageSearch._page * alarmMessageSearch._size) - status.index;" class="number"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="alarmMessage" data-duice-property="alarmName"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="alarmMessage" data-duice-property="subject"></span>
+                            </td>
+                            <td class="text-align--center">
+                                <span data-duice-bind="alarmMessage" data-duice-property="submittedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                            </td>
+                            <td class="text-align--center">
+                                <span data-duice-bind="alarmMessage" data-duice-property="sentAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                            </td>
+                            <td class="text-align--center">
+                                <span data-duice-bind="alarmMessage" data-duice-property="status"
+                                      data-duice-execute="
+                                        this.classList.toggle('background-color--green', alarmMessage.status === 'COMPLETED');
+                                        this.classList.toggle('background-color--red', alarmMessage.status === 'FAILED');
+                                        "
+                                      class="badge"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="alarmMessages" data-duice-if="return alarmMessages.length===0;">
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.alarm.AlarmMessage})}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="display--flex justify-content--space-between">
+                    <div>
+                        <span data-th-text="#{web.global.total}"></span>
+                        <span data-duice-bind="alarmMessageSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                        <span data-th-text="#{web.global.rows}"></span>
+                    </div>
+                    <div>
+                        <duice-pagination
+                            data-duice-bind="alarmMessageSearch"
+                            data-duice-page-property="_page"
+                            data-duice-size-property="_size"
+                            data-duice-total-property="_total"
+                            data-duice-onclick="getAlarmMessages(this.dataset.page);">
+                        </duice-pagination>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: alarm message tab content         -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: send alarm dialog               -->
+    <!-- ====================================== -->
+    <dialog id="sendAlarmMessageDialog" class="dialog">
+        <style th:inline="css">
+            #sendAlarmMessageDialog {
+                width: 400px;
+            }
+        </style>
+        <script th:inline="javascript">
+            const sendAlarmMessageDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('sendAlarmMessageDialog'));
+                const data = new duice.ObjectProxy({
+                    alarmId: null,
+                    subject: null,
+                    content: null
+                });
+
+                /**
+                 * Opens
+                 * @param userId
+                 * @returns {Promise<*>}
+                 */
+                async function open({alarmId: alarmId}) {
+                    duice.ObjectProxy.clear(data);
+                    data.alarmId = alarmId;
+                    return dialog.open();
+                }
+
+                /**
+                 * Confirms
+                 * @returns {Promise<void>}
+                 */
+                async function confirm() {
+                    if (!await _confirm(/*[[#{web.global.sendItemConfirm(#{core.alarm.AlarmMessage})}]]*/'')) {
+                        return;
+                    }
+                    let url = new URL(`${location.pathname}/send-alarm-message`, location.origin);
+                    _fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
+                    }).then(response => {
+                        if (response.ok) {
+                            _alert(/*[[#{web.global.sendItemComplete(#{core.alarm.AlarmMessage})}]]*/'').then(()=>{
+                                dialog.close();
+                            });
+                        }
+                    });
+                }
+
+                // returns
+                return {
+                    open,
+                    data,
+                    confirm
+                };
+            })();
+        </script>
+        <div class="dialog-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-send.svg}" alt="send"/>
+                <span data-th-text="#{core.alarm.AlarmMessage}"></span>
+            </h2>
+        </div>
+        <div class="dialog-content">
+            <form class="display--grid grid-template-columns--12fr gap--1em">
+                <div class="grid-column--span-12">
+                    <label>
+                        <span data-th-text="#{core.alarm.AlarmMessage.subject}"></span>
+                        <input type="text" data-duice-bind="sendAlarmMessageDialog.data" data-duice-property="subject" class="width--100"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <label>
+                        <span data-th-text="#{core.alarm.AlarmMessage.content}"></span>
+                        <textarea data-duice-bind="sendAlarmMessageDialog.data" data-duice-property="content" class="width--100"></textarea>
+                    </label>
+
+                </div>
+                <div class="grid-column--span-12">
+                    <div class="display--flex justify-content--end">
+                        <button class="button" type="button" onclick="sendAlarmMessageDialog.confirm();">
+                            <img class="icon" th:src="@{/static/image/icon-send.svg}" alt="send"/>
+                            <span data-th-text="#{web.global.send}"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </dialog>
+    <!-- ====================================== -->
+    <!-- end: send alarm dialog                 -->
     <!-- ====================================== -->
 
 </main>

@@ -2,6 +2,7 @@ package org.chomookun.arch4j.web.view.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.security.AuthorityService;
 import org.chomookun.arch4j.core.security.RoleService;
 import org.chomookun.arch4j.core.security.model.Authority;

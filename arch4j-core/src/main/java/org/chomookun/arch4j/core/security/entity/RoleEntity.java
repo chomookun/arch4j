@@ -7,7 +7,6 @@ import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.chomookun.arch4j.core.user.entity.UserRoleEntity;
 
 import java.util.*;
 
@@ -36,18 +35,13 @@ public class RoleEntity extends BaseEntity {
     @Convert(converter = BooleanConverter.class)
     private boolean authenticated;
 
-    @Column(name = "note", length = 4000)
+    @Column(name = "description", length = 4000)
     @Lob
-    private String note;
+    private String description;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "role_id", updatable = false)
+    @JoinColumn(name = "role_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Builder.Default
-    private List<RoleAuthorityEntity> roleAuthorities = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "role_id", updatable = false)
-    @Builder.Default
-    private List<UserRoleEntity> userRoles = new ArrayList<>();
+    private List<RoleAuthorityEntity> authorities = new ArrayList<>();
 
 }

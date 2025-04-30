@@ -1,13 +1,13 @@
 @import url('/static/font/font.css');
 
 :root {
-    --web-font-family: "Nanum Gothic";
+    --web-font-family: "Noto Sans", "Noto Sans KR";
     --web-panel-border: var(--duice-form-element-border);
     --web-box-border: var(--duice-form-element-border);
     --web-tab-item-border: var(--duice-form-element-border);
-    --web-code-font-family: "Nanum Gothic Coding";
-    --web-number-font-family: "Nanum Gothic Coding";
-    --web-date-font-family: "Nanum Gothic Coding";
+    --web-code-font-family: "Noto Sans Mono";
+    --web-number-font-family: "Noto Sans Mono";
+    --web-date-font-family: "Noto Sans Mono";
     --web-color--red: red;
     --web-color--green: limegreen;
     --web-color--blue: blue;
@@ -292,3 +292,18 @@ html {
     text-overflow: ellipsis;
 }
 
+/* loading */
+.loading:after {
+    content: "";
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' stroke='%23888888' stroke-width='10' fill='none' stroke-linecap='round' stroke-dasharray='283' stroke-dashoffset='75'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: spin 0.5s ease-in-out infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

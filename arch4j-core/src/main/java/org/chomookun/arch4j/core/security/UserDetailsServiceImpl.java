@@ -41,9 +41,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // user details
         UserDetailsImpl userDetails =  UserDetailsImpl.builder()
                 .userId(user.getUserId())
+                .name(user.getName())
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .name(user.getName())
                 .admin(user.isAdmin())
                 .build();
         // checks disabled

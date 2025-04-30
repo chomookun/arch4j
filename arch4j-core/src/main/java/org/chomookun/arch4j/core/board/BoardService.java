@@ -30,7 +30,7 @@ public class BoardService {
                     .boardId(board.getBoardId())
                     .build());
         boardEntity.setSystemUpdatedAt(LocalDateTime.now());    // disable dirty checking
-        boardEntity.setName(board.getName());
+        boardEntity.setBoardName(board.getName());
         boardEntity.setIcon(board.getIcon());
         boardEntity.setMessageFormat(board.getMessageFormat());
         boardEntity.setMessage(board.getMessage());
@@ -42,34 +42,34 @@ public class BoardService {
         boardEntity.setDiscussionEnabled(board.isDiscussionEnabled());
         boardEntity.setDiscussionId(board.getDiscussionId());
         // access roles
-        boardEntity.getAccessBoardRoleEntities().clear();
+        boardEntity.getBoardRoleEntities().clear();
         board.getAccessRoles().forEach(accessRole -> {
             BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
                     .boardId(boardEntity.getBoardId())
                     .roleId(accessRole.getRoleId())
                     .type("ACCESS")
                     .build();
-            boardEntity.getAccessBoardRoleEntities().add(boardRoleEntity);
+            boardEntity.getBoardRoleEntities().add(boardRoleEntity);
         });
         // read roles
-        boardEntity.getReadBoardRoleEntities().clear();
+        boardEntity.getBoardRoleEntities().clear();
         board.getReadRoles().forEach(readRole -> {
             BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
                     .boardId(boardEntity.getBoardId())
                     .roleId(readRole.getRoleId())
                     .type("READ")
                     .build();
-            boardEntity.getReadBoardRoleEntities().add(boardRoleEntity);
+            boardEntity.getBoardRoleEntities().add(boardRoleEntity);
         });
         // write roles
-        boardEntity.getWriteBoardRoleEntities().clear();
+        boardEntity.getBoardRoleEntities().clear();
         board.getWriteRoles().forEach(writeRole -> {
             BoardRoleEntity boardRoleEntity = BoardRoleEntity.builder()
                     .boardId(boardEntity.getBoardId())
                     .roleId(writeRole.getRoleId())
                     .type("WRITE")
                     .build();
-            boardEntity.getWriteBoardRoleEntities().add(boardRoleEntity);
+            boardEntity.getBoardRoleEntities().add(boardRoleEntity);
         });
         // save
         BoardEntity savedBoardEntity = boardRepository.saveAndFlush(boardEntity);

@@ -78,7 +78,7 @@ class AuthorityServiceTest extends CoreTestSupport {
     void deleteAuthority() {
         // given
         AuthorityEntity authorityEntity = AuthorityEntity.builder()
-                .authorityId(IdGenerator.uuid())
+                .authorityId("test")
                 .name("test authority")
                 .build();
         entityManager.persist(authorityEntity);
@@ -94,7 +94,7 @@ class AuthorityServiceTest extends CoreTestSupport {
     void getAuthorities() {
         // given
         AuthorityEntity authorityEntity = AuthorityEntity.builder()
-                .authorityId(IdGenerator.uuid())
+                .authorityId("test")
                 .name("test authority")
                 .build();
         entityManager.persist(authorityEntity);

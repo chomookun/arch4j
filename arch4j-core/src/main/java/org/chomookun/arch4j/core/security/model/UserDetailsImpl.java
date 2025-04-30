@@ -42,7 +42,6 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
     @Builder.Default
     private Set<GrantedAuthority> authorities = new HashSet<>();
 
-    @Override
     public String getUsername() {
         return this.username;
     }

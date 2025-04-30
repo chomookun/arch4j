@@ -6,6 +6,7 @@ import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import jakarta.persistence.*;
 import org.chomookun.arch4j.core.security.entity.RoleEntity;
+import org.chomookun.arch4j.core.security.entity.RoleEntity_;
 
 import java.io.Serializable;
 
@@ -37,11 +38,11 @@ public class UserRoleEntity extends BaseEntity {
     private String roleId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "role_id", insertable = false, updatable = false)
+    @JoinColumn(name = "role_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private RoleEntity role;
 
 }

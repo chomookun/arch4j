@@ -32,7 +32,7 @@ public class Article {
     private User user;
 
     @Builder.Default
-    private List<StorageFile> articleFiles = new ArrayList<>();
+    private List<StorageFile> files = new ArrayList<>();
 
     public enum Format { TEXT, MARKDOWN, HTML }
 

@@ -49,7 +49,7 @@ public class ArticleService {
         articleEntity.setBoardId(article.getBoardId());
         // files
         List<StorageFile> oldArticleFiles = articleFileService.getArticleFiles(articleEntity.getArticleId());
-        List<StorageFile> newArticleFiles = article.getArticleFiles();
+        List<StorageFile> newArticleFiles = article.getFiles();
         newArticleFiles.stream()
                 .filter(newOne ->
                         oldArticleFiles.stream().noneMatch(oldOne -> Objects.equals(oldOne.getFileId(), newOne.getFileId())))
@@ -84,7 +84,7 @@ public class ArticleService {
         if (article != null) {
             populateArticle(article);
             List<StorageFile> files = articleFileService.getArticleFiles(article.getArticleId());
-            article.setArticleFiles(files);
+            article.setFiles(files);
         }
         return Optional.ofNullable(article);
     }

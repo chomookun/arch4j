@@ -2,7 +2,6 @@ package org.chomookun.arch4j.core.code.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.code.entity.CodeItemEntity_;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
@@ -29,25 +28,26 @@ public class CodeEntity extends BaseEntity implements I18nSupportEntity<CodeI18n
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "note", length = 4000)
+	@Column(name = "description", length = 4000)
 	@Lob
-	private String note;
+	private String description;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "code_id", updatable = false)
+    @JoinColumn(referencedColumnName = "code_id", name = "code_id", insertable = false, updatable = false)
 	@OrderBy(CodeItemEntity_.SORT)
 	@Builder.Default
     @Setter(AccessLevel.NONE)
-	private List<CodeItemEntity> codeItems = new ArrayList<>();
+	private List<CodeItemEntity> codeItemEntities = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "code_id", updatable = false)
+    @JoinColumn(referencedColumnName = "code_id", name = "code_id", insertable = false, updatable = false)
     @Builder.Default
-    private List<CodeI18nEntity> codeI18ns = new ArrayList<>();
+    @Setter(AccessLevel.NONE)
+    private List<CodeI18nEntity> codeI18nEntities = new ArrayList<>();
 
     @Override
     public List<CodeI18nEntity> provideI18nEntities() {
-        return this.codeI18ns;
+        return this.codeI18nEntities;
     }
 
     @Override
@@ -58,10 +58,10 @@ public class CodeEntity extends BaseEntity implements I18nSupportEntity<CodeI18n
                 .build();
     }
 
-    public void setName(String name) {
+    public void setName(String codeName) {
         I18nSetter.of(this, this.name)
-                .whenDefault(() -> this.name = name)
-                .whenI18n(codeLanguageEntity -> codeLanguageEntity.setName(name))
+                .whenDefault(() -> this.name = codeName)
+                .whenI18n(codeLanguageEntity -> codeLanguageEntity.setName(codeName))
                 .set();
     }
 

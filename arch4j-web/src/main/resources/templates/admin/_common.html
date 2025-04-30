@@ -11,7 +11,7 @@
     <script th:inline="javascript">
         const _selectRoleDialog = (() => {
             const dialog = new duice.Dialog(document.getElementById('_selectRoleDialog'));
-            const options = {
+            const option = {
                 disabledRoleIds: []
             }
             const roleSearch = new duice.ObjectProxy({
@@ -19,18 +19,19 @@
                 value: null,
                 _page: 0,
                 _size: 5,
-                _total: -1
+                _total: 0,
+                _status: null
             });
             const roles = new duice.ArrayProxy([]);
             const selectedRoles = new duice.ArrayProxy([]);
 
             /**
              * Opens dialog
-             * @param disabledRoleIds
+             * @param disabledIds
              * @returns {*}
              */
-            function open({disabledRoleIds = []}) {
-                options.disabledRoleIds = disabledRoleIds;
+            function open({disabledRoleIds}) {
+                option.disabledRoleIds = disabledRoleIds || [];
                 duice.ArrayProxy.clear(this.selectedRoles);
                 getRoles(0);
                 return dialog.open();
@@ -44,25 +45,27 @@
                 if(page) {
                     roleSearch._page = page;
                 }
-                let url = new URL(/*[[@{/admin/common/get-roles}]]*/'',document.location.origin);
+                let url = new URL(/*[[@{/admin/common/get-roles}]]*/'', location.origin);
                 if(roleSearch.key && roleSearch.value) {
                     url.searchParams.set(roleSearch.key, roleSearch.value);
                 }
                 url.searchParams.set('_page', roleSearch._page);
                 url.searchParams.set('_size', roleSearch._size);
+                roles.length = 0;
+                roleSearch._status = 'loading';
                 await _fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        duice.ArrayProxy.clear(roles);
+                        roleSearch._status = data.content.length < 1 ? 'empty' : null;
                         duice.ArrayProxy.assign(roles, data.content);
                         roleSearch._total = data['totalElements'];
                         // check already selected
                         roles.forEach(role => {
-                            if(options.disabledRoleIds.includes(role.roleId)){
+                            if(option.disabledRoleIds.includes(role.roleId)){
                                 role['_selected'] = true;
                             }
-                            selectedRoles.forEach(element => {
-                                if(element.roleId === role.roleId) {
+                            selectedRoles.forEach(it => {
+                                if(it.roleId === role.roleId) {
                                     role['_selected'] = true;
                                 }
                             });
@@ -85,9 +88,9 @@
             function selectRole(index) {
                 let role = JSON.parse(JSON.stringify(roles[index]));
                 selectedRoles.push(role);
-                roles.forEach(element => {
-                    if(element.roleId === role.roleId) {
-                        element['_selected'] = true;
+                roles.forEach(it => {
+                    if(it.roleId === role.roleId) {
+                        it['_selected'] = true;
                         return false;
                     }
                 });
@@ -101,9 +104,9 @@
             async function deselectRole(index) {
                 let role = this.selectedRoles[index];
                 selectedRoles.splice(index, 1);
-                roles.forEach(element => {
-                    if(element.roleId === role.roleId) {
-                        element['_selected'] = false;
+                roles.forEach(it => {
+                    if(it.roleId === role.roleId) {
+                        it['_selected'] = false;
                         return false;
                     }
                 });
@@ -119,11 +122,12 @@
             // returns
             return {
                 open,
-                options,
+                option,
                 roleSearch,
                 roles,
                 selectedRoles,
                 getRoles,
+                resetRoles,
                 selectRole,
                 deselectRole,
                 confirm
@@ -216,8 +220,14 @@
                         </label>
                     </td>
                 </tr>
-                <tr data-duice-bind="_selectRoleDialog.roles"
-                    data-duice-if="return _selectRoleDialog.roles.length === 0;" hidden>
+                <tr data-duice-bind="_selectRoleDialog.roleSearch"
+                    data-duice-if="return _selectRoleDialog.roleSearch._status === 'loading';" hidden>
+                    <td colspan="100%" class="text-align--center">
+                        <span class="loading"></span>
+                    </td>
+                </tr>
+                <tr data-duice-bind="_selectRoleDialog.roleSearch"
+                    data-duice-if="return _selectRoleDialog.roleSearch._status === 'empty';" hidden>
                     <td colspan="100%" class="text-align--center">
                         <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
                     </td>
@@ -288,9 +298,9 @@
                     </td>
                 </tr>
                 <tr data-duice-bind="_selectRoleDialog.selectedRoles"
-                    data-duice-if="return _selectRoleDialog.selectedRoles.length === 0;" hidden>
+                    data-duice-if="return _selectRoleDialog.selectedRoles.length < 1;" hidden>
                     <td colspan="100%" class="text-align--center">
-                        <span data-th-text="#{web.global.itemNotFound(#{core.security.Role})}"></span>
+                        <span data-th-text="#{web.global.itemNotSelected(#{core.security.Role})}"></span>
                     </td>
                 </tr>
                 </tbody>

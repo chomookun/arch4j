@@ -65,7 +65,7 @@ public class Board extends BaseModel {
                 .systemUpdatedAt(boardEntity.getSystemUpdatedAt())
                 .systemUpdatedBy(boardEntity.getSystemUpdatedBy())
                 .boardId(boardEntity.getBoardId())
-                .name(boardEntity.getName())
+                .name(boardEntity.getBoardName())
                 .icon(boardEntity.getIcon())
                 .messageFormat(boardEntity.getMessageFormat())
                 .message(boardEntity.getMessage())
@@ -78,21 +78,21 @@ public class Board extends BaseModel {
                 .discussionId(boardEntity.getDiscussionId())
                 .build();
         // access policy
-        List<Role> accessRoles = boardEntity.getAccessBoardRoleEntities().stream()
+        List<Role> accessRoles = boardEntity.getBoardRoleEntities().stream()
                 .map(BoardRoleEntity::getRoleEntity)
                 .filter(Objects::nonNull)
                 .map(Role::from)
                 .collect(Collectors.toList());
         board.setAccessRoles(accessRoles);
         // read policy
-        List<Role> readRoles = boardEntity.getReadBoardRoleEntities().stream()
+        List<Role> readRoles = boardEntity.getBoardRoleEntities().stream()
                 .map(BoardRoleEntity::getRoleEntity)
                 .filter(Objects::nonNull)
                 .map(Role::from)
                 .collect(Collectors.toList());
         board.setReadRoles(readRoles);
         // write policy
-        List<Role> writeRoles = boardEntity.getWriteBoardRoleEntities().stream()
+        List<Role> writeRoles = boardEntity.getBoardRoleEntities().stream()
                 .map(BoardRoleEntity::getRoleEntity)
                 .filter(Objects::nonNull)
                 .map(Role::from)

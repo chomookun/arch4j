@@ -35,8 +35,8 @@ public class BoardI18nEntity extends BaseEntity implements I18nEntity {
     @Column(name = "language", length = 8)
     private String language;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "board_name")
+    private String boardName;
 
     @Column(name = "message")
     @Lob

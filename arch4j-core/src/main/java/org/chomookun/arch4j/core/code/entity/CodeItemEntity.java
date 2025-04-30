@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
@@ -46,10 +47,14 @@ public class CodeItemEntity extends BaseEntity implements I18nSupportEntity<Code
     @Column(name = "sort")
 	private Integer sort;
 
+    @Column(name = "enabled")
+    @Convert(converter = BooleanConverter.class)
+    private boolean enabled;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumns({
-            @JoinColumn(name = "code_id", updatable = false),
-            @JoinColumn(name = "item_id", updatable = false)
+            @JoinColumn(name = "code_id", insertable = false, updatable = false),
+            @JoinColumn(name = "item_id", insertable = false, updatable = false)
     })
     @Builder.Default
     private List<CodeItemI18nEntity> i18ns = new ArrayList<>();

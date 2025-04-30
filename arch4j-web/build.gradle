@@ -14,6 +14,9 @@ dependencies {
     annotationProcessor platform(project(":arch4j-dependencies"))
     api project(":arch4j-core")
 
+    // development tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
     // spring boot starter
     api 'org.springframework.boot:spring-boot-starter-web'
     api 'org.springframework.boot:spring-boot-starter-websocket'

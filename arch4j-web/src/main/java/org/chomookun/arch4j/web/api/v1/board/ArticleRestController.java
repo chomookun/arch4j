@@ -76,7 +76,7 @@ public class ArticleRestController {
         List<StorageFile> articleFiles = articleRequest.getArticleFiles().stream()
                 .map(StorageFileRequest::toModel)
                 .collect(Collectors.toList());
-        article.setArticleFiles(articleFiles);
+        article.setFiles(articleFiles);
         // save
         Article savedArticle = articleService.saveArticle(article);
         return ResponseEntity.ok(ArticleResponse.from(savedArticle));
@@ -98,7 +98,7 @@ public class ArticleRestController {
         List<StorageFile> articleFiles = articleRequest.getArticleFiles().stream()
                 .map(StorageFileRequest::toModel)
                 .collect(Collectors.toList());
-        article.setArticleFiles(articleFiles);
+        article.setFiles(articleFiles);
         // save article
         Article savedArticle = articleService.saveArticle(article);
         return ResponseEntity.ok(ArticleResponse.from(savedArticle));

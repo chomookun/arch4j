@@ -35,11 +35,11 @@ public class RoleAuthorityEntity extends BaseEntity {
     private String authorityId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "role_id", insertable = false, updatable = false)
+    @JoinColumn(name = "role_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private RoleEntity roleEntity;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "authority_id", insertable = false, updatable = false)
+    @JoinColumn(name = "authority_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private AuthorityEntity authorityEntity;
 
 }

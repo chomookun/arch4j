@@ -1,6 +1,7 @@
 package org.chomookun.arch4j.core.user;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.model.UserSearch;
@@ -34,7 +35,7 @@ class UserServiceTest extends CoreTestSupport {
     void saveUserForMerge() {
         // given
         UserEntity userEntity = UserEntity.builder()
-                .userId("1234")
+                .userId(IdGenerator.uuid())
                 .username("username")
                 .password("password1234!@#$")
                 .name("test user")
@@ -53,7 +54,7 @@ class UserServiceTest extends CoreTestSupport {
     void getUser() {
         // given
         UserEntity userEntity = UserEntity.builder()
-                .userId("1234")
+                .userId(IdGenerator.uuid())
                 .username("username")
                 .password("password1234!@#$")
                 .name("test user")
@@ -70,7 +71,7 @@ class UserServiceTest extends CoreTestSupport {
     void deleteUser() {
         // given
         UserEntity userEntity = UserEntity.builder()
-                .userId("1234")
+                .userId(IdGenerator.uuid())
                 .username("username")
                 .password("password1234!@#$")
                 .name("test user")
@@ -87,7 +88,7 @@ class UserServiceTest extends CoreTestSupport {
     void getUsers() {
         // given
         UserEntity userEntity = UserEntity.builder()
-                .userId("1234")
+                .userId(IdGenerator.uuid())
                 .username("username")
                 .password("password1234!@#$")
                 .name("test user")

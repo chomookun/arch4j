@@ -44,7 +44,7 @@ public class ArticleResponse {
                 .title(article.getTitle())
                 .format(article.getFormat())
                 .content(article.getContent())
-                .articleFiles(article.getArticleFiles().stream().map(StorageFileResponse::from).collect(Collectors.toList()))
+                .articleFiles(article.getFiles().stream().map(StorageFileResponse::from).collect(Collectors.toList()))
                 .build();
         if (article.getUser() != null) {
             articleResponse.setUserName(article.getUser().getName());

@@ -9,6 +9,6 @@ public class AlarmSearch {
 
     private String alarmId;
 
-    private String name;
+    private String alarmName;
 
 }

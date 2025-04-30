@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping
     public ModelAndView index() {
-        ModelAndView modelAndView = new ModelAndView("admin/user.html");
+        ModelAndView modelAndView = new ModelAndView("admin/user");
         modelAndView.addObject("userStatuses", User.Status.values());
         return modelAndView;
     }
@@ -50,6 +50,12 @@ public class UserController {
     @ResponseBody
     public User getUser(@RequestParam("userId") String userId) {
         return userService.getUser(userId).orElseThrow();
+    }
+
+    @GetMapping("get-user-by-login-id")
+    @ResponseBody
+    public User getUserByLoginId(@RequestParam("loginId") String loginId) {
+        return userService.getUserByUsername(loginId).orElseThrow();
     }
 
     @PostMapping("save-user")
@@ -70,15 +76,21 @@ public class UserController {
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.user:edit')")
     public void changeUserPassword(@RequestBody Map<String,String> payload) {
-        userService.changePassword(payload.get("userId"), payload.get("password"));
+        String userId = Optional.ofNullable(payload.get("userId"))
+                .orElseThrow(IllegalArgumentException::new);
+        String password = Optional.ofNullable(payload.get("password"))
+                .orElseThrow(IllegalArgumentException::new);
+        userService.changePassword(userId, password);
     }
 
     @PostMapping(value = "generate-security-token", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     @PreAuthorize("hasAuthority('admin.user:edit')")
     public String generateAccessToken(@RequestBody Map<String,String> payload) {
-        String userId = Optional.ofNullable(payload.get("userId")).orElseThrow();
-        int expirationDays = Optional.ofNullable(payload.get("expirationDays")).map(Integer::parseInt).orElseThrow();
+        String userId = Optional.ofNullable(payload.get("userId"))
+                .orElseThrow(IllegalArgumentException::new);
+        int expirationDays = Optional.ofNullable(payload.get("expirationDays")).map(Integer::parseInt)
+                .orElseThrow(IllegalArgumentException::new);
         int expirationMinutes = expirationDays * 60 * 24;
         User user = userService.getUser(userId).orElseThrow();
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());

@@ -1,7 +1,6 @@
 package org.chomookun.arch4j.core.role;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.security.RoleService;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.security.model.Role;
@@ -37,7 +36,7 @@ class RoleServiceTest extends CoreTestSupport {
     void saveRoleForMerge() {
         // given
         RoleEntity roleEntity = RoleEntity.builder()
-                .roleId(IdGenerator.uuid())
+                .roleId("test")
                 .name("test role")
                 .build();
         entityManager.persist(roleEntity);

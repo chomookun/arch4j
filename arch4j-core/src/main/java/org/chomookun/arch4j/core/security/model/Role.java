@@ -29,7 +29,7 @@ public class Role extends BaseModel {
 
     private boolean authenticated;
 
-    private String note;
+    private String description;
 
     @Builder.Default
 	private List<Authority> authorities = new ArrayList<>();
@@ -41,7 +41,7 @@ public class Role extends BaseModel {
      */
     public static Role from(RoleEntity roleEntity) {
         // authorities
-        List<Authority> authorities = roleEntity.getRoleAuthorities().stream()
+        List<Authority> authorities = roleEntity.getAuthorities().stream()
                 .map(RoleAuthorityEntity::getAuthorityEntity)
                 .filter(Objects::nonNull)
                 .map(Authority::from)
@@ -55,7 +55,7 @@ public class Role extends BaseModel {
                 .name(roleEntity.getName())
                 .anonymous(roleEntity.isAnonymous())
                 .authenticated(roleEntity.isAuthenticated())
-                .note(roleEntity.getNote())
+                .description(roleEntity.getDescription())
                 .authorities(authorities)
                 .build();
     }

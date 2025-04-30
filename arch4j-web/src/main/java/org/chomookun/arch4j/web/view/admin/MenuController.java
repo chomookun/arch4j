@@ -25,7 +25,7 @@ public class MenuController {
 
     @GetMapping
     public ModelAndView menus() {
-        ModelAndView modelAndView = new ModelAndView("admin/menu.html");
+        ModelAndView modelAndView = new ModelAndView("admin/menu");
         modelAndView.addObject("menuTargets", Menu.Target.values());
         return modelAndView;
     }
@@ -39,8 +39,7 @@ public class MenuController {
     @GetMapping("get-menu")
     @ResponseBody
     public Menu getMenu(@RequestParam("menuId")String menuId) {
-        return menuService.getMenu(menuId)
-                .orElseThrow();
+        return menuService.getMenu(menuId).orElseThrow();
     }
 
     @PostMapping("save-menu")
@@ -48,9 +47,6 @@ public class MenuController {
     @Transactional
     @PreAuthorize("hasAuthority('admin.menu:edit')")
     public Menu saveMenu(@RequestBody @Valid Menu menu) {
-        if(menu.getMenuId() == null) {
-            menu.setMenuId(IdGenerator.uuid());
-        }
         return menuService.saveMenu(menu);
     }
 
