@@ -29,8 +29,10 @@ values
     ('admin.git:edit','Y','Admin Git Edit Authority'),
     ('admin.email','Y','Admin Email Access Authority'),
     ('admin.email:edit','Y','Admin Email Edit Authority'),
-    ('admin.alarm','Y','Admin Alarm Access Authority'),
-    ('admin.alarm:edit','Y','Admin Alarm Edit Authority'),
+    ('admin.notification','Y','Admin Notification Access Authority'),
+    ('admin.notification:edit','Y','Admin Notification Edit Authority'),
+    ('admin.verification','Y','Admin Verification Access Authority'),
+    ('admin.verification:edit','Y','Admin Verification Edit Authority'),
     ('admin.storage','Y','Admin Storage Access Authority'),
     ('admin.storage:edit','Y','Admin Storage Edit Authority'),
     ('admin.discussion','Y','Admin Discussion Access Authority'),
@@ -43,7 +45,7 @@ values
 
 -- core_role
 insert into `core_role`
-    (`role_id`,`system_required`,`name`,`anonymous`, `authenticated`, `description`)
+    (`role_id`,`system_required`,`name`,`anonymous`, `authenticated`, `note`)
 values
     ('DEFAULT','Y','Default Role','Y','Y','Default Role'),
     ('USER','Y','User Role','N','Y','User Role'),
@@ -66,7 +68,8 @@ values
     ('DEVELOPER','admin.page'),
     ('DEVELOPER','admin.git'),
     ('DEVELOPER','admin.email'),
-    ('DEVELOPER','admin.alarm'),
+    ('DEVELOPER','admin.notification'),
+    ('DEVELOPER','admin.verification'),
     ('DEVELOPER','admin.storage'),
     ('DEVELOPER','admin.discussion'),
     ('DEVELOPER','admin.execution'),
@@ -653,9 +656,14 @@ insert into `core_git` (`git_id`,`name`,`note`,`url`,`branch`, `discussion_enabl
 insert into `core_email` (`email_id`,`name`,`subject`,`content`) values
     ('verification','Verification Email', 'Verification Answer: [[${answer}]]', 'Verification Answer: [[${answer}]]');
 
--- core_alarm
-insert into `core_alarm` (`alarm_id`,`alarm_name`) values
-    ('test','Test Alarm');
+-- core_notification
+insert into `core_notification` (`notification_id`,`system_required`,`name`, `client_id`, `client_config`) values
+    ('verification:email','Y','Email Verification Channel','EMAIL','
+host=sandbox.smtp.mailtrap.io
+port=25
+username=
+password=
+    ');
 
 -- core_example
 insert into `core_example` (`example_id`,`name`,`number`,`decimal_number`,`date_time`,`date`,`time`,`enabled`,`type`,`code`,`icon`) values

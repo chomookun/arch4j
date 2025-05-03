@@ -7,26 +7,27 @@
     <script th:inline="javascript">
         // code search condition
         const codeSearch = new duice.ObjectProxy({
-            key: 'id',
+            key: 'codeId',
             value: null,
             _page: 0,
             _size: 20,
-            _total: 0
+            _total: 0,
+            _status: null
         });
         // code list
         const codes = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(codes, true);
         // code
         const code = new duice.ObjectProxy({
-            id: null,
+            codeId: null,
             name: null,
             items: []
         });
         duice.ObjectProxy.setDisabledAll(code, true);
         duice.ObjectProxy.onPropertyChanging(code, async event => {
-            if (event.getProperty() === 'id') {
+            if (event.getProperty() === 'codeId') {
                 if (!await validateCodeId(event.getValue())) {
-                    duice.ObjectProxy.focus(code, 'id');
+                    duice.ObjectProxy.focus(code, 'codeId');
                     return false;
                 }
             }
@@ -47,14 +48,16 @@
             }
             url.searchParams.append('_page', codeSearch._page);
             url.searchParams.append('_size', codeSearch._size);
+            codes.length = 0;
+            codeSearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(codes);
+                    codeSearch._status = data.content.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(codes, data.content);
                     codeSearch._total = data['totalElements'];
                     // select current item
-                    duice.ArrayProxy.selectItem(codes, codes.findIndex(item => item.id === code.id));
+                    duice.ArrayProxy.selectItem(codes, codes.findIndex(it => it.codeId === code.codeId));
                 });
         }
 
@@ -68,17 +71,17 @@
 
         /**
          * Gets code
-         * @param id code id
+         * @param codeId code id
          */
-        function getCode(id) {
+        function getCode(codeId) {
             let url = new URL(`${location.pathname}/get-code`, location.origin);
-            url.searchParams.append('id', id);
+            url.searchParams.append('codeId', codeId);
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(code, data);
                     duice.ObjectProxy.setDisabledAll(code, false);
-                    duice.ObjectProxy.setReadonly(code, 'id', true);
+                    duice.ObjectProxy.setReadonly(code, 'codeId', true);
                     code._new = false;
                 });
         }
@@ -92,25 +95,25 @@
                 _new: true
             });
             duice.ObjectProxy.setDisabledAll(code, false);
-            duice.ObjectProxy.setReadonly(code, 'id', false);
-            duice.ObjectProxy.focus(code, 'id');
+            duice.ObjectProxy.setReadonly(code, 'codeId', false);
+            duice.ObjectProxy.focus(code, 'codeId');
         }
 
         /**
          * Validates code id
-         * @param id code id
+         * @param codeId code id
          * @returns {Promise<boolean>}
          */
-        async function validateCodeId(id) {
+        async function validateCodeId(codeId) {
             // check blank
-            if (!id) {
-                await _alert(/*[[#{web.global.itemEmpty(#{core.code.Code.id})}]]*/'');
-                duice.ObjectProxy.focus(code, 'id');
+            if (!codeId) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.code.Code.codeId})}]]*/'');
+                duice.ObjectProxy.focus(code, 'codeId');
                 return false;
             }
             // check duplicated id
             let url = new URL(`${location.pathname}/get-code`, location.origin);
-            url.searchParams.append('id', id);
+            url.searchParams.append('codeId', codeId);
             let response = await _fetch(url, {}, true);
             if (response.ok) {
                 let code = await response.json();
@@ -130,7 +133,7 @@
         async function saveCode() {
             // if new, checks id
             if (code._new) {
-                if (!await validateCodeId(code.id)) {
+                if (!await validateCodeId(code.codeId)) {
                     return false;
                 }
             }
@@ -142,9 +145,9 @@
             }
             // check items
             for (const item of code.items) {
-                if(_isEmpty(item.value)) {
-                    await _alert(/*[[#{web.global.itemEmpty(#{core.code.CodeItem.value})}]]*/'');
-                    duice.ObjectProxy.focus(item, 'value');
+                if(_isEmpty(item.itemId)) {
+                    await _alert(/*[[#{web.global.itemEmpty(#{core.code.CodeItem.itemId})}]]*/'');
+                    duice.ObjectProxy.focus(item, 'itemId');
                     return false;
                 }
             }
@@ -154,15 +157,13 @@
                     let url = new URL(`${location.pathname}/save-code`, location.origin);
                     _fetch(url, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(code)
                     }).then(response => {
                         if (response.ok) {
                             _alert(/*[[#{web.global.saveItemComplete(#{core.code.Code})}]]*/).then(() => {
                                 getCodes();
-                                getCode(code.id);
+                                getCode(code.codeId);
                             });
                         }
                     });
@@ -177,7 +178,7 @@
             _confirm(/*[[#{web.global.deleteItemConfirm(#{core.code.Code})}]]*/'').then(result => {
                 if (result) {
                     let url = new URL(`${location.pathname}/delete-code`, location.origin);
-                    url.searchParams.append('id', code.id);
+                    url.searchParams.append('codeId', code.codeId);
                     _fetch(url).then(response => {
                         if (response.ok) {
                             _alert(/*[[#{web.global.deleteItemComplete(#{core.code.Code})}]]*/'').then(() => {
@@ -206,7 +207,7 @@
         }
 
         // Initializes
-        document.addEventListener('DOMContentLoaded',()=> {
+        _initialize(() => {
             getCodes();
         });
     </script>
@@ -243,7 +244,7 @@
                             <div class="display--flex flex-wrap--nowrap gap--1px">
                                 <label>
                                     <select data-duice-bind="codeSearch" data-duice-property="key">
-                                        <option value="id" th:text="#{core.code.Code.id}"></option>
+                                        <option value="codeId" th:text="#{core.code.Code.codeId}"></option>
                                         <option value="name" th:text="#{core.code.Code.name}"></option>
                                     </select>
                                 </label>
@@ -273,7 +274,7 @@
                         <thead>
                         <tr>
                             <th data-th-text="#{web.global.no}"></th>
-                            <th data-th-text="#{core.code.Code.id}"></th>
+                            <th data-th-text="#{core.code.Code.codeId}"></th>
                             <th data-th-text="#{core.code.Code.name}"></th>
                             <th data-th-text="#{core.code.Code.items}"></th>
                         </tr>
@@ -282,14 +283,14 @@
                         <tr data-duice-bind="codes"
                             data-duice-foreach="code,status"
                             data-duice-selected-item-class="selected"
-                            data-duice-execute="this.dataset.id=code.id;"
-                            onclick="getCode(this.dataset.id);"
+                            data-duice-execute="this.dataset.codeId=code.codeId;"
+                            onclick="getCode(this.dataset.codeId);"
                             class="cursor--pointer">
                             <td class="text-align--center">
                                 <span data-duice-bind="status" data-duice-execute="this.innerHTML = (codeSearch._page * codeSearch._size) + status.count" class="number"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="code" data-duice-property="id" class="code"></span>
+                                <span data-duice-bind="code" data-duice-property="codeId" class="code"></span>
                             </td>
                             <td>
                                 <span data-duice-bind="code" data-duice-property="name"></span>
@@ -298,7 +299,14 @@
                                 <span data-duice-bind="code" data-duice-property="items.length" class="number badge border-radius--50"></span>
                             </td>
                         </tr>
-                        <tr data-duice-bind="codes" data-duice-if="return codes.length < 1" hidden>
+                        <tr data-duice-bind="codeSearch"
+                            data-duice-if="return codeSearch._status === 'loading';" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span class="loading"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="codeSearch"
+                            data-duice-if="return codeSearch._status === 'empty';" hidden>
                             <td colspan="100%" class="text-align--center">
                                 <span data-th-text="#{web.global.itemNotFound(#{core.code.Code})}"></span>
                             </td>
@@ -346,8 +354,8 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.code.Code.id}" class="font-weight--bold tag-required"></span>
-                                <input type="text" data-duice-bind="code" data-duice-property="id" class="width--100 code"/>
+                                <span data-th-text="#{core.code.Code.codeId}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="code" data-duice-property="codeId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
@@ -358,7 +366,7 @@
                         </div>
                         <div class="grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.code.Code.description}" class="font-weight--bold"></span>
+                                <span data-th-text="#{core.code.Code.note}" class="font-weight--bold"></span>
                                 <textarea data-duice-bind="code" data-duice-property="note" class="width--100"></textarea>
                             </label>
                         </div>
@@ -395,7 +403,7 @@
                                     </td>
                                     <td>
                                         <label>
-                                            <input type="text" data-duice-bind="item" data-duice-property="value" class="width--100 code"/>
+                                            <input type="text" data-duice-bind="item" data-duice-property="itemId" class="width--100 code"/>
                                         </label>
                                     </td>
                                     <td>
@@ -424,14 +432,14 @@
                             <button class="button" type="button" onclick="deleteCode();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.code:edit'')')}?'locked'"
                                     data-duice-bind="code"
-                                    data-duice-execute="(code.id && !code._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(code.codeId && !code._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
                                 <span data-th-text="#{web.global.delete}"></span>
                             </button>
                             <button class="button" type="button" onclick="saveCode();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.code:edit'')')}?'locked'"
                                     data-duice-bind="code"
-                                    data-duice-execute="(code.id || code._new) ? this.disabled=false : this.disabled=true;">
+                                    data-duice-execute="(code.codeId || code._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
                                 <span data-th-text="#{web.global.save}"></span>
                             </button>

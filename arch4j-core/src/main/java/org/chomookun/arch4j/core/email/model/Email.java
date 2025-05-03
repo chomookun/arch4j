@@ -23,6 +23,8 @@ public class Email extends BaseModel {
 
     private String content;
 
+    private String note;
+
     @Builder.Default
     private Map<String,Object> variables = new LinkedHashMap<>();
 
@@ -37,18 +39,19 @@ public class Email extends BaseModel {
 
     /**
      * Email factory method
-     * @param emailTemplateEntity email template entity
+     * @param emailEntity email template entity
      * @return email
      */
-    public static Email from(EmailEntity emailTemplateEntity) {
+    public static Email from(EmailEntity emailEntity) {
         return Email.builder()
-                .systemRequired(emailTemplateEntity.isSystemRequired())
-                .systemUpdatedAt(emailTemplateEntity.getSystemUpdatedAt())
-                .systemUpdatedBy(emailTemplateEntity.getSystemUpdatedBy())
-                .emailId(emailTemplateEntity.getEmailId())
-                .name(emailTemplateEntity.getName())
-                .subject(emailTemplateEntity.getSubject())
-                .content(emailTemplateEntity.getContent())
+                .systemRequired(emailEntity.isSystemRequired())
+                .systemUpdatedAt(emailEntity.getSystemUpdatedAt())
+                .systemUpdatedBy(emailEntity.getSystemUpdatedBy())
+                .emailId(emailEntity.getEmailId())
+                .name(emailEntity.getName())
+                .subject(emailEntity.getSubject())
+                .content(emailEntity.getContent())
+                .note(emailEntity.getNote())
                 .build();
     }
 

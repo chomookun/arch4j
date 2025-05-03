@@ -50,7 +50,7 @@ public class MenuService {
         menuEntity.setTarget(menu.getTarget());
         menuEntity.setIcon(menu.getIcon());
         menuEntity.setSort(menu.getSort());
-        menuEntity.setDescription(menu.getDescription());
+        menuEntity.setNote(menu.getNote());
         menuEntity.getMenuRoleEntities().clear();
         // view roles
         menu.getViewRoles().forEach(viewRole -> {

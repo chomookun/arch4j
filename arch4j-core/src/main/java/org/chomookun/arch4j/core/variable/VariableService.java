@@ -64,7 +64,8 @@ public class VariableService {
      */
     @Transactional
     public void deleteVariable(String variableId) {
-        variableRepository.deleteById(variableId);
+        VariableEntity variableEntity = variableRepository.findById(variableId).orElseThrow();
+        variableRepository.delete(variableEntity);
         variableRepository.flush();
     }
 

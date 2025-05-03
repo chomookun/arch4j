@@ -22,8 +22,8 @@ public interface EmailRepository extends JpaRepository<EmailEntity,String>, JpaS
      * @return page of email entities
      */
     default Page<EmailEntity> findAll(EmailSearch emailSearch, Pageable pageable) {
-        // specification
-        Specification<EmailEntity> specification = (root, query, criteriaBuilder) -> null;
+        // where
+        Specification<EmailEntity> specification = Specification.where(null);
         if(emailSearch.getEmailId() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(EmailEntity_.EMAIL_ID), '%' + emailSearch.getEmailId() + '%'));

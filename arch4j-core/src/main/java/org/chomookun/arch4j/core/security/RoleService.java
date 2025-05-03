@@ -45,7 +45,7 @@ public class RoleService {
         roleEntity.setName(role.getName());
         roleEntity.setAnonymous(role.isAnonymous());
         roleEntity.setAuthenticated(role.isAuthenticated());
-        roleEntity.setDescription(role.getDescription());
+        roleEntity.setNote(role.getNote());
         // authorities
         roleEntity.getAuthorities().clear();
         role.getAuthorities().forEach(authority -> {

@@ -1,5 +1,6 @@
 package org.chomookun.arch4j.core.common.data;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
@@ -16,7 +17,8 @@ public class IdGenerator {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     public static String uuid() {
-        return UUID.randomUUID().toString().replaceAll("-","");
+        UUID uuid = UuidCreator.getTimeOrderedEpoch();
+        return uuid.toString().replace("-","");
     }
 
     public static String md5(String value) {

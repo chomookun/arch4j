@@ -31,7 +31,7 @@ public class Menu extends BaseModel {
 
     private Integer sort;
 
-    private String description;
+    private String note;
 
     @Builder.Default
     private List<MenuRole> viewRoles = new ArrayList<>();
@@ -58,7 +58,7 @@ public class Menu extends BaseModel {
                 .target(menuEntity.getTarget())
                 .icon(menuEntity.getIcon())
                 .sort(menuEntity.getSort())
-                .description(menuEntity.getDescription())
+                .note(menuEntity.getNote())
                 .build();
         menu.setViewRoles(menuEntity.getMenuRoleEntities().stream()
                 .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.VIEW)

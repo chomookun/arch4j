@@ -35,9 +35,9 @@ public class RoleEntity extends BaseEntity {
     @Convert(converter = BooleanConverter.class)
     private boolean authenticated;
 
-    @Column(name = "description", length = 4000)
+    @Column(name = "note", length = 4000)
     @Lob
-    private String description;
+    private String note;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "role_id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

@@ -20,7 +20,7 @@ public class Authority extends BaseModel {
     @NotBlank
     private String name;
 
-    private String description;
+    private String note;
 
     /**
      * authority factory method
@@ -34,7 +34,7 @@ public class Authority extends BaseModel {
                 .systemUpdatedBy(authorityEntity.getSystemUpdatedBy())
                 .authorityId(authorityEntity.getAuthorityId())
                 .name(authorityEntity.getName())
-                .description(authorityEntity.getDescription())
+                .note(authorityEntity.getNote())
                 .build();
     }
 

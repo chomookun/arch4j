@@ -41,11 +41,11 @@ public class CodeService {
                     .codeId(code.getCodeId())
                     .build());
         codeEntity.setName(code.getName());
-        codeEntity.setDescription(code.getDescription());
+        codeEntity.setNote(code.getNote());
         // code item (insert/update)
         AtomicInteger sort = new AtomicInteger();
         code.getItems().forEach(codeItem -> {
-            CodeItemEntity codeItemEntity = codeEntity.getCodeItemEntities().stream()
+            CodeItemEntity codeItemEntity = codeEntity.getItemEntities().stream()
                     .filter(it -> Objects.equals(it.getItemId(), codeItem.getItemId()))
                     .findFirst()
                     .orElse(null);
@@ -54,14 +54,14 @@ public class CodeService {
                         .codeId(codeEntity.getCodeId())
                         .itemId(codeItem.getItemId())
                         .build();
-                codeEntity.getCodeItemEntities().add(codeItemEntity);
+                codeEntity.getItemEntities().add(codeItemEntity);
             }
             codeItemEntity.setName(codeItem.getName());
             codeItemEntity.setSort(sort.getAndIncrement());
             codeItemEntity.setEnabled(codeItem.isEnabled());
         });
         // code item (remove)
-        codeEntity.getCodeItemEntities().removeIf(codeItemEntity ->
+        codeEntity.getItemEntities().removeIf(codeItemEntity ->
                 code.getItems().stream()
                         .noneMatch(codeItem -> codeItem.getItemId().equals(codeItemEntity.getItemId())));
         // save
@@ -72,21 +72,22 @@ public class CodeService {
 
     /**
      * Gets code
-     * @param id code id
+     * @param codeId code id
      * @return code
      */
-    public Optional<Code> getCode(String id) {
-        return codeRepository.findById(id)
+    public Optional<Code> getCode(String codeId) {
+        return codeRepository.findById(codeId)
                 .map(Code::from);
     }
 
     /**
      * Deletes code
-     * @param id code id
+     * @param codeId code id
      */
     @Transactional
-    public void deleteCode(String id) {
-        codeRepository.deleteById(id);
+    public void deleteCode(String codeId) {
+        CodeEntity codeEntity = codeRepository.findById(codeId).orElseThrow();
+        codeRepository.delete(codeEntity);
         codeRepository.flush();
     }
 

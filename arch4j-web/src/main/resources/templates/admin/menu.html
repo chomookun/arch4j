@@ -210,7 +210,8 @@
             window.open(url,'_blank');
         }
 
-        document.addEventListener('DOMContentLoaded',()=> {
+        // Initializes
+        _initialize(() => {
             getMenus();
         });
     </script>
@@ -363,9 +364,9 @@
                             </label>
                         </div>
                         <div class="grid-column--span-12">
-                            <span data-th-text="#{core.menu.Menu.description}" class="font-weight--bold"></span>
+                            <span data-th-text="#{core.menu.Menu.note}" class="font-weight--bold"></span>
                             <label class="display--flex">
-                                <textarea data-duice-bind="menu" data-duice-property="description" class="width--100"></textarea>
+                                <textarea data-duice-bind="menu" data-duice-property="note" class="width--100"></textarea>
                             </label>
                         </div>
                         <div class="grid-column--span-12">

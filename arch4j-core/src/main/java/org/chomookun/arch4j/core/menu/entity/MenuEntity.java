@@ -49,9 +49,9 @@ public class MenuEntity extends BaseEntity implements I18nSupportEntity<MenuI18n
     @Column(name = "sort")
     private Integer sort;
 
-    @Column(name = "description", length = 4000)
+    @Column(name = "note", length = 4000)
     @Lob
-    private String description;
+    private String note;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_menu_id", insertable = false, updatable = false)

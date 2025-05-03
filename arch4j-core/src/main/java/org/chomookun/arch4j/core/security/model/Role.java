@@ -29,7 +29,7 @@ public class Role extends BaseModel {
 
     private boolean authenticated;
 
-    private String description;
+    private String note;
 
     @Builder.Default
 	private List<Authority> authorities = new ArrayList<>();
@@ -55,7 +55,7 @@ public class Role extends BaseModel {
                 .name(roleEntity.getName())
                 .anonymous(roleEntity.isAnonymous())
                 .authenticated(roleEntity.isAuthenticated())
-                .description(roleEntity.getDescription())
+                .note(roleEntity.getNote())
                 .authorities(authorities)
                 .build();
     }

@@ -42,7 +42,7 @@ public class AuthorityService {
                     .build());
         authorityEntity.setSystemUpdatedAt(LocalDateTime.now());
         authorityEntity.setName(authority.getName());
-        authorityEntity.setDescription(authority.getDescription());
+        authorityEntity.setNote(authority.getNote());
         // save
         AuthorityEntity savedAuthorityEntity = authorityRepository.saveAndFlush(authorityEntity);
         entityManager.refresh(savedAuthorityEntity);

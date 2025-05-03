@@ -11,7 +11,8 @@
             value: null,
             _page: 0,
             _size: 20,
-            _total: 0
+            _total: 0,
+            _status: null
         });
         const variables = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(variables, true);
@@ -45,10 +46,12 @@
             }
             url.searchParams.append('_page', variableSearch._page);
             url.searchParams.append('_size', variableSearch._size);
+            variables.length = 0;
+            variableSearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(variables);
+                    variableSearch._status = data.content.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(variables, data.content);
                     variableSearch._total = data['totalElements'];
                     // select current item
@@ -179,7 +182,7 @@
         }
 
         // Initializes
-        document.addEventListener('DOMContentLoaded',()=> {
+        _initialize(() => {
             getVariables();
         });
     </script>
@@ -266,9 +269,17 @@
                                 <span data-duice-bind="variable" data-duice-property="name"></span>
                             </td>
                         </tr>
-                        <tr data-duice-bind="variables"
-                            data-duice-execute="if(variables.length === 0) this.hidden=false;" hidden>
-                            <td colspan="100%" class="text-align--center">No Data</td>
+                        <tr data-duice-bind="variableSearch"
+                            data-duice-if="return variableSearch._status === 'loading';" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span class="loading"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="variableSearch"
+                            data-duice-if="return variableSearch._status === 'empty';" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.variable.Variable})}"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -332,6 +343,14 @@
                                         data-duice-property="value"
                                         data-duice-theme="dracula">
                                 </duice-codemirror>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.variable.Variable.note}" class="font-weight--bold"></span>
+                                <textarea data-duice-bind="variable"
+                                          data-duice-property="note"
+                                          class="width--100"> </textarea>
                             </label>
                         </div>
                     </form>

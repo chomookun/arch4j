@@ -367,15 +367,15 @@
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/email}" th:classappend="!${#authorization.expression('hasAuthority(''admin.email'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-email.svg}" alt="email"/>
-                    <span data-th-text="#{web.admin.email}"></span>
+                <a th:href="@{/admin/notification}" th:classappend="!${#authorization.expression('hasAuthority(''admin.notification'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-notification.svg}" alt="notification"/>
+                    <span data-th-text="#{web.admin.notification}"></span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/admin/alarm}" th:classappend="!${#authorization.expression('hasAuthority(''admin.alarm'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-alarm.svg}" alt="alarm"/>
-                    <span data-th-text="#{web.admin.alarm}"></span>
+                <a th:href="@{/admin/verification}" th:classappend="!${#authorization.expression('hasAuthority(''admin.verification'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-verification.svg}" alt="verification"/>
+                    <span data-th-text="#{web.admin.verification}"></span>
                 </a>
             </li>
             <li>

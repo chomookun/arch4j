@@ -22,8 +22,8 @@ public class AuthorityEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description", length = 4000)
+    @Column(name = "note", length = 4000)
     @Lob
-    private String description;
+    private String note;
 
 }

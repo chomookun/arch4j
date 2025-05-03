@@ -28,26 +28,26 @@ public class CodeEntity extends BaseEntity implements I18nSupportEntity<CodeI18n
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "description", length = 4000)
+	@Column(name = "note", length = 4000)
 	@Lob
-	private String description;
-	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "code_id", name = "code_id", insertable = false, updatable = false)
-	@OrderBy(CodeItemEntity_.SORT)
-	@Builder.Default
-    @Setter(AccessLevel.NONE)
-	private List<CodeItemEntity> codeItemEntities = new ArrayList<>();
+	private String note;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(referencedColumnName = "code_id", name = "code_id", insertable = false, updatable = false)
     @Builder.Default
     @Setter(AccessLevel.NONE)
-    private List<CodeI18nEntity> codeI18nEntities = new ArrayList<>();
+    private List<CodeI18nEntity> i18nEntities = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(referencedColumnName = "code_id", name = "code_id", insertable = false, updatable = false)
+	@OrderBy(CodeItemEntity_.SORT)
+	@Builder.Default
+    @Setter(AccessLevel.NONE)
+	private List<CodeItemEntity> itemEntities = new ArrayList<>();
 
     @Override
     public List<CodeI18nEntity> provideI18nEntities() {
-        return this.codeI18nEntities;
+        return this.i18nEntities;
     }
 
     @Override

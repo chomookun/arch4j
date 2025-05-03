@@ -34,14 +34,18 @@ public class EmailEntity extends BaseEntity implements I18nSupportEntity<EmailI1
     @Lob
     private String content;
 
+    @Column(name = "notee", length = 4000)
+    @Lob
+    private String note;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "email_id", updatable = false)
     @Builder.Default
-    private List<EmailI18nEntity> emailI18ns = new ArrayList<>();
+    private List<EmailI18nEntity> i18nEntities = new ArrayList<>();
 
     @Override
     public List<EmailI18nEntity> provideI18nEntities() {
-        return this.emailI18ns;
+        return this.i18nEntities;
     }
 
     @Override

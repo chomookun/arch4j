@@ -16,6 +16,9 @@ public class PbePropertiesUtil {
      * @return encoded properties string
      */
     public static String encodePropertiesString(@NotNull String propertiesString) {
+        if (propertiesString == null || propertiesString.trim().isEmpty()) {
+            return propertiesString;
+        }
         StringBuilder stringBuilder = new StringBuilder();
 
         try (StringReader stringReader = new StringReader(propertiesString);
@@ -49,7 +52,7 @@ public class PbePropertiesUtil {
      */
     public static Properties loadProperties(String propertiesString) {
         Properties properties = new Properties();
-        if (propertiesString != null && propertiesString.trim().length() > 0) {
+        if (propertiesString != null && !propertiesString.trim().isEmpty()) {
             try {
                 properties.load(new StringReader(propertiesString));
             } catch (IOException e) {

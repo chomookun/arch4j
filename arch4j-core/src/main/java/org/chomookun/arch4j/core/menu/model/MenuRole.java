@@ -37,7 +37,7 @@ public class MenuRole extends Role {
                 .name(role.getName())
                 .anonymous(role.isAnonymous())
                 .authenticated(role.isAuthenticated())
-                .description(role.getDescription())
+                .note(role.getNote())
                 .authorities(role.getAuthorities())
                 .build();
     }

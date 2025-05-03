@@ -20,7 +20,7 @@ public class Code extends BaseModel {
 	
 	private String name;
 	
-	private String description;
+	private String note;
 
     @Builder.Default
 	private List<CodeItem> items = new ArrayList<>();
@@ -37,10 +37,10 @@ public class Code extends BaseModel {
                 .systemUpdatedBy(codeEntity.getSystemUpdatedBy())
                 .codeId(codeEntity.getCodeId())
                 .name(codeEntity.getName())
-                .description(codeEntity.getDescription())
+                .note(codeEntity.getNote())
                 .build();
         // items
-        code.setItems(codeEntity.getCodeItemEntities().stream()
+        code.setItems(codeEntity.getItemEntities().stream()
                 .map(CodeItem::from)
                 .collect(Collectors.toList()));
         // returns
