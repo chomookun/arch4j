@@ -27,7 +27,6 @@ class UserRepositoryTest extends CoreTestSupport {
                 .userId(IdGenerator.uuid())
                 .username("username")
                 .name("test name")
-                .password("password1234!@#$")
                 .build();
         UserRoleEntity userRoleEntity = UserRoleEntity.builder()
                 .userId(userEntity.getUserId())

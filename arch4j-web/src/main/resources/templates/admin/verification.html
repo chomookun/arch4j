@@ -51,7 +51,7 @@
          * Requests verification
          */
         function requestVerification() {
-            requestVerificationDialog.open().then(result =>{
+            issueCodeDialog.open().then(result =>{
                 if (result) {
                     getVerifications();
                 }
@@ -136,11 +136,15 @@
                         <col/>
                         <col/>
                         <col/>
+                        <col/>
                     </colgroup>
                     <thead>
                     <tr>
                         <th>
                             <span data-th-text="#{web.global.no}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{core.verification.Verification.type}"></span>
                         </th>
                         <th>
                             <span data-th-text="#{core.notification.Notification}"></span>
@@ -187,6 +191,9 @@
                                   data-duice-execute="this.innerHTML = verificationSearch._total - (verificationSearch._page * verificationSearch._size + status.index);"
                                   class="number">
                             </span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="verification" data-duice-property="type" class="code badge"></span>
                         </td>
                         <td>
                             <label>
@@ -284,18 +291,19 @@
     <!-- ================================== -->
 
     <!-- ====================================== -->
-    <!-- start: request verification dialog     -->
+    <!-- start: issue code dialog               -->
     <!-- ====================================== -->
-    <dialog id="requestVerificationDialog" class="dialog">
+    <dialog id="issueCodeDialog" class="dialog">
         <style th:inline="css">
-            #requestVerificationDialog {
+            #issueCodeDialog {
                 width: 400px;
             }
         </style>
         <script th:inline="javascript">
-            const requestVerificationDialog = (() => {
-                const dialog = new duice.Dialog(document.getElementById('requestVerificationDialog'));
+            const issueCodeDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('issueCodeDialog'));
                 const data = new duice.ObjectProxy({
+                    type: null,
                     notificationId: null,
                     principal: null,
                     reason: null
@@ -319,7 +327,7 @@
                     if (!await _confirm(/*[[#{web.global.sendItemConfirm(#{core.verification.Verification})}]]*/'')) {
                         return;
                     }
-                    let url = new URL(`${location.pathname}/request-verification`, location.origin);
+                    let url = new URL(`${location.pathname}/issue-code`, location.origin);
                     _fetch(url, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -351,8 +359,19 @@
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <div class="grid-column--span-12">
                     <label>
+                        <span data-th-text="#{core.verification.Verification.code}" class="font-weight--bold tag-required"></span>
+                        <select data-duice-bind="issueCodeDialog.data"
+                                data-duice-property="type"
+                                class="width--100">
+                            <option value="" data-th-text="#{web.global.select}"></option>
+                            <option th:each="type:${types}" th:value="${type}" th:text="${type}"></option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <label>
                         <span data-th-text="#{core.notification.Notification}" class="font-weight--bold tag-required"></span>
-                        <select data-duice-bind="requestVerificationDialog.data"
+                        <select data-duice-bind="issueCodeDialog.data"
                                 data-duice-property="notificationId"
                                 data-duice-option="notifications"
                                 data-duice-option-value-property="notificationId"
@@ -365,18 +384,18 @@
                 <div class="grid-column--span-12">
                     <label>
                         <span data-th-text="#{core.verification.Verification.principal}" class="font-weight--bold tag-required"></span>
-                        <input type="text" data-duice-bind="requestVerificationDialog.data" data-duice-property="principal" class="width--100"/>
+                        <input type="text" data-duice-bind="issueCodeDialog.data" data-duice-property="principal" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
                     <label>
                         <span data-th-text="#{core.verification.Verification.reason}" class="font-weight--bold tag-required"></span>
-                        <input type="text" data-duice-bind="requestVerificationDialog.data" data-duice-property="reason" class="width--100"/>
+                        <input type="text" data-duice-bind="issueCodeDialog.data" data-duice-property="reason" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
                     <div class="display--flex justify-content--end">
-                        <button class="button" type="button" onclick="requestVerificationDialog.confirm();">
+                        <button class="button" type="button" onclick="issueCodeDialog.confirm();">
                             <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="send"/>
                             <span data-th-text="#{web.global.request}"></span>
                         </button>
@@ -386,7 +405,7 @@
         </div>
     </dialog>
     <!-- ====================================== -->
-    <!-- end: request verification dialog       -->
+    <!-- end: issue code dialog                 -->
     <!-- ====================================== -->
 
     <!-- ====================================== -->

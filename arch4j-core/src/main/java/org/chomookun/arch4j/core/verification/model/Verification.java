@@ -16,11 +16,13 @@ public class Verification {
 
     private String verificationId;
 
+    private String type;
+
+    private String reason;
+
     private String notificationId;
 
     private String principal;
-
-    private String reason;
 
     private String userId;
 
@@ -51,10 +53,11 @@ public class Verification {
      */
     public static Verification from(VerificationEntity verificationEntity) {
         return Verification.builder()
+                .type(verificationEntity.getType())
+                .reason(verificationEntity.getReason())
                 .verificationId(verificationEntity.getVerificationId())
                 .notificationId(verificationEntity.getNotificationId())
                 .principal(verificationEntity.getPrincipal())
-                .reason(verificationEntity.getReason())
                 .userId(verificationEntity.getUserId())
                 .user(Optional.ofNullable(verificationEntity.getUser())
                         .map(User::from)

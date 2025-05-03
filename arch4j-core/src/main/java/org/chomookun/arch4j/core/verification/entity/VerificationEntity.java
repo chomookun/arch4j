@@ -22,14 +22,17 @@ public class VerificationEntity extends BaseEntity {
     @Column(name = "verification_id", length = 32)
     private String verificationId;
 
+    @Column(name = "type", length = 32)
+    private String type;
+
+    @Column(name = "reason")
+    private String reason;
+
     @Column(name = "notification_id", length = 32)
     private String notificationId;
 
     @Column(name = "principal")
     private String principal;
-
-    @Column(name = "reason")
-    private String reason;
 
     @Column(name = "user_id", length = 32)
     private String userId;

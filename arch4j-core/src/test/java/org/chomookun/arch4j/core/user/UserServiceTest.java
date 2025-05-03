@@ -37,7 +37,6 @@ class UserServiceTest extends CoreTestSupport {
         UserEntity userEntity = UserEntity.builder()
                 .userId(IdGenerator.uuid())
                 .username("username")
-                .password("password1234!@#$")
                 .name("test user")
                 .build();
         entityManager.persist(userEntity);
@@ -56,7 +55,6 @@ class UserServiceTest extends CoreTestSupport {
         UserEntity userEntity = UserEntity.builder()
                 .userId(IdGenerator.uuid())
                 .username("username")
-                .password("password1234!@#$")
                 .name("test user")
                 .build();
         entityManager.persist(userEntity);
@@ -73,7 +71,6 @@ class UserServiceTest extends CoreTestSupport {
         UserEntity userEntity = UserEntity.builder()
                 .userId(IdGenerator.uuid())
                 .username("username")
-                .password("password1234!@#$")
                 .name("test user")
                 .build();
         entityManager.persist(userEntity);
@@ -90,7 +87,6 @@ class UserServiceTest extends CoreTestSupport {
         UserEntity userEntity = UserEntity.builder()
                 .userId(IdGenerator.uuid())
                 .username("username")
-                .password("password1234!@#$")
                 .name("test user")
                 .build();
         entityManager.persist(userEntity);

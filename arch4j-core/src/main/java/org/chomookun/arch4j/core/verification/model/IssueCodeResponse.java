@@ -1,0 +1,14 @@
+package org.chomookun.arch4j.core.verification.model;
+
+import lombok.Builder;
+import lombok.Getter;
+
+@Builder
+@Getter
+public class IssueCodeResponse {
+
+    private String code;
+
+    private String notificationMessageId;
+
+}

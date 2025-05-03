@@ -3,6 +3,7 @@ package org.chomookun.arch4j.web.view.admin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
+import org.chomookun.arch4j.core.user.UserCredentialService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.model.UserSearch;
@@ -32,6 +33,8 @@ public class UserController {
     private final UserDetailsService userDetailsService;
 
     private final SecurityTokenService securityTokenService;
+
+    private final UserCredentialService userCredentialService;
 
     @GetMapping
     public ModelAndView index() {
@@ -80,7 +83,7 @@ public class UserController {
                 .orElseThrow(IllegalArgumentException::new);
         String password = Optional.ofNullable(payload.get("password"))
                 .orElseThrow(IllegalArgumentException::new);
-        userService.changePassword(userId, password);
+        userCredentialService.changePasswordCredential(userId, password);
     }
 
     @PostMapping(value = "generate-security-token", produces = MediaType.TEXT_PLAIN_VALUE)

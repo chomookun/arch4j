@@ -1,15 +1,15 @@
 package org.chomookun.arch4j.web.view.admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.notification.model.NotificationSearch;
 import org.chomookun.arch4j.core.security.support.SecurityUtils;
 import org.chomookun.arch4j.core.verification.VerificationService;
-import org.chomookun.arch4j.core.verification.model.Verification;
-import org.chomookun.arch4j.core.verification.model.VerificationSearch;
-import org.chomookun.arch4j.core.verification.model.VerifyResult;
+import org.chomookun.arch4j.core.verification.model.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,9 +32,13 @@ public class VerificationController {
 
     private final NotificationService notificationService;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView("admin/verification");
+        List<String> types = verificationService.getAvailableTypes();
+        modelAndView.addObject("types", types);
         List<Notification> notifications = notificationService.getNotifications(NotificationSearch.builder().build(), Pageable.unpaged()).getContent();
         modelAndView.addObject("notifications", notifications);
         return modelAndView;
@@ -46,23 +50,16 @@ public class VerificationController {
         return verificationService.getVerifications(verificationSearch, pageable);
     }
 
-    @PostMapping("request-verification")
+    @PostMapping("issue-code")
     @ResponseBody
-    public Verification requestVerification(@RequestBody JsonNode jsonNode) {
-        String notificationId = jsonNode.get("notificationId").asText();
-        String principal = jsonNode.get("principal").asText();
-        String reason = jsonNode.get("reason").asText();
-        String userId = SecurityUtils.getCurrentUserId();
-        return verificationService.requestVerification(notificationId, principal, reason, userId);
+    public IssueCodeResponse requestVerification(@RequestBody IssueCodeRequest issueCodeRequest) throws JsonProcessingException {
+        return verificationService.issueCode(issueCodeRequest);
     }
 
     @PatchMapping("verify-code")
     @ResponseBody
-    public Map<String,VerifyResult> verifyCode(@RequestBody JsonNode jsonNode) {
-        String verificationId = jsonNode.get("verificationId").asText();
-        String code = jsonNode.get("code").asText();
-        VerifyResult verifyResult = verificationService.verifyCode(verificationId, code);
-        return Map.of("verifyResult", verifyResult);
+    public VerifyCodeResponse verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) throws JsonProcessingException {
+        return verificationService.verifyCode(verifyCodeRequest);
     }
 
 }

@@ -43,11 +43,6 @@ public class UserEntity extends BaseEntity {
     @Comment("Username")
     private String username;
 
-    @Column(name = "password", nullable = false, length = 256)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Comment("Password")
-    private String password;
-
     @Column(name = "name", nullable = false, length = 128)
     @Comment("Name")
     private String name;

@@ -2,6 +2,7 @@ package org.chomookun.arch4j.web.api.v1.user;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.user.UserCredentialService;
 import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
@@ -24,6 +25,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class UserRestController {
 
     private final UserService userService;
+
+    private final UserCredentialService userCredentialService;
 
     private final HttpServletRequest request;
 
@@ -61,8 +64,8 @@ public class UserRestController {
         if(!id.equals(currentUserId)) {
             throw new AccessDeniedException("Not login user");
         }
-        if(userService.isPasswordMatched(currentUserId, changePasswordRequest.getCurrentPassword())){
-            userService.changePassword(currentUserId, changePasswordRequest.getNewPassword());
+        if(userCredentialService.isPasswordCredentialMatched(currentUserId, changePasswordRequest.getCurrentPassword())){
+            userCredentialService.changePasswordCredential(currentUserId, changePasswordRequest.getNewPassword());
         }else{
             ErrorResponse errorResponse = ErrorResponse.from(request, HttpStatus.BAD_REQUEST, "password not matched");
             return ResponseEntity

@@ -2,9 +2,11 @@ package org.chomookun.arch4j.core.security;
 
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.security.model.Role;
+import org.chomookun.arch4j.core.user.UserCredentialService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
+import org.chomookun.arch4j.core.user.model.UserCredential;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserService userService;
 
+    private final UserCredentialService userCredentialService;
+
     private final RoleService roleService;
 
     private final AuthorityService authorityService;
@@ -38,12 +42,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // retrieves by username
         User user = userService.getUserByUsername(username).orElseThrow(()-> new UsernameNotFoundException(username));
+        UserCredential passwordCredential = userCredentialService.getCredential(user.getUserId(), UserCredential.Type.PASSWORD).orElseThrow();
         // user details
         UserDetailsImpl userDetails =  UserDetailsImpl.builder()
                 .userId(user.getUserId())
                 .name(user.getName())
                 .username(user.getUsername())
-                .password(user.getPassword())
+                .password(passwordCredential.getCredential())
                 .admin(user.isAdmin())
                 .build();
         // checks disabled

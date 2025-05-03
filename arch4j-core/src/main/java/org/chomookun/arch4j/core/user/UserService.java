@@ -7,6 +7,7 @@ import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.data.ValidationUtil;
 import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
+import org.chomookun.arch4j.core.user.model.UserCredential;
 import org.chomookun.arch4j.core.user.repository.UserRepository;
 import org.chomookun.arch4j.core.user.entity.UserRoleEntity;
 import org.chomookun.arch4j.core.user.model.User;
@@ -33,7 +34,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final UserCredentialService userCredentialService;
 
     /**
      * Saves user
@@ -49,7 +50,6 @@ public class UserService {
         } else {
             userEntity = UserEntity.builder()
                     .userId(IdGenerator.uuid())
-                    .password(passwordEncoder.encode(user.getPassword()))
                     .joinAt(Instant.now())
                     .passwordAt(Instant.now())
                     .build();
@@ -73,8 +73,20 @@ public class UserService {
                     .build();
             userEntity.getUserRoles().add(userRoleEntity);
         }
-        // save
         UserEntity savedUserEntity = userRepository.saveAndFlush(userEntity);
+
+        // creates password credential
+        if (user.getUserId() == null) {
+            UserCredential passwordCredential = UserCredential.builder()
+                    .userId(savedUserEntity.getUserId())
+                    .type(UserCredential.Type.PASSWORD)
+                    .credential(userCredentialService.generatePasswordCredential(user.getPassword()))
+                    .changedAt(Instant.now())
+                    .build();
+            userCredentialService.saveCredential(passwordCredential);
+        }
+
+        // returns
         entityManager.refresh(savedUserEntity);
         return User.from(savedUserEntity);
     }
@@ -118,32 +130,10 @@ public class UserService {
      * @param userId user id
      */
     public void deleteUser(String userId) {
-        userRepository.deleteById(userId);
-        userRepository.flush();
-    }
-
-    /**
-     * Checks if password is matched
-     * @param userId user id
-     * @param password password
-     * @return whether password is matched or not
-     */
-    public boolean isPasswordMatched(String userId, String password) {
+        userCredentialService.deleteCredentials(userId);
         UserEntity userEntity = userRepository.findById(userId).orElseThrow();
-        return passwordEncoder.matches(password, userEntity.getPassword());
-    }
-
-    /**
-     * Changes password
-     * @param userId user id
-     * @param newPassword new password
-     */
-    public void changePassword(String userId, String newPassword) {
-        userRepository.findById(userId).ifPresent(userEntity -> {
-            userEntity.setPassword(passwordEncoder.encode(newPassword));
-            userEntity.setPasswordAt(Instant.now());
-            userRepository.saveAndFlush(userEntity);
-        });
+        userRepository.delete(userEntity);
+        userRepository.flush();
     }
 
 }

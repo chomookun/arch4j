@@ -71,7 +71,6 @@ public class User extends BaseModel {
                 .userId(userEntity.getUserId())
                 .name(userEntity.getName())
                 .username(userEntity.getUsername())
-                .password(userEntity.getPassword())
                 .status(userEntity.getStatus())
                 .admin(userEntity.isAdmin())
                 .email(userEntity.getEmail())

@@ -3,6 +3,7 @@ package org.chomookun.arch4j.web.api.v1.login;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.email.EmailService;
+import org.chomookun.arch4j.core.user.UserCredentialService;
 import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
@@ -21,6 +22,8 @@ import jakarta.validation.Valid;
 public class ResetPasswordRestController {
 
     private final UserService userService;
+
+    private final UserCredentialService userCredentialService;
 
     private final EmailService emailService;
 
@@ -45,7 +48,7 @@ public class ResetPasswordRestController {
         }
 
         // update password
-        userService.changePassword(user.getUserId(), resetPasswordRequest.getPassword());
+        userCredentialService.changePasswordCredential(user.getUserId(), resetPasswordRequest.getPassword());
 
         // response
         return ResponseEntity.ok().build();
