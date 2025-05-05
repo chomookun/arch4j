@@ -3,11 +3,12 @@ package org.chomookun.arch4j.core.user;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Base32;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.data.ValidationUtil;
+import org.chomookun.arch4j.core.security.TotpService;
 import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
-import org.chomookun.arch4j.core.user.model.UserCredential;
 import org.chomookun.arch4j.core.user.repository.UserRepository;
 import org.chomookun.arch4j.core.user.entity.UserRoleEntity;
 import org.chomookun.arch4j.core.user.model.User;
@@ -19,6 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,11 +34,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @PersistenceContext
-    private final EntityManager entityManager;
+    private EntityManager entityManager;
 
     private final UserRepository userRepository;
 
-    private final UserCredentialService userCredentialService;
+    private final PasswordEncoder passwordEncoder;
+
+    private final TotpService totpService;
 
     /**
      * Saves user
@@ -50,6 +56,8 @@ public class UserService {
         } else {
             userEntity = UserEntity.builder()
                     .userId(IdGenerator.uuid())
+                    .password(passwordEncoder.encode(user.getPassword()))
+                    .totpSecret(totpService.generateTotpSecret())
                     .joinAt(Instant.now())
                     .passwordAt(Instant.now())
                     .build();
@@ -61,6 +69,7 @@ public class UserService {
         userEntity.setStatus(user.getStatus());
         userEntity.setEmail(user.getEmail());
         userEntity.setMobile(user.getMobile());
+        userEntity.setMfaEnabled(user.isMfaEnabled());
         userEntity.setIcon(user.getIcon());
         userEntity.setBio(user.getBio());
         userEntity.setExpireAt(user.getExpireAt());
@@ -74,19 +83,6 @@ public class UserService {
             userEntity.getUserRoles().add(userRoleEntity);
         }
         UserEntity savedUserEntity = userRepository.saveAndFlush(userEntity);
-
-        // creates password credential
-        if (user.getUserId() == null) {
-            UserCredential passwordCredential = UserCredential.builder()
-                    .userId(savedUserEntity.getUserId())
-                    .type(UserCredential.Type.PASSWORD)
-                    .credential(userCredentialService.generatePasswordCredential(user.getPassword()))
-                    .changedAt(Instant.now())
-                    .build();
-            userCredentialService.saveCredential(passwordCredential);
-        }
-
-        // returns
         entityManager.refresh(savedUserEntity);
         return User.from(savedUserEntity);
     }
@@ -130,10 +126,33 @@ public class UserService {
      * @param userId user id
      */
     public void deleteUser(String userId) {
-        userCredentialService.deleteCredentials(userId);
         UserEntity userEntity = userRepository.findById(userId).orElseThrow();
         userRepository.delete(userEntity);
         userRepository.flush();
+    }
+
+    /**
+     * Checks if password is matched
+     * @param userId user id
+     * @param password password
+     * @return whether password is matched or not
+     */
+    public boolean isPasswordMatched(String userId, String password) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+        return passwordEncoder.matches(password, userEntity.getPassword());
+    }
+
+    /**
+     * Changes password
+     * @param userId user id
+     * @param newPassword new password
+     */
+    public void changePassword(String userId, String newPassword) {
+        userRepository.findById(userId).ifPresent(userEntity -> {
+            userEntity.setPassword(passwordEncoder.encode(newPassword));
+            userEntity.setPasswordAt(Instant.now());
+            userRepository.saveAndFlush(userEntity);
+        });
     }
 
 }

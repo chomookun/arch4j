@@ -7,6 +7,7 @@ import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.web.api.v1.join.dto.JoinRequest;
+import org.chomookun.arch4j.web.common.error.ErrorResponseFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,8 @@ public class JoinRestController {
     private final UserService userService;
 
     private final EmailService emailService;
+
+    private final ErrorResponseFactory errorResponseFactory;
 
     @PostMapping
     public ResponseEntity<?> join(@RequestBody @Validated JoinRequest joinRequest) {
@@ -60,32 +63,11 @@ public class JoinRestController {
     public ResponseEntity<?> validateUserId(@PathVariable("userId")String userId, HttpServletRequest request) {
         User user = userService.getUser(userId).orElse(null);
         if(user != null) {
-            ErrorResponse errorResponse = ErrorResponse.from(request, HttpStatus.CONFLICT, "duplicated user id");
+            ErrorResponse errorResponse = errorResponseFactory.createErrorResponse(request, HttpStatus.CONFLICT, new RuntimeException("duplicated user id"));
             return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
         }
         return ResponseEntity.ok().build();
     }
-
-//    @Deprecated
-//    @GetMapping("validate-email/{email}")
-//    public ResponseEntity<?> validateEmail(@PathVariable("email")String email) {
-//
-//        // check duplicated email
-//        User user = userService.getUserByEmail(email).orElse(null);
-//        if(user != null) {
-//            ErrorResponse errorResponse = ErrorResponse.builder()
-//                    .status(HttpStatus.CONFLICT)
-//                    .message("duplicated email")
-//                    .build();
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
-//        }
-//
-//        // issue verification
-//        emailService.issueEmailVerification(email);
-//
-//        // response
-//        return ResponseEntity.ok().build();
-//    }
 
     @GetMapping("validate-email/{email}/answer/{answer}")
     public ResponseEntity<?> validateEmailAnswer(@PathVariable("email")String email, @PathVariable("answer")String answer) {

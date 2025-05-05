@@ -32,8 +32,11 @@
             payload.append('password', login.password);
             _fetch(url, {
                 method: 'POST',
-                body: payload
-            }, true).then(async function (response) {
+                body: payload,
+                headers: {'Accept': 'application/json'},
+                _suppressError: true
+            }).then(async function (response) {
+                console.error(response);
                 if (response.ok) {
                     document.location.href = '/admin';
                 } else {

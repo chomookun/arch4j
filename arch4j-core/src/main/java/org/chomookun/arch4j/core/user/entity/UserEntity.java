@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.CryptoConverter;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 import org.chomookun.arch4j.core.user.model.User;
@@ -43,6 +44,18 @@ public class UserEntity extends BaseEntity {
     @Comment("Username")
     private String username;
 
+    @Column(name = "password", nullable = false, length = 256)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // defensive
+    @Comment("Password")
+    private String password;
+
+    @Column(name = "totp_secret", nullable = false, length = 4000)
+    @Convert(converter = CryptoConverter.class)
+    @Lob
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // defensive
+    @Comment("TOTP Secret")
+    private String totpSecret;
+
     @Column(name = "name", nullable = false, length = 128)
     @Comment("Name")
     private String name;
@@ -63,6 +76,11 @@ public class UserEntity extends BaseEntity {
     @Column(name = "mobile", unique = true)
     @Comment("Mobile number")
     private String mobile;
+
+    @Column(name = "mfa_enabled", length = 1)
+    @Convert(converter = BooleanConverter.class)
+    @Comment("Whether MFA is enabled or not")
+    private boolean mfaEnabled;
 
     @Column(name = "icon", length = 4000)
     @Lob

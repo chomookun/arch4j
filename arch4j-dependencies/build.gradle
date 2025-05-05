@@ -97,6 +97,10 @@ dependencies {
         // okhttp
         api 'com.squareup.okhttp3:okhttp:4.10.0'
 
+        // totp
+        api 'com.google.zxing:core:3.5.3'
+        api 'com.google.zxing:javase:3.5.3'
+
     }
 
 }

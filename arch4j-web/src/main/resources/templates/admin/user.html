@@ -259,6 +259,13 @@
             generateSecurityTokenDialog.open(user.userId);
         }
 
+        /**
+         * Generates TOTP QR code
+         */
+        function generateTotpQrCode() {
+            generateTotpQrCodeDialog.open(user.userId);
+        }
+
         // DOM content loaded listener
         document.addEventListener('DOMContentLoaded',() => {
             getUsers();
@@ -621,6 +628,13 @@
                                 <img class="icon" th:src="@{/static/image/icon-token.svg}" alt="password"/>
                                 <span data-th-text="#{web.admin.user.generateSecurityToken}"></span>
                             </button>
+                            <button class="button" type="button" onclick="generateTotpQrCode();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.user:edit'')')}?'locked'"
+                                    data-duice-bind="user"
+                                    data-duice-execute="user.userId ? this.disabled=false : this.disabled=true;">
+                                <img class="icon" th:src="@{/static/image/icon-totp.svg}" alt="totp"/>
+                                <span data-th-text="#{web.admin.user.generateTotpQrCode}"></span>
+                            </button>
                         </div>
                         <div class="display--flex justify-content--end gap--1px">
                             <button class="button" type="button" onclick="deleteUser();"
@@ -841,6 +855,60 @@
     </dialog>
     <!-- ====================================== -->
     <!-- end: generate security token dialog    -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: generate totp qr code dialog    -->
+    <!-- ====================================== -->
+    <dialog id="generateTotpQrCodeDialog" class="dialog">
+        <style th:inline="css">
+            #generateTotpQrCodeDialog{
+                width: 300px;
+            }
+        </style>
+        <script th:inline="javascript">
+            const generateTotpQrCodeDialog = (() => {
+                const dialog = new duice.Dialog(document.getElementById('generateTotpQrCodeDialog'));
+                const data = new duice.ObjectProxy({
+                    userId: null,
+                    totpQrCode: null
+                });
+
+                async function open(userId) {
+                    duice.ObjectProxy.clear(data);
+                    data.userId = userId;
+                    let url = new URL(`${location.pathname}/generate-totp-qr-code`, location.origin);
+                    _fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
+                    }).then(response => response.text()).then(responseBody => {
+                        data.totpQrCode = responseBody;
+                    });
+                    return dialog.open();
+                }
+
+                // returns
+                return {
+                    open,
+                    data
+                };
+            })();
+        </script>
+        <div class="dialog-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-totp.svg}" alt="totp"/>
+                <span data-th-text="#{web.admin.user.generateTotpQrCode}"></span>
+            </h2>
+        </div>
+        <div class="dialog-content">
+            <label>
+                <img th:src="@{/static/image/icon-null.svg}" data-duice-bind="generateTotpQrCodeDialog.data" data-duice-property="totpQrCode" alt="totpQrCode"/>
+            </label>
+        </div>
+    </dialog>
+    <!-- ====================================== -->
+    <!-- end: generate totp qr code dialog      -->
     <!-- ====================================== -->
 
     <th:block th:include="admin/_common.html :: _selectRoleDialog"/>

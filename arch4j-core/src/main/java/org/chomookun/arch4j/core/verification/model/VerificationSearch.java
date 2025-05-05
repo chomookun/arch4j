@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class VerificationSearch {
 
-    private String notificationId;
+    private String verificationId;
 
-    private String principal;
+    private String name;
 
 }

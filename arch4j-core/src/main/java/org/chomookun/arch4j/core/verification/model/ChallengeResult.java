@@ -5,8 +5,10 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class VerifyCodeResponse {
+public class ChallengeResult {
 
-    private VerifyResult verifyResult;
+    private String code;
+
+    private String notificationMessageId;
 
 }

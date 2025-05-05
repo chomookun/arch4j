@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class IssueCodeResponse {
+public class VerificationIssueSearch {
 
-    private String code;
+    private String verificationId;
 
-    private String notificationMessageId;
+    private String principal;
 
 }

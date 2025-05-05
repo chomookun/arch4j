@@ -19,6 +19,9 @@ public class SecurityProperties {
     private final SecurityPolicy securityPolicy;
 
     @NotNull
+    private final String issuer;
+
+    @NotNull
     private final String signingKey;
 
     @NotNull

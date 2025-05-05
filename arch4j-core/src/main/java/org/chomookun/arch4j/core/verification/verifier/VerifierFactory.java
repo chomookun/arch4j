@@ -1,32 +1,32 @@
 package org.chomookun.arch4j.core.verification.verifier;
 
+import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
+import org.chomookun.arch4j.core.verification.model.Verification;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Constructor;
+import java.util.Properties;
 
-@Component
-public class VerifierFactory {
+public abstract class VerifierFactory {
 
-    private final Map<String, Verifier> verifierMap = new LinkedHashMap<>();
+    public abstract Class<? extends Verifier> getTypeClass();
 
-
-    public VerifierFactory(List<Verifier> verifies) {
-        for (Verifier verifier : verifies) {
-            verifierMap.put(verifier.getType(), verifier);
+    public Verifier getVerifier(Verification verification) {
+        VerifierDefinition verifierDefinition = VerifierDefinitionRegistry.getVerifierDefinition(verification.getVerifierType()).orElseThrow();
+        try {
+            Constructor<? extends Verifier> constructor = verifierDefinition.getTypeClass().getConstructor(Properties.class);
+            Properties config = loadPropertiesFromString(verification.getVerifierConfig());
+            return constructor.newInstance(config);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Verifier constructor not found: " + verification.getVerifierType(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public List<String> getAvailableTypes() {
-        return List.copyOf(verifierMap.keySet());
-    }
-
-    public Verifier getVerifier(String type) {
-        if (verifierMap.containsKey(type)) {
-            return verifierMap.get(type);
-        }
-        throw new IllegalArgumentException(String.format("Invalid Verifier type: %s", type));
+    private Properties loadPropertiesFromString(String config) {
+        return PbePropertiesUtil.loadProperties(config);
     }
 
 }

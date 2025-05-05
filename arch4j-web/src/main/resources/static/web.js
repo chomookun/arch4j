@@ -99,61 +99,61 @@ const _stopProgress = function() {
 /**
  * _fetch
  * @param url
- * @param options
- * @param _bypass
+ * @param option
  */
-const _fetch = function(url, options, _bypass) {
-    if(!options){
-        options = {};
+const _fetch = function(url, option) {
+    if(!option){
+        option = {};
     }
-    if(!options.headers){
-        options.headers = {};
+    if(!option.headers){
+        option.headers = {};
     }
     // csrf token
     ['XSRF-TOKEN', 'CSRF-TOKEN'].forEach(tokenName => {
         let tokenValue = _getCookie(tokenName);
         if(tokenValue){
-            options.headers[`X-${tokenName}`] = tokenValue;
+            option.headers[`X-${tokenName}`] = tokenValue;
         }
     });
-    options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-    options.headers['Pragma'] = 'no-cache';
-    options.headers['Expires'] = '0';
-    options.redirect = 'follow';
+    option.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+    option.headers['Pragma'] = 'no-cache';
+    option.headers['Expires'] = '0';
     // request interceptors
     _fetch.interceptors.request.forEach(interceptor => {
-        interceptor.call(null, options);
+        interceptor.call(null, option);
     });
     _startProgress();
-    return globalThis.fetch(url, options)
+    return globalThis.fetch(url, option)
         .then(async function(response) {
             console.debug(response);
             // calls interceptor
             _fetch.interceptors.response.forEach(interceptor => {
                 interceptor.call(response);
             });
-            // bypass
-            if (_bypass) {
-                return response;
-            }
             // checks response
             if (response.ok) {
                 return response;
             }else{
                 const contentType = response.headers.get('content-type');
                 let errorMessage;
-                if(contentType === 'application/json'){
+                if(contentType && contentType.includes('application/json')){
                     let responseJson = await response.json();
+                    // redirect
+                    if (responseJson.redirect) {
+                        console.log(`redirect to ${responseJson.redirectUri}`);
+                        location.href = responseJson.redirectUri;
+                        return;
+                    }
                     errorMessage = responseJson.message;
                 }else{
                     errorMessage = await response.text();
                 }
-
                 throw Error(errorMessage);
             }
         })
         .catch((error)=> {
-            if(!_bypass) {
+            console.error(error);
+            if(!option['_suppressAlert']) {
                 _alert(error.message).then();
             }
             // calls error interceptor

@@ -1,16 +1,27 @@
 package org.chomookun.arch4j.core.verification.verifier;
 
-import org.chomookun.arch4j.core.verification.model.IssueCodeRequest;
-import org.chomookun.arch4j.core.verification.model.IssueCodeResponse;
-import org.chomookun.arch4j.core.verification.model.VerifyCodeRequest;
-import org.chomookun.arch4j.core.verification.model.VerifyCodeResponse;
+import lombok.Getter;
+import org.chomookun.arch4j.core.verification.model.VerificationIssue;
+
+import java.security.SecureRandom;
+import java.util.Properties;
 
 public abstract class Verifier {
 
-    public abstract String getType();
+    @Getter
+    private final Properties config;
 
-    public abstract IssueCodeResponse issueCode(IssueCodeRequest request);
+    protected Verifier(Properties config) {
+        this.config = config;
+    }
 
-    public abstract VerifyCodeResponse verifyCode(VerifyCodeRequest request);
+    public abstract void issueCode(VerificationIssue verificationIssue);
+
+    public abstract boolean verifyCode(VerificationIssue verificationIssue, String code);
+
+    protected String generateCode() {
+        SecureRandom random = new SecureRandom();
+        return String.format("%06d", random.nextInt(1_000_000));
+    }
 
 }

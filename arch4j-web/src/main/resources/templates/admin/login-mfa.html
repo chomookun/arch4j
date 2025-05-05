@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<body layout:fragment="_body">
+<script th:inline="javascript">
+    const mfa = new duice.ObjectProxy({
+
+        verificationId: null,
+        code: null,
+        message: null
+    });
+
+    function issueCode() {
+        const url = new URL(`${location.pathname}/issue-code`, location.origin);
+        _fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(mfa),
+        }).then(async response => {
+            console.error(response);
+            if (response.ok) {
+                document.location.href = '/admin';
+            } else {
+                let json = await response.json();
+                mfa.message = json.message;
+            }
+        });
+    }
+
+    function verifyCode() {
+        const url = new URL(`${location.pathname}/verify-code`, location.origin);
+        _fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(mfa),
+        }).then(async response => {
+            console.error(response);
+            if (response.ok) {
+                document.location.href = '/admin';
+            } else {
+                let json = await response.json();
+                mfa.message = json.message;
+            }
+        });
+    }
+
+</script>
+<style>
+    #login {
+        width: 300px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -75%);
+    }
+    #_brand,
+    #_brand * {
+        display: inline-block;
+        height: 2rem;
+        font-weight: bold;
+    }
+    .dark-mode #_brand {
+        filter: invert(0.9);
+    }
+</style>
+<main>
+    <!-- ================================== -->
+    <!-- start: login                       -->
+    <!-- ================================== -->
+    <div id="login" class="panel">
+        <div class="panel-title justify-content--center align-items--center padding-bottom--1rem">
+            <img class="icon font-size--large" th:src="@{/static/image/icon-verification.svg}" alt=""/>
+            <span data-th-text="#{web.global.enterItem(#{core.verification.Verification.code})}"></span>
+        </div>
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                <label class="grid-column--span-12">
+                    <input type="text" autocomplete="off"
+                           data-duice-bind="mfa" data-duice-property="code"
+                           class="width--100 text-align--center"
+                           th:placeholder="#{core.verification.Verification.code}"/>
+                </label>
+                <div class="grid-column--span-12 justify-self--center">
+                    <span data-duice-bind="mfa" data-duice-property="message"></span>
+                </div>
+                <div class="grid-column--span-12">
+                    <button type="submit" onclick="verifyCode();" class="width--100">
+                        <img class="icon" th:src="@{/static/image/icon-confirm.svg}">
+                        <span data-th-text="#{web.global.confirm}"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ================================== -->
+    <!-- end: login                         -->
+    <!-- ================================== -->
+</main>
+<!-- ================================== -->
+<!-- end: main                          -->
+<!-- ================================== -->
+</body>

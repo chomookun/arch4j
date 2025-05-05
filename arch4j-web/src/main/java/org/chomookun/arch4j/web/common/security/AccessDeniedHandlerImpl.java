@@ -1,6 +1,7 @@
 package org.chomookun.arch4j.web.common.security;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.web.common.error.ErrorResponseFactory;
 import org.chomookun.arch4j.web.common.error.ErrorResponseHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;

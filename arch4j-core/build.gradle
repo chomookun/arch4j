@@ -119,6 +119,10 @@ dependencies {
     // java websocket
     api 'org.java-websocket:Java-WebSocket'
 
+    // totp
+    api 'com.google.zxing:core'
+    api 'com.google.zxing:javase'
+
     // okhttp
     api 'com.squareup.okhttp3:okhttp'
 

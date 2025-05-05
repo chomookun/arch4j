@@ -2,7 +2,6 @@ package org.chomookun.arch4j.web.api.v1.user;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.user.UserCredentialService;
 import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
@@ -10,6 +9,7 @@ import org.chomookun.arch4j.core.security.support.SecurityUtils;
 import org.chomookun.arch4j.web.api.v1.user.dto.ChangePasswordRequest;
 import org.chomookun.arch4j.web.api.v1.user.dto.UserRequest;
 import org.chomookun.arch4j.web.api.v1.user.dto.UserResponse;
+import org.chomookun.arch4j.web.common.error.ErrorResponseFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,7 +26,7 @@ public class UserRestController {
 
     private final UserService userService;
 
-    private final UserCredentialService userCredentialService;
+    private final ErrorResponseFactory errorResponseFactory;
 
     private final HttpServletRequest request;
 
@@ -64,10 +64,10 @@ public class UserRestController {
         if(!id.equals(currentUserId)) {
             throw new AccessDeniedException("Not login user");
         }
-        if(userCredentialService.isPasswordCredentialMatched(currentUserId, changePasswordRequest.getCurrentPassword())){
-            userCredentialService.changePasswordCredential(currentUserId, changePasswordRequest.getNewPassword());
+        if(userService.isPasswordMatched(currentUserId, changePasswordRequest.getCurrentPassword())){
+            userService.changePassword(currentUserId, changePasswordRequest.getNewPassword());
         }else{
-            ErrorResponse errorResponse = ErrorResponse.from(request, HttpStatus.BAD_REQUEST, "password not matched");
+            ErrorResponse errorResponse = errorResponseFactory.createErrorResponse(request, HttpStatus.BAD_REQUEST, new RuntimeException("password not matched"));
             return ResponseEntity
                     .status(errorResponse.getStatus())
                     .body(errorResponse);

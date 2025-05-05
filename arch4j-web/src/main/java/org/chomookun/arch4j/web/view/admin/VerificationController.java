@@ -1,15 +1,17 @@
 package org.chomookun.arch4j.web.view.admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.notification.model.NotificationSearch;
-import org.chomookun.arch4j.core.security.support.SecurityUtils;
 import org.chomookun.arch4j.core.verification.VerificationService;
 import org.chomookun.arch4j.core.verification.model.*;
+import org.chomookun.arch4j.core.verification.verifier.IssueCodeRequest;
+import org.chomookun.arch4j.core.verification.model.ChallengeResult;
+import org.chomookun.arch4j.core.verification.verifier.VerifyCodeRequest;
+import org.chomookun.arch4j.core.verification.model.VerifyResult;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
@@ -52,13 +53,13 @@ public class VerificationController {
 
     @PostMapping("issue-code")
     @ResponseBody
-    public IssueCodeResponse requestVerification(@RequestBody IssueCodeRequest issueCodeRequest) throws JsonProcessingException {
+    public ChallengeResult requestVerification(@RequestBody IssueCodeRequest issueCodeRequest) throws JsonProcessingException {
         return verificationService.issueCode(issueCodeRequest);
     }
 
     @PatchMapping("verify-code")
     @ResponseBody
-    public VerifyCodeResponse verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) throws JsonProcessingException {
+    public VerifyResult verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) throws JsonProcessingException {
         return verificationService.verifyCode(verifyCodeRequest);
     }
 

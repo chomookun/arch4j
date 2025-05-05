@@ -1,0 +1,20 @@
+<th:block th:replace="|_theme/${_theme}/verification/verification.html|"/>
+<script th:inline="javascript">
+    const _verification = (() => {
+        const data = new duice.ObjectProxy({
+            verificationId: null,
+            code: null
+        });
+
+        function issueCode() {
+
+        }
+
+        // returns
+        return {
+            data,
+            issueCode
+        };
+    })();
+</script>
+

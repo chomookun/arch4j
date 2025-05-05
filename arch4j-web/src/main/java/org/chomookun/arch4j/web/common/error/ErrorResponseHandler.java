@@ -3,28 +3,69 @@ package org.chomookun.arch4j.web.common.error;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.LocaleResolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import javax.annotation.Nullable;
-import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class ErrorResponseHandler {
 
-    private final MessageSource messageSource;
-
-    @Nullable
-    private final LocaleResolver localeResolver;
+    private final ErrorResponseFactory errorResponseFactory;
 
     private final ObjectMapper objectMapper;
+
+    /**
+     * Sends error response
+     * @param request request
+     * @param response response
+     * @param errorResponse error response
+     */
+    public void sendErrorResponse(HttpServletRequest request, HttpServletResponse response, ErrorResponse errorResponse) {
+        try {
+            if (isRestRequest(request)) {
+                response.setHeader("Content-Type", "application/json;charset=UTF-8");
+                response.setStatus(errorResponse.getStatus());
+                String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+                response.getWriter().write(jsonResponse);
+            } else {
+                if (errorResponse.isRedirect()) {
+                    response.sendRedirect(errorResponse.getRedirectUri());
+                } else {
+                    response.sendError(errorResponse.getStatus(), errorResponse.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Checks is rest request
+     * @param request http servlet request
+     * @return whether if rest request or not
+     */
+    public boolean isRestRequest(HttpServletRequest request) {
+        String accept = request.getHeader("Accept");
+        String contentType = request.getHeader("Content-Type");
+        String xRequestedWith = request.getHeader("X-Requested-With");
+        log.debug("contentType: {}", contentType);
+        log.debug("accept: {}", accept);
+        if (accept != null && accept.contains("application/json")) {
+            return true;
+        }
+        if (contentType != null && contentType.contains("application/json")){
+            return true;
+        }
+        if (xRequestedWith != null && xRequestedWith.equals("XMLHttpRequest")){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Sends error response
@@ -34,49 +75,21 @@ public class ErrorResponseHandler {
      * @param exception exception
      */
     public void sendErrorResponse(HttpServletRequest request, HttpServletResponse response, HttpStatus status, Exception exception) {
-        ErrorResponse errorResponse = createErrorResponse(request, status, exception);
-        try {
-            if (isRestRequest(request)) {
-                response.setHeader("Content-Type", "application/json;charset=UTF-8");
-                response.setStatus(errorResponse.getStatus());
-                String jsonResponse = objectMapper.writeValueAsString(errorResponse);
-                response.getWriter().write(jsonResponse);
-            } else {
-                response.sendError(errorResponse.getStatus(), errorResponse.getMessage());
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+        ErrorResponse errorResponse = errorResponseFactory.createErrorResponse(request, status, exception);
+        sendErrorResponse(request, response, errorResponse);
     }
 
     /**
-     * Creates error response
+     * Sends error response with redirect
      * @param request http servlet request
+     * @param response http servlet response
      * @param status http status
      * @param exception exception
-     * @return error response
+     * @param redirectUri redirect url
      */
-    public ErrorResponse createErrorResponse(HttpServletRequest request, HttpStatus status, Exception exception) {
-        String messageId = String.format("web.error.%s", exception.getClass().getSimpleName());
-        Locale locale = localeResolver.resolveLocale(request);
-        String message = messageSource.getMessage(messageId, null, locale);
-        return ErrorResponse.from(request, status, message);
-    }
-
-    /**
-     * Checks is rest request
-     * @param request http servlet request
-     * @return whether if rest request or not
-     */
-    public boolean isRestRequest(HttpServletRequest request) {
-        if ("application/json".equals(request.getHeader("Content-Type"))){
-            return true;
-        }
-        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-with"))){
-            return true;
-        }
-        return false;
+    public void sendRedirectErrorResponse(HttpServletRequest request, HttpServletResponse response, HttpStatus status, Exception exception, String redirectUri) {
+        ErrorResponse errorResponse = errorResponseFactory.createRedirectErrorResponse(request, status, exception, redirectUri);
+        sendErrorResponse(request, response, errorResponse);
     }
 
 }

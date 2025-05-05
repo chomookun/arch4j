@@ -24,13 +24,13 @@
             <div class="display--flex justify-content--end gap--1px">
                 <button type="button"
                         class="button small"
-                        onclick="_comment.cancelComment();">
+                        onclick="_verification.cancelComment();">
                     <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-cancel.svg(_theme=${_theme})}" alt="cancel"/>
                     <span data-th-text="#{web.global.cancel}">Cancel</span>
                 </button>
                 <button type="button"
                         class="button small"
-                        onclick="_comment.saveComment();">
+                        onclick="_verification.saveComment();">
                     <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-save.svg(_theme=${_theme})}" alt="save"/>
                     <span data-th-text="#{web.global.save}">Save</span>
                 </button>
@@ -75,7 +75,7 @@
                             data-duice-bind="comment"
                             data-duice-if="return comment.canUpdate;"
                             data-duice-execute="this.dataset.commentId = comment.commentId;"
-                            onclick="_comment.editComment(this.dataset.commentId);">
+                            onclick="_verification.editComment(this.dataset.commentId);">
                         <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-edit.svg(_theme=${_theme})}" alt=""/>
                         <span data-th-text="#{web.global.edit}"></span>
                     </button>
@@ -83,14 +83,14 @@
                             data-duice-bind="comment"
                             data-duice-if="return comment.canDelete;"
                             data-duice-execute="this.dataset.commentId = comment.commentId;"
-                            onclick="_comment.deleteComment(this.dataset.commentId);">
+                            onclick="_verification.deleteComment(this.dataset.commentId);">
                         <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-delete.svg(_theme=${_theme})}" alt=""/>
                         <span data-th-text="#{web.global.delete}"></span>
                     </button>
                     <button type="button" class="button small"
                             data-duice-bind="comment"
                             data-duice-execute="this.dataset.commentId = comment.commentId;"
-                            onclick="_comment.replyComment(this.dataset.commentId);">
+                            onclick="_verification.replyComment(this.dataset.commentId);">
                         <img class="icon" th:src="@{/static/_theme/{_theme}/static/image/icon-reply.svg(_theme=${_theme})}" alt=""/>
                         <span data-th-text="#{web.global.reply}"></span>
                     </button>

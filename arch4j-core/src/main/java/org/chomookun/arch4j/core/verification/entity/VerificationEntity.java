@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.notification.entity.NotificationMessageEntity;
-import org.chomookun.arch4j.core.user.entity.UserEntity;
-
-import java.time.Instant;
+import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 
 @Entity
 @Table(name = "core_verification")
@@ -22,48 +19,18 @@ public class VerificationEntity extends BaseEntity {
     @Column(name = "verification_id", length = 32)
     private String verificationId;
 
-    @Column(name = "type", length = 32)
-    private String type;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "reason")
-    private String reason;
+    @Column(name = "verifier_type", length = 32)
+    private String verifierType;
 
-    @Column(name = "notification_id", length = 32)
-    private String notificationId;
+    @Column(name = "verifier_config", length = Integer.MAX_VALUE)
+    @Lob
+    private String verifierConfig;
 
-    @Column(name = "principal")
-    private String principal;
-
-    @Column(name = "user_id", length = 32)
-    private String userId;
-
-    @Column(name = "notification_message_id", length = 32)
-    private String notificationMessageId;
-
-    @Column(name = "code", length = 32)
-    private String code;
-
-    @Column(name = "issued_at")
-    private Instant issuedAt;
-
-    @Column(name = "expires_at")
-    private Instant expiresAt;
-
-    @Column(name = "try_count")
-    private Integer tryCount;
-
-    @Column(name = "verified", length = 1)
-    private boolean verified;
-
-    @Column(name = "verified_at")
-    private Instant verifiedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notification_message_id", insertable = false, updatable = false)
-    private NotificationMessageEntity notificationMessage;
+    @Column(name = "enabled", length = 1)
+    @Convert(converter = BooleanConverter.class)
+    private boolean enabled;
 
 }

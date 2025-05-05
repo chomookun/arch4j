@@ -30,6 +30,9 @@ public class User extends BaseModel {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String totpSecret;
+
     @NotBlank
     private String name;
 
@@ -40,6 +43,8 @@ public class User extends BaseModel {
     private String email;
 
     private String mobile;
+
+    private boolean mfaEnabled;
 
     private String icon;
 
@@ -69,12 +74,15 @@ public class User extends BaseModel {
                 .systemUpdatedAt(userEntity.getSystemUpdatedAt())
                 .systemUpdatedBy(userEntity.getSystemUpdatedBy())
                 .userId(userEntity.getUserId())
-                .name(userEntity.getName())
                 .username(userEntity.getUsername())
+                .password(userEntity.getPassword())
+                .totpSecret(userEntity.getTotpSecret())
+                .name(userEntity.getName())
                 .status(userEntity.getStatus())
                 .admin(userEntity.isAdmin())
                 .email(userEntity.getEmail())
                 .mobile(userEntity.getMobile())
+                .mfaEnabled(userEntity.isMfaEnabled())
                 .icon(userEntity.getIcon())
                 .bio(userEntity.getBio())
                 .joinAt(userEntity.getJoinAt())

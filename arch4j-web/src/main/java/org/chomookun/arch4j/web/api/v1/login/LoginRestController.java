@@ -2,7 +2,6 @@ package org.chomookun.arch4j.web.api.v1.login;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.user.UserCredentialService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.web.api.v1.login.dto.LoginRequest;
@@ -32,8 +31,6 @@ public class LoginRestController {
 
     private final UserService userService;
 
-    private final UserCredentialService userCredentialService;
-
     private final UserDetailsService userDetailsService;
 
     private final SecurityTokenService securityTokenService;
@@ -50,7 +47,7 @@ public class LoginRestController {
         try {
             User user = userService.getUserByUsername(loginRequest.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("user not found"));
-            boolean passwordMatched = userCredentialService.isPasswordCredentialMatched(user.getUserId(), loginRequest.getPassword());
+            boolean passwordMatched = userService.isPasswordMatched(user.getUserId(), loginRequest.getPassword());
             if (!passwordMatched) {
                 throw new BadCredentialsException("bad credentials");
             }

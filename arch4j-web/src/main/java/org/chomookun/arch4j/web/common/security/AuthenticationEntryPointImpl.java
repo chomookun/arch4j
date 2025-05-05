@@ -24,13 +24,13 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             errorResponseHandler.sendErrorResponse(request, response, HttpStatus.FORBIDDEN, authenticationException);
         }else{
             String requestUri = request.getRequestURI();
-            String loginUrl;
+            String redirectUrl;
             if(requestUri.startsWith("/admin")) {
-                loginUrl = "/admin/login";
+                redirectUrl = "/admin/login";
             }else{
-                loginUrl = "/login";
+                redirectUrl = "/login";
             }
-            response.sendRedirect(loginUrl);
+            errorResponseHandler.sendRedirectErrorResponse(request, response, HttpStatus.FORBIDDEN, authenticationException, redirectUrl);
         }
     }
 

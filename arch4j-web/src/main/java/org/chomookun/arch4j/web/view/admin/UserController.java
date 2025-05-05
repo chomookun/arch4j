@@ -2,8 +2,10 @@ package org.chomookun.arch4j.web.view.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.security.SecurityProperties;
+import org.chomookun.arch4j.core.security.SecurityService;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
-import org.chomookun.arch4j.core.user.UserCredentialService;
+import org.chomookun.arch4j.core.security.TotpService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.model.UserSearch;
@@ -32,9 +34,11 @@ public class UserController {
 
     private final UserDetailsService userDetailsService;
 
+    private final SecurityProperties securityProperties;
+
     private final SecurityTokenService securityTokenService;
 
-    private final UserCredentialService userCredentialService;
+    private final TotpService totpService;
 
     @GetMapping
     public ModelAndView index() {
@@ -83,7 +87,7 @@ public class UserController {
                 .orElseThrow(IllegalArgumentException::new);
         String password = Optional.ofNullable(payload.get("password"))
                 .orElseThrow(IllegalArgumentException::new);
-        userCredentialService.changePasswordCredential(userId, password);
+        userService.changePassword(userId, password);
     }
 
     @PostMapping(value = "generate-security-token", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -98,6 +102,19 @@ public class UserController {
         User user = userService.getUser(userId).orElseThrow();
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         return securityTokenService.encodeSecurityToken(userDetails, expirationMinutes);
+    }
+
+    @PostMapping(value = "generate-totp-qr-code", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseBody
+    @PreAuthorize("hasAuthority('admin.user:edit')")
+    public String generateTotpQrCode(@RequestBody Map<String,String> payload) {
+        String userId = Optional.ofNullable(payload.get("userId"))
+                .orElseThrow(IllegalArgumentException::new);
+        User user = userService.getUser(userId).orElseThrow();
+        String totpSecret = user.getTotpSecret();
+        String issuer = securityProperties.getIssuer();
+        String account = user.getUsername();
+        return totpService.generateTotpQrCode(totpSecret, issuer, account);
     }
 
 }

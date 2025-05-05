@@ -80,23 +80,13 @@ values
 
 -- core_user
 insert into `core_user`
-    (`user_id`,`username`,`name`,`admin`,`status`,`email`,`mobile`, `join_at`, `password_at`)
+    (`user_id`,`username`,`password`,`totp_secret`,`name`,`admin`,`status`,`email`,`mobile`, `join_at`, `password_at`)
 values
-    ('1fa8cd866e1a4baf94d62a6f3b71ac74','admin','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678', current_timestamp, current_timestamp),
-    ('027d360d6a3a4a319959e29647815f9b','developer','Developer','N','ACTIVE', null, null, current_timestamp, current_timestamp),
-    ('6edb6033f8ea40858179cd657e9b9c8e','user','User','N','ACTIVE', null, null, current_timestamp, current_timestamp),
-    ('27b91369bdee4e1ab77a2cecb70384ec','apple','Apple','N','ACTIVE', 'apple@oopscraft.org', null, current_timestamp, current_timestamp),
-    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222', current_timestamp, current_timestamp);
-
--- core_user
-insert into `core_credential`
-    (`user_id`,`type`,`credential`, `changed_at`)
-values
-    ('1fa8cd866e1a4baf94d62a6f3b71ac74','PASSWORD','{noop}admin', current_timestamp),
-    ('027d360d6a3a4a319959e29647815f9b','PASSWORD','{noop}developer', current_timestamp),
-    ('6edb6033f8ea40858179cd657e9b9c8e','PASSWORD','{noop}user', current_timestamp),
-    ('27b91369bdee4e1ab77a2cecb70384ec','PASSWORD','{noop}apple', current_timestamp),
-    ('5e676016aa644a6cb5f4e1fd4a469dce','PASSWORD','{noop}orange', current_timestamp);
+    ('1fa8cd866e1a4baf94d62a6f3b71ac74','admin','{noop}admin','{noop}CSKN2SJE4PUJYRYAYJ4LSMV3LXO2HXLM','Administrator','Y','ACTIVE','admin@oopscraft.org','010-1234-5678', current_timestamp, current_timestamp),
+    ('027d360d6a3a4a319959e29647815f9b','developer','{noop}developer','{noop}FW36O4RCP35ASLUR2C7RHSCRJ6HEXYDQ','Developer','N','ACTIVE', null, null, current_timestamp, current_timestamp),
+    ('6edb6033f8ea40858179cd657e9b9c8e','user','{noop}user','{noop}J6WMGYTHQZ4TP3DB5PM4TXEEZUB37NYV','User','N','ACTIVE', null, null, current_timestamp, current_timestamp),
+    ('27b91369bdee4e1ab77a2cecb70384ec','apple','{noop}apple','{noop}UVG5QBQDQHKX6X75CKMDM7AW32LTGHBB','Apple','N','ACTIVE', 'apple@oopscraft.org', null, current_timestamp, current_timestamp),
+    ('5e676016aa644a6cb5f4e1fd4a469dce','orange','{noop}orange','{noop}VIJRCY6PVBN5DYORRBWUWIW6J67A2QTY','Orange','N','ACTIVE', 'orange@oopscraft.org', '010-1111-2222', current_timestamp, current_timestamp);
 
 -- core_user_role
 insert into `core_user_role`
@@ -671,8 +661,8 @@ insert into `core_notification` (`notification_id`,`system_required`,`name`, `cl
     ('verification:email','Y','Email Verification Channel','EMAIL','
 host=sandbox.smtp.mailtrap.io
 port=25
-username=
-password=
+username=987a77fac40349
+password=cfad266492f5fa
     ');
 
 -- core_example

@@ -234,7 +234,7 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.securityMatcher(securityMatcher);
             // sets authorize
             http.authorizeHttpRequests(authorizeHttpRequests ->
-                    authorizeHttpRequests.requestMatchers("/admin/login**")
+                    authorizeHttpRequests.requestMatchers("/admin/login/**")
                             .permitAll()
                             .anyRequest()
                             .hasAuthority("admin")

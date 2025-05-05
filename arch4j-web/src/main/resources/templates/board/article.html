@@ -55,7 +55,7 @@
             getBoard();
             getArticle();
             if (window._comment) {
-                _comment.getComments();
+                _verification.getComments();
             }
         });
     </script>
@@ -66,7 +66,7 @@
         <th:block th:replace="|${discussionProvider.viewName}|"/>
         <script th:inline="javascript">
             if (window._comment) {
-                _comment.configure({
+                _verification.configure({
                     createComment: function(comment) {
                         let url = new URL(`${_apiUrl}/v1/boards/${boardId}/articles/${articleId}/comments`, location.origin);
                         return _fetch(url, {
