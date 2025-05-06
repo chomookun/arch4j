@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<main layout:fragment="_main">
+    <script th:inline="javascript">
+        // template search condition
+        const templateSearch = new duice.ObjectProxy({
+            key: 'templateId',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _total: 0
+        });
+        // template list
+        const templates = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(templates, true);
+        // template
+        const template = new duice.ObjectProxy({
+            templateId: null,
+            name: null
+        });
+        duice.ObjectProxy.setDisabledAll(template, true);
+        duice.ObjectProxy.onPropertyChanging(template, async event => {
+            if (event.getProperty() === 'templateId') {
+                if (!await validateTemplateId(event.getValue())) {
+                    duice.ObjectProxy.focus(template, 'templateId');
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        /**
+         * Gets templates
+         * @param page page number
+         */
+        function getTemplates(page) {
+            if(page) {
+                templateSearch._page = page;
+            }
+            let url = new URL(`${location.pathname}/get-templates`, location.origin);
+            if (templateSearch.key && templateSearch.value) {
+                url.searchParams.append(templateSearch.key, templateSearch.value);
+            }
+            url.searchParams.append('_page', templateSearch._page);
+            url.searchParams.append('_size', templateSearch._size);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.clear(templates);
+                    duice.ArrayProxy.assign(templates, data.content);
+                    templateSearch._total = data['totalElements'];
+                    // select current item
+                    duice.ArrayProxy.selectItem(templates, templates.findIndex(item => item.templateId === template.templateId));
+                });
+        }
+
+        /**
+         * Resets templates
+         */
+        function resetTemplates() {
+            duice.ObjectProxy.reset(templateSearch);
+            getTemplates();
+        }
+
+        /**
+         * Gets template
+         * @param templateId template id
+         */
+        function getTemplate(templateId) {
+            let url = new URL(`${location.pathname}/get-template`, location.origin);
+            url.searchParams.append('templateId', templateId);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ObjectProxy.assign(template, data);
+                    duice.ObjectProxy.setDisabledAll(template, false);
+                    duice.ObjectProxy.setReadonly(template, 'templateId', true);
+                    template._new = false;
+                });
+        }
+
+        /**
+         * Creates template
+         */
+        function createTemplate() {
+            duice.ObjectProxy.clear(template);
+            duice.ObjectProxy.assign(template, {
+                _new: true
+            });
+            duice.ObjectProxy.setDisabledAll(template, false);
+            duice.ObjectProxy.setReadonly(template, 'templateId', false);
+            duice.ObjectProxy.focus(template, 'templateId');
+        }
+
+        /**
+         * Validates template id
+         * @param templateId template id
+         * @returns {Promise<boolean>}
+         */
+        async function validateTemplateId(templateId) {
+            // check blank
+            if (!templateId) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.template.Template.templateId})}]]*/'');
+                duice.ObjectProxy.focus(template, 'templateId');
+                return false;
+            }
+            // check duplicated id
+            let url = new URL(`${location.pathname}/get-template`, location.origin);
+            url.searchParams.append('templateId', templateId);
+            let response = await _fetch(url, {}, true);
+            if (response.ok) {
+                let template = await response.json();
+                if (template) {
+                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.template.Template.templateId})}]]*/'');
+                    return false;
+                }
+            }
+            // return true
+            return true;
+        }
+
+        /**
+         * Saves template
+         * @returns {Promise<boolean>}
+         */
+        async function saveTemplate() {
+            // if new, checks id
+            if (template._new) {
+                if (!await validateTemplateId(template.templateId)) {
+                    return false;
+                }
+            }
+            // checks name
+            if (!template.name || template.name.trim().length < 1) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.template.Template.name})}]]*/'');
+                duice.ObjectProxy.focus(template, 'name');
+                return false;
+            }
+            // call save
+            _confirm(/*[[#{web.global.saveItemConfirm(#{core.template.Template})}]]*/'').then(result => {
+                if (result) {
+                    let url = new URL(`${location.pathname}/save-template`, location.origin);
+                    _fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(template)
+                    }).then(response => {
+                        if (response.ok) {
+                            _alert(/*[[#{web.global.saveItemComplete(#{core.template.Template})}]]*/'').then(() => {
+                                getTemplates();
+                                getTemplate(template.templateId);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        /**
+         * Deletes template
+         */
+        function deleteTemplate() {
+            _confirm(/*[[#{web.global.deleteItemConfirm(#{core.template.Template})}]]*/'').then(result => {
+                if (result) {
+                    let url = new URL(`${location.pathname}/delete-template`, location.origin);
+                    url.searchParams.append('templateId', template.templateId);
+                    _fetch(url).then(response => {
+                        if (response.ok) {
+                            _alert(/*[[#{web.global.deleteItemComplete(#{core.template.Template})}]]*/'').then(() => {
+                                getTemplates();
+                                duice.ObjectProxy.clear(template);
+                            });
+                        }
+                    })
+                }
+            });
+        }
+
+        // Initializes
+        document.addEventListener('DOMContentLoaded',()=> {
+            getTemplates();
+        });
+    </script>
+
+    <!-- ====================================== -->
+    <!-- start: title                           -->
+    <!-- ====================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-template.svg}" alt="template"/>
+        <span data-th-text="#{web.admin.template}"></span>
+    </h1>
+    <!-- ====================================== -->
+    <!-- end: title                             -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: template content                   -->
+    <!-- ====================================== -->
+    <div id="templateContent" class="display--grid grid-template-columns--12fr gap--1rem">
+        <div class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ====================================== -->
+            <!-- start: template list                      -->
+            <!-- ====================================== -->
+            <div id="templateList" class="panel">
+                <div class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                        <span data-th-text="#{core.template.Template}+' '+#{web.global.list}"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1rem">
+                        <div class="display--flex gap--1px">
+                            <div class="display--flex flex-wrap--nowrap gap--1px">
+                                <label>
+                                    <select data-duice-bind="templateSearch" data-duice-property="key">
+                                        <option value="templateId" th:text="#{core.template.Template.templateId}"></option>
+                                        <option value="name" th:text="#{core.template.Template.name}"></option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <input type="text" data-duice-bind="templateSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                            <button class="button" type="submit" onclick="getTemplates();">
+                                <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                                <span data-th-text="#{web.global.search}">Search</span>
+                            </button>
+                            <button class="button" type="button" onclick="resetTemplates();">
+                                <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                                <span data-th-text="#{web.global.reset}">Reset</span>
+                            </button>
+                        </div>
+                    </form>
+                    <table class="table width--100">
+                        <colgroup>
+                            <col style="width:5rem;"/>
+                            <col/>
+                            <col/>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                            <th data-th-text="#{core.template.Template.templateId}"></th>
+                            <th data-th-text="#{core.template.Template.name}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-duice-bind="templates"
+                            data-duice-foreach="template,status"
+                            data-duice-selected-item-class="selected"
+                            data-duice-execute="this.dataset.templateId=template.templateId;"
+                            onclick="getTemplate(this.dataset.templateId);"
+                            class="cursor--pointer">
+                            <td class="text-align--center">
+                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (templateSearch._page * templateSearch._size) + status.count;" class="number"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="template" data-duice-property="templateId" class="code"></span>
+                            </td>
+                            <td>
+                                <span data-duice-bind="template" data-duice-property="name"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="templates" data-duice-if="return templates.length < 1;" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.template.Template})}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="display--flex justify-content--space-between gap--1rem">
+                        <div>
+                            <span data-th-text="#{web.global.total}"></span>
+                            <span data-duice-bind="templateSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                            <span data-th-text="#{web.global.rows}"></span>
+                        </div>
+                        <duice-pagination
+                                data-duice-bind="templateSearch"
+                                data-duice-size-property="_size"
+                                data-duice-page-property="_page"
+                                data-duice-total-property="_total"
+                                data-duice-onclick="getTemplates(this.dataset.page);">
+                        </duice-pagination>
+                        <div class="text-align--right">
+                            <button class="button" type="button" onclick="createTemplate();">
+                                <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
+                                <span data-th-text="#{web.global.create}"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ====================================== -->
+            <!-- end: template list                        -->
+            <!-- ====================================== -->
+        </div>
+        <div class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ====================================== -->
+            <!-- start: template detail                    -->
+            <!-- ====================================== -->
+            <div class="panel">
+                <div class="panel-title">
+                    <h2>
+                        <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                        <span data-th-text="#{core.template.Template}+' '+#{web.global.detail}"></span>
+                    </h2>
+                </div>
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                            <span data-th-text="#{core.template.Template.templateId}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="template" data-duice-property="templateId" class="width--100 code"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.template.Template.name}" class="font-weight--bold tag-required"></span>
+                                <input type="text" data-duice-bind="template" data-duice-property="name" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span class="font-weight--bold" data-th-text="#{core.template.Template.subject}"></span>
+                                <input type="text" data-duice-bind="template" data-duice-property="subject" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.template.Template.content}" class="font-weight--bold"></span>
+                                <duice-codemirror
+                                        class="code box"
+                                        data-duice-bind="template"
+                                        data-duice-property="content"
+                                        data-duice-theme="dracula">
+                                </duice-codemirror>
+                            </label>
+                        </div>
+                    </form>
+                    <div class="display--flex justify-content--space-between gap--1rem">
+                        <div></div>
+                        <div class="display--flex justify-content--end gap--1px">
+                            <button class="button" type="button" onclick="deleteTemplate();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.template:edit'')')}?'locked'"
+                                    data-duice-bind="template"
+                                    data-duice-execute="(template.templateId && !template._new) ? this.disabled=false : this.disabled=true;">
+                                <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                                <span data-th-text="#{web.global.delete}"></span>
+                            </button>
+                            <button class="button" type="button" onclick="saveTemplate();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.template:edit'')')}?'locked'"
+                                    data-duice-bind="template"
+                                    data-duice-execute="(template.templateId || template._new) ? this.disabled=false : this.disabled=true;">
+                                <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
+                                <span data-th-text="#{web.global.save}"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-align--right font-size--xx-small font-style--italic">
+                        Last Updated At
+                        <span data-duice-bind="template" data-duice-property="systemUpdatedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                        By
+                        <span data-duice-bind="template" data-duice-property="systemUpdatedBy"></span>
+                    </div>
+                </div>
+            </div>
+            <!-- ====================================== -->
+            <!-- end: template detail                      -->
+            <!-- ====================================== -->
+        </div>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: template content                     -->
+    <!-- ====================================== -->
+
+</main>

@@ -9,6 +9,6 @@ public class VerificationSearch {
 
     private String verificationId;
 
-    private String name;
+    private String principal;
 
 }

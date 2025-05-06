@@ -1,17 +1,15 @@
 package org.chomookun.arch4j.web.view.admin;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.notification.model.NotificationSearch;
 import org.chomookun.arch4j.core.verification.VerificationService;
+import org.chomookun.arch4j.core.verification.VerifierService;
+import org.chomookun.arch4j.core.verification.adaptor.VerifierProcessorDefinition;
+import org.chomookun.arch4j.core.verification.adaptor.VerifierProcessorDefinitionRegistry;
 import org.chomookun.arch4j.core.verification.model.*;
-import org.chomookun.arch4j.core.verification.verifier.IssueCodeRequest;
-import org.chomookun.arch4j.core.verification.model.ChallengeResult;
-import org.chomookun.arch4j.core.verification.verifier.VerifyCodeRequest;
-import org.chomookun.arch4j.core.verification.model.VerifyResult;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +29,8 @@ public class VerificationController {
 
     private final VerificationService verificationService;
 
+    private final VerifierService verifierService;
+
     private final NotificationService notificationService;
 
     private final ObjectMapper objectMapper;
@@ -38,8 +38,8 @@ public class VerificationController {
     @GetMapping
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView("admin/verification");
-        List<String> types = verificationService.getAvailableTypes();
-        modelAndView.addObject("types", types);
+        List<VerifierProcessorDefinition> verifierProcessorDefinitions = VerifierProcessorDefinitionRegistry.getDefinitions();
+        modelAndView.addObject("verifierProcessorDefinitions", verifierProcessorDefinitions);
         List<Notification> notifications = notificationService.getNotifications(NotificationSearch.builder().build(), Pageable.unpaged()).getContent();
         modelAndView.addObject("notifications", notifications);
         return modelAndView;
@@ -51,16 +51,40 @@ public class VerificationController {
         return verificationService.getVerifications(verificationSearch, pageable);
     }
 
-    @PostMapping("issue-code")
+    @GetMapping("get-verifiers")
     @ResponseBody
-    public ChallengeResult requestVerification(@RequestBody IssueCodeRequest issueCodeRequest) throws JsonProcessingException {
-        return verificationService.issueCode(issueCodeRequest);
+    public Page<Verifier> getVerifiers(VerifierSearch verifierSearch, Pageable pageable) {
+        return verifierService.getVerifiers(verifierSearch, pageable);
     }
 
-    @PatchMapping("verify-code")
+    @PostMapping("save-verifier")
     @ResponseBody
-    public VerifyResult verifyCode(@RequestBody VerifyCodeRequest verifyCodeRequest) throws JsonProcessingException {
-        return verificationService.verifyCode(verifyCodeRequest);
+    public Verifier saveVerifier(@RequestBody Verifier verifier) {
+        return verifierService.saveVerifier(verifier);
+    }
+
+    @GetMapping("get-verifier")
+    @ResponseBody
+    public Verifier getVerifier(@RequestParam("verifierId") String verifierId) {
+        return verifierService.getVerifier(verifierId).orElseThrow();
+    }
+
+    @DeleteMapping("delete-verifier")
+    @ResponseBody
+    public void deleteVerifier(@RequestParam("verifierId") String verifierId) {
+        verifierService.deleteVerifier(verifierId);
+    }
+
+    @PostMapping("issue-challenge")
+    @ResponseBody
+    public IssueChallengeResult issueChallenge(@RequestBody IssueChallengeParam param) {
+        return verificationService.issueChallenge(param);
+    }
+
+    @PostMapping("verify-challenge")
+    @ResponseBody
+    public VerifyChallengeResult verifyCode(@RequestBody VerifyChallengeParam param) {
+        return verificationService.verifyChallenge(param);
     }
 
 }

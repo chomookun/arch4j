@@ -133,11 +133,12 @@ const _fetch = function(url, option) {
             // checks response
             if (response.ok) {
                 return response;
-            }else{
+            } else {
+                const clonedResponse = response.clone();
                 const contentType = response.headers.get('content-type');
                 let errorMessage;
-                if(contentType && contentType.includes('application/json')){
-                    let responseJson = await response.json();
+                if (contentType && contentType.includes('application/json')) {
+                    let responseJson = await clonedResponse.json();
                     // redirect
                     if (responseJson.redirect) {
                         console.log(`redirect to ${responseJson.redirectUri}`);
@@ -145,22 +146,27 @@ const _fetch = function(url, option) {
                         return;
                     }
                     errorMessage = responseJson.message;
-                }else{
-                    errorMessage = await response.text();
+                } else {
+                    errorMessage = await clonedResponse.text();
                 }
-                throw Error(errorMessage);
+                // alert error message
+                if (!option['_suppressAlert']) {
+                    await _alert(errorMessage).then();
+                }
+                return response;
             }
         })
-        .catch((error)=> {
-            console.error(error);
-            if(!option['_suppressAlert']) {
-                _alert(error.message).then();
+        .catch(async (error)=> {
+            // alert error message
+            if (!option['_suppressAlert']) {
+                await _alert(error.message).then();
             }
+            console.error(error);
             // calls error interceptor
             _fetch.interceptors.error.forEach(interceptor => {
                 interceptor.call(error);
             });
-            throw Error(error);
+            throw error;
         })
         .finally(() => {
             _stopProgress();
