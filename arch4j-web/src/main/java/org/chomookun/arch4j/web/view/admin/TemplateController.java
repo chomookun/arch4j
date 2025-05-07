@@ -27,7 +27,9 @@ public class TemplateController {
 
     @GetMapping
     public ModelAndView index() {
-        return new ModelAndView("admin/template");
+        ModelAndView modelAndView = new ModelAndView("admin/template");
+        modelAndView.addObject("formats", Template.Format.values());
+        return modelAndView;
     }
 
     @GetMapping("get-templates")

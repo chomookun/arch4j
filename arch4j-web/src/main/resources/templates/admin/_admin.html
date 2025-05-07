@@ -367,6 +367,12 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/admin/template}" th:classappend="!${#authorization.expression('hasAuthority(''admin.template'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-template.svg}" alt="template"/>
+                    <span data-th-text="#{web.admin.template}"></span>
+                </a>
+            </li>
+            <li>
                 <a th:href="@{/admin/notification}" th:classappend="!${#authorization.expression('hasAuthority(''admin.notification'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-notification.svg}" alt="notification"/>
                     <span data-th-text="#{web.admin.notification}"></span>

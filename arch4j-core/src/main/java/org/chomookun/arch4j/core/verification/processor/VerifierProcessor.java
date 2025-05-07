@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.verification.adaptor;
+package org.chomookun.arch4j.core.verification.processor;
 
 import lombok.Getter;
 import org.chomookun.arch4j.core.verification.model.*;

@@ -20,20 +20,15 @@ public class Template extends BaseModel {
 
     private String name;
 
+    private Format format;
+
     private String subject;
 
     private String content;
 
-    @Builder.Default
-    private Map<String,Object> variables = new LinkedHashMap<>();
-
-    /**
-     * Adds variable to the email template
-     * @param key key
-     * @param value value
-     */
-    public void addVariable(String key, Object value) {
-        variables.put(key, value);
+    public enum Format {
+        TEXT,
+        HTML
     }
 
     /**
@@ -48,6 +43,7 @@ public class Template extends BaseModel {
                 .systemUpdatedBy(templateEntity.getSystemUpdatedBy())
                 .templateId(templateEntity.getTemplateId())
                 .name(templateEntity.getName())
+                .format(templateEntity.getFormat())
                 .subject(templateEntity.getSubject())
                 .content(templateEntity.getContent())
                 .build();

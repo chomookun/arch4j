@@ -1,11 +1,11 @@
-package org.chomookun.arch4j.core.verification.adaptor.totp;
+package org.chomookun.arch4j.core.verification.processor.totp;
 
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.security.TotpService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.verification.model.Verifier;
-import org.chomookun.arch4j.core.verification.adaptor.VerifierProcessor;
-import org.chomookun.arch4j.core.verification.adaptor.VerifierProcessorFactory;
+import org.chomookun.arch4j.core.verification.processor.VerifierProcessor;
+import org.chomookun.arch4j.core.verification.processor.VerifierProcessorFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

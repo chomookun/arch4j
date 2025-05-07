@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.i18n.I18nGetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSetter;
 import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
+import org.chomookun.arch4j.core.template.model.Template;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,9 @@ public class TemplateEntity extends BaseEntity implements I18nSupportEntity<Temp
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "format")
+    private Template.Format format;
 
     @Column(name = "subject", length = 1024)
     private String subject;
@@ -79,5 +84,8 @@ public class TemplateEntity extends BaseEntity implements I18nSupportEntity<Temp
                 .whenI18n(TemplateI18nEntity::getContent)
                 .get();
     }
+
+    @Converter(autoApply = true)
+    public static class FormatConverter extends GenericEnumConverter<Template.Format> {}
 
 }

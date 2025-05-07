@@ -7,7 +7,7 @@ import org.chomookun.arch4j.core.verification.entity.VerifierEntity;
 import org.chomookun.arch4j.core.verification.model.*;
 import org.chomookun.arch4j.core.verification.repository.VerificationRepository;
 import org.chomookun.arch4j.core.verification.repository.VerifierRepository;
-import org.chomookun.arch4j.core.verification.adaptor.*;
+import org.chomookun.arch4j.core.verification.processor.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

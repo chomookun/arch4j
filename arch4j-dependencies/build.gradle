@@ -46,6 +46,9 @@ dependencies {
         api 'org.apache.commons:commons-math3:3.6.1'
         api 'org.apache.commons:commons-csv:1.10.0'
 
+        // template engine
+        api 'ognl:ognl:3.2.21'
+
         // uuid-creator
         api 'com.github.f4b6a3:uuid-creator:6.1.1'
 

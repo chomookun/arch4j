@@ -1,11 +1,11 @@
-package org.chomookun.arch4j.core.verification.adaptor.totp;
+package org.chomookun.arch4j.core.verification.processor.totp;
 
 import lombok.Setter;
 import org.chomookun.arch4j.core.security.TotpService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.verification.model.*;
-import org.chomookun.arch4j.core.verification.adaptor.*;
+import org.chomookun.arch4j.core.verification.processor.*;
 
 import java.util.Properties;
 

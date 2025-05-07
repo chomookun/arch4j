@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.verification.adaptor;
+package org.chomookun.arch4j.core.verification.processor;
 
 public abstract class VerifierProcessorDefinition {
 

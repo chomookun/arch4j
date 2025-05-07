@@ -1,5 +1,7 @@
 package org.chomookun.arch4j.core.notification.client.email;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
@@ -9,6 +11,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -50,17 +53,22 @@ public class EmailNotificationClient extends NotificationClient {
         mailSender.setPassword(password);
         mailSender.setJavaMailProperties(properties);
         // message
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(content);
-        // option
-        if (option != null) {
-            if (option.containsKey("cc")) {
-                message.setCc(option.get("cc").toString());
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = null;
+        try {
+            helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content, true);
+            if (option != null) {
+                if (option.containsKey("cc")) {
+                    helper.setCc(option.get("cc").toString());
+                }
             }
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
-        mailSender.send(message);
+        mailSender.send(mimeMessage);
     }
 
 }

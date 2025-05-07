@@ -27,8 +27,8 @@ values
     ('admin.page:edit','Y','Admin Pages Edit Authority'),
     ('admin.git','Y','Admin Git Access Authority'),
     ('admin.git:edit','Y','Admin Git Edit Authority'),
-    ('admin.email','Y','Admin Email Access Authority'),
-    ('admin.email:edit','Y','Admin Email Edit Authority'),
+    ('admin.template','Y','Admin Template Access Authority'),
+    ('admin.template:edit','Y','Admin Template Edit Authority'),
     ('admin.notification','Y','Admin Notification Access Authority'),
     ('admin.notification:edit','Y','Admin Notification Edit Authority'),
     ('admin.verification','Y','Admin Verification Access Authority'),
@@ -67,7 +67,7 @@ values
     ('DEVELOPER','admin.board'),
     ('DEVELOPER','admin.page'),
     ('DEVELOPER','admin.git'),
-    ('DEVELOPER','admin.email'),
+    ('DEVELOPER','admin.template'),
     ('DEVELOPER','admin.notification'),
     ('DEVELOPER','admin.verification'),
     ('DEVELOPER','admin.storage'),
@@ -652,13 +652,14 @@ insert into `core_page_widget` (
 insert into `core_git` (`git_id`,`name`,`note`,`url`,`branch`, `discussion_enabled`, `discussion_id`) values
     ('arch4j', 'arch4j repository', 'Arch4j Github Repository','https://github.com/chomookun/arch4j.git', null, 'Y', '7eddf209186d487ab58e30a090944d79');
 
--- core_email
-insert into `core_email` (`email_id`,`name`,`subject`,`content`) values
-    ('verification','Verification Email', 'Verification Answer: [[${answer}]]', 'Verification Answer: [[${answer}]]');
+-- core_template
+insert into `core_template` (`template_id`,`system_required`,`name`,`format`,`subject`,`content`) values
+    ('verification.email','Y','Verification Email','HTML', 'Verification Code: [[${code}]]', 'Verification Code: <span data-th-text="${code}" style="font-weight:bold;"></span>'),
+    ('verification.sms','Y','Verification SMS','TEXT', 'Verification Code: [[${code}]]', 'Verification Code: [[${code}]]');
 
 -- core_notification
 insert into `core_notification` (`notification_id`,`system_required`,`name`, `client_id`, `client_config`) values
-    ('verification:email','Y','Email Verification Channel','EMAIL','
+    ('verification.email','Y','Email Verification Channel','EMAIL','
 host=sandbox.smtp.mailtrap.io
 port=25
 username=987a77fac40349
@@ -667,7 +668,9 @@ password=cfad266492f5fa
 
 -- core_verifier
 insert into `core_verifier` (`verifier_id`,`system_required`,`name`,`processor_type`,`processor_config`,`enabled`) values
-    ('totp','Y','TOTP Verifier', 'totp', 'test=','Y');
+    ('totp','Y','TOTP Verifier', 'totp', '','Y'),
+    ('email','Y','Email Verifier', 'notification', 'notifierId=verification.email
+    templateId=verification.email','Y');
 
 -- core_example
 insert into `core_example` (`example_id`,`name`,`number`,`decimal_number`,`date_time`,`date`,`time`,`enabled`,`type`,`code`,`icon`) values

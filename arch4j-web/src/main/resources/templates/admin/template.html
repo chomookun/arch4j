@@ -110,7 +110,7 @@
             // check duplicated id
             let url = new URL(`${location.pathname}/get-template`, location.origin);
             url.searchParams.append('templateId', templateId);
-            let response = await _fetch(url, {}, true);
+            let response = await _fetch(url, {_suppressAlert: true});
             if (response.ok) {
                 let template = await response.json();
                 if (template) {
@@ -263,7 +263,10 @@
                                 <span data-duice-bind="status" data-duice-execute="this.innerHTML = (templateSearch._page * templateSearch._size) + status.count;" class="number"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="template" data-duice-property="templateId" class="code"></span>
+                                <span data-duice-bind="template"
+                                      data-duice-property="templateId"
+                                      data-duice-execute="this.classList.toggle('tag-system-required', template.systemRequired);"
+                                      class="code"></span>
                             </td>
                             <td>
                                 <span data-duice-bind="template" data-duice-property="name"></span>
@@ -325,6 +328,17 @@
                             <label>
                                 <span data-th-text="#{core.template.Template.name}" class="font-weight--bold tag-required"></span>
                                 <input type="text" data-duice-bind="template" data-duice-property="name" class="width--100"/>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6">
+                            <label>
+                                <span class="font-weight--bold" data-th-text="#{core.template.Template.format}"></span>
+                                <select data-duice-bind="template" data-duice-property="format" class="width--100">
+                                    <option value="" data-th-text="|#{web.global.select}...|"></option>
+                                    <option th:each="format : ${formats}"
+                                            th:value="${format}"
+                                            th:text="${format}"></option>
+                                </select>
                             </label>
                         </div>
                         <div class="grid-column--span-12">

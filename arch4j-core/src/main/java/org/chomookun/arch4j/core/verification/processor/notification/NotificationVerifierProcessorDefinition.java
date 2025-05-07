@@ -1,7 +1,7 @@
-package org.chomookun.arch4j.core.verification.adaptor.notification;
+package org.chomookun.arch4j.core.verification.processor.notification;
 
-import org.chomookun.arch4j.core.verification.adaptor.VerifierProcessor;
-import org.chomookun.arch4j.core.verification.adaptor.VerifierProcessorDefinition;
+import org.chomookun.arch4j.core.verification.processor.VerifierProcessor;
+import org.chomookun.arch4j.core.verification.processor.VerifierProcessorDefinition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
