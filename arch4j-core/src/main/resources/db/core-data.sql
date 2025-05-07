@@ -658,12 +658,13 @@ insert into `core_template` (`template_id`,`system_required`,`name`,`format`,`su
     ('verification.sms','Y','Verification SMS','TEXT', 'Verification Code: [[${code}]]', 'Verification Code: [[${code}]]');
 
 -- core_notification
-insert into `core_notification` (`notification_id`,`system_required`,`name`, `client_id`, `client_config`) values
-    ('verification.email','Y','Email Verification Channel','EMAIL','
-host=sandbox.smtp.mailtrap.io
+insert into `core_notifier` (`notifier_id`,`system_required`,`name`, `client_type`, `client_config`) values
+    ('verification.email','Y','Email Verification Channel','EMAIL','host=sandbox.smtp.mailtrap.io
 port=25
 username=987a77fac40349
 password=cfad266492f5fa
+    '),
+    ('test.slack','N','Slack Test Channel','SLACK','url=https://hooks.slack.com/services/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
     ');
 
 -- core_verifier

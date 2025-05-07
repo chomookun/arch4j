@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.verification.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.chomookun.arch4j.core.notification.model.NotificationMessage;
+import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.verification.entity.VerificationEntity;
 
@@ -29,7 +29,7 @@ public class Verification {
     @Setter
     private String notificationMessageId;
 
-    private NotificationMessage notificationMessage;
+    private Notification notificationMessage;
 
     @Setter
     private String code;
@@ -71,7 +71,7 @@ public class Verification {
                         .map(User::from)
                         .orElse(null))
                 .notificationMessage(Optional.ofNullable(verificationEntity.getNotificationMessage())
-                        .map(NotificationMessage::from)
+                        .map(Notification::from)
                         .orElse(null))
                 .build();
     }

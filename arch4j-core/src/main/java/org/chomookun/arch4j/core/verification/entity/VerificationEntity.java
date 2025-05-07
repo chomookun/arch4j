@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.notification.entity.NotificationMessageEntity;
+import org.chomookun.arch4j.core.notification.entity.NotificationEntity;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
 
 import java.time.Instant;
@@ -61,6 +61,6 @@ public class VerificationEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notification_message_id", insertable = false, updatable = false)
-    private NotificationMessageEntity notificationMessage;
+    private NotificationEntity notificationMessage;
 
 }

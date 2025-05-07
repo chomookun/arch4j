@@ -2,9 +2,9 @@ package org.chomookun.arch4j.web.view.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.notification.NotificationService;
-import org.chomookun.arch4j.core.notification.model.Notification;
-import org.chomookun.arch4j.core.notification.model.NotificationSearch;
+import org.chomookun.arch4j.core.notification.NotifierService;
+import org.chomookun.arch4j.core.notification.model.Notifier;
+import org.chomookun.arch4j.core.notification.model.NotifierSearch;
 import org.chomookun.arch4j.core.verification.VerificationService;
 import org.chomookun.arch4j.core.verification.VerifierService;
 import org.chomookun.arch4j.core.verification.processor.VerifierProcessorDefinition;
@@ -31,7 +31,7 @@ public class VerificationController {
 
     private final VerifierService verifierService;
 
-    private final NotificationService notificationService;
+    private final NotifierService notificationService;
 
     private final ObjectMapper objectMapper;
 
@@ -40,7 +40,7 @@ public class VerificationController {
         ModelAndView modelAndView = new ModelAndView("admin/verification");
         List<VerifierProcessorDefinition> verifierProcessorDefinitions = VerifierProcessorDefinitionRegistry.getDefinitions();
         modelAndView.addObject("verifierProcessorDefinitions", verifierProcessorDefinitions);
-        List<Notification> notifications = notificationService.getNotifications(NotificationSearch.builder().build(), Pageable.unpaged()).getContent();
+        List<Notifier> notifications = notificationService.getNotifiers(NotifierSearch.builder().build(), Pageable.unpaged()).getContent();
         modelAndView.addObject("notifications", notifications);
         return modelAndView;
     }

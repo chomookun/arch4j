@@ -2,7 +2,7 @@ package org.chomookun.arch4j.core.notification.client.slack;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.chomookun.arch4j.core.notification.client.NotificationClient;
+import org.chomookun.arch4j.core.notification.client.NotifierClient;
 import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -12,13 +12,13 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 @Slf4j
-public class SlackNotificationClient extends NotificationClient {
+public class SlackNotifierClient extends NotifierClient {
 
     private final String url;
 
     private final boolean insecure;
 
-    public SlackNotificationClient(Properties config) {
+    public SlackNotifierClient(Properties config) {
         super(config);
         this.url = config.getProperty("url");
         this.insecure = Optional.ofNullable(config.getProperty("insecure"))

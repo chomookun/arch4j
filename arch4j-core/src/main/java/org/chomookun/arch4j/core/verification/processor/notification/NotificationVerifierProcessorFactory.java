@@ -1,8 +1,8 @@
 package org.chomookun.arch4j.core.verification.processor.notification;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.notification.NotificationMessageService;
 import org.chomookun.arch4j.core.notification.NotificationService;
+import org.chomookun.arch4j.core.notification.NotifierService;
 import org.chomookun.arch4j.core.template.TemplateService;
 import org.chomookun.arch4j.core.verification.model.Verifier;
 import org.chomookun.arch4j.core.verification.processor.VerifierProcessor;
@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotificationVerifierProcessorFactory extends VerifierProcessorFactory {
 
-    private final NotificationService notificationService;
+    private final NotifierService notificationService;
 
-    private final NotificationMessageService notificationMessageService;
+    private final NotificationService notificationMessageService;
 
     private final TemplateService templateService;
 

@@ -1,39 +1,57 @@
 package org.chomookun.arch4j.core.notification.model;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.notification.entity.NotificationEntity;
-import org.chomookun.arch4j.core.common.data.BaseModel;
 
+import java.time.Instant;
+import java.util.Map;
+
+@Builder
 @Data
-@EqualsAndHashCode(callSuper = true)
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Notification extends BaseModel {
+public class Notification {
 
     private String notificationId;
 
-    private String name;
+    private String notifierId;
 
-    private String clientId;
+    private String notifierName;
 
-    private String clientConfig;
+    private String to;
 
-    /**
-     * Notification factory method
-     * @param notificationEntity notification entity
-     * @return notification
-     */
+    private String subject;
+
+    private String content;
+
+    private Map<String, Object> option;
+
+    private Instant submittedAt;
+
+    private Instant sentAt;
+
+    private Status status;
+
+    private String errorMessage;
+
+    public enum Status {
+        SUBMITTED,
+        COMPLETED,
+        FAILED
+    }
+
     public static Notification from(NotificationEntity notificationEntity) {
         return Notification.builder()
-                .systemRequired(notificationEntity.isSystemRequired())
-                .systemUpdatedAt(notificationEntity.getSystemUpdatedAt())
-                .systemUpdatedBy(notificationEntity.getSystemUpdatedBy())
                 .notificationId(notificationEntity.getNotificationId())
-                .name(notificationEntity.getName())
-                .clientId(notificationEntity.getClientId())
-                .clientConfig(notificationEntity.getClientConfig())
+                .notifierId(notificationEntity.getNotifierId())
+                .notifierName(notificationEntity.getNotifierName())
+                .to(notificationEntity.getTo())
+                .subject(notificationEntity.getSubject())
+                .content(notificationEntity.getContent())
+                .submittedAt(notificationEntity.getSubmittedAt())
+                .sentAt(notificationEntity.getSentAt())
+                .status(notificationEntity.getStatus())
+                .errorMessage(notificationEntity.getErrorMessage())
                 .build();
     }
 

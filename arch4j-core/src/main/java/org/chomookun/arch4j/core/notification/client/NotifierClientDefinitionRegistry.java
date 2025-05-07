@@ -12,22 +12,22 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Component
-public class NotificationClientDefinitionRegistry implements BeanPostProcessor {
+public class NotifierClientDefinitionRegistry implements BeanPostProcessor {
 
     @Getter
-    private static final List<NotificationClientDefinition> notificationClientDefinitions = new ArrayList<>();
+    private static final List<NotifierClientDefinition> notifierClientDefinitions = new ArrayList<>();
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-        if(bean instanceof NotificationClientDefinition) {
-            notificationClientDefinitions.add((NotificationClientDefinition) bean);
+        if(bean instanceof NotifierClientDefinition) {
+            notifierClientDefinitions.add((NotifierClientDefinition) bean);
         }
         return bean;
     }
 
-    public static Optional<NotificationClientDefinition> getNotificationClientDefinition(String notificationClientId) {
-        return notificationClientDefinitions.stream()
-                .filter(item -> Objects.equals(item.getClientId(), notificationClientId))
+    public static Optional<NotifierClientDefinition> getNotifierDefinition(String notifierType) {
+        return notifierClientDefinitions.stream()
+                .filter(item -> Objects.equals(item.getClientType(), notifierType))
                 .findFirst();
     }
 

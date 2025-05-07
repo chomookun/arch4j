@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class NotificationMessageSearch {
+public class NotifierSearch {
 
-    private String notificationId;
+    private String notifierId;
 
-    private NotificationMessage.Status status;
+    private String name;
 
 }

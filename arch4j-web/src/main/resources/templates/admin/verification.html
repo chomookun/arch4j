@@ -30,6 +30,7 @@
             verifierId: null,
             name:null
         });
+        duice.ObjectProxy.setDisabledAll(verifier, true);
         const verifierProcessorDefinitions = new duice.ArrayProxy(/*[[${verifierProcessorDefinitions}]]*/[]);
         duice.ObjectProxy.onPropertyChanging(verifier, async event => {
             console.error(event);
@@ -486,7 +487,7 @@
     <!-- ====================================== -->
     <!-- start: verifier tab content            -->
     <!-- ====================================== -->
-    <div id="verifierTabContent" class="display--grid grid-template-columns--12fr gap--1em">
+    <div id="verifierTabContent" class="display--grid grid-template-columns--12fr gap--1em" hidden>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
             <!-- start: verifier list                   -->

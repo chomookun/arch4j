@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public class NotificationSearch {
 
-    private String notificationId;
+    private String notifierId;
 
-    private String name;
+    private Notification.Status status;
 
 }

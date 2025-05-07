@@ -3,21 +3,14 @@ package org.chomookun.arch4j.core.notification.client.email;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
-import org.chomookun.arch4j.core.notification.client.NotificationClient;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
+import org.chomookun.arch4j.core.notification.client.NotifierClient;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 @Slf4j
-public class EmailNotificationClient extends NotificationClient {
+public class EmailNotifierClient extends NotifierClient {
 
     private final String host;
 
@@ -29,7 +22,7 @@ public class EmailNotificationClient extends NotificationClient {
 
     private final Properties properties;
 
-    public EmailNotificationClient(Properties config) {
+    public EmailNotifierClient(Properties config) {
         super(config);
         this.host = config.getProperty("host");
         this.port = Integer.parseInt(config.getProperty("port"));

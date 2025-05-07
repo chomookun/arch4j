@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.notification.NotificationMessageService;
-import org.chomookun.arch4j.core.notification.model.Notification;
-import org.chomookun.arch4j.core.notification.model.NotificationMessage;
-import org.chomookun.arch4j.core.notification.model.NotificationMessageSearch;
-import org.chomookun.arch4j.core.notification.model.NotificationSearch;
 import org.chomookun.arch4j.core.notification.NotificationService;
-import org.chomookun.arch4j.core.notification.client.NotificationClientDefinitionRegistry;
+import org.chomookun.arch4j.core.notification.client.NotifierClientFactory;
+import org.chomookun.arch4j.core.notification.model.Notifier;
+import org.chomookun.arch4j.core.notification.model.Notification;
+import org.chomookun.arch4j.core.notification.model.NotificationSearch;
+import org.chomookun.arch4j.core.notification.model.NotifierSearch;
+import org.chomookun.arch4j.core.notification.NotifierService;
+import org.chomookun.arch4j.core.notification.client.NotifierClientDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.validation.Valid;
 
-import java.util.Map;
+import java.util.List;
 
 @Controller
 @ConditionalOnProperty(prefix = "web.admin", name = "enabled", havingValue = "true", matchIfMissing = false)
@@ -31,17 +32,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final NotifierService notifierService;
 
-    private final NotificationMessageService notificationMessageService;
+    private final NotificationService notificationService;
 
     private final ObjectMapper objectMapper;
 
     @GetMapping
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView("admin/notification");
-        modelAndView.addObject("notificationClientDefinitions", NotificationClientDefinitionRegistry.getNotificationClientDefinitions());
-        modelAndView.addObject("notificationMessageStatuses", NotificationMessage.Status.values());
+        List<Notifier> notifiers = notifierService.getNotifiers(NotifierSearch.builder().build(), Pageable.unpaged()).getContent();
+        modelAndView.addObject("notifiers", notifiers);
+        modelAndView.addObject("notificationStatuses", Notification.Status.values());
+        modelAndView.addObject("notifierClientDefinitions", NotifierClientDefinitionRegistry.getNotifierClientDefinitions());
         return modelAndView;
     }
 
@@ -51,49 +54,50 @@ public class NotificationController {
         return notificationService.getNotifications(notificationSearch, pageable);
     }
 
-    @GetMapping("get-notification")
+    @PostMapping("send-notification")
     @ResponseBody
-    public Notification getNotification(@RequestParam("notificationId")String notificationId) {
-        return notificationService.getNotification(notificationId)
+    public void sendNotification(@RequestBody Notification notification) throws JsonProcessingException {
+        notificationService.sendNotification(notification.getNotifierId(), notification.getTo(), notification.getSubject(), notification.getContent(), null);
+    }
+
+    @GetMapping("get-notifiers")
+    @ResponseBody
+    public Page<Notifier> getNotifiers(NotifierSearch notifierSearch, Pageable pageable) {
+        return notifierService.getNotifiers(notifierSearch, pageable);
+    }
+
+    @GetMapping("get-notifier")
+    @ResponseBody
+    public Notifier getNotifier(@RequestParam("notifierId")String notifierId) {
+        return notifierService.getNotifier(notifierId)
                 .orElseThrow();
     }
 
-    @PostMapping("save-notification")
+    @PostMapping("save-notifier")
     @ResponseBody
     @Transactional
     @PreAuthorize("hasAuthority('admin.notification:edit')")
-    public Notification saveNotification(@RequestBody @Valid Notification notification) {
-        return notificationService.saveNotification(notification);
+    public Notifier saveNotifier(@RequestBody @Valid Notifier notifier) {
+        return notifierService.saveNotifier(notifier);
     }
 
-    @GetMapping("delete-notification")
+    @GetMapping("delete-notifier")
     @ResponseBody
     @Transactional
     @PreAuthorize("hasAuthority('admin.notification:edit')")
-    public void deleteNotification(@RequestParam("notificationId")String notificationId) {
-        notificationService.deleteNotification(notificationId);
+    public void deleteNotifier(@RequestParam("notifierId")String notifierId) {
+        notifierService.deleteNotifier(notifierId);
     }
 
-    @PostMapping("send-notification-message")
+    @PostMapping("test-notifier")
     @ResponseBody
-    public void sendNotificationMessage(@RequestBody JsonNode jsonNode) throws JsonProcessingException {
-        JsonNode notificationNode = jsonNode.get("notification");
-        Notification notification = objectMapper.treeToValue(notificationNode, Notification.class);
+    public void testNotifier(@RequestBody JsonNode jsonNode) throws JsonProcessingException {
+        JsonNode notifierNode = jsonNode.get("notifier");
+        Notifier notifier = objectMapper.treeToValue(notifierNode, Notifier.class);
         String to = jsonNode.get("to").asText();
         String subject = jsonNode.get("subject").asText();
         String content = jsonNode.get("content").asText();
-        boolean test = jsonNode.get("test").asBoolean(false);
-        if (test) {
-            notificationService.testNotification(notification, to, subject, content);
-        } else {
-            notificationMessageService.sendNotificationMessage(notification, to, subject, content, null);
-        }
-    }
-
-    @GetMapping("get-notification-messages")
-    @ResponseBody
-    public Page<NotificationMessage> getNotificationMessages(NotificationMessageSearch notificationMessageSearch, Pageable pageable) {
-        return notificationMessageService.getNotificationMessages(notificationMessageSearch, pageable);
+        notifierService.testNotifier(notifier, to, subject, content);
     }
 
 }

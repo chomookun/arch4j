@@ -1,100 +1,84 @@
 package org.chomookun.arch4j.core.notification;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
-import org.chomookun.arch4j.core.notification.client.NotificationClient;
-import org.chomookun.arch4j.core.notification.client.NotificationClientFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.notification.entity.NotificationEntity;
-import org.chomookun.arch4j.core.notification.repository.NotificationRepository;
 import org.chomookun.arch4j.core.notification.model.Notification;
+import org.chomookun.arch4j.core.notification.model.Notifier;
 import org.chomookun.arch4j.core.notification.model.NotificationSearch;
+import org.chomookun.arch4j.core.notification.repository.NotificationRepository;
+import org.chomookun.arch4j.core.common.data.IdGenerator;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-@Service
+@Component
+@Lazy(false)
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
 
-    @PersistenceContext
-    private final EntityManager entityManager;
+    private final NotifierService notifierService;
+
+    private final NotificationConsumer notificationConsumer;
 
     private final NotificationRepository notificationRepository;
 
     /**
-     * Saves notification
-     * @param notification notification
-     * @return saved notification
-     */
-    @Transactional
-    public Notification saveNotification(Notification notification) {
-        NotificationEntity notificationEntity = Optional.ofNullable(notification.getNotificationId())
-                .flatMap(notificationRepository::findById)
-                .orElse(NotificationEntity.builder()
-                        .notificationId(notification.getNotificationId())
-                        .build());
-        notificationEntity.setSystemUpdatedAt(LocalDateTime.now());
-        notificationEntity.setName(notification.getName());
-        notificationEntity.setClientId(notification.getClientId());
-        notificationEntity.setClientConfig(PbePropertiesUtil.encodePropertiesString(notification.getClientConfig()));
-        // saves
-        NotificationEntity savedNotificationEntity = notificationRepository.saveAndFlush(notificationEntity);
-        entityManager.refresh(savedNotificationEntity);
-        return Notification.from(savedNotificationEntity);
-    }
-
-    /**
-     * Gets notification
-     * @param notificationId notification id
+     * Sends notification
+     * @param notifier notifier
+     * @param to to
+     * @param subject subject
+     * @param content content
+     * @param option option
      * @return notification
      */
-    public Optional<Notification> getNotification(String notificationId) {
-        return notificationRepository.findById(notificationId)
-                .map(Notification::from);
+    public Notification sendNotification(Notifier notifier, String to, String subject, String content, Map<String,Object> option) {
+        Notification notification = Notification.builder()
+                .notificationId(IdGenerator.uuid())
+                .notifierId(notifier.getNotifierId())
+                .notifierName(notifier.getName())
+                .to(to)
+                .subject(subject)
+                .content(content)
+                .option(option)
+                .build();
+        notificationConsumer.addNotification(notification);
+        return notification;
     }
 
     /**
-     * Deletes alarm
-     * @param notificationId alarm id
+     * Sends notification message
+     * @param notifierId notifier id
+     * @param to to
+     * @param subject subject
+     * @param content content
+     * @param option option
+     * @return notification
      */
-    @Transactional
-    public void deleteNotification(String notificationId) {
-        NotificationEntity notificationEntity = notificationRepository.findById(notificationId).orElseThrow();
-        notificationRepository.delete(notificationEntity);
-        notificationRepository.flush();
+    public Notification sendNotification(String notifierId, String to, String subject, String content, Map<String,Object> option) {
+        Notifier notification = notifierService.getNotifier(notifierId).orElseThrow();
+        return sendNotification(notification, to, subject, content, option);
     }
 
     /**
-     * Gets alarms
+     * Gets notifications
      * @param notificationSearch notification search
      * @param pageable pageable
-     * @return page of notification
+     * @return notification page
      */
     public Page<Notification> getNotifications(NotificationSearch notificationSearch, Pageable pageable) {
-        Page<NotificationEntity> page = notificationRepository.findAll(notificationSearch, pageable);
-        List<Notification> notifications = page.getContent().stream()
+        Page<NotificationEntity> notificationEntityPage = notificationRepository.findAll(notificationSearch, pageable);
+        List<Notification> notifications = notificationEntityPage.getContent().stream()
                 .map(Notification::from)
-                .collect(Collectors.toList());
-        return new PageImpl<>(notifications, pageable, page.getTotalElements());
-    }
-
-    /**
-     * Tests alarm
-     * @param notification alarm
-     */
-    public void testNotification(Notification notification, String to, String subject, String content) {
-        NotificationClient notificationClient = NotificationClientFactory.getNotificationClient(notification);
-        notificationClient.sendMessage(to, subject, content, null);
+                .toList();
+        long total = notificationEntityPage.getTotalElements();
+        return new PageImpl<>(notifications, pageable, total);
     }
 
 }

@@ -2,8 +2,8 @@ package org.chomookun.arch4j.core.notification.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.notification.entity.NotificationEntity;
-import org.chomookun.arch4j.core.notification.model.NotificationSearch;
+import org.chomookun.arch4j.core.notification.entity.NotifierEntity;
+import org.chomookun.arch4j.core.notification.model.NotifierSearch;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -14,16 +14,16 @@ import org.springframework.data.domain.Pageable;
 @Slf4j
 class NotificationRepositoryTest extends CoreTestSupport {
 
-    final NotificationRepository alarmRepository;
+    final NotifierRepository alarmRepository;
 
     @Test
     void findAll() {
         // given
-        NotificationSearch notificationSearch = NotificationSearch.builder()
+        NotifierSearch notificationSearch = NotifierSearch.builder()
                 .build();
         Pageable pageable = PageRequest.of(0, 10);
         // when
-        Page<NotificationEntity> notificationEntityPage = alarmRepository.findAll(notificationSearch, pageable);
+        Page<NotifierEntity> notificationEntityPage = alarmRepository.findAll(notificationSearch, pageable);
         // then
         log.info("{}", notificationEntityPage);
     }
@@ -31,11 +31,11 @@ class NotificationRepositoryTest extends CoreTestSupport {
     @Test
     void findAllWithUnPaged() {
         // given
-        NotificationSearch notificationSearch = NotificationSearch.builder()
+        NotifierSearch notificationSearch = NotifierSearch.builder()
                 .build();
         Pageable pageable = Pageable.unpaged();
         // when
-        Page<NotificationEntity> notificationEntityPage = alarmRepository.findAll(notificationSearch, pageable);
+        Page<NotifierEntity> notificationEntityPage = alarmRepository.findAll(notificationSearch, pageable);
         // then
         log.info("{}", notificationEntityPage);
     }

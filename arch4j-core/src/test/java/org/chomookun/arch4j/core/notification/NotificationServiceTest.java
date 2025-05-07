@@ -1,10 +1,10 @@
 package org.chomookun.arch4j.core.notification;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.notification.entity.NotificationEntity;
+import org.chomookun.arch4j.core.notification.entity.NotifierEntity;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.chomookun.arch4j.core.notification.model.Notification;
+import org.chomookun.arch4j.core.notification.model.Notifier;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 
@@ -13,41 +13,41 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor
 class NotificationServiceTest extends CoreTestSupport {
 
-    private final NotificationService notificationService;
+    private final NotifierService notificationService;
 
     @Test
     @Order(1)
     void saveToPersist() {
         // given
-        Notification notification = Notification.builder()
-                .notificationId(IdGenerator.uuid())
+        Notifier notification = Notifier.builder()
+                .notifierId(IdGenerator.uuid())
                 .name("test")
                 .build();
         // when
-        Notification savedNotification = notificationService.saveNotification(notification);
+        Notifier savedNotification = notificationService.saveNotifier(notification);
         // then
-        assertNotNull(entityManager.find(NotificationEntity.class, savedNotification.getNotificationId()));
+        assertNotNull(entityManager.find(NotifierEntity.class, savedNotification.getNotifierId()));
     }
 
     @Test
     @Order(2)
     void saveToMerge() {
         // given
-        NotificationEntity notificationEntity = NotificationEntity.builder()
-                .notificationId(IdGenerator.uuid())
+        NotifierEntity notificationEntity = NotifierEntity.builder()
+                .notifierId(IdGenerator.uuid())
                 .name("test")
                 .build();
         entityManager.persist(notificationEntity);
         // when
-        Notification notification = Notification.builder()
-                .notificationId(notificationEntity.getNotificationId())
+        Notifier notification = Notifier.builder()
+                .notifierId(notificationEntity.getNotifierId())
                 .name("changed")
                 .build();
-        notificationService.saveNotification(notification);
+        notificationService.saveNotifier(notification);
         // then
         assertEquals(
                 "changed",
-                entityManager.find(NotificationEntity.class, notification.getNotificationId())
+                entityManager.find(NotifierEntity.class, notification.getNotifierId())
                         .getName()
         );
     }
@@ -56,13 +56,13 @@ class NotificationServiceTest extends CoreTestSupport {
     @Order(3)
     void getAlarm() {
         // given
-        NotificationEntity notificationEntity = NotificationEntity.builder()
-                .notificationId("test_alarm")
+        NotifierEntity notificationEntity = NotifierEntity.builder()
+                .notifierId("test_alarm")
                 .name("test alarm")
                 .build();
         entityManager.persist(notificationEntity);
         // when
-        Notification notification = notificationService.getNotification(notificationEntity.getNotificationId()).orElse(null);
+        Notifier notification = notificationService.getNotifier(notificationEntity.getNotifierId()).orElse(null);
         //then
         assertNotNull(notification);
     }
@@ -71,15 +71,15 @@ class NotificationServiceTest extends CoreTestSupport {
     @Order(4)
     void deleteAlarm() {
         // given
-        NotificationEntity alarmEntity = NotificationEntity.builder()
-                .notificationId("test_alarm")
+        NotifierEntity alarmEntity = NotifierEntity.builder()
+                .notifierId("test_alarm")
                 .name("test alarm")
                 .build();
         entityManager.persist(alarmEntity);
         // when
-        notificationService.deleteNotification(alarmEntity.getNotificationId());
+        notificationService.deleteNotifier(alarmEntity.getNotifierId());
         //then
-        assertNull(entityManager.find(NotificationEntity.class, alarmEntity.getNotificationId()));
+        assertNull(entityManager.find(NotifierEntity.class, alarmEntity.getNotifierId()));
     }
 
 }

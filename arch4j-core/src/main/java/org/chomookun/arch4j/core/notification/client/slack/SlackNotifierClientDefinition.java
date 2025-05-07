@@ -1,21 +1,18 @@
 package org.chomookun.arch4j.core.notification.client.slack;
 
-import org.chomookun.arch4j.core.notification.client.NotificationClient;
-import org.chomookun.arch4j.core.notification.client.NotificationClientDefinition;
+import org.chomookun.arch4j.core.notification.client.NotifierClient;
+import org.chomookun.arch4j.core.notification.client.NotifierClientDefinition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 
 @Component
 @Lazy(false)
-public class SlackNotificationClientDefinition implements NotificationClientDefinition {
+public class SlackNotifierClientDefinition implements NotifierClientDefinition {
 
     @Override
-    public String getClientId() {
+    public String getClientType() {
         return "SLACK";
     }
 
@@ -25,16 +22,16 @@ public class SlackNotificationClientDefinition implements NotificationClientDefi
     }
 
     @Override
+    public Class<? extends NotifierClient> getTypeClass() {
+        return SlackNotifierClient.class;
+    }
+
+    @Override
     public String getConfigTemplate() {
         StringJoiner template = new StringJoiner("\n");
         template.add("url=url");
         template.add("insecure=true|false (default is false)");
         return template.toString();
-    }
-
-    @Override
-    public Class<? extends NotificationClient> getClassType() {
-        return SlackNotificationClient.class;
     }
 
 }

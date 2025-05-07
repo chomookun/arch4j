@@ -5,12 +5,12 @@ import lombok.Getter;
 import java.util.Map;
 import java.util.Properties;
 
-public abstract class NotificationClient {
+public abstract class NotifierClient {
 
     @Getter
     private final Properties properties;
 
-    public NotificationClient(Properties properties) {
+    public NotifierClient(Properties properties) {
         this.properties = properties;
     }
 

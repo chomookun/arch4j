@@ -1,10 +1,10 @@
 package org.chomookun.arch4j.core.verification.processor.notification;
 
 import lombok.Setter;
-import org.chomookun.arch4j.core.notification.NotificationMessageService;
 import org.chomookun.arch4j.core.notification.NotificationService;
+import org.chomookun.arch4j.core.notification.NotifierService;
+import org.chomookun.arch4j.core.notification.model.Notifier;
 import org.chomookun.arch4j.core.notification.model.Notification;
-import org.chomookun.arch4j.core.notification.model.NotificationMessage;
 import org.chomookun.arch4j.core.template.TemplateService;
 import org.chomookun.arch4j.core.template.model.Template;
 import org.chomookun.arch4j.core.verification.model.*;
@@ -17,10 +17,10 @@ import java.util.Properties;
 public class NotificationVerifierProcessor extends VerifierProcessor {
 
     @Setter
-    private NotificationService notificationService;
+    private NotifierService notificationService;
 
     @Setter
-    private NotificationMessageService notificationMessageService;
+    private NotificationService notificationMessageService;
 
     @Setter
     private TemplateService templateService;
@@ -43,10 +43,10 @@ public class NotificationVerifierProcessor extends VerifierProcessor {
         String subject = template.getSubject();
         String content = template.getContent();
         // send notification
-        Notification notification = notificationService.getNotification(notifierId).orElseThrow();
-        NotificationMessage notificationMessage = notificationMessageService.sendNotificationMessage(notification, to, subject, content, null);
+        Notifier notification = notificationService.getNotifier(notifierId).orElseThrow();
+        Notification notificationMessage = notificationMessageService.sendNotification(notification, to, subject, content, null);
         return IssueChallengeResult.builder()
-                .notificationId(notificationMessage.getMessageId())
+                .notificationId(notificationMessage.getNotificationId())
                 .code(code)
                 .build();
     }
