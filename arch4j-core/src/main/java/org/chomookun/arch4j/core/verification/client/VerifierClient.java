@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.verification.processor;
+package org.chomookun.arch4j.core.verification.client;
 
 import lombok.Getter;
 import org.chomookun.arch4j.core.verification.model.*;
@@ -6,12 +6,12 @@ import org.chomookun.arch4j.core.verification.model.*;
 import java.security.SecureRandom;
 import java.util.Properties;
 
-public abstract class VerifierProcessor {
+public abstract class VerifierClient {
 
     @Getter
     private final Properties config;
 
-    protected VerifierProcessor(Properties config) {
+    protected VerifierClient(Properties config) {
         this.config = config;
     }
 

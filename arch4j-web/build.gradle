@@ -8,14 +8,21 @@ plugins {
     id 'application'
 }
 
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
 dependencies {
     // subproject
     implementation platform(project(":arch4j-dependencies"))
     annotationProcessor platform(project(":arch4j-dependencies"))
     api project(":arch4j-core")
 
-    // development tools
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // development tools (BOM not working)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:3.4.1'
 
     // spring boot starter
     api 'org.springframework.boot:spring-boot-starter-web'

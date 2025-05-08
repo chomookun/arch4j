@@ -11,9 +11,9 @@ public class NotifierClientFactory {
     public static NotifierClient getNotificationClient(Notifier notification) {
         NotifierClientDefinition notificationClientDefinition = NotifierClientDefinitionRegistry.getNotifierDefinition(notification.getClientType()).orElseThrow();
         try {
-            Class<? extends NotifierClient> clientType = notificationClientDefinition.getTypeClass().asSubclass(NotifierClient.class);
+            Class<? extends NotifierClient> clientType = notificationClientDefinition.getClassType().asSubclass(NotifierClient.class);
             Constructor<? extends NotifierClient> constructor = clientType.getConstructor(Properties.class);
-            Properties config = loadPropertiesFromString(notification.getClientConfig());
+            Properties config = loadPropertiesFromString(notification.getClientProperties());
             return constructor.newInstance(config);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("Notification client constructor not found: " + notification.getClientType(), e);

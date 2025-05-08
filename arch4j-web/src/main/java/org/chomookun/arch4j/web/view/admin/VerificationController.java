@@ -7,8 +7,8 @@ import org.chomookun.arch4j.core.notification.model.Notifier;
 import org.chomookun.arch4j.core.notification.model.NotifierSearch;
 import org.chomookun.arch4j.core.verification.VerificationService;
 import org.chomookun.arch4j.core.verification.VerifierService;
-import org.chomookun.arch4j.core.verification.processor.VerifierProcessorDefinition;
-import org.chomookun.arch4j.core.verification.processor.VerifierProcessorDefinitionRegistry;
+import org.chomookun.arch4j.core.verification.client.VerifierClientDefinition;
+import org.chomookun.arch4j.core.verification.client.VerifierClientDefinitionRegistry;
 import org.chomookun.arch4j.core.verification.model.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
@@ -31,17 +31,13 @@ public class VerificationController {
 
     private final VerifierService verifierService;
 
-    private final NotifierService notificationService;
-
-    private final ObjectMapper objectMapper;
-
     @GetMapping
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView("admin/verification");
-        List<VerifierProcessorDefinition> verifierProcessorDefinitions = VerifierProcessorDefinitionRegistry.getDefinitions();
-        modelAndView.addObject("verifierProcessorDefinitions", verifierProcessorDefinitions);
-        List<Notifier> notifications = notificationService.getNotifiers(NotifierSearch.builder().build(), Pageable.unpaged()).getContent();
-        modelAndView.addObject("notifications", notifications);
+        List<VerifierClientDefinition> verifierClientDefinitions = VerifierClientDefinitionRegistry.getDefinitions();
+        modelAndView.addObject("verifierClientDefinitions", verifierClientDefinitions);
+        List<Verifier> verifiers = verifierService.getVerifiers(VerifierSearch.builder().build(), Pageable.unpaged()).getContent();
+        modelAndView.addObject("verifiers", verifiers);
         return modelAndView;
     }
 

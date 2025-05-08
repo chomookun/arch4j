@@ -11,7 +11,8 @@
             value: null,
             _page: 0,
             _size: 20,
-            _total: 0
+            _total: 0,
+            _status: null
         });
         // template list
         const templates = new duice.ArrayProxy([]);
@@ -42,18 +43,20 @@
             }
             let url = new URL(`${location.pathname}/get-templates`, location.origin);
             if (templateSearch.key && templateSearch.value) {
-                url.searchParams.append(templateSearch.key, templateSearch.value);
+                url.searchParams.set(templateSearch.key, templateSearch.value);
             }
-            url.searchParams.append('_page', templateSearch._page);
-            url.searchParams.append('_size', templateSearch._size);
+            url.searchParams.set('_page', templateSearch._page);
+            url.searchParams.set('_size', templateSearch._size);
+            templates.length = 0;
+            templateSearch._status = 'loading';
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    duice.ArrayProxy.clear(templates);
+                    templateSearch._status = data.content.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(templates, data.content);
                     templateSearch._total = data['totalElements'];
                     // select current item
-                    duice.ArrayProxy.selectItem(templates, templates.findIndex(item => item.templateId === template.templateId));
+                    duice.ArrayProxy.selectItem(templates, templates.findIndex(it => it.templateId === template.templateId));
                 });
         }
 
@@ -272,7 +275,12 @@
                                 <span data-duice-bind="template" data-duice-property="name"></span>
                             </td>
                         </tr>
-                        <tr data-duice-bind="templates" data-duice-if="return templates.length < 1;" hidden>
+                        <tr data-duice-bind="templateSearch" data-duice-if="return templateSearch._status === 'loading';" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <span class="loading"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="templateSearch" data-duice-if="return templateSearch._status === 'empty';" hidden>
                             <td colspan="100%" class="text-align--center">
                                 <span data-th-text="#{web.global.itemNotFound(#{core.template.Template})}"></span>
                             </td>
@@ -320,13 +328,13 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                            <span data-th-text="#{core.template.Template.templateId}" class="font-weight--bold tag-required"></span>
+                            <span data-th-text="#{core.template.Template.templateId}" class="font-weight--bold tag-important"></span>
                                 <input type="text" data-duice-bind="template" data-duice-property="templateId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.template.Template.name}" class="font-weight--bold tag-required"></span>
+                                <span data-th-text="#{core.template.Template.name}" class="font-weight--bold tag-important"></span>
                                 <input type="text" data-duice-bind="template" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>

@@ -31,16 +31,30 @@
             name:null
         });
         duice.ObjectProxy.setDisabledAll(verifier, true);
-        const verifierProcessorDefinitions = new duice.ArrayProxy(/*[[${verifierProcessorDefinitions}]]*/[]);
+        const verifierClientDefinitions = new duice.ArrayProxy(/*[[${verifierClientDefinitions}]]*/[]);
         duice.ObjectProxy.onPropertyChanging(verifier, async event => {
-            console.error(event);
             if (event.getProperty() === 'verifierId') {
                 if (!await validateVerifierId(event.getValue())) {
                     duice.ObjectProxy.focus(verifier, 'verifierId');
                     return false;
                 }
             }
+            if (event.getProperty() === 'clientType') {
+                if (!verifier._new) {
+                    if (!await _confirm(/*[[#{web.global.changeItemConfirm(#{core.verification.Verifier.clientType})}]]*/'')) {
+                        return false;
+                    }
+                }
+            }
             return true;
+        });
+        duice.ObjectProxy.onPropertyChanged(verifier, async event => {
+            if(event.getProperty() === 'clientType') {
+                let clientType = event.getValue();
+                verifier.clientProperties = verifierClientDefinitions
+                    .find(it => it['clientType'] === clientType)
+                    ?.propertiesTemplate;
+            }
         });
 
         /**
@@ -201,13 +215,6 @@
             });
         }
 
-
-
-
-
-
-
-
         function issueChallenge() {
             issueChallengeDialog.open().then(result =>{
                 if (result) {
@@ -217,7 +224,7 @@
         }
 
         function verifyChallenge(verificationId) {
-            verifyChallengeDialog.open(verificationId).then(result =>{
+            verifyChallengeDialog.open(verificationId).then(result => {
                 if (result) {
                     getVerifications();
                 }
@@ -284,20 +291,25 @@
             <div class="panel-title">
                 <h2>
                     <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
-                    <span data-th-text="|#{core.verification.Verification} #{web.global.list}|"></span>
+                    <span data-th-text="|#{core.verification.Verification}|"></span>
                 </h2>
             </div>
             <div class="panel-content">
                 <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
+                    <div class="display--flex gap--1px">
+                        <label>
+                            <select data-duice-bind="verificationSearch" data-duice-property="verifierId">
+                                <option value="" data-th-text="|#{core.verification.Verifier}...|"></option>
+                                <option data-th-each="verifier : ${verifiers}"
+                                        th:value="${verifier.verifierId}"
+                                        th:text="${verifier.name}"></option>
+                            </select>
+                        </label>
+                    </div>
                     <div class="display--flex flex-wrap--wrap gap--1px">
-                        <div class="display--flex flex-wrap--nowrap gap--1px">
-                            <label>
-                                <input type="text" data-duice-bind="verificationSearch" data-duice-property="type" th:placeholder="#{core.verification.Verification.type}"/>
-                            </label>
-                            <label>
-                                <input type="text" data-duice-bind="verificationSearch" data-duice-property="principal" th:placeholder="#{core.verification.Verification.principal}"/>
-                            </label>
-                        </div>
+                        <label>
+                            <input type="text" data-duice-bind="verificationSearch" data-duice-property="principal" th:placeholder="#{core.verification.Verification.principal}"/>
+                        </label>
                     </div>
                     <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
                         <button class="button" type="submit" onclick="getVerifications(0);">
@@ -326,7 +338,6 @@
                             <col/>
                             <col/>
                             <col/>
-                            <col/>
                         </colgroup>
                         <thead>
                         <tr>
@@ -334,10 +345,10 @@
                                 <span data-th-text="#{web.global.no}"></span>
                             </th>
                             <th>
-                                <span data-th-text="#{core.verification.Verification.type}"></span>
+                                <span data-th-text="#{core.verification.Verification.issuedAt}" class="date"></span>
                             </th>
                             <th>
-                                <span data-th-text="#{core.verification.Verification}"></span>
+                                <span data-th-text="#{core.verification.Verification.verifierName}"></span>
                             </th>
                             <th>
                                 <span data-th-text="#{core.verification.Verification.principal}" class="code"></span>
@@ -346,29 +357,24 @@
                                 <span data-th-text="#{core.verification.Verification.reason}" class="code"></span>
                             </th>
                             <th>
-                                <span data-th-text="#{core.verification.Verification.user}"></span>
-                            </th>
-                            <th>
-                                <span data-th-text="#{core.verification.Verification.verificationMessage}"></span>
+                                <span data-th-text="#{core.verification.Verification.userName}"></span>
                             </th>
                             <th>
                                 <span data-th-text="#{core.verification.Verification.code}" class="code"></span>
                             </th>
                             <th>
-                                <span data-th-text="#{core.verification.Verification.issuedAt}" class="date"></span>
-                            </th>
-                            <th>
-                                <span data-th-text="#{core.verification.Verification.expiresAt}" class="date"></span>
+                                <span data-th-text="#{core.verification.Verification.notificationId}"></span>
                             </th>
                             <th>
                                 <span data-th-text="#{core.verification.Verification.tryCount}" class="number"></span>
                             </th>
                             <th>
-                                <span data-th-text="#{core.verification.Verification.verified}"></span>
+                                <span data-th-text="#{core.verification.Verification.tryAt}" class="date"></span>
                             </th>
                             <th>
-                                <span data-th-text="#{core.verification.Verification.verifiedAt}" class="date"></span>
+                                <span data-th-text="#{core.verification.Verification.result}" class="code"></span>
                             </th>
+
                             <th>
                                 -
                             </th>
@@ -377,68 +383,52 @@
                         <tbody>
                         <tr data-duice-bind="verifications" data-duice-foreach="verification,status" class="text-align--center">
                             <td>
-                            <span data-duice-bind="status"
-                                  data-duice-execute="this.innerHTML = verificationSearch._total - (verificationSearch._page * verificationSearch._size + status.index);"
-                                  class="number">
-                            </span>
+                                <span data-duice-bind="status"
+                                      data-duice-execute="this.innerHTML = verificationSearch._total - (verificationSearch._page * verificationSearch._size + status.index);"
+                                      class="number">
+                                </span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="type" class="code badge"></span>
+                                <span data-duice-bind="verification" data-duice-property="issuedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')" class="date"></span>
                             </td>
                             <td>
-                                <label>
-                                    <select data-duice-bind="verification"
-                                            data-duice-property="verificationId"
-                                            data-duice-option="verifications"
-                                            data-duice-option-value-property="verificationId"
-                                            data-duice-option-text-property="name"
-                                            class="width--100">
-                                    </select>
-                                </label>
+                                <span data-duice-bind="verification" data-duice-property="verifierName"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="principal"></span>
+                                <span data-duice-bind="verification" data-duice-property="principal" class="code"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="reason"></span>
+                                <span data-duice-bind="verification" data-duice-property="reason" class="code"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="user.name"></span>
+                                <span data-duice-bind="verification" data-duice-property="userName"></span>
                             </td>
                             <td>
-                            <span class="badge"
-                                  data-duice-bind="verification"
-                                  data-duice-property="verificationMessage.status"
-                                  data-duice-execute="
-                                  this.classList.toggle('background-color--green', verification.verificationMessage?.status === 'COMPLETED');
-                                  this.classList.toggle('background-color--red', verification.verificationMessage?.status === 'FAILED');
-                                  "></span>
+                                <span data-duice-bind="verification" data-duice-property="code" class="code"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="code"></span>
+                                <span data-duice-bind="verification" data-duice-property="notificationId" class="code"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="issuedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                                <span data-duice-bind="verification" data-duice-property="tryCount" data-duice-format="number(0)" class="number"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="expiresAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                                <span data-duice-bind="verification" data-duice-property="tryAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')" class="date"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verification" data-duice-property="tryCount" data-duice-format="number(0)"></span>
+                                <span data-duice-bind="verification"
+                                      data-duice-property="result"
+                                      data-duice-execute="
+                                      this.classList.toggle('background-color--green', verification.result === 'SUCCESS');
+                                      "
+                                      class="badge code"></span>
                             </td>
                             <td>
-                                <label>
-                                    <input type="checkbox" data-duice-bind="verification" data-duice-property="verified"/>
-                                </label>
-                            </td>
-                            <td>
-                                <span data-duice-bind="verification" data-duice-property="verifiedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
-                            </td>
-                            <td>
-                                <button class="button" type="button"
+                                <button class="button small" type="button"
                                         data-duice-bind="verification" data-duice-execute="this.dataset.verificationId = verification.verificationId;"
                                         onclick="verifyChallenge(this.dataset.verificationId);">
-                                    <span data-th-text="#{web.global.detail}"></span>
+                                    <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
+                                    <span data-th-text="#{core.verification.VerifyChallenge}"></span>
                                 </button>
                             </td>
                         </tr>
@@ -470,7 +460,7 @@
                         <button type="button" class="button"
                                 onclick="issueChallenge();">
                             <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="create"/>
-                            <span data-th-text="#{web.global.request}"></span>
+                            <span data-th-text="#{core.verification.IssueChallenge}"></span>
                         </button>
                     </div>
                 </div>
@@ -549,7 +539,10 @@
                                 <span data-duice-bind="status" data-duice-execute="this.innerHTML = (verifierSearch._page * verifierSearch._size) + status.count;" class="number"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="verifier" data-duice-property="verifierId" class="code"></span>
+                                <span data-duice-bind="verifier"
+                                      data-duice-property="verifierId"
+                                      data-duice-execute="this.classList.toggle('tag-system-required', verifier.systemRequired);"
+                                      class="code"></span>
                             </td>
                             <td>
                                 <span data-duice-bind="verifier" data-duice-property="name"></span>
@@ -603,22 +596,22 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.verification.Verifier.verifierId}" class="font-weight--bold tag-required"></span>
+                                <span data-th-text="#{core.verification.Verifier.verifierId}" class="font-weight--bold tag-important"></span>
                                 <input type="text" data-duice-bind="verifier" data-duice-property="verifierId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.verification.Verifier.name}" class="font-weight--bold tag-required"></span>
+                                <span data-th-text="#{core.verification.Verifier.name}" class="font-weight--bold tag-important"></span>
                                 <input type="text" data-duice-bind="verifier" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.verification.Verifier.processorType}" class="font-weight--bold"></span>
-                                <select data-duice-bind="verifier" data-duice-property="processorType"
-                                        data-duice-option="verifierProcessorDefinitions"
-                                        data-duice-option-value-property="type"
+                                <span data-th-text="#{core.verification.Verifier.clientType}" class="font-weight--bold"></span>
+                                <select data-duice-bind="verifier" data-duice-property="clientType"
+                                        data-duice-option="verifierClientDefinitions"
+                                        data-duice-option-value-property="clientType"
                                         data-duice-option-text-property="name"
                                         class="width--100">
                                     <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
@@ -628,7 +621,7 @@
                         <div class="grid-column--span-12">
                             <div class="display--flex justify-content--space-between">
                                 <div>
-                                    <span data-th-text="#{core.verification.Verifier.processorConfig}" class="font-weight--bold"></span>
+                                    <span data-th-text="#{core.verification.Verifier.clientProperties}" class="font-weight--bold"></span>
                                 </div>
                                 <div>
                                 </div>
@@ -638,7 +631,7 @@
                                     <duice-codemirror
                                             class="code box"
                                             data-duice-bind="verifier"
-                                            data-duice-property="processorConfig"
+                                            data-duice-property="clientProperties"
                                             data-duice-theme="dracula">
                                     </duice-codemirror>
                                 </label>
@@ -746,7 +739,7 @@
                         body: JSON.stringify(data)
                     }).then(response => {
                         if (response.ok) {
-                            _alert(/*[[#{web.global.sendItemComplete(#{core.verification.VerificationMessage})}]]*/'').then(()=>{
+                            _alert(/*[[#{web.global.sendItemComplete(#{core.verification.Verification})}]]*/'').then(()=>{
                                 dialog.close(true);
                             });
                         }
@@ -765,14 +758,14 @@
         <div class="dialog-title">
             <h2>
                 <img class="icon" th:src="@{/static/image/icon-verification.svg}" alt="send"/>
-                <span data-th-text="#{core.verification.Verification}"></span>
+                <span data-th-text="#{core.verification.IssueChallenge}"></span>
             </h2>
         </div>
         <div class="dialog-content">
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.verification.Verification}" class="font-weight--bold tag-required"></span>
+                        <span data-th-text="#{core.verification.Verification}" class="font-weight--bold tag-important"></span>
                         <select data-duice-bind="issueChallengeDialog.data"
                                 data-duice-property="verifierId"
                                 data-duice-option="issueChallengeDialog.verifiers"
@@ -785,21 +778,21 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.verification.Verification.principal}" class="font-weight--bold tag-required"></span>
+                        <span data-th-text="#{core.verification.Verification.principal}" class="font-weight--bold tag-important"></span>
                         <input type="text" data-duice-bind="issueChallengeDialog.data" data-duice-property="principal" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.verification.Verification.reason}" class="font-weight--bold tag-required"></span>
+                        <span data-th-text="#{core.verification.Verification.reason}" class="font-weight--bold tag-important"></span>
                         <input type="text" data-duice-bind="issueChallengeDialog.data" data-duice-property="reason" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
                     <div class="display--flex justify-content--end">
                         <button class="button" type="button" onclick="issueChallengeDialog.confirm();">
-                            <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="send"/>
-                            <span data-th-text="#{web.global.request}"></span>
+                            <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="send"/>
+                            <span data-th-text="#{web.global.confirm}"></span>
                         </button>
                     </div>
                 </div>
@@ -824,10 +817,10 @@
                 const dialog = new duice.Dialog(document.getElementById('verifyChallengeDialog'));
                 const data = new duice.ObjectProxy({
                     verificationId: null,
-                    principal: null,
-                    code: null
+                    code: null,
+                    result: null
                 });
-                duice.ObjectProxy.setReadonly(data, "verifyResult", true);
+                duice.ObjectProxy.setReadonly(data, "result", true);
 
                 /**
                  * Opens
@@ -853,7 +846,12 @@
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(data)
                     }).then(response => response.json()).then(responseBody => {
-                        data.verifyResult = responseBody.verifyResult;
+                        data.result = responseBody.result;
+                        if (responseBody.result === 'SUCCESS') {
+                            _alert(responseBody.result).then(() => {
+                                dialog.close(true);
+                            });
+                        }
                     });
                 }
 
@@ -868,34 +866,28 @@
         <div class="dialog-title">
             <h2>
                 <img class="icon" th:src="@{/static/image/icon-verification.svg}" alt="send"/>
-                <span data-th-text="#{core.verification.Verification}"></span>
+                <span data-th-text="#{core.verification.VerifyChallenge}"></span>
             </h2>
         </div>
         <div class="dialog-content">
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.verification.Verification.code}" class="font-weight--bold tag-required"></span>
+                        <span data-th-text="#{core.verification.Verification.code}" class="font-weight--bold tag-important"></span>
                         <input type="text" data-duice-bind="verifyChallengeDialog.data" data-duice-property="code" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.verification.Verification.code}" class="font-weight--bold tag-required"></span>
-                        <input type="text" data-duice-bind="verifyChallengeDialog.data" data-duice-property="code" class="width--100"/>
-                    </label>
-                </div>
-                <div class="grid-column--span-12">
-                    <label>
-                        <span data-th-text="#{core.verification.VerifyResult}" class="font-weight--bold"></span>
-                        <input type="text" data-duice-bind="verifyChallengeDialog.data" data-duice-property="verifyResult" class="width--100" readonly/>
+                        <span data-th-text="#{core.verification.Verification.result}" class="font-weight--bold"></span>
+                        <input type="text" data-duice-bind="verifyChallengeDialog.data" data-duice-property="result" class="width--100" readonly/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
                     <div class="display--flex justify-content--end">
                         <button class="button" type="button" onclick="verifyChallengeDialog.confirm();">
-                            <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="send"/>
-                            <span data-th-text="#{web.global.request}"></span>
+                            <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="send"/>
+                            <span data-th-text="#{web.global.confirm}"></span>
                         </button>
                     </div>
                 </div>

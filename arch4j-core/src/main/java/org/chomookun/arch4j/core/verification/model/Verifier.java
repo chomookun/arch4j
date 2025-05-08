@@ -1,7 +1,5 @@
 package org.chomookun.arch4j.core.verification.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Lob;
 import lombok.*;
 import org.chomookun.arch4j.core.verification.entity.VerifierEntity;
 
@@ -15,9 +13,9 @@ public class Verifier {
 
     private String name;
 
-    private String processorType;
+    private String clientType;
 
-    private String processorConfig;
+    private String clientProperties;
 
     private boolean enabled;
 
@@ -32,8 +30,8 @@ public class Verifier {
         return Verifier.builder()
                 .verifierId(verifierEntity.getVerifierId())
                 .name(verifierEntity.getName())
-                .processorType(verifierEntity.getProcessorType())
-                .processorConfig(verifierEntity.getProcessorConfig())
+                .clientType(verifierEntity.getClientType())
+                .clientProperties(verifierEntity.getClientProperties())
                 .enabled(verifierEntity.isEnabled())
                 .note(verifierEntity.getNote())
                 .build();

@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.verification.processor.notification;
+package org.chomookun.arch4j.core.verification.client.notification;
 
 import lombok.Setter;
 import org.chomookun.arch4j.core.notification.NotificationService;
@@ -8,24 +8,24 @@ import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.template.TemplateService;
 import org.chomookun.arch4j.core.template.model.Template;
 import org.chomookun.arch4j.core.verification.model.*;
-import org.chomookun.arch4j.core.verification.processor.*;
+import org.chomookun.arch4j.core.verification.client.*;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-public class NotificationVerifierProcessor extends VerifierProcessor {
+public class NotificationVerifierClient extends VerifierClient {
 
     @Setter
-    private NotifierService notificationService;
+    private NotifierService notifierService;
 
     @Setter
-    private NotificationService notificationMessageService;
+    private NotificationService notificationService;
 
     @Setter
     private TemplateService templateService;
 
-    public NotificationVerifierProcessor(Properties config) {
+    public NotificationVerifierClient(Properties config) {
         super(config);
     }
 
@@ -43,21 +43,21 @@ public class NotificationVerifierProcessor extends VerifierProcessor {
         String subject = template.getSubject();
         String content = template.getContent();
         // send notification
-        Notifier notification = notificationService.getNotifier(notifierId).orElseThrow();
-        Notification notificationMessage = notificationMessageService.sendNotification(notification, to, subject, content, null);
+        Notifier notifier = notifierService.getNotifier(notifierId).orElseThrow();
+        Notification notification = notificationService.sendNotification(notifier, to, subject, content, null);
         return IssueChallengeResult.builder()
-                .notificationId(notificationMessage.getNotificationId())
                 .code(code)
+                .notificationId(notification.getNotificationId())
                 .build();
     }
 
     @Override
     public VerifyChallengeResult verifyChallenge(VerifyChallengeParam param, Verification verification) {
-        VerifyChallengeResult.Result result;
+        Verification.Result result;
         if (Objects.equals(param.getCode(), verification.getCode())) {
-            result = VerifyChallengeResult.Result.SUCCESS;
+            result = Verification.Result.SUCCESS;
         } else {
-            result = VerifyChallengeResult.Result.INVALID_CODE;
+            result = Verification.Result.INVALID_CODE;
         }
         return VerifyChallengeResult.builder()
                 .result(result)

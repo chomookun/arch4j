@@ -18,7 +18,7 @@ public class Notifier extends BaseModel {
 
     private String clientType;
 
-    private String clientConfig;
+    private String clientProperties;
 
     /**
      * Notification factory method
@@ -33,7 +33,7 @@ public class Notifier extends BaseModel {
                 .notifierId(notificationEntity.getNotifierId())
                 .name(notificationEntity.getName())
                 .clientType(notificationEntity.getClientType())
-                .clientConfig(notificationEntity.getClientConfig())
+                .clientProperties(notificationEntity.getClientProperties())
                 .build();
     }
 

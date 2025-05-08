@@ -25,8 +25,8 @@ public class NotifierEntity extends BaseEntity {
     @Column(name = "client_type", length = 32)
     private String clientType;
 
-    @Column(name = "client_config", length = Integer.MAX_VALUE)
+    @Column(name = "client_properties", length = Integer.MAX_VALUE)
     @Lob
-    private String clientConfig;
+    private String clientProperties;
 
 }

@@ -22,12 +22,12 @@ public class SlackNotifierClientDefinition implements NotifierClientDefinition {
     }
 
     @Override
-    public Class<? extends NotifierClient> getTypeClass() {
+    public Class<? extends NotifierClient> getClassType() {
         return SlackNotifierClient.class;
     }
 
     @Override
-    public String getConfigTemplate() {
+    public String getPropertiesTemplate() {
         StringJoiner template = new StringJoiner("\n");
         template.add("url=url");
         template.add("insecure=true|false (default is false)");

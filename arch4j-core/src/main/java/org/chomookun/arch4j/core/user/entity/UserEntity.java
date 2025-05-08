@@ -44,12 +44,12 @@ public class UserEntity extends BaseEntity {
     @Comment("Username")
     private String username;
 
-    @Column(name = "password", nullable = false, length = 256)
+    @Column(name = "password", length = 256)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // defensive
     @Comment("Password")
     private String password;
 
-    @Column(name = "totp_secret", nullable = false, length = 4000)
+    @Column(name = "totp_secret", length = 4000)
     @Convert(converter = CryptoConverter.class)
     @Lob
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // defensive

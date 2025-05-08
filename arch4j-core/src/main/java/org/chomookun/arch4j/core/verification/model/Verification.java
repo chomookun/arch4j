@@ -3,12 +3,9 @@ package org.chomookun.arch4j.core.verification.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.chomookun.arch4j.core.notification.model.Notification;
-import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.verification.entity.VerificationEntity;
 
 import java.time.Instant;
-import java.util.Optional;
 
 @Builder
 @Getter
@@ -16,7 +13,11 @@ public class Verification {
 
     private String verificationId;
 
+    private Instant issuedAt;
+
     private String verifierId;
+
+    private String verifierName;
 
     private String principal;
 
@@ -24,55 +25,42 @@ public class Verification {
 
     private String userId;
 
-    private User user;
-
-    @Setter
-    private String notificationMessageId;
-
-    private Notification notificationMessage;
+    private String userName;
 
     @Setter
     private String code;
 
-    private Instant issuedAt;
-
-    private Instant expiresAt;
+    @Setter
+    private String notificationId;
 
     private Integer tryCount;
 
-    @Setter
-    private boolean verified;
-
-    @Setter
-    private Instant verifiedAt;
+    private Instant tryAt;
 
     private Result result;
 
     public enum Result {
-        ISSUED,
-        VERIFIED,
-        FAILED
+        SUCCESS,
+        INVALID_CODE,
+        EXPIRED,
+        TOO_MANY_TRIES,
     }
 
     public static Verification from(VerificationEntity verificationEntity) {
         return Verification.builder()
                 .verificationId(verificationEntity.getVerificationId())
+                .issuedAt(verificationEntity.getIssuedAt())
                 .verifierId(verificationEntity.getVerifierId())
+                .verifierName(verificationEntity.getVerifierName())
                 .principal(verificationEntity.getPrincipal())
                 .reason(verificationEntity.getReason())
                 .userId(verificationEntity.getUserId())
-                .notificationMessageId(verificationEntity.getNotificationMessageId())
+                .userName(verificationEntity.getUserName())
                 .code(verificationEntity.getCode())
-                .issuedAt(verificationEntity.getIssuedAt())
-                .expiresAt(verificationEntity.getExpiresAt())
+                .notificationId(verificationEntity.getNotificationId())
                 .tryCount(verificationEntity.getTryCount())
-                .verified(verificationEntity.isVerified())
-                .user(Optional.ofNullable(verificationEntity.getUser())
-                        .map(User::from)
-                        .orElse(null))
-                .notificationMessage(Optional.ofNullable(verificationEntity.getNotificationMessage())
-                        .map(Notification::from)
-                        .orElse(null))
+                .tryAt(verificationEntity.getTryAt())
+                .result(verificationEntity.getResult())
                 .build();
     }
 

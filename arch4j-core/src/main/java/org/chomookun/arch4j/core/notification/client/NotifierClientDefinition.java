@@ -8,8 +8,8 @@ public interface NotifierClientDefinition extends Aware {
 
     String getName();
 
-    Class<? extends NotifierClient> getTypeClass();
+    Class<? extends NotifierClient> getClassType();
 
-    String getConfigTemplate();
+    String getPropertiesTemplate();
 
 }

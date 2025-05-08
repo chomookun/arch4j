@@ -2,7 +2,6 @@ package org.chomookun.arch4j.web.api.v1.join;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.email.EmailService;
 import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
@@ -23,8 +22,6 @@ public class JoinRestController {
 
     private final UserService userService;
 
-    private final EmailService emailService;
-
     private final ErrorResponseFactory errorResponseFactory;
 
     @PostMapping
@@ -41,7 +38,7 @@ public class JoinRestController {
 
         // check answer code
         try {
-            emailService.validateEmailVerification(joinRequest.getEmail(), joinRequest.getAnswer());
+//            emailService.validateEmailVerification(joinRequest.getEmail(), joinRequest.getAnswer());
         } catch (Throwable t) {
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .message(t.getMessage())
@@ -72,7 +69,7 @@ public class JoinRestController {
     @GetMapping("validate-email/{email}/answer/{answer}")
     public ResponseEntity<?> validateEmailAnswer(@PathVariable("email")String email, @PathVariable("answer")String answer) {
         try {
-            emailService.validateEmailVerification(email, answer);
+//            emailService.validateEmailVerification(email, answer);
         } catch (Throwable t) {
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .message(t.getMessage())

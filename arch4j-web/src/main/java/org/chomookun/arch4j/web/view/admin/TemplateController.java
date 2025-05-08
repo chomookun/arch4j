@@ -2,8 +2,6 @@ package org.chomookun.arch4j.web.view.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.email.model.Email;
-import org.chomookun.arch4j.core.email.model.EmailSearch;
 import org.chomookun.arch4j.core.template.TemplateService;
 import org.chomookun.arch4j.core.template.model.Template;
 import org.chomookun.arch4j.core.template.model.TemplateSearch;

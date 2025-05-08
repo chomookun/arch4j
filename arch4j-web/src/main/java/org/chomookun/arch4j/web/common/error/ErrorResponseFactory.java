@@ -28,7 +28,7 @@ public class ErrorResponseFactory {
      * @return error response
      */
     public ErrorResponse createErrorResponse(HttpServletRequest request, HttpStatus status, Exception exception) {
-        String messageId = String.format("web.error.%s", exception.getClass().getSimpleName());
+        String messageId = exception.getMessage();
         Locale locale = localeResolver.resolveLocale(request);
         String message = messageSource.getMessage(messageId, null, locale);
         return ErrorResponse.builder()

@@ -1,31 +1,31 @@
-package org.chomookun.arch4j.core.verification.processor.totp;
+package org.chomookun.arch4j.core.verification.client.totp;
 
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.security.TotpService;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.verification.model.Verifier;
-import org.chomookun.arch4j.core.verification.processor.VerifierProcessor;
-import org.chomookun.arch4j.core.verification.processor.VerifierProcessorFactory;
+import org.chomookun.arch4j.core.verification.client.VerifierClient;
+import org.chomookun.arch4j.core.verification.client.VerifierClientFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 @Lazy(false)
 @RequiredArgsConstructor
-public class TotpVerifierProcessorFactory extends VerifierProcessorFactory {
+public class TotpVerifierClientFactory extends VerifierClientFactory {
 
     private final UserService userService;
 
     private final TotpService totpService;
 
     @Override
-    public Class<? extends VerifierProcessor> getTypeClass() {
-        return TotpVerifierProcessor.class;
+    public Class<? extends VerifierClient> getTypeClass() {
+        return TotpVerifierClient.class;
     }
 
     @Override
-    public TotpVerifierProcessor getObject(Verifier verifier) {
-        TotpVerifierProcessor totpVerifier = (TotpVerifierProcessor) super.getObject(verifier);
+    public TotpVerifierClient getObject(Verifier verifier) {
+        TotpVerifierClient totpVerifier = (TotpVerifierClient) super.getObject(verifier);
         totpVerifier.setUserService(userService);
         totpVerifier.setTotpService(totpService);
         return totpVerifier;

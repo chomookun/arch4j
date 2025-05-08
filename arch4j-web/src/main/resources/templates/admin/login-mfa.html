@@ -5,10 +5,10 @@
 <body layout:fragment="_body">
 <script th:inline="javascript">
     const mfa = new duice.ObjectProxy({
-
+        verifierId: null,
         verificationId: null,
         code: null,
-        message: null
+        result: null
     });
 
     function issueCode() {
@@ -20,14 +20,9 @@
                 'Accept': 'application/json'
             },
             body: JSON.stringify(mfa),
-        }).then(async response => {
-            console.error(response);
-            if (response.ok) {
-                document.location.href = '/admin';
-            } else {
-                let json = await response.json();
-                mfa.message = json.message;
-            }
+        }).then(response => response.json())
+        .then(data => {
+            mfa.verificationId = data.verificationId;
         });
     }
 
@@ -40,8 +35,8 @@
                 'Accept': 'application/json'
             },
             body: JSON.stringify(mfa),
+            _suppressAlert: true
         }).then(async response => {
-            console.error(response);
             if (response.ok) {
                 document.location.href = '/admin';
             } else {
@@ -81,6 +76,19 @@
         </div>
         <div class="panel-content">
             <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                <div class="grid-column--span-12 display--flex justify-content--space-between gap--1px">
+                    <label class="flex--1">
+                        <select data-duice-bind="mfa" data-duice-property="verifierId" class="width--100">
+                            <option value="" data-th-text="|#{web.global.select}...|"></option>
+                            <option th:each="verifier : ${availableVerifiers}"
+                                    th:value="${verifier.verifierId}"
+                                    th:text="${verifier.name}"></option>
+                        </select>
+                    </label>
+                    <button type="button" onclick="issueCode();">
+                        인증요청
+                    </button>
+                </div>
                 <label class="grid-column--span-12">
                     <input type="text" autocomplete="off"
                            data-duice-bind="mfa" data-duice-property="code"

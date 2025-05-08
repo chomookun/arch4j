@@ -22,12 +22,12 @@ public class EmailNotifierClientDefinition implements NotifierClientDefinition {
     }
 
     @Override
-    public Class<? extends NotifierClient> getTypeClass() {
+    public Class<? extends NotifierClient> getClassType() {
         return EmailNotifierClient.class;
     }
 
     @Override
-    public String getConfigTemplate() {
+    public String getPropertiesTemplate() {
         StringJoiner template = new StringJoiner("\n");
         template.add("host=[smtp.example.com]");
         template.add("port=[465]");

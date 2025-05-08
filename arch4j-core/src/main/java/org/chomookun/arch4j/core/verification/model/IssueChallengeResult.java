@@ -1,16 +1,17 @@
 package org.chomookun.arch4j.core.verification.model;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Builder
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IssueChallengeResult {
 
     private String verificationId;
 
-    private String notificationId;
-
     private String code;
+
+    private String notificationId;
 
 }

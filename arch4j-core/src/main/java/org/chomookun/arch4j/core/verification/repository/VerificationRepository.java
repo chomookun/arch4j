@@ -14,10 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VerificationRepository extends JpaRepository<VerificationEntity, String>, JpaSpecificationExecutor<VerificationEntity> {
 
-    @Override
-    @EntityGraph(attributePaths = {"user", "notificationMessage"})
-    Page<VerificationEntity> findAll(Specification<VerificationEntity> specification, Pageable pageable);
-
     default Page<VerificationEntity> findAll(VerificationSearch verificationIssueSearch, Pageable pageable) {
         // where
         Specification<VerificationEntity> specification = Specification.where(null);

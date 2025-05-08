@@ -20,7 +20,6 @@ class MenuServiceTest extends CoreTestSupport {
     void saveMenuForPersist() {
         // given
         Menu menu = Menu.builder()
-                .menuId(IdGenerator.uuid())
                 .name("test menu")
                 .link("test/link")
                 .target(Menu.Target.SELF)

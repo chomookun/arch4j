@@ -29,8 +29,8 @@ public class VerifierService {
                     .build();
         }
         verifierEntity.setName(verifier.getName());
-        verifierEntity.setProcessorType(verifier.getProcessorType());
-        verifierEntity.setProcessorConfig(verifier.getProcessorConfig());
+        verifierEntity.setClientType(verifier.getClientType());
+        verifierEntity.setClientProperties(verifier.getClientProperties());
         verifierEntity.setEnabled(verifier.isEnabled());
         verifierEntity.setNote(verifier.getNote());
         VerifierEntity savedVerifierEntity = verifierRepository.saveAndFlush(verifierEntity);

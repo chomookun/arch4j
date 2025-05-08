@@ -31,8 +31,8 @@
         const notifier = new duice.ObjectProxy({
             notifierId: null,
             name: null,
-            clientId: null,
-            clientConfig: null
+            clientType: null,
+            clientProperties: null
         });
         duice.ObjectProxy.setDisabledAll(notifier, true);
         duice.ObjectProxy.onPropertyChanging(notifier, async event => {
@@ -42,9 +42,11 @@
                     return false;
                 }
             }
-            if (!notifier._new) {
-                if (!await _confirm(/*[[#{web.global.changeItemConfirm(#{core.notification.Notifier.clientType})}]]*/'')) {
-                    return false;
+            if (event.getProperty() === 'clientType') {
+                if (!notifier._new) {
+                    if (!await _confirm(/*[[#{web.global.changeItemConfirm(#{core.notification.Notifier.clientType})}]]*/'')) {
+                        return false;
+                    }
                 }
             }
             return true;
@@ -52,9 +54,9 @@
         duice.ObjectProxy.onPropertyChanged(notifier, async event => {
             if(event.getProperty() === 'clientType') {
                 let clientType = event.getValue();
-                notifier.clientConfig = notifierClientDefinitions
+                notifier.clientProperties = notifierClientDefinitions
                     .find(it => it['clientType'] === clientType)
-                    ?.configTemplate;
+                    ?.propertiesTemplate;
             }
         });
         const notifierClientDefinitions = new duice.ArrayProxy(/*[[${notifierClientDefinitions}]]*/[]);
@@ -310,7 +312,7 @@
             <span data-th-text="#{core.notification.Notification}"></span>
         </span>
         <span id="notifierTabButton" class="tab-item">
-            <img class="icon" src="/static/image/icon-config.svg" alt=""/>
+            <img class="icon" src="/static/image/icon-notifier.svg" alt=""/>
             <span data-th-text="#{core.notification.Notifier}"></span>
         </span>
     </div>
@@ -326,7 +328,7 @@
             <div class="panel-title">
                 <h2>
                     <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
-                    <span data-th-text="#{core.notification.Notification}+' '+#{web.global.history}"></span>
+                    <span data-th-text="#{core.notification.Notification}"></span>
                 </h2>
             </div>
             <div class="panel-content">
@@ -584,19 +586,19 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.notification.Notifier.notifierId}" class="font-weight--bold tag-required"></span>
+                                <span data-th-text="#{core.notification.Notifier.notifierId}" class="font-weight--bold tag-important"></span>
                                 <input type="text" data-duice-bind="notifier" data-duice-property="notifierId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.notification.Notifier.name}" class="font-weight--bold tag-required"></span>
+                                <span data-th-text="#{core.notification.Notifier.name}" class="font-weight--bold tag-important"></span>
                                 <input type="text" data-duice-bind="notifier" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.notification.Notifier.clientType}" class="font-weight--bold tag-required"></span>
+                                <span data-th-text="#{core.notification.Notifier.clientType}" class="font-weight--bold tag-important"></span>
                                 <select data-duice-bind="notifier" data-duice-property="clientType"
                                         data-duice-option="notifierClientDefinitions"
                                         data-duice-option-value-property="clientType"
@@ -609,7 +611,7 @@
                         <div class="grid-column--span-12">
                             <div class="display--flex justify-content--space-between">
                                 <div>
-                                    <span data-th-text="#{core.notification.Notifier.clientConfig}" class="font-weight--bold"></span>
+                                    <span data-th-text="#{core.notification.Notifier.clientProperties}" class="font-weight--bold"></span>
                                 </div>
                                 <div>
                                     <button class="button small" type="button" onclick="testNotifier();"
@@ -626,7 +628,7 @@
                                     <duice-codemirror
                                             class="code box"
                                             data-duice-bind="notifier"
-                                            data-duice-property="clientConfig"
+                                            data-duice-property="clientProperties"
                                             data-duice-theme="dracula">
                                     </duice-codemirror>
                                 </label>
@@ -859,7 +861,7 @@
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.notification.Notifier}" class="font-weight--bold tag-required"></span>
+                        <span data-th-text="#{core.notification.Notifier}" class="font-weight--bold tag-important"></span>
                         <select data-duice-bind="sendNotificationDialog.data"
                                 data-duice-property="notifierId"
                                 data-duice-option="sendNotificationDialog.notifiers"

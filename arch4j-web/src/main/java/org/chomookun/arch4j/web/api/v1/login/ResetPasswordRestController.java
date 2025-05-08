@@ -2,7 +2,6 @@ package org.chomookun.arch4j.web.api.v1.login;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.email.EmailService;
 import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
@@ -23,8 +22,6 @@ public class ResetPasswordRestController {
 
     private final UserService userService;
 
-    private final EmailService emailService;
-
     private final ErrorResponseFactory errorResponseFactory;
 
     private final HttpServletRequest request;
@@ -35,7 +32,7 @@ public class ResetPasswordRestController {
         User user = userService.getUserByUsername(resetPasswordRequest.getUsername()).orElseThrow();
         // check answer code
         try {
-            emailService.validateEmailVerification(resetPasswordRequest.getUsername(), resetPasswordRequest.getAnswer());
+//            emailService.validateEmailVerification(resetPasswordRequest.getUsername(), resetPasswordRequest.getAnswer());
         } catch (Exception e) {
             ErrorResponse errorResponse = errorResponseFactory.createErrorResponse(request, HttpStatus.BAD_REQUEST, e);
             return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
@@ -54,7 +51,7 @@ public class ResetPasswordRestController {
         User user = userService.getUserByUsername(email).orElseThrow();
 
         // issue verification
-        emailService.issueEmailVerification(email);
+//        emailService.issueEmailVerification(email);
 
         // response
         return ResponseEntity.ok().build();
@@ -63,7 +60,7 @@ public class ResetPasswordRestController {
     @GetMapping("validate-email/{email}/answer/{answer}")
     public ResponseEntity<?> validateEmailAnswer(@PathVariable("email")String email, @PathVariable("answer")String answer) {
         try {
-            emailService.validateEmailVerification(email, answer);
+//            emailService.validateEmailVerification(email, answer);
         } catch (Exception e) {
             ErrorResponse errorResponse = errorResponseFactory.createErrorResponse(request, HttpStatus.BAD_REQUEST, e);
             return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);

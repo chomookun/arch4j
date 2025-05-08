@@ -3,11 +3,7 @@ package org.chomookun.arch4j.core.template.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
-import org.chomookun.arch4j.core.email.entity.EmailEntity;
 import org.chomookun.arch4j.core.template.entity.TemplateEntity;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

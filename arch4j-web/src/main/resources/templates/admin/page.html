@@ -354,11 +354,11 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
                         <label class="grid-column--span-6 s__grid-column--span-12">
                             <span data-th-text="#{core.page.Page.pageId}"
-                              class="font-weight--bold tag-required"></span>
+                              class="font-weight--bold tag-important"></span>
                             <input type="text" data-duice-bind="page" data-duice-property="pageId" class="width--100 code"/>
                         </label>
                         <label class="grid-column--span-6 s__grid-column--span-12">
-                            <span data-th-text="#{core.page.Page.name}" class="font-weight--bold tag-required"></span>
+                            <span data-th-text="#{core.page.Page.name}" class="font-weight--bold tag-important"></span>
                             <input type="text" data-duice-bind="page" data-duice-property="name"
                                    class="width--100"/>
                         </label>
@@ -398,7 +398,7 @@
                                  data-duice-foreach="pageWidget,status"
                                  data-duice-editable="true">
                                 <label>
-                                <span class="font-weight--bold tag-required" data-th-text="#{core.page.PageWidget.type}">
+                                <span class="font-weight--bold tag-important" data-th-text="#{core.page.PageWidget.type}">
                                 </span>
                                     <select class="width--100 font-weight--bold" data-duice-bind="pageWidget" data-duice-property="type">
                                         <option value th:text="|#{web.global.select}...|"></option>

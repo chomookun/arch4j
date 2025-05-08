@@ -45,7 +45,7 @@ public class NotifierService {
         notifierEntity.setSystemUpdatedAt(LocalDateTime.now());
         notifierEntity.setName(notifier.getName());
         notifierEntity.setClientType(notifier.getClientType());
-        notifierEntity.setClientConfig(PbePropertiesUtil.encodePropertiesString(notifier.getClientConfig()));
+        notifierEntity.setClientProperties(PbePropertiesUtil.encodePropertiesString(notifier.getClientProperties()));
         // saves
         NotifierEntity savedNotifierEntity = notifierRepository.saveAndFlush(notifierEntity);
         entityManager.refresh(savedNotifierEntity);

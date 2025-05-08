@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.core.verification.processor;
+package org.chomookun.arch4j.core.verification.client;
 
 import lombok.Getter;
 import org.springframework.beans.BeansException;
@@ -14,22 +14,22 @@ import java.util.Optional;
 
 @Component
 @Lazy(false)
-public class VerifierProcessorDefinitionRegistry implements BeanPostProcessor {
+public class VerifierClientDefinitionRegistry implements BeanPostProcessor {
 
     @Getter
-    private static final List<VerifierProcessorDefinition> definitions = new ArrayList<>();
+    private static final List<VerifierClientDefinition> definitions = new ArrayList<>();
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-        if(bean instanceof VerifierProcessorDefinition) {
-            definitions.add((VerifierProcessorDefinition) bean);
+        if(bean instanceof VerifierClientDefinition) {
+            definitions.add((VerifierClientDefinition) bean);
         }
         return bean;
     }
 
-    public static Optional<VerifierProcessorDefinition> getDefinition(String verifierType) {
+    public static Optional<VerifierClientDefinition> getDefinition(String verifierType) {
         return definitions.stream()
-                .filter(item -> Objects.equals(item.getType(), verifierType))
+                .filter(item -> Objects.equals(item.getClientType(), verifierType))
                 .findFirst();
     }
 

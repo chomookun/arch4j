@@ -22,12 +22,12 @@ public class VerifierEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "processor_type", length = 32)
-    private String processorType;
+    @Column(name = "client_type", length = 32)
+    private String clientType;
 
-    @Column(name = "processor_config", length = Integer.MAX_VALUE)
+    @Column(name = "client_properties", length = Integer.MAX_VALUE)
     @Lob
-    private String processorConfig;
+    private String clientProperties;
 
     @Column(name = "enabled", length = 1)
     @Convert(converter = BooleanConverter.class)
