@@ -1,19 +1,19 @@
 package org.chomookun.arch4j.shell.entity;
 
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.asciitable.CWC_LongestLine;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.template.entity.TemplateEntity;
+import org.chomookun.arch4j.core.template.model.Template;
 import org.chomookun.arch4j.shell.common.InteractiveUtil;
 import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataBuilder;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.boot.model.relational.internal.SqlStringGenerationContextImpl;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.boot.spi.MetadataBuilderContributor;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.engine.jdbc.internal.FormatStyle;
@@ -21,6 +21,7 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Table;
 import org.hibernate.tool.schema.internal.StandardIndexExporter;
 import org.hibernate.tool.schema.internal.StandardTableExporter;
+import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -29,33 +30,11 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @ShellComponent
+@ShellCommandGroup("Entity Command")
 @RequiredArgsConstructor
-public class EntityCommand {
+public class DdlCommand extends AbstractEntityCommand {
 
-    private final EntityManager entityManager;
-
-    private final EntityManagerFactory entityManagerFactory;
-
-    @ShellMethod(key = "entity list", value = "Entity list command")
-    public void list() {
-        Set<EntityType<?>> entities = entityManager.getMetamodel().getEntities();
-
-        AsciiTable table = new AsciiTable();
-        table.getRenderer().setCWC(new CWC_LongestLine());
-        table.addRule();
-        table.addRow("Entity Name", "Table Name", "Class Name");
-        table.addRule();
-        for (EntityType<?> entity : entities) {
-            String entityName = entity.getName();
-            String tableName = getTableName(entity.getJavaType());
-            String className = entity.getJavaType().getName();
-            table.addRow(entityName, tableName, className);
-            table.addRule();
-        }
-        System.out.println(table.render());
-    }
-
-    @ShellMethod(key = "entity generate-ddl", value = "Generate DDL command")
+    @ShellMethod(key = "entity ddl", value = "Generate DDL command")
     public void generateDdl(@ShellOption(defaultValue = ShellOption.NULL, arity = Integer.MAX_VALUE) List<String> entityNames) {
         // selects dialect
         Map<String,String> dialectOptions = new LinkedHashMap<String,String>() {{
@@ -76,6 +55,7 @@ public class EntityCommand {
                 .applySetting("hibernate.connection.provider_class", org.hibernate.engine.jdbc.connections.spi.ConnectionProvider.class.getName())
                 .applySetting("hibernate.temp.use_jdbc_metadata_defaults", "false")
                 .applySetting("hibernate.hbm2ddl.auto", "none")
+                .applySetting("hibernate.globally_quoted_identifiers", "true")
                 .build();
         MetadataSources metadataSources = new MetadataSources(registry);
         Metamodel metamodel = entityManagerFactory.getMetamodel();
@@ -114,11 +94,6 @@ public class EntityCommand {
                 });
             });
         }
-    }
-
-    String getTableName(Class<?> entityClass) {
-        jakarta.persistence.Table table = entityClass.getAnnotation(jakarta.persistence.Table.class);
-        return (table != null && !table.name().isEmpty()) ? table.name() : entityClass.getSimpleName().toLowerCase();
     }
 
 }

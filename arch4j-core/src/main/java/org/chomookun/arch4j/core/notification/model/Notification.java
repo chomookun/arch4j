@@ -22,7 +22,7 @@ public class Notification {
 
     private String content;
 
-    private String to;
+    private String receiver;
 
     private Map<String, Object> option;
 
@@ -45,7 +45,7 @@ public class Notification {
                 .notificationId(notificationEntity.getNotificationId())
                 .notifierId(notificationEntity.getNotifierId())
                 .notifierName(notificationEntity.getNotifierName())
-                .to(notificationEntity.getTo())
+                .receiver(notificationEntity.getReceiver())
                 .subject(notificationEntity.getSubject())
                 .content(notificationEntity.getContent())
                 .submittedAt(notificationEntity.getSubmittedAt())

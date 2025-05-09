@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.15
+ * duice - v0.3.16
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -3101,7 +3101,9 @@ var duice = (function (exports) {
             // register as option observer
             if (this.option) {
                 let optionArray = findVariable(this.getContext(), this.option);
-                getProxyHandler(optionArray).addObserver(this);
+                if (optionArray) {
+                    getProxyHandler(optionArray).addObserver(this);
+                }
             }
         }
         /**

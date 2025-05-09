@@ -29,7 +29,8 @@ public class TemplateEntity extends BaseEntity implements I18nSupportEntity<Temp
     @Column(name = "name")
     private String name;
 
-    @Column(name = "format")
+    @Column(name = "format", length = 16)
+    @Convert(converter = FormatConverter.class)
     private Template.Format format;
 
     @Column(name = "subject", length = 1024)

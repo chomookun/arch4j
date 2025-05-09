@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -91,9 +92,9 @@ public class NotifierService {
      * Tests alarm
      * @param notifier alarm
      */
-    public void testNotifier(Notifier notifier, String subject, String content, String to) {
+    public void testNotifier(Notifier notifier, String subject, String content, String receiver) {
         NotifierClient notifierClient = NotifierClientFactory.getNotificationClient(notifier);
-        notifierClient.sendMessage(to, subject, content, null);
+        notifierClient.sendMessage(subject, content, receiver, Map.of());
     }
 
 }

@@ -10,7 +10,7 @@ import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import java.time.Instant;
 
 @Entity
-@Table(name = "core_notifiction")
+@Table(name = "core_notification")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
@@ -35,8 +35,8 @@ public class NotificationEntity extends BaseEntity {
     @Lob
     private String content;
 
-    @Column(name = "to")
-    private String to;
+    @Column(name = "receiver")
+    private String receiver;
 
     @Column(name = "submitted_at")
     private Instant submittedAt;

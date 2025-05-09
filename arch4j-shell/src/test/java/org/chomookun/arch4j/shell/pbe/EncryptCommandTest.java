@@ -5,9 +5,9 @@ import org.chomookun.arch4j.shell.common.test.ShellTestSupport;
 import org.junit.jupiter.api.Test;
 
 @RequiredArgsConstructor
-class PbeCommandTest extends ShellTestSupport {
+class EncryptCommandTest extends ShellTestSupport {
 
-    private final PbeCommand pbeCommand;
+    private final EncryptCommand encryptCommand;
 
     @Test
     void encrypt() {
@@ -16,16 +16,7 @@ class PbeCommandTest extends ShellTestSupport {
         String secretKey = "password";
         // then
         setIn(secretKey);
-        pbeCommand.encrypt(plainValue);
+        encryptCommand.encrypt(plainValue);
     }
 
-    @Test
-    void decrypt() {
-        // given
-        String encryptedValue = "lrZwmK3/KnE2tBbfTgEIY/AVjTNCb9je";
-        String secretKey = "password";
-        // then
-        setIn(secretKey);
-        pbeCommand.decrypt(encryptedValue);
-    }
 }

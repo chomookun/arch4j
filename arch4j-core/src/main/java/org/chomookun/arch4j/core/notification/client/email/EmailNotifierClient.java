@@ -30,15 +30,15 @@ public class EmailNotifierClient extends NotifierClient {
         this.password = config.getProperty("password");
         // mail properties
         this.properties = new Properties();
-        for (String key : properties.stringPropertyNames()) {
+        for (String key : config.stringPropertyNames()) {
             if (key.startsWith("mail.")) {
-                this.properties.put(key, properties.getProperty(key));
+                this.properties.put(key, config.getProperty(key));
             }
         }
     }
 
     @Override
-    public void sendMessage(String subject, String content, String to, Map<String,Object> option) {
+    public void sendMessage(String subject, String content, String receiver, Map<String,Object> option) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);
@@ -50,7 +50,7 @@ public class EmailNotifierClient extends NotifierClient {
         MimeMessageHelper helper = null;
         try {
             helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            helper.setTo(to);
+            helper.setTo(receiver);
             helper.setSubject(subject);
             helper.setText(content, true);
             if (option != null) {

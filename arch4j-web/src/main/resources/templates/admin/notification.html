@@ -367,9 +367,9 @@
                     <table class="table width--100">
                         <colgroup>
                             <col style="width:5rem;"/>
-                            <col style="width:20rem;"/>
+                            <col style="width:15rem;"/>
                             <col/>
-                            <col/>
+                            <col style="width:15rem;"/>
                             <col style="width:12rem;"/>
                             <col style="width:12rem;"/>
                             <col style="width:10rem;"/>
@@ -378,8 +378,8 @@
                         <tr>
                             <th data-th-text="#{web.global.no}"></th>
                             <th data-th-text="#{core.notification.Notification.notifierName}"></th>
-                            <th data-th-text="#{core.notification.Notification.to}"></th>
                             <th data-th-text="#{core.notification.Notification.subject}"></th>
+                            <th data-th-text="#{core.notification.Notification.receiver}"></th>
                             <th data-th-text="#{core.notification.Notification.submittedAt}"></th>
                             <th data-th-text="#{core.notification.Notification.sentAt}"></th>
                             <th data-th-text="#{core.notification.Notification.status}"></th>
@@ -394,10 +394,10 @@
                                 <span data-duice-bind="notification" data-duice-property="notifierName"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="notification" data-duice-property="to" class="code"></span>
+                                <span data-duice-bind="notification" data-duice-property="subject"></span>
                             </td>
                             <td>
-                                <span data-duice-bind="notification" data-duice-property="subject"></span>
+                                <span data-duice-bind="notification" data-duice-property="receiver" class="code"></span>
                             </td>
                             <td class="text-align--center">
                                 <span data-duice-bind="notification" data-duice-property="submittedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
@@ -688,7 +688,7 @@
                     notifier: null,
                     subject: null,
                     content: null,
-                    to: null
+                    receiver: null
                 });
 
                 /**
@@ -755,8 +755,8 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.notification.Notification.to}"></span>
-                        <input type="text" data-duice-bind="testNotifierDialog.data" data-duice-property="to" class="width--100"/>
+                        <span data-th-text="#{core.notification.Notification.receiver}"></span>
+                        <input type="text" data-duice-bind="testNotifierDialog.data" data-duice-property="receiver" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
@@ -790,7 +790,7 @@
                     notifierId: null,
                     subject: null,
                     content: null,
-                    to: null
+                    receiver: null
                 });
                 const notifiers = new duice.ArrayProxy([]);
 
@@ -800,7 +800,7 @@
                  */
                 async function open() {
                     duice.ObjectProxy.clear(data);
-                    getNotifiers();
+                    await getNotifiers();
                     return dialog.open();
                 }
 
@@ -884,8 +884,8 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.notification.Notification.to}"></span>
-                        <input type="text" data-duice-bind="sendNotificationDialog.data" data-duice-property="to" class="width--100"/>
+                        <span data-th-text="#{core.notification.Notification.receiver}"></span>
+                        <input type="text" data-duice-bind="sendNotificationDialog.data" data-duice-property="receiver" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">

@@ -93,12 +93,12 @@ html {
     overflow: auto;
 }
 .tab-item {
+    flex-shrink: 0;
     border: var(--web-tab-item-border);
     border-bottom: none;
     border-radius: .25rem .25rem 0 0;
     padding: 0.2rem 1rem;
     white-space: nowrap;
-    border-bottom: solid 1px gray;
 }
 
 /* box */

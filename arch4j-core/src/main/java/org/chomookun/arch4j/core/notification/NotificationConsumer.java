@@ -53,9 +53,9 @@ public class NotificationConsumer {
                 .notificationId(notification.getNotificationId())
                 .notifierId(notification.getNotifierId())
                 .notifierName(notification.getNotifierName())
-                .to(notification.getTo())
                 .subject(notification.getSubject())
                 .content(notification.getContent())
+                .receiver(notification.getReceiver())
                 .submittedAt(Instant.now())
                 .status(Notification.Status.SUBMITTED)
                 .build();
@@ -86,7 +86,7 @@ public class NotificationConsumer {
                 try {
                     Notifier notifier = notifierService.getNotifier(notification.getNotifierId()).orElseThrow();
                     NotifierClient notifierClient = NotifierClientFactory.getNotificationClient(notifier);
-                    notifierClient.sendMessage(notification.getSubject(), notification.getContent(), notification.getTo(), notification.getOption());
+                    notifierClient.sendMessage(notification.getSubject(), notification.getContent(), notification.getReceiver(), notification.getOption());
                     notification.setStatus(Notification.Status.COMPLETED);
                 } catch (Throwable t) {
                     log.warn(t.getMessage());

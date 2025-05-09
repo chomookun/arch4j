@@ -111,7 +111,13 @@ public class UserController {
         String userId = Optional.ofNullable(payload.get("userId"))
                 .orElseThrow(IllegalArgumentException::new);
         User user = userService.getUser(userId).orElseThrow();
+
+        // if TOTP secret is not set, create a new one
         String totpSecret = user.getTotpSecret();
+        if (totpSecret == null) {
+            totpSecret = userService.createTotpSecret(userId);
+        }
+
         String issuer = securityProperties.getIssuer();
         String account = user.getUsername();
         return totpService.generateTotpQrCode(totpSecret, issuer, account);

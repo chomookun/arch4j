@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.notification.NotificationService;
-import org.chomookun.arch4j.core.notification.client.NotifierClientFactory;
 import org.chomookun.arch4j.core.notification.model.Notifier;
 import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.notification.model.NotificationSearch;
 import org.chomookun.arch4j.core.notification.model.NotifierSearch;
 import org.chomookun.arch4j.core.notification.NotifierService;
 import org.chomookun.arch4j.core.notification.client.NotifierClientDefinitionRegistry;
-import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForArraysOfBoolean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +56,7 @@ public class NotificationController {
     @PostMapping("send-notification")
     @ResponseBody
     public void sendNotification(@RequestBody Notification notification) throws JsonProcessingException {
-        notificationService.sendNotification(notification.getNotifierId(), notification.getSubject(), notification.getContent(), notification.getTo());
+        notificationService.sendNotification(notification.getNotifierId(), notification.getSubject(), notification.getContent(), notification.getReceiver());
     }
 
     @GetMapping("get-notifiers")
@@ -97,8 +95,8 @@ public class NotificationController {
         Notifier notifier = objectMapper.treeToValue(notifierNode, Notifier.class);
         String subject = jsonNode.get("subject").asText();
         String content = jsonNode.get("content").asText();
-        String to = jsonNode.get("to").asText();
-        notifierService.testNotifier(notifier, subject, content, to);
+        String receiver = jsonNode.get("receiver").asText();
+        notifierService.testNotifier(notifier, subject, content, receiver);
     }
 
 }

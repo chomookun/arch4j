@@ -31,13 +31,15 @@
             // request login
             let url = new URL(`${window.location.pathname}/process`, document.location.origin);
             let payload = new URLSearchParams();
-            payload.append('username', login.username);
-            payload.append('password', login.password);
-            payload.append('remember-me', login.rememberMe);
+            payload.set('username', login.username);
+            payload.set('password', login.password);
+            payload.set('remember-me', login.rememberMe);
             _fetch(url, {
                 method: 'POST',
-                body: payload
-            }, true).then(async function (response) {
+                headers: {'Accept': 'application/json'},
+                body: payload,
+                _suppressAlert: true
+            }).then(async function (response) {
                 if (response.ok) {
                     document.location.href = document.location.origin;
                 } else {

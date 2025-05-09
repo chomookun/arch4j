@@ -14,6 +14,6 @@ public abstract class NotifierClient {
         this.properties = properties;
     }
 
-    public abstract void sendMessage(String subject, String content, String to, Map<String,Object> option);
+    public abstract void sendMessage(String subject, String content, String receiver, Map<String,Object> option);
 
 }

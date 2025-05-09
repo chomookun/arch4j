@@ -27,7 +27,7 @@ public class SlackNotifierClient extends NotifierClient {
     }
 
     @Override
-    public void sendMessage(String subject, String content, String to, Map<String,Object> option) {
+    public void sendMessage(String subject, String content, String receiver, Map<String,Object> option) {
         RestTemplate restTemplate = RestTemplateBuilder.create()
                 .insecure(this.insecure)
                 .build();

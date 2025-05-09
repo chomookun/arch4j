@@ -147,12 +147,22 @@ public class UserService {
      * @param userId user id
      * @param newPassword new password
      */
+    @Transactional
     public void changePassword(String userId, String newPassword) {
         userRepository.findById(userId).ifPresent(userEntity -> {
             userEntity.setPassword(passwordEncoder.encode(newPassword));
             userEntity.setPasswordAt(Instant.now());
             userRepository.saveAndFlush(userEntity);
         });
+    }
+
+    @Transactional
+    public String createTotpSecret(String userId) {
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+        String totpSecret = totpService.generateTotpSecret();
+        userEntity.setTotpSecret(totpSecret);
+        userRepository.saveAndFlush(userEntity);
+        return totpSecret;
     }
 
 }

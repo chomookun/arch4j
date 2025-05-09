@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Lazy(false)
@@ -44,7 +43,7 @@ public class NotificationService {
                 .notifierName(notifier.getName())
                 .subject(subject)
                 .content(content)
-                .to(to)
+                .receiver(to)
                 .build();
         notificationConsumer.addNotification(notification);
         return notification;

@@ -69,14 +69,6 @@ spring:
       host: localhost
       port: 6379
       password: ~
-  mail:
-    host: 127.0.0.1
-    port: 3025
-    username: ~
-    password: ~
-    properties:
-      mail.smtp.auth: false
-      mail.smtp.starttls.enable: true
   batch:
     job:
       enabled: false
