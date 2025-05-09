@@ -686,10 +686,9 @@
                 const dialog = new duice.Dialog(document.getElementById('testNotifierDialog'));
                 const data = new duice.ObjectProxy({
                     notifier: null,
-                    to: null,
                     subject: null,
                     content: null,
-                    test: false
+                    to: null
                 });
 
                 /**
@@ -743,12 +742,6 @@
             <form class="display--grid grid-template-columns--12fr gap--1em">
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.notification.Notification.to}"></span>
-                        <input type="text" data-duice-bind="testNotifierDialog.data" data-duice-property="to" class="width--100"/>
-                    </label>
-                </div>
-                <div class="grid-column--span-12">
-                    <label>
                         <span data-th-text="#{core.notification.Notification.subject}"></span>
                         <input type="text" data-duice-bind="testNotifierDialog.data" data-duice-property="subject" class="width--100"/>
                     </label>
@@ -759,6 +752,12 @@
                         <textarea data-duice-bind="testNotifierDialog.data" data-duice-property="content" class="width--100"></textarea>
                     </label>
 
+                </div>
+                <div class="grid-column--span-12">
+                    <label>
+                        <span data-th-text="#{core.notification.Notification.to}"></span>
+                        <input type="text" data-duice-bind="testNotifierDialog.data" data-duice-property="to" class="width--100"/>
+                    </label>
                 </div>
                 <div class="grid-column--span-12">
                     <div class="display--flex justify-content--end">
@@ -789,10 +788,9 @@
                 const dialog = new duice.Dialog(document.getElementById('sendNotificationDialog'));
                 const data = new duice.ObjectProxy({
                     notifierId: null,
-                    to: null,
                     subject: null,
                     content: null,
-                    test: false
+                    to: null
                 });
                 const notifiers = new duice.ArrayProxy([]);
 
@@ -874,12 +872,6 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.notification.Notification.to}"></span>
-                        <input type="text" data-duice-bind="sendNotificationDialog.data" data-duice-property="to" class="width--100"/>
-                    </label>
-                </div>
-                <div class="grid-column--span-12">
-                    <label>
                         <span data-th-text="#{core.notification.Notification.subject}"></span>
                         <input type="text" data-duice-bind="sendNotificationDialog.data" data-duice-property="subject" class="width--100"/>
                     </label>
@@ -888,6 +880,12 @@
                     <label>
                         <span data-th-text="#{core.notification.Notification.content}"></span>
                         <textarea data-duice-bind="sendNotificationDialog.data" data-duice-property="content" class="width--100"></textarea>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <label>
+                        <span data-th-text="#{core.notification.Notification.to}"></span>
+                        <input type="text" data-duice-bind="sendNotificationDialog.data" data-duice-property="to" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">

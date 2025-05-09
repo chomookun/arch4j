@@ -44,7 +44,7 @@ public class NotificationVerifierClient extends VerifierClient {
         String content = template.getContent();
         // send notification
         Notifier notifier = notifierService.getNotifier(notifierId).orElseThrow();
-        Notification notification = notificationService.sendNotification(notifier, to, subject, content, null);
+        Notification notification = notificationService.sendNotification(notifier, subject, content, to);
         return IssueChallengeResult.builder()
                 .code(code)
                 .notificationId(notification.getNotificationId())

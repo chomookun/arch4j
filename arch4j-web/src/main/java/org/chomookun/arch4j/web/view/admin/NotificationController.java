@@ -12,6 +12,7 @@ import org.chomookun.arch4j.core.notification.model.NotificationSearch;
 import org.chomookun.arch4j.core.notification.model.NotifierSearch;
 import org.chomookun.arch4j.core.notification.NotifierService;
 import org.chomookun.arch4j.core.notification.client.NotifierClientDefinitionRegistry;
+import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForArraysOfBoolean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +58,7 @@ public class NotificationController {
     @PostMapping("send-notification")
     @ResponseBody
     public void sendNotification(@RequestBody Notification notification) throws JsonProcessingException {
-        notificationService.sendNotification(notification.getNotifierId(), notification.getTo(), notification.getSubject(), notification.getContent(), null);
+        notificationService.sendNotification(notification.getNotifierId(), notification.getSubject(), notification.getContent(), notification.getTo());
     }
 
     @GetMapping("get-notifiers")
@@ -94,10 +95,10 @@ public class NotificationController {
     public void testNotifier(@RequestBody JsonNode jsonNode) throws JsonProcessingException {
         JsonNode notifierNode = jsonNode.get("notifier");
         Notifier notifier = objectMapper.treeToValue(notifierNode, Notifier.class);
-        String to = jsonNode.get("to").asText();
         String subject = jsonNode.get("subject").asText();
         String content = jsonNode.get("content").asText();
-        notifierService.testNotifier(notifier, to, subject, content);
+        String to = jsonNode.get("to").asText();
+        notifierService.testNotifier(notifier, subject, content, to);
     }
 
 }

@@ -38,7 +38,7 @@ public class EmailNotifierClient extends NotifierClient {
     }
 
     @Override
-    public void sendMessage(String to, String subject, String content, Map<String,Object> option) {
+    public void sendMessage(String subject, String content, String to, Map<String,Object> option) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);

@@ -91,7 +91,7 @@ public class NotifierService {
      * Tests alarm
      * @param notifier alarm
      */
-    public void testNotifier(Notifier notifier, String to, String subject, String content) {
+    public void testNotifier(Notifier notifier, String subject, String content, String to) {
         NotifierClient notifierClient = NotifierClientFactory.getNotificationClient(notifier);
         notifierClient.sendMessage(to, subject, content, null);
     }

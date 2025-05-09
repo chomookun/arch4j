@@ -18,11 +18,11 @@ public class Notification {
 
     private String notifierName;
 
-    private String to;
-
     private String subject;
 
     private String content;
+
+    private String to;
 
     private Map<String, Object> option;
 

@@ -28,15 +28,15 @@ public class NotificationEntity extends BaseEntity {
     @Column(name = "notifier_name")
     private String notifierName;
 
-    @Column(name = "to")
-    private String to;
-
     @Column(name = "subject")
     private String subject;
 
     @Column(name = "content", length = Integer.MAX_VALUE)
     @Lob
     private String content;
+
+    @Column(name = "to")
+    private String to;
 
     @Column(name = "submitted_at")
     private Instant submittedAt;

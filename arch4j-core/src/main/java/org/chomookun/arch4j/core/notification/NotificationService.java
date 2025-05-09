@@ -32,21 +32,19 @@ public class NotificationService {
     /**
      * Sends notification
      * @param notifier notifier
-     * @param to to
      * @param subject subject
      * @param content content
-     * @param option option
+     * @param to to
      * @return notification
      */
-    public Notification sendNotification(Notifier notifier, String to, String subject, String content, Map<String,Object> option) {
+    public Notification sendNotification(Notifier notifier, String subject, String content, String to) {
         Notification notification = Notification.builder()
                 .notificationId(IdGenerator.uuid())
                 .notifierId(notifier.getNotifierId())
                 .notifierName(notifier.getName())
-                .to(to)
                 .subject(subject)
                 .content(content)
-                .option(option)
+                .to(to)
                 .build();
         notificationConsumer.addNotification(notification);
         return notification;
@@ -58,12 +56,11 @@ public class NotificationService {
      * @param to to
      * @param subject subject
      * @param content content
-     * @param option option
      * @return notification
      */
-    public Notification sendNotification(String notifierId, String to, String subject, String content, Map<String,Object> option) {
+    public Notification sendNotification(String notifierId, String subject, String content, String to) {
         Notifier notification = notifierService.getNotifier(notifierId).orElseThrow();
-        return sendNotification(notification, to, subject, content, option);
+        return sendNotification(notification, subject, content, to);
     }
 
     /**
