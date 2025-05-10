@@ -9,8 +9,8 @@
         const notificationSearch = new duice.ObjectProxy({
             notifierId: null,
             status: null,
-            _page: 0,
             _size: 20,
+            _page: 0,
             _total: 0,
             _status: null
         });
@@ -21,8 +21,8 @@
         const notifierSearch = new duice.ObjectProxy({
             key: 'notifierId',
             value: null,
-            _page: 0,
             _size: 20,
+            _page: 0,
             _total: 0,
             _status: null
         });
@@ -66,7 +66,7 @@
          * @param page page
          */
         function getNotifications(page) {
-            if (Number.isFinite(page)){
+            if (Number.isFinite(parseInt(page))){
                 notificationSearch._page = page;
             }
             let url = new URL(`${location.pathname}/get-notifications`, location.origin);
@@ -76,6 +76,8 @@
             if (notificationSearch.status) {
                 url.searchParams.set('status', notificationSearch.status);
             }
+            url.searchParams.set('_size', notificationSearch._size);
+            url.searchParams.set('_page', notificationSearch._page);
             notifications.length = 0;
             notificationSearch._status = 'loading';
             _fetch(url)
@@ -101,14 +103,14 @@
          */
         function getNotifiers(page) {
             if(page) {
-                notifierSearch._page = page;
+                notifierSearch._page = parseInt(page);
             }
             let url = new URL(`${location.pathname}/get-notifiers`, location.origin);
             if (notifierSearch.key && notifierSearch.value) {
-                url.searchParams.append(notifierSearch.key, notifierSearch.value);
+                url.searchParams.set(notifierSearch.key, notifierSearch.value);
             }
-            url.searchParams.append('_page', notifierSearch._page);
-            url.searchParams.append('_size', notifierSearch._size);
+            url.searchParams.set('_size', notifierSearch._size);
+            url.searchParams.set('_page', notifierSearch._page);
             notifiers.length = 0;
             notifierSearch._status = 'loading';
             _fetch(url)
@@ -436,10 +438,10 @@
                     <div>
                         <duice-pagination
                                 data-duice-bind="notificationSearch"
-                                data-duice-page-property="_page"
                                 data-duice-size-property="_size"
+                                data-duice-page-property="_page"
                                 data-duice-total-property="_total"
-                                data-duice-onclick="getNotificationMessages(this.dataset.page);">
+                                data-duice-onclick="getNotifications(this.dataset.page);">
                         </duice-pagination>
                     </div>
                     <div>
