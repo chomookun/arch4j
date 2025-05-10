@@ -135,14 +135,6 @@ dependencies {
     api 'ognl:ognl:3.2.21'
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        events 'failed'
-        exceptionFormat = 'full'
-    }
-}
-
 jar {
     enabled = true
     archiveClassifier = ''

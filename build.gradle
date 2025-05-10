@@ -22,7 +22,7 @@ allprojects {
     }
 
     afterEvaluate {
-       // java
+        // java
         if(it.plugins.hasPlugin("java")) {
             it.extensions.configure(JavaPluginExtension) { java ->
                 java.toolchain {
@@ -53,6 +53,16 @@ allprojects {
             }
             it.java {
                 withSourcesJar()
+            }
+        }
+        // junit test
+        it.tasks.withType(Test).configureEach {
+            useJUnitPlatform {
+                excludeTags 'manual'
+            }
+            testLogging {
+                events 'failed'
+                exceptionFormat = 'full'
             }
         }
         // maven-publish

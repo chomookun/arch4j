@@ -49,14 +49,6 @@ dependencies {
 
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        events 'failed'
-        exceptionFormat = 'full'
-    }
-}
-
 jar {
     enabled = true
     archiveClassifier = ''
