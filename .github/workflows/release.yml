@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RELEASE_VERSION: 1.0.0-SNAPSHOT
-      RELEASE_TAG: ${{ github.event.inputs.tag }}
+      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
