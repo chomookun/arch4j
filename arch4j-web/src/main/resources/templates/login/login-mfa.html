@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="admin/_admin.html">
+<body layout:fragment="_body">
+    <script th:inline="javascript">
+        const mfa = new duice.ObjectProxy({
+            verifierId: null,
+            verificationId: null,
+            code: null,
+            result: null
+        });
+
+        function issueCode() {
+            const url = new URL(`${location.pathname}/issue-code`, location.origin);
+            _fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(mfa),
+            }).then(response => response.json())
+            .then(data => {
+                mfa.verificationId = data.verificationId;
+            });
+        }
+
+        function verifyCode() {
+            const url = new URL(`${location.pathname}/verify-code`, location.origin);
+            _fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(mfa),
+                _suppressAlert: true
+            }).then(async response => {
+                if (response.ok) {
+                    location.href = location.origin;
+                } else {
+                    let json = await response.json();
+                    mfa.message = json.message;
+                }
+            });
+        }
+
+    </script>
+    <th:block th:replace="|_theme/${_theme}/login/login-mfa.html|"/>
+</body>

@@ -427,8 +427,8 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
             http.securityMatcher(securityMatcher);
             // authorize http requests
             http.authorizeHttpRequests(authorizeHttpRequests -> {
-                authorizeHttpRequests.requestMatchers("/login**", "/join**").permitAll();
-                authorizeHttpRequests.requestMatchers("/user**").authenticated();
+                authorizeHttpRequests.requestMatchers("/login/**", "/join/**").permitAll();
+                authorizeHttpRequests.requestMatchers("/user/**").authenticated();
                 if(securityProperties.getSecurityPolicy() == SecurityPolicy.ANONYMOUS) {
                     authorizeHttpRequests.anyRequest().permitAll();
                 }else{

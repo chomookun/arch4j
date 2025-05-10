@@ -1,0 +1,64 @@
+<style>
+    #login {
+        width: 300px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -75%);
+    }
+    #_brand,
+    #_brand * {
+        display: inline-block;
+        height: 2rem;
+        font-weight: bold;
+    }
+    .dark-mode #_brand {
+        filter: invert(0.9);
+    }
+</style>
+<main>
+    <!-- ================================== -->
+    <!-- start: login                       -->
+    <!-- ================================== -->
+    <div id="login" class="panel">
+        <div class="panel-title justify-content--center align-items--center padding-bottom--1rem">
+            <img class="icon font-size--large" th:src="@{/static/image/icon-verification.svg}" alt=""/>
+            <span data-th-text="#{web.global.enterItem(#{core.verification.Verification.code})}"></span>
+        </div>
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                <div class="grid-column--span-12 display--flex justify-content--space-between gap--1px">
+                    <label class="flex--1">
+                        <select data-duice-bind="mfa" data-duice-property="verifierId" class="width--100">
+                            <option value="" data-th-text="|#{web.global.select}...|"></option>
+                            <option th:each="verifier : ${availableVerifiers}"
+                                    th:value="${verifier.verifierId}"
+                                    th:text="${verifier.name}"></option>
+                        </select>
+                    </label>
+                    <button type="button" onclick="issueCode();">
+                        인증요청
+                    </button>
+                </div>
+                <label class="grid-column--span-12">
+                    <input type="text" autocomplete="off"
+                           data-duice-bind="mfa" data-duice-property="code"
+                           class="width--100 text-align--center"
+                           th:placeholder="#{core.verification.Verification.code}"/>
+                </label>
+                <div class="grid-column--span-12 justify-self--center">
+                    <span data-duice-bind="mfa" data-duice-property="message"></span>
+                </div>
+                <div class="grid-column--span-12">
+                    <button type="submit" onclick="verifyCode();" class="width--100">
+                        <img class="icon" th:src="@{/static/image/icon-confirm.svg}">
+                        <span data-th-text="#{web.global.confirm}"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ================================== -->
+    <!-- end: login                         -->
+    <!-- ================================== -->
+</main>

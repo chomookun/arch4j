@@ -33,33 +33,33 @@ public class NotificationService {
      * @param notifier notifier
      * @param subject subject
      * @param content content
-     * @param to to
+     * @param receiver receiver
      * @return notification
      */
-    public Notification sendNotification(Notifier notifier, String subject, String content, String to) {
+    public Notification sendNotification(Notifier notifier, String subject, String content, String receiver) {
         Notification notification = Notification.builder()
                 .notificationId(IdGenerator.uuid())
                 .notifierId(notifier.getNotifierId())
                 .notifierName(notifier.getName())
                 .subject(subject)
                 .content(content)
-                .receiver(to)
+                .receiver(receiver)
                 .build();
         notificationConsumer.addNotification(notification);
         return notification;
     }
 
     /**
-     * Sends notification message
+     * Sends notification
      * @param notifierId notifier id
-     * @param to to
+     * @param receiver receiver
      * @param subject subject
      * @param content content
      * @return notification
      */
-    public Notification sendNotification(String notifierId, String subject, String content, String to) {
+    public Notification sendNotification(String notifierId, String subject, String content, String receiver) {
         Notifier notification = notifierService.getNotifier(notifierId).orElseThrow();
-        return sendNotification(notification, subject, content, to);
+        return sendNotification(notification, subject, content, receiver);
     }
 
     /**
