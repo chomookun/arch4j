@@ -659,18 +659,18 @@ insert into `core_template` (`template_id`,`system_required`,`name`,`format`,`su
 
 -- core_notification
 insert into `core_notifier` (`notifier_id`,`system_required`,`name`, `client_type`, `client_properties`) values
-    ('email','Y','Email Channel','EMAIL','host=sandbox.smtp.mailtrap.io
+    ('email','Y','Email','EMAIL','host=sandbox.smtp.mailtrap.io
 port=25
 username=987a77fac40349
 password=cfad266492f5fa
     '),
-    ('slack','N','Slack Channel','SLACK','url=https://hooks.slack.com/services/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
+    ('slack','N','Slack','SLACK','url=https://hooks.slack.com/services/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
     ');
 
 -- core_verifier
 insert into `core_verifier` (`verifier_id`,`system_required`,`name`,`client_type`,`client_properties`,`enabled`) values
-    ('totp','Y','TOTP Verifier', 'totp', '','Y'),
-    ('email','Y','Email Verifier', 'notification', 'notifierId=email
+    ('totp','Y','TOTP', 'totp', '','Y'),
+    ('email','Y','Email', 'notification', 'notifierId=email
 templateId=verification.email','Y');
 
 -- core_example
