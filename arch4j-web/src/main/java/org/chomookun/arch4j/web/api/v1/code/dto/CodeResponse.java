@@ -31,7 +31,6 @@ public class CodeResponse {
                 .name(code.getName())
                 .build();
         List<CodeItemResponse> codeItems = code.getItems().stream()
-                .filter(CodeItem::isEnabled)        // only enabled
                 .map(CodeItemResponse::from)
                 .collect(Collectors.toList());
         codeResponse.setItems(codeItems);

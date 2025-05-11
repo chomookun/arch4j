@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.code.CachedCodeService;
 import org.chomookun.arch4j.core.code.model.Code;
 import org.chomookun.arch4j.core.code.model.CodeSearch;
 import org.chomookun.arch4j.core.code.CodeService;
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
 public class CodeRestController {
 
     private final CodeService codeService;
+
+    private final CachedCodeService cachedCodeService;
 
     @Operation(summary = "Returns list of code")
     @Parameter(name = "pageable", hidden = true) @PageableAsQueryParam
@@ -54,7 +57,7 @@ public class CodeRestController {
     @Parameter(name = "codeId", in =ParameterIn.PATH, example = "core.example.Example.code")
     @GetMapping("{codeId}")
     public ResponseEntity<CodeResponse> getCode(@PathVariable("codeId") String codeId) {
-        Code code = codeService.getCode(codeId).orElseThrow();
+        Code code = cachedCodeService.getCode(codeId).orElseThrow();
         CodeResponse codeResponse = CodeResponse.from(code);
         return ResponseEntity.ok(codeResponse);
     }

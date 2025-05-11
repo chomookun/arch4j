@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.web.common.error.ErrorResponse;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
-import org.chomookun.arch4j.core.security.support.SecurityUtils;
+import org.chomookun.arch4j.core.security.SecurityUtils;
 import org.chomookun.arch4j.web.api.v1.user.dto.ChangePasswordRequest;
 import org.chomookun.arch4j.web.api.v1.user.dto.UserRequest;
 import org.chomookun.arch4j.web.api.v1.user.dto.UserResponse;

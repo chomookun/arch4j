@@ -11,8 +11,11 @@ import org.chomookun.arch4j.core.message.model.MessageSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +30,21 @@ public class MessageService {
     private final EntityManager entityManager;
 
     private final MessageRepository messageRepository;
+
+    private final StringRedisTemplate redisTemplate;
+
+    /**
+     * Evicts cache for message
+     * @param messageId message id
+     */
+    void evictCache(String messageId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisTemplate.convertAndSend(MessageChannels.MESSAGE_EVICT, messageId);
+            }
+        });
+    }
 
     /**
      * Saves message
@@ -47,6 +65,7 @@ public class MessageService {
         // save
         MessageEntity savedMessageEntity = messageRepository.saveAndFlush(messageEntity);
         entityManager.refresh(savedMessageEntity);
+        evictCache(savedMessageEntity.getMessageId());
         return Message.from(savedMessageEntity);
     }
 
@@ -67,6 +86,7 @@ public class MessageService {
     public void deleteMessage(String messageId) {
         messageRepository.deleteById(messageId);
         messageRepository.flush();
+        evictCache(messageId);
     }
 
     /**

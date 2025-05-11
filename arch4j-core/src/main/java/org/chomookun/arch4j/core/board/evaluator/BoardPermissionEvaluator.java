@@ -3,7 +3,7 @@ package org.chomookun.arch4j.core.board.evaluator;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.board.BoardService;
-import org.chomookun.arch4j.core.security.support.SecurityUtils;
+import org.chomookun.arch4j.core.security.SecurityUtils;
 import org.springframework.stereotype.Component;
 
 @Component("boardPermissionEvaluator")

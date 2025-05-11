@@ -3,9 +3,11 @@ package org.chomookun.arch4j.core.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.message.model.Message;
+import org.chomookun.arch4j.core.user.UserChannels;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.NonNull;
 
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class MessageSource extends ReloadableResourceBundleMessageSource {
 
     private static final String PROPERTIES_SUFFIX = ".properties";
 
-    private final MessageService messageService;
+    private final CachedMessageService cachedMessageService;
 
     private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
@@ -54,7 +56,7 @@ public class MessageSource extends ReloadableResourceBundleMessageSource {
     protected String resolveCodeWithoutArguments(@NonNull String code, @NonNull Locale locale) {
         String result = super.resolveCodeWithoutArguments(code, locale);
         if(result == null) {
-            Message message = messageService.getMessage(code).orElse(null);
+            Message message = cachedMessageService.getMessage(code).orElse(null);
             if(message != null) {
                 result = message.getValue();
             }
@@ -66,7 +68,7 @@ public class MessageSource extends ReloadableResourceBundleMessageSource {
     protected MessageFormat resolveCode(@NonNull String code, @NonNull Locale locale) {
         MessageFormat messageFormat = super.resolveCode(code, locale);
         if(messageFormat == null) {
-           Message message = messageService.getMessage(code).orElse(null);
+           Message message = cachedMessageService.getMessage(code).orElse(null);
             if(message != null) {
                 messageFormat = new MessageFormat(message.getValue(), locale);
             }

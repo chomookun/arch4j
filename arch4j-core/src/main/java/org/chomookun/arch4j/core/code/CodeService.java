@@ -8,11 +8,15 @@ import org.chomookun.arch4j.core.code.entity.CodeItemEntity;
 import org.chomookun.arch4j.core.code.repository.CodeRepository;
 import org.chomookun.arch4j.core.code.model.Code;
 import org.chomookun.arch4j.core.code.model.CodeSearch;
+import org.chomookun.arch4j.core.user.UserChannels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +32,21 @@ public class CodeService {
     private final EntityManager entityManager;
 
     private final CodeRepository codeRepository;
+
+    private final StringRedisTemplate redisTemplate;
+
+    /**
+     * Evicts cache for code
+     * @param codeId code id
+     */
+    void evictCache(String codeId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisTemplate.convertAndSend(CodeChannels.CODE_EVICT, codeId);
+            }
+        });
+    }
 
     /**
      * Saves code
@@ -67,6 +86,7 @@ public class CodeService {
         // save
         CodeEntity savedCodeEntity = codeRepository.saveAndFlush(codeEntity);
         entityManager.refresh(savedCodeEntity);
+        evictCache(savedCodeEntity.getCodeId());
         return Code.from(savedCodeEntity);
     }
 
@@ -89,6 +109,7 @@ public class CodeService {
         CodeEntity codeEntity = codeRepository.findById(codeId).orElseThrow();
         codeRepository.delete(codeEntity);
         codeRepository.flush();
+        evictCache(codeId);
     }
 
     /**

@@ -18,6 +18,7 @@ logging:
     org.apache.http.wire: INFO
     org.apache.http.conn.ssl: INFO
     org.apache.http.client.protocol.ResponseProcessCookies: ERROR
+    io.lettuce.core: INFO
 
 # spring
 spring:

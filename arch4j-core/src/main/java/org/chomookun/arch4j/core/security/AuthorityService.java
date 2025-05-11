@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.ValidationUtil;
+import org.chomookun.arch4j.core.message.MessageChannels;
 import org.chomookun.arch4j.core.security.model.Authority;
 import org.chomookun.arch4j.core.security.model.AuthoritySearch;
 import org.chomookun.arch4j.core.security.entity.AuthorityEntity;
@@ -11,8 +12,11 @@ import org.chomookun.arch4j.core.security.repository.AuthorityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +31,21 @@ public class AuthorityService {
     private final EntityManager entityManager;
 
     private final AuthorityRepository authorityRepository;
+
+    private final StringRedisTemplate redisTemplate;
+
+    /**
+     * Evicts cache for authority
+     * @param authorityId authority id
+     */
+    void evictCache(String authorityId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisTemplate.convertAndSend(SecurityChannels.AUTHORITY_EVICT, authorityId);
+            }
+        });
+    }
 
     /**
      * Saves authority
@@ -46,6 +65,7 @@ public class AuthorityService {
         // save
         AuthorityEntity savedAuthorityEntity = authorityRepository.saveAndFlush(authorityEntity);
         entityManager.refresh(savedAuthorityEntity);
+        evictCache(savedAuthorityEntity.getAuthorityId());
         return Authority.from(savedAuthorityEntity);
     }
 
@@ -67,6 +87,7 @@ public class AuthorityService {
         AuthorityEntity authorityEntity = authorityRepository.findById(authorityId).orElseThrow();
         authorityRepository.delete(authorityEntity);
         authorityRepository.flush();
+        evictCache(authorityId);
     }
 
     /**

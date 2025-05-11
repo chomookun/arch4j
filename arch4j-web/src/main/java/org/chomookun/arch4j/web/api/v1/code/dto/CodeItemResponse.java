@@ -13,10 +13,13 @@ public class CodeItemResponse {
 
     private String name;
 
+    private boolean enabled;
+
     static CodeItemResponse from(CodeItem codeItem) {
         return CodeItemResponse.builder()
                 .itemId(codeItem.getItemId())
                 .name(codeItem.getName())
+                .enabled(codeItem.isEnabled())
                 .build();
     }
 

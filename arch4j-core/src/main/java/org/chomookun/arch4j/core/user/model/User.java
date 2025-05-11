@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
+import org.chomookun.arch4j.core.security.model.Authority;
 import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
 import org.chomookun.arch4j.core.user.entity.UserRoleEntity;
@@ -62,6 +63,12 @@ public class User extends BaseModel {
     List<Role> roles = new ArrayList<>();
 
     public enum Status { ACTIVE, LOCKED, CLOSED }
+
+    public List<Authority> getAuthorities() {
+        return roles.stream()
+                .flatMap(role -> role.getAuthorities().stream())
+                .collect(Collectors.toList());
+    }
 
     /**
      * user factory method

@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.menu.MenuService;
+import org.chomookun.arch4j.core.menu.CachedMenuService;
 import org.chomookun.arch4j.core.menu.model.Menu;
 import org.chomookun.arch4j.web.api.v1.menu.dto.MenuResponse;
-import org.chomookun.arch4j.core.security.support.SecurityUtils;
+import org.chomookun.arch4j.core.security.SecurityUtils;
 import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +26,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuRestController {
 
-    private final MenuService menuService;
+    private final CachedMenuService cachedMenuService;
 
     @Operation(summary = "Returns list of all menu")
     @GetMapping
     public ResponseEntity<List<MenuResponse>> getMenus() {
-        List<MenuResponse> menuResponses = menuService.getMenus().stream()
+        List<MenuResponse> menuResponses = cachedMenuService.getMenus().stream()
                 .filter(menu -> SecurityUtils.hasPermission(menu.getViewRoles()))
                 .peek(menu -> {
                     if (!SecurityUtils.hasPermission(menu.getLinkRoles())) {
@@ -50,7 +50,7 @@ public class MenuRestController {
     @Parameter(name = "menuId", in = ParameterIn.PATH)
     @GetMapping("{menuId}")
     public ResponseEntity<MenuResponse> getMenu(@PathVariable("menuId") String menuId) {
-        Menu menu = menuService.getMenu(menuId).orElseThrow();
+        Menu menu = cachedMenuService.getMenu(menuId).orElseThrow();
         MenuResponse menuResponse = MenuResponse.from(menu);
         return ResponseEntity.ok(menuResponse);
     }

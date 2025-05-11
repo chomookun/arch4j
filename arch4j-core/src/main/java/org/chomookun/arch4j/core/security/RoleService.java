@@ -12,8 +12,11 @@ import org.chomookun.arch4j.core.security.repository.RoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +31,21 @@ public class RoleService {
     private final EntityManager entityManager;
 
     private final RoleRepository roleRepository;
+
+    private final StringRedisTemplate redisTemplate;
+
+    /**
+     * Evicts cache for role
+     * @param roleId role id
+     */
+    void evictCache(String roleId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisTemplate.convertAndSend(SecurityChannels.ROLE_EVICT, roleId);
+            }
+        });
+    }
 
     /**
      * Saves role
@@ -58,6 +76,7 @@ public class RoleService {
         // save
         RoleEntity savedRoleEntity = roleRepository.saveAndFlush(roleEntity);
         entityManager.refresh(savedRoleEntity);
+        evictCache(savedRoleEntity.getRoleId());
         return Role.from(savedRoleEntity);
     }
 
@@ -79,6 +98,7 @@ public class RoleService {
         RoleEntity roleEntity = roleRepository.findById(roleId).orElseThrow();
         roleRepository.delete(roleEntity);
         roleRepository.flush();
+        evictCache(roleId);
     }
 
     /**

@@ -126,13 +126,13 @@
                 return false;
             }
             // check duplicated id
-            let url = new URL(`${location.pathname}/get-user-by-login-id`, location.origin);
-            url.searchParams.append('username', username);
-            let response = await _fetch(url, {}, true);
+            let url = new URL(`${location.pathname}/get-user-by-username`, location.origin);
+            url.searchParams.set('username', username);
+            let response = await _fetch(url, {_suppressAlert:true});
             if (response.ok) {
                 let user = await response.json();
                 if (user) {
-                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.user.User.userId})}]]*/'');
+                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.user.User.username})}]]*/'');
                     return false;
                 }
             }

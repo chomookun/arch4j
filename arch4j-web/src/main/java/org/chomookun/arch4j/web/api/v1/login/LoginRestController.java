@@ -2,6 +2,7 @@ package org.chomookun.arch4j.web.api.v1.login;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.chomookun.arch4j.core.security.model.SecurityToken;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.web.api.v1.login.dto.LoginRequest;
@@ -22,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.security.Security;
 
 @Tag(name = "login")
 @RestController
@@ -44,8 +46,9 @@ public class LoginRestController {
     @PostMapping
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) throws IOException, ServletException {
         // checks username, password
+        User user;
         try {
-            User user = userService.getUserByUsername(loginRequest.getUsername())
+            user = userService.getUserByUsername(loginRequest.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("user not found"));
             boolean passwordMatched = userService.isPasswordMatched(user.getUserId(), loginRequest.getPassword());
             if (!passwordMatched) {
@@ -57,9 +60,11 @@ public class LoginRestController {
         }
 
         // generates security token (access, refresh token)
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-        String accessToken = securityTokenService.encodeSecurityToken(userDetails, 10);
-        String refreshToken = securityTokenService.encodeSecurityToken(userDetails, 60*24*7);
+        SecurityToken securityToken = SecurityToken.builder()
+                .userId(user.getUserId())
+                .build();
+        String accessToken = securityTokenService.encodeSecurityToken(securityToken, 10);
+        String refreshToken = securityTokenService.encodeSecurityToken(securityToken, 60*24*7);
         LoginResponse loginResponse = LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

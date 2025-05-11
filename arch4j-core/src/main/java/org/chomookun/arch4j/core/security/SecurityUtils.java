@@ -1,10 +1,9 @@
-package org.chomookun.arch4j.core.security.support;
+package org.chomookun.arch4j.core.security;
 
-import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.core.security.model.Role;
-import org.chomookun.arch4j.core.user.model.User;
-import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
+import org.chomookun.arch4j.core.user.CachedUserService;
+import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -24,7 +23,7 @@ public class SecurityUtils {
 
     private static SecurityProperties securityProperties;
 
-    private static UserService userService;
+    private static CachedUserService cachedUserService;
 
     @Autowired
     public void setSecurityProperty(SecurityProperties securityPropertiesBean) {
@@ -32,8 +31,8 @@ public class SecurityUtils {
     }
 
     @Autowired
-    public void setUserService(UserService userServiceBean){
-        userService = userServiceBean;
+    public void setCachedUserService(CachedUserService cachedUserServiceBean){
+        cachedUserService = cachedUserServiceBean;
     }
 
     public static boolean isAuthenticated() {
@@ -65,7 +64,7 @@ public class SecurityUtils {
 
     public static Optional<User> getCurrentUser() {
         User user = getUserDetails()
-                .flatMap(userDetails -> userService.getUser(userDetails.getUserId()))
+                .flatMap(userDetails -> cachedUserService.getUser(userDetails.getUserId()))
                 .orElse(null);
         return Optional.ofNullable(user);
     }

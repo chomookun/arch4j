@@ -1,11 +1,12 @@
 package org.chomookun.arch4j.core.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.Base32;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.data.ValidationUtil;
+import org.chomookun.arch4j.core.message.MessageChannels;
 import org.chomookun.arch4j.core.security.TotpService;
 import org.chomookun.arch4j.core.security.model.Role;
 import org.chomookun.arch4j.core.user.entity.UserEntity;
@@ -16,13 +17,13 @@ import org.chomookun.arch4j.core.user.model.UserSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +42,21 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final TotpService totpService;
+
+    private final StringRedisTemplate redisTemplate;
+
+    /**
+     * Evicts cache for user
+     * @param userId user id
+     */
+    void evictCache(String userId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisTemplate.convertAndSend(UserChannels.USER_EVICT, userId);
+            }
+        });
+    }
 
     /**
      * Saves user
@@ -84,6 +100,7 @@ public class UserService {
         }
         UserEntity savedUserEntity = userRepository.saveAndFlush(userEntity);
         entityManager.refresh(savedUserEntity);
+        evictCache(savedUserEntity.getUserId()); // evict cached user
         return User.from(savedUserEntity);
     }
 
@@ -129,6 +146,7 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow();
         userRepository.delete(userEntity);
         userRepository.flush();
+        evictCache(userId);    // evict cached user
     }
 
     /**
@@ -153,6 +171,7 @@ public class UserService {
             userEntity.setPassword(passwordEncoder.encode(newPassword));
             userEntity.setPasswordAt(Instant.now());
             userRepository.saveAndFlush(userEntity);
+            evictCache(userId);
         });
     }
 
@@ -162,6 +181,7 @@ public class UserService {
         String totpSecret = totpService.generateTotpSecret();
         userEntity.setTotpSecret(totpSecret);
         userRepository.saveAndFlush(userEntity);
+        evictCache(userId);
         return totpSecret;
     }
 

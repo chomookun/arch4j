@@ -15,11 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.CoreConfiguration;
 import org.chomookun.arch4j.core.CoreProperties;
-import org.chomookun.arch4j.core.security.RoleService;
-import org.chomookun.arch4j.core.security.SecurityProperties;
-import org.chomookun.arch4j.web.common.security.SecurityFilter;
-import org.chomookun.arch4j.core.security.SecurityTokenService;
+import org.chomookun.arch4j.core.security.*;
 import org.chomookun.arch4j.core.security.model.SecurityPolicy;
+import org.chomookun.arch4j.core.security.model.SecurityToken;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -161,9 +159,13 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
     @RequiredArgsConstructor
     static class SecurityConfiguration {
 
+        private final ApplicationContext applicationContext;
+
         private final SecurityProperties securityProperties;
 
-        private final ApplicationContext applicationContext;
+        private final SecurityService securityService;
+
+        private final SecurityTokenService securityTokenService;
 
         private final AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -173,20 +175,10 @@ public class WebConfiguration implements EnvironmentPostProcessor, WebMvcConfigu
 
         private final AuthenticationFailureHandler authenticationFailureHandler;
 
-        private final PlatformTransactionManager transactionManager;
-
-        private final SecurityTokenService authenticationTokenService;
-
-        private final UserDetailsService userDetailsService;
-
-        private final RoleService roleService;
-
         private SecurityFilter securityFilter() {
             return SecurityFilter.builder()
-                    .transactionManager(transactionManager)
-                    .authenticationTokenService(authenticationTokenService)
-                    .userDetailsService(userDetailsService)
-                    .roleService(roleService)
+                    .securityService(securityService)
+                    .securityTokenService(securityTokenService)
                     .build();
         }
 

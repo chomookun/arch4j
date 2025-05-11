@@ -7,6 +7,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
+import org.chomookun.arch4j.core.message.CachedMessageService;
 import org.h2.tools.Server;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.server.ServerAcl;
@@ -125,8 +126,8 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
     }
 
     @Bean
-    public MessageSource messageSource(MessageSourceProperties messageProperties, MessageService messageService) {
-        MessageSource messageSource = new MessageSource(messageService);
+    public MessageSource messageSource(MessageSourceProperties messageProperties, CachedMessageService cachedMessageService) {
+        MessageSource messageSource = new MessageSource(cachedMessageService);
         // basename
         List<String> basenames = messageProperties.getBasename();
         if (basenames != null && !basenames.isEmpty()) {

@@ -10,9 +10,13 @@ import org.chomookun.arch4j.core.menu.model.MenuRole;
 import org.chomookun.arch4j.core.menu.repository.MenuRepository;
 import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
 import org.chomookun.arch4j.core.menu.model.Menu;
+import org.chomookun.arch4j.core.message.MessageChannels;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +31,21 @@ public class MenuService {
     private final EntityManager entityManager;
 
     private final MenuRepository menuRepository;
+
+    private final StringRedisTemplate redisTemplate;
+
+    /**
+     * Evicts cache for menu
+     * @param menuId menu id
+     */
+    void evictCache(String menuId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                redisTemplate.convertAndSend(MenuChannels.MENU_EVICT, menuId);
+            }
+        });
+    }
 
     /**
      * Saves menu
@@ -73,6 +92,7 @@ public class MenuService {
         // saves and returns
         MenuEntity savedMenu = menuRepository.saveAndFlush(menuEntity);
         entityManager.refresh(savedMenu);
+        evictCache(savedMenu.getMenuId());
         return Menu.from(savedMenu);
     }
 
@@ -107,6 +127,7 @@ public class MenuService {
         MenuEntity menuEntity = menuRepository.findById(menuId).orElseThrow();
         menuRepository.delete(menuEntity);
         menuRepository.flush();
+        evictCache(menuId);
     }
 
 }

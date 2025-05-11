@@ -20,10 +20,10 @@ import java.util.List;
 @Table(
     name = "core_user",
     indexes = {
-            @Index(name = "ix_login_id", columnList = "login_id"),
+            @Index(name = "ix_username", columnList = "username"),
             @Index(name = "ix_email", columnList = "email"),
             @Index(name = "ix_mobile", columnList = "mobile"),
-            @Index(name = "ix_name", columnList = "user_name")
+            @Index(name = "ix_name", columnList = "name")
     }
 )
 @Comment("User information")

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.board.ArticleCommentService;
 import org.chomookun.arch4j.core.discussion.model.Comment;
-import org.chomookun.arch4j.core.security.support.SecurityUtils;
+import org.chomookun.arch4j.core.security.SecurityUtils;
 import org.chomookun.arch4j.web.api.v1.discussion.dto.CommentRequest;
 import org.chomookun.arch4j.web.api.v1.discussion.dto.CommentResponse;
 import org.springframework.http.ResponseEntity;

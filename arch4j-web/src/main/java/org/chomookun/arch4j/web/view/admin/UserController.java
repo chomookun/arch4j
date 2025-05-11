@@ -3,9 +3,9 @@ package org.chomookun.arch4j.web.view.admin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.security.SecurityProperties;
-import org.chomookun.arch4j.core.security.SecurityService;
 import org.chomookun.arch4j.core.security.SecurityTokenService;
 import org.chomookun.arch4j.core.security.TotpService;
+import org.chomookun.arch4j.core.security.model.SecurityToken;
 import org.chomookun.arch4j.core.user.UserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.chomookun.arch4j.core.user.model.UserSearch;
@@ -59,10 +59,10 @@ public class UserController {
         return userService.getUser(userId).orElseThrow();
     }
 
-    @GetMapping("get-user-by-login-id")
+    @GetMapping("get-user-by-username")
     @ResponseBody
-    public User getUserByLoginId(@RequestParam("loginId") String loginId) {
-        return userService.getUserByUsername(loginId).orElseThrow();
+    public User getUserByUsername(@RequestParam("username") String username) {
+        return userService.getUserByUsername(username).orElseThrow();
     }
 
     @PostMapping("save-user")
@@ -100,8 +100,10 @@ public class UserController {
                 .orElseThrow(IllegalArgumentException::new);
         int expirationMinutes = expirationDays * 60 * 24;
         User user = userService.getUser(userId).orElseThrow();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-        return securityTokenService.encodeSecurityToken(userDetails, expirationMinutes);
+        SecurityToken securityToken = SecurityToken.builder()
+                .userId(user.getUserId())
+                .build();
+        return securityTokenService.encodeSecurityToken(securityToken, expirationMinutes);
     }
 
     @PostMapping(value = "generate-totp-qr-code", produces = MediaType.TEXT_PLAIN_VALUE)

@@ -15,6 +15,7 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
 
     private String userId;
 
+    @Getter
     private String username;
 
     private String password;
@@ -40,11 +41,8 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
     private Boolean credentialNonExpired = true;
 
     @Builder.Default
-    private Set<GrantedAuthority> authorities = new HashSet<>();
-
-    public String getUsername() {
-        return this.username;
-    }
+    @Setter
+    private Collection<GrantedAuthority> authorities = new HashSet<>();
 
     @Override
     public String getPassword() {
@@ -72,7 +70,7 @@ public class UserDetailsImpl implements UserDetails, CredentialsContainer {
     }
 
     @Override
-    public Set<GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         return this.authorities;
     }
 
