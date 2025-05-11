@@ -276,6 +276,7 @@ public class CoreConfiguration implements EnvironmentPostProcessor {
     }
 
     @Bean(destroyMethod = "stop")
+    @Lazy(false)
     public RedisServer redisServer(ConfigurableEnvironment environment) throws IOException {
         String host = environment.getProperty("spring.data.redis.host");
         if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
