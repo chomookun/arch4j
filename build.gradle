@@ -5,6 +5,7 @@ allprojects {
             cacheChangingModulesFor 0, 'seconds'
         }
         exclude group: 'junit', module: 'junit'
+        exclude group: 'org.apache.logging.log4j'
     }
 
     repositories {

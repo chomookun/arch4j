@@ -38,6 +38,9 @@ management:
     build.enabled: true
     defaults.enabled: true
     git.enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
 
 # spring
 spring:

@@ -63,56 +63,60 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    initializeCpuChart(data);
+                    updateCpuChart(data);
                 });
         }
 
         /**
-         * Initializes cpu chart
+         * Updates cpu chart
          * @param cpu cpu data
          */
-        function initializeCpuChart(cpu) {
+        function updateCpuChart(cpu) {
             let labels = [];
             let usage = [];
             cpu.forEach(element => {
                 labels.push(new Date(element.time));
                 usage.push(element.usage)
             });
-            cpuChart = new Chart(document.getElementById("cpuChart"), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Usage',
-                        data: usage,
-                        fill: true,
-                        borderColor: 'rgba(75,192,192,1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderWidth: 1,
-                        pointStyle: 'crossRot'
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            display: false,
-                            title: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                font: {
-                                    size: 8
-                                },
-                                callback: function(value, index, values) {
-                                    return value + '%';
+            if (!cpuChart) {
+                cpuChart = new Chart(document.getElementById("cpuChart"), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Usage',
+                            data: usage,
+                            fill: true,
+                            borderColor: 'rgba(75,192,192,1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 1,
+                            pointStyle: 'crossRot'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                display: false,
+                                title: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        size: 8
+                                    },
+                                    callback: function (value, index, values) {
+                                        return value + '%';
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                cpuChart.update();
+            }
         }
 
         /**
@@ -123,15 +127,15 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    initializeMemoryChart(data);
+                    updateMemoryChart(data);
                 });
         }
 
         /**
-         * Initializes memory chart
+         * Updates memory chart
          * @param memory memory metrics
          */
-        function initializeMemoryChart(memory) {
+        function updateMemoryChart(memory) {
             let labels = [];
             let used = [];
             let max = [];
@@ -142,49 +146,54 @@
             });
 
             // creates chart
-            memoryChart = new Chart(document.getElementById("memoryChart"), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Used',
-                            data: used,
-                            fill: true,
-                            borderColor: 'rgba(75, 192, 192, 0.5)',
-                            backgroundColor: 'rgba(75, 192, 192,0.2)',
-                            borderWidth: 1,
-                            pointStyle: 'crossRot'
-                        },
-                        {
-                            label: 'Max',
-                            data: max,
-                            borderWidth: 1,
-                            pointStyle: 'dash'
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            display: false,
-                            title: {
-                                display: false
+            if (!memoryChart) {
+
+                memoryChart = new Chart(document.getElementById("memoryChart"), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Used',
+                                data: used,
+                                fill: true,
+                                borderColor: 'rgba(75, 192, 192, 0.5)',
+                                backgroundColor: 'rgba(75, 192, 192,0.2)',
+                                borderWidth: 1,
+                                pointStyle: 'crossRot'
+                            },
+                            {
+                                label: 'Max',
+                                data: max,
+                                borderWidth: 1,
+                                pointStyle: 'dash'
                             }
-                        },
-                        y: {
-                            ticks: {
-                                font: {
-                                    size: 8
-                                },
-                                callback: function(value, index, values) {
-                                    return value + 'M';
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                display: false,
+                                title: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        size: 8
+                                    },
+                                    callback: function (value, index, values) {
+                                        return value + 'M';
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                memoryChart.update();
+            }
         }
 
         /**
@@ -195,15 +204,15 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    initializeDiskChart(data);
+                    updateDiskChart(data);
                 });
         }
 
         /**
-         * Initializes disk chart
+         * Updates disk chart
          * @param disk disk metrics
          */
-        function initializeDiskChart(disk) {
+        function updateDiskChart(disk) {
             let labels = [];
             let used = [];
             let total = [];
@@ -213,48 +222,52 @@
                 total.push(element.total);
             });
 
-            // creates chart
-            diskChart = new Chart(document.getElementById("diskChart"), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Used',
-                            data: used,
-                            fill: true,
-                            borderColor: 'rgba(75, 192, 192, 0.5)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderWidth: 1,
-                            pointStyle: 'crossRot'
-                        },
-                        {
-                            label: 'Total',
-                            data: total,
-                            borderWidth: 1,
-                            pointStyle: 'dash'
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            display: false,
-                            title: {
-                                display: false
+            if (!diskChart) {
+                // creates chart
+                diskChart = new Chart(document.getElementById("diskChart"), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Used',
+                                data: used,
+                                fill: true,
+                                borderColor: 'rgba(75, 192, 192, 0.5)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderWidth: 1,
+                                pointStyle: 'crossRot'
+                            },
+                            {
+                                label: 'Total',
+                                data: total,
+                                borderWidth: 1,
+                                pointStyle: 'dash'
                             }
-                        },
-                        y: {
-                            min: 0,
-                            ticks: {
-                                font: {
-                                    size: 8
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                display: false,
+                                title: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                min: 0,
+                                ticks: {
+                                    font: {
+                                        size: 8
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                diskChart.update();
+            }
         }
 
         /**
@@ -265,15 +278,15 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    initializeServerChart(data);
+                    updateServerChart(data);
                 });
         }
 
         /**
-         * Initializes server chart
+         * Updates server chart
          * @param cpu cpu data
          */
-        function initializeServerChart(cpu) {
+        function updateServerChart(cpu) {
             let labels = [];
             let max = [];
             let current = [];
@@ -282,43 +295,47 @@
                 max.push(element.max);
                 current.push(element.current);
             });
-            serverChart = new Chart(document.getElementById("serverChart"), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Max',
-                        data: max,
-                        borderWidth: 1,
-                        pointStyle: 'dash'
-                    },{
-                        label: 'Current',
-                        data: current,
-                        fill: true,
-                        borderColor: 'rgba(75, 192, 192, 0.5)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderWidth: 1,
-                        pointStyle: 'crossRot'
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            display: false,
-                            title: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                font: {
-                                    size: 8
+            if (!serverChart) {
+                serverChart = new Chart(document.getElementById("serverChart"), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Max',
+                            data: max,
+                            borderWidth: 1,
+                            pointStyle: 'dash'
+                        }, {
+                            label: 'Current',
+                            data: current,
+                            fill: true,
+                            borderColor: 'rgba(75, 192, 192, 0.5)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 1,
+                            pointStyle: 'crossRot'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                display: false,
+                                title: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        size: 8
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                serverChart.update();
+            }
         }
 
         /**
@@ -329,15 +346,15 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    initializeDatasourceChart(data);
+                    updateDatasourceChart(data);
                 });
         }
 
         /**
-         * Initializes datasource chart
+         * Updates datasource chart
          * @param cpu cpu data
          */
-        function initializeDatasourceChart(cpu) {
+        function updateDatasourceChart(cpu) {
             let labels = [];
             let max = [];
             let active = [];
@@ -346,43 +363,47 @@
                 max.push(element.max);
                 active.push(element.active);
             });
-            datasourceChart = new Chart(document.getElementById("datasourceChart"), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Max',
-                        data: max,
-                        borderWidth: 1,
-                        pointStyle: 'dash'
-                    },{
-                        label: 'Active',
-                        data: active,
-                        fill: true,
-                        borderColor: 'rgba(75, 192, 192, 0.5)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderWidth: 1,
-                        pointStyle: 'crossRot'
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            display: false,
-                            title: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                font: {
-                                    size: 8
+            if (!datasourceChart) {
+                datasourceChart = new Chart(document.getElementById("datasourceChart"), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Max',
+                            data: max,
+                            borderWidth: 1,
+                            pointStyle: 'dash'
+                        }, {
+                            label: 'Active',
+                            data: active,
+                            fill: true,
+                            borderColor: 'rgba(75, 192, 192, 0.5)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 1,
+                            pointStyle: 'crossRot'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                display: false,
+                                title: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        size: 8
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                datasourceChart.update();
+            }
         }
 
         /**
@@ -397,16 +418,39 @@
                 });
         }
 
-        // DOM content loaded listener
-        document.addEventListener('DOMContentLoaded',()=> {
-            getInfo();
-            getCpu();
-            getMemory();
-            getDisk();
-            getServer();
-            getDatasource();
-            getRequests();
-        });
+        _initialize(() => {
+            const tabFolder = new duice.TabFolder();
+            const applicationTabItem = new duice.TabItem(
+                document.getElementById('applicationTabButton'),
+                document.getElementById('applicationTabContent'),
+                () => {
+                    getInfo();
+                    getCpu();
+                    getMemory();
+                    getDisk();
+                    getServer();
+                    getDatasource();
+                });
+            const transactionTabItem = new duice.TabItem(
+                document.getElementById('transactionTabButton'),
+                document.getElementById('transactionTabContent'),
+                () => {
+                    getRequests();
+                });
+            tabFolder.addItem(applicationTabItem);
+            tabFolder.addItem(transactionTabItem);
+            tabFolder.setActive(0);
+        })
+
+        // // DOM content loaded listener
+        // document.addEventListener('DOMContentLoaded',()=> {
+        //     getInfo();
+        //     getCpu();
+        //     getMemory();
+        //     getDisk();
+        //     getServer();
+        //     getDatasource();
+        // });
 
     </script>
     <style th:inline="css">
@@ -430,15 +474,32 @@
     <!-- end: title                         -->
     <!-- ================================== -->
 
+    <!-- ====================================== -->
+    <!-- start: tab index                       -->
+    <!-- ====================================== -->
+    <div id="tabIndex" class="tab">
+        <span id="applicationTabButton" class="tab-item">
+            <img class="icon" src="/static/image/icon-application.svg" alt=""/>
+            <span data-th-text="#{web.admin.monitor.application}"></span>
+        </span>
+        <span id="transactionTabButton" class="tab-item">
+            <img class="icon" src="/static/image/icon-transaction.svg" alt=""/>
+            <span data-th-text="#{web.admin.monitor.transaction}"></span>
+        </span>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: tab index                         -->
+    <!-- ====================================== -->
+
     <!-- ================================== -->
-    <!-- start: monitorContent              -->
+    <!-- start: applicationTabContent       -->
     <!-- ================================== -->
-    <div id="monitorContent" class="display--grid grid-template-columns--3fr s__grid-template-columns--1fr gap--1rem">
+    <div id="applicationTabContent" class="display--grid grid-template-columns--3fr s__grid-template-columns--1fr gap--1rem">
         <div class="grid-column--span-1">
             <!-- ================================== -->
             <!-- start: info                        -->
             <!-- ================================== -->
-            <div id="info" class="panel height--100">
+            <div class="panel height--100">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-info.svg}" alt="info"/>
@@ -459,7 +520,7 @@
             <!-- ================================== -->
             <!-- start: cpu                         -->
             <!-- ================================== -->
-            <div id="cpu" class="panel">
+            <div class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-cpu.svg}" alt="cpu"/>
@@ -478,7 +539,7 @@
             <!-- ================================== -->
             <!-- start: memory                      -->
             <!-- ================================== -->
-            <div id="memory" class="panel">
+            <div class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-memory.svg}" alt="memory"/>
@@ -498,7 +559,7 @@
             <!-- start: disk                        -->
             <!-- ================================== -->
             <div class="panel">
-                <div id="disk" class="panel-title">
+                <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-disk.svg}" alt="disk"/>
                         <span data-th-text="#{web.admin.monitor.disk}"></span>
@@ -517,7 +578,7 @@
             <!-- start: server                      -->
             <!-- ================================== -->
             <div class="panel">
-                <div id="server" class="panel-title">
+                <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-server.svg}" alt="server"/>
                         <span data-th-text="#{web.admin.monitor.server}"></span>
@@ -550,71 +611,78 @@
             <!-- end: datasource                    -->
             <!-- ================================== -->
         </div>
-        <div class="grid-column--span-3">
-            <!-- ================================== -->
-            <!-- start: requests                    -->
-            <!-- ================================== -->
-            <div class="panel">
-                <div id="server" class="panel-title">
-                    <h2>
-                        <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="request"/>
-                        <span data-th-text="#{web.admin.monitor.request}"></span>
-                    </h2>
-                </div>
-                <div class="panel-content">
-                    <div class="width--100 overflow--scroll box" style="max-height:40rem;">
-                        <table class="table width--100 border--none font-size--smaller">
-                            <thead>
-                            <tr>
-                                <th>URL</th>
-                                <th>Method</th>
-                                <th>Total Count</th>
-                                <th>Success Count (2xx)</th>
-                                <th>Client Error Count (4xx)</th>
-                                <th>Server Error Count (5xx)</th>
-                                <th>Average Time (s)</th>
-                                <th>Max Time (s)</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr data-duice-bind="requests" data-duice-foreach="request">
-                                <td>
-                                    <span data-duice-bind="request" data-duice-property="uri" class="code font-weight--bold"></span>
-                                </td>
-                                <td class="text-align--center">
-                                    <span data-duice-bind="request" data-duice-property="method" class="code badge"></span>
-                                </td>
-                                <td class="text-align--right">
-                                    <span data-duice-bind="request" data-duice-property="totalCount" data-duice-format="number(0)" class="number"></span>
-                                </td>
-                                <td class="text-align--right">
-                                    <span data-duice-bind="request" data-duice-property="successCount" data-duice-format="number(0)" class="number"></span>
-                                </td>
-                                <td class="text-align--right">
-                                    <span data-duice-bind="request" data-duice-property="clientErrorCount" data-duice-format="number(0)" class="number"></span>
-                                </td>
-                                <td class="text-align--right">
-                                    <span data-duice-bind="request" data-duice-property="serverErrorCount" data-duice-format="number(0)" class="number"></span>
-                                </td>
-                                <td class="text-align--right">
-                                    <span data-duice-bind="request" data-duice-property="averageTime" data-duice-format="number(0)" class="number"></span>
-                                </td>
-                                <td class="text-align--right">
-                                    <span data-duice-bind="request" data-duice-property="maxTime" data-duice-format="number(0)" class="number"></span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <!-- ================================== -->
-            <!-- end: requests                      -->
-            <!-- ================================== -->
-        </div>
     </div>
     <!-- ================================== -->
-    <!-- end: monitorContent                -->
+    <!-- end: monitorTabContent             -->
+    <!-- ================================== -->
+
+    <!-- ================================== -->
+    <!-- end: transactionTabContent         -->
+    <!-- ================================== -->
+    <div id="transactionTabContent">
+        <!-- ================================== -->
+        <!-- start: requests                    -->
+        <!-- ================================== -->
+        <div class="panel">
+            <div class="panel-title">
+                <h2>
+                    <img class="icon" th:src="@{/static/image/icon-request.svg}" alt="request"/>
+                    <span data-th-text="#{web.admin.monitor.request}"></span>
+                </h2>
+            </div>
+            <div class="panel-content">
+                <div class="width--100 overflow--scroll box" style="max-height:100%;">
+                    <table class="table width--100 border--none font-size--smaller">
+                        <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Method</th>
+                            <th>Total Count</th>
+                            <th>Success Count (2xx)</th>
+                            <th>Client Error Count (4xx)</th>
+                            <th>Server Error Count (5xx)</th>
+                            <th>Average Time (s)</th>
+                            <th>Max Time (s)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-duice-bind="requests" data-duice-foreach="request">
+                            <td>
+                                <span data-duice-bind="request" data-duice-property="uri" class="code font-weight--bold"></span>
+                            </td>
+                            <td class="text-align--center">
+                                <span data-duice-bind="request" data-duice-property="method" class="code badge"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="request" data-duice-property="totalCount" data-duice-format="number(0)" class="number"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="request" data-duice-property="successCount" data-duice-format="number(0)" class="number"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="request" data-duice-property="clientErrorCount" data-duice-format="number(0)" class="number"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="request" data-duice-property="serverErrorCount" data-duice-format="number(0)" class="number"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="request" data-duice-property="averageTime" data-duice-format="number(0)" class="number"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="request" data-duice-property="maxTime" data-duice-format="number(0)" class="number"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- ================================== -->
+        <!-- end: requests                      -->
+        <!-- ================================== -->
+    </div>
+    <!-- ================================== -->
+    <!-- end: transactionTabContent         -->
     <!-- ================================== -->
 
 </main>

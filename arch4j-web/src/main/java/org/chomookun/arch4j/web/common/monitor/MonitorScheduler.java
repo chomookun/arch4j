@@ -1,4 +1,4 @@
-package org.chomookun.arch4j.web.view.admin;
+package org.chomookun.arch4j.web.common.monitor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

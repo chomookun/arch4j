@@ -44,8 +44,10 @@ dependencies {
     // spring security test
     api 'org.springframework.security:spring-security-test'
 
-    // prometheus
+    // management
     api "io.micrometer:micrometer-registry-prometheus"
+    api "io.micrometer:micrometer-tracing"
+    api "io.micrometer:micrometer-tracing-bridge-brave"
 
 }
 
