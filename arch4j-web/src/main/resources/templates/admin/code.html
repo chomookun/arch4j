@@ -114,11 +114,11 @@
             // check duplicated id
             let url = new URL(`${location.pathname}/get-code`, location.origin);
             url.searchParams.append('codeId', codeId);
-            let response = await _fetch(url, {}, true);
+            let response = await _fetch(url, {_suppressAlert:true});
             if (response.ok) {
                 let code = await response.json();
                 if (code) {
-                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.code.Code.id})}]]*/'');
+                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.code.Code.codeId})}]]*/'');
                     return false;
                 }
             }
@@ -148,6 +148,11 @@
                 if(_isEmpty(item.itemId)) {
                     await _alert(/*[[#{web.global.itemEmpty(#{core.code.CodeItem.itemId})}]]*/'');
                     duice.ObjectProxy.focus(item, 'itemId');
+                    return false;
+                }
+                if (_isEmpty(item.name)) {
+                    await _alert(/*[[#{web.global.itemEmpty(#{core.code.CodeItem.name})}]]*/'');
+                    duice.ObjectProxy.focus(item, 'name');
                     return false;
                 }
             }
@@ -275,7 +280,9 @@
                         <tr>
                             <th data-th-text="#{web.global.no}"></th>
                             <th data-th-text="#{core.code.Code.codeId}"></th>
-                            <th data-th-text="#{core.code.Code.name}"></th>
+                            <th>
+                                <span data-th-text="#{core.code.Code.name}"></span><i class="tag-i18n"></i>
+                            </th>
                             <th data-th-text="#{core.code.Code.items}"></th>
                         </tr>
                         </thead>
@@ -291,6 +298,7 @@
                             </td>
                             <td>
                                 <span data-duice-bind="code" data-duice-property="codeId" class="code"></span>
+                                <i data-duice-bind="code" data-duice-if="return code.systemRequired" class="tag-system-required"></i>
                             </td>
                             <td>
                                 <span data-duice-bind="code" data-duice-property="name"></span>
@@ -354,13 +362,13 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.code.Code.codeId}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.code.Code.codeId}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="code" data-duice-property="codeId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.code.Code.name}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.code.Code.name}" class="font-weight--bold"></span><i class="tag-important"></i><i class="tag-i18n"></i>
                                 <input type="text" data-duice-bind="code" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
@@ -387,7 +395,9 @@
                                         </button>
                                     </th>
                                     <th data-th-text="#{core.code.CodeItem.itemId}"></th>
-                                    <th data-th-text="#{core.code.CodeItem.name}"></th>
+                                    <th>
+                                        <span data-th-text="#{core.code.CodeItem.name}"></span><i class="tag-i18n"></i>
+                                    </th>
                                     <th data-th-text="#{core.code.CodeItem.enabled}"></th>
                                 </tr>
                                 </thead>

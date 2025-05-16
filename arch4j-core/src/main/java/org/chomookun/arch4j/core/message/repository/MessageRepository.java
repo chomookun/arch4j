@@ -3,13 +3,16 @@ package org.chomookun.arch4j.core.message.repository;
 import org.chomookun.arch4j.core.message.entity.MessageEntity;
 import org.chomookun.arch4j.core.message.entity.MessageEntity_;
 import org.chomookun.arch4j.core.message.model.MessageSearch;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 @Repository

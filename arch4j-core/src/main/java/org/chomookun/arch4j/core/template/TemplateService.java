@@ -4,8 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nUtils;
 import org.chomookun.arch4j.core.message.MessageSource;
 import org.chomookun.arch4j.core.template.entity.TemplateEntity;
+import org.chomookun.arch4j.core.template.entity.TemplateI18nEntity;
 import org.chomookun.arch4j.core.template.model.Template;
 import org.chomookun.arch4j.core.template.model.TemplateSearch;
 import org.chomookun.arch4j.core.template.repository.TemplateRepository;
@@ -34,6 +36,11 @@ public class TemplateService  {
 
     private final MessageSource messageSource;
 
+    /**
+     * Saves template
+     * @param template template
+     * @return saved template
+     */
     @Transactional
     public Template saveTemplate(Template template) {
         TemplateEntity templateEntity = Optional.ofNullable(template.getTemplateId())
@@ -45,6 +52,8 @@ public class TemplateService  {
         templateEntity.setFormat(template.getFormat());
         templateEntity.setSubject(template.getSubject());
         templateEntity.setContent(template.getContent());
+
+        // saves
         TemplateEntity savedTemplateEntity = templateRepository.saveAndFlush(templateEntity);
         entityManager.refresh(savedTemplateEntity);
         return Template.from(savedTemplateEntity);

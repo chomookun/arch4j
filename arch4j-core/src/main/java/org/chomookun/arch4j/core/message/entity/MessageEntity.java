@@ -3,9 +3,8 @@ package org.chomookun.arch4j.core.message.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.i18n.I18nGetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
+import org.chomookun.arch4j.core.common.i18n.I18nSupport;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nEntitySupport;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MessageEntity extends BaseEntity implements I18nSupportEntity<MessageI18nEntity> {
+public class MessageEntity extends BaseEntity implements I18nSupport<MessageI18nEntity> {
 
     @Id
     @Column(name = "message_id", length = 128)
@@ -27,44 +26,37 @@ public class MessageEntity extends BaseEntity implements I18nSupportEntity<Messa
     @Column(name = "name")
     private String name;
 
-    @Column(name = "value", length = 4000)
-    @Lob
-    private String value;
+    /**
+     * Sets message localized message value
+     * @param value message value
+     */
+    public void setValue(String value) {
+        i18nSet(i18n -> i18n.setValue(value));
+    }
+
+    /**
+     * Gets localized message value
+     * @return localized message value
+     */
+    public String getValue() {
+        return i18nGet(MessageI18nEntity::getValue);
+    }
 
     @Column(name = "note", length = 4000)
     @Lob
     private String note;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "message_id", updatable = false)
     @Builder.Default
     private List<MessageI18nEntity> i18ns = new ArrayList<>();
 
     @Override
-    public List<MessageI18nEntity> provideI18nEntities() {
-        return this.i18ns;
-    }
-
-    @Override
-    public MessageI18nEntity provideNewI18nEntity(String language) {
+    public MessageI18nEntity provideNewI18n(String locale) {
         return MessageI18nEntity.builder()
                 .messageId(this.messageId)
-                .language(language)
+                .locale(locale)
                 .build();
-    }
-
-    public void setValue(String value) {
-        I18nSetter.of(this, this.value)
-                .whenDefault(() -> this.value = value)
-                .whenI18n(messageLanguageEntity -> messageLanguageEntity.setValue(value))
-                .set();
-    }
-
-    public String getValue() {
-        return I18nGetter.of(this, this.value)
-                .whenDefault(() -> this.value)
-                .whenI18n(MessageI18nEntity::getValue)
-                .get();
     }
 
 }

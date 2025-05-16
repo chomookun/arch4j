@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.i18n.I18nEntity;
+import org.chomookun.arch4j.core.common.i18n.I18n;
 
 import java.io.Serializable;
 
@@ -16,7 +16,7 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CodeI18nEntity extends BaseEntity implements I18nEntity {
+public class CodeI18nEntity extends BaseEntity implements I18n {
 
     @Data
     @Builder
@@ -24,7 +24,7 @@ public class CodeI18nEntity extends BaseEntity implements I18nEntity {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Pk implements Serializable {
         private String codeId;
-        private String language;
+        private String locale;
     }
 
     @Id
@@ -32,8 +32,8 @@ public class CodeI18nEntity extends BaseEntity implements I18nEntity {
     private String codeId;
 
     @Id
-    @Column(name = "language", length = 8)
-    private String language;
+    @Column(name = "locale", length = 8)
+    private String locale;
 
     @Column(name = "name")
     private String name;

@@ -21,8 +21,8 @@ class CodeServiceTest extends CoreTestSupport {
         // given
         Code code = Code.builder()
                 .codeId("test")
-                .name("test code")
                 .build();
+        code.setName("test code");
         // when
         Code savedCode = codeService.saveCode(code);
         // then
@@ -35,8 +35,8 @@ class CodeServiceTest extends CoreTestSupport {
         // given
         CodeEntity codeEntity = CodeEntity.builder()
                 .codeId("test")
-                .name("test code")
                 .build();
+        codeEntity.setName("test code");
         entityManager.persist(codeEntity);
         entityManager.flush();
         entityManager.clear();
@@ -46,6 +46,7 @@ class CodeServiceTest extends CoreTestSupport {
         Code savedCode = codeService.saveCode(code);
         // then
         entityManager.clear();
+        CodeEntity savedCodeEntity = entityManager.find(CodeEntity.class, savedCode.getCodeId());
         assertEquals("changed", entityManager.find(CodeEntity.class, code.getCodeId()).getName());
     }
 
@@ -54,8 +55,8 @@ class CodeServiceTest extends CoreTestSupport {
         // given
         CodeEntity codeEntity = CodeEntity.builder()
                 .codeId("test")
-                .name("name")
                 .build();
+        codeEntity.setName("test code");
         entityManager.persist(codeEntity);
         entityManager.flush();
         entityManager.clear();
@@ -70,8 +71,8 @@ class CodeServiceTest extends CoreTestSupport {
         // given
         CodeEntity codeEntity = CodeEntity.builder()
                 .codeId("test")
-                .name("name")
                 .build();
+        codeEntity.setName("test code");
         entityManager.persist(codeEntity);
         entityManager.flush();
         entityManager.clear();
@@ -86,8 +87,8 @@ class CodeServiceTest extends CoreTestSupport {
         // given
         CodeEntity codeEntity = CodeEntity.builder()
                 .codeId("test")
-                .name("name")
                 .build();
+        codeEntity.setName("test code");
         entityManager.persist(codeEntity);
         entityManager.flush();
         entityManager.clear();

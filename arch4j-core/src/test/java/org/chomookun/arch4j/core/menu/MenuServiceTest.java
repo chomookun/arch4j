@@ -20,10 +20,10 @@ class MenuServiceTest extends CoreTestSupport {
     void saveMenuForPersist() {
         // given
         Menu menu = Menu.builder()
-                .name("test menu")
                 .link("test/link")
                 .target(Menu.Target.SELF)
                 .build();
+        menu.setName("test menu");
         // when
         Menu savedMenu = menuService.saveMenu(menu);
         // then
@@ -35,8 +35,8 @@ class MenuServiceTest extends CoreTestSupport {
         // given
         MenuEntity menuEntity = MenuEntity. builder()
                 .menuId(IdGenerator.uuid())
-                .name("test menu")
                 .build();
+        menuEntity.setName("test menu");
         entityManager.persist(menuEntity);
         entityManager.flush();
         // when
@@ -52,8 +52,8 @@ class MenuServiceTest extends CoreTestSupport {
         // given
         MenuEntity menuEntity = MenuEntity.builder()
                 .menuId(IdGenerator.uuid())
-                .name("test menu")
                 .build();
+        menuEntity.setName("test menu");
         entityManager.persist(menuEntity);
         entityManager.flush();
         // when
@@ -67,8 +67,8 @@ class MenuServiceTest extends CoreTestSupport {
         // given
         MenuEntity menuEntity = MenuEntity.builder()
                 .menuId(IdGenerator.uuid())
-                .name("test menu")
                 .build();
+        menuEntity.setName("test menu");
         entityManager.persist(menuEntity);
         entityManager.flush();
         // when
@@ -83,8 +83,8 @@ class MenuServiceTest extends CoreTestSupport {
         // given
         MenuEntity menuEntity = MenuEntity.builder()
                 .menuId(IdGenerator.uuid())
-                .name("test menu")
                 .build();
+        menuEntity.setName("test menu");
         entityManager.persist(menuEntity);
         entityManager.flush();
         // when

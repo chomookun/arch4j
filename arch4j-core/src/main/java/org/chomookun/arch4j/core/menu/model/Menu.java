@@ -1,9 +1,11 @@
 package org.chomookun.arch4j.core.menu.model;
 
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.data.BaseModel;
+import org.chomookun.arch4j.core.common.i18n.I18nSupport;
 import org.chomookun.arch4j.core.menu.entity.MenuEntity;
 
 import java.util.ArrayList;
@@ -14,12 +16,26 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Menu extends BaseModel {
+@Slf4j
+public class Menu extends BaseModel implements I18nSupport<MenuI18n> {
 
     private String menuId;
 
-    @NotBlank
-    private String name;
+    /**
+     * Sets name
+     * @param name name
+     */
+    public void setName(String name) {
+        i18nSet(i18n -> i18n.setName(name));
+    }
+
+    /**
+     * Gets localized value of name
+     * @return localized name
+     */
+    public String getName() {
+        return i18nGet(MenuI18n::getName);
+    }
 
     private String parentMenuId;
 
@@ -32,6 +48,20 @@ public class Menu extends BaseModel {
     private Integer sort;
 
     private String note;
+
+    private boolean enabled;
+
+    @Builder.Default
+    @JsonIgnore
+    private List<MenuI18n> i18ns = new ArrayList<>();
+
+    @Override
+    public MenuI18n provideNewI18n(String locale) {
+        return MenuI18n.builder()
+                .menuId(this.menuId)
+                .locale(locale)
+                .build();
+    }
 
     @Builder.Default
     private List<MenuRole> viewRoles = new ArrayList<>();
@@ -52,19 +82,22 @@ public class Menu extends BaseModel {
                 .systemUpdatedAt(menuEntity.getSystemUpdatedAt())
                 .systemUpdatedBy(menuEntity.getSystemUpdatedBy())
                 .menuId(menuEntity.getMenuId())
-                .name(menuEntity.getName())
                 .parentMenuId(menuEntity.getParentMenuId())
                 .link(menuEntity.getLink())
                 .target(menuEntity.getTarget())
                 .icon(menuEntity.getIcon())
                 .sort(menuEntity.getSort())
                 .note(menuEntity.getNote())
+                .enabled(menuEntity.isEnabled())
                 .build();
-        menu.setViewRoles(menuEntity.getMenuRoleEntities().stream()
+        menu.setI18ns(menuEntity.getI18ns().stream()
+                .map(MenuI18n::from)
+                .toList());
+        menu.setViewRoles(menuEntity.getRoles().stream()
                 .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.VIEW)
                 .map(MenuRole::from)
                 .toList());
-        menu.setLinkRoles(menuEntity.getMenuRoleEntities().stream()
+        menu.setLinkRoles(menuEntity.getRoles().stream()
                 .filter(menuRoleEntity -> menuRoleEntity.getType() == MenuRole.Type.LINK)
                 .map(MenuRole::from)
                 .toList());

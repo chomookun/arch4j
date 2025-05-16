@@ -2,7 +2,7 @@ package org.chomookun.arch4j.core.menu.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.common.i18n.I18nEntity;
+import org.chomookun.arch4j.core.common.i18n.I18n;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MenuI18nEntity extends BaseEntity implements I18nEntity {
+public class MenuI18nEntity extends BaseEntity implements I18n {
 
     @Data
     @Builder
@@ -24,7 +24,7 @@ public class MenuI18nEntity extends BaseEntity implements I18nEntity {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Pk implements Serializable {
         private String menuId;
-        private String language;
+        private String locale;
     }
 
     @Id
@@ -32,8 +32,8 @@ public class MenuI18nEntity extends BaseEntity implements I18nEntity {
     private String menuId;
 
     @Id
-    @Column(name = "language", length = 8)
-    private String language;
+    @Column(name = "locale", length = 8)
+    private String locale;
 
     @Column(name = "name")
     private String name;

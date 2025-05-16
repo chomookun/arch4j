@@ -6,8 +6,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.menu.model.Menu;
-import org.chomookun.arch4j.core.message.model.Message;
-import org.chomookun.arch4j.core.security.model.Authority;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.MessageListener;
@@ -15,7 +13,6 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +33,7 @@ public class CachedMenuService implements MessageListener {
     private final MenuService menuService;
 
     @PostConstruct
-    public void init() {
+    public void initialize() {
         container.addMessageListener(this, ChannelTopic.of(MenuChannels.MENU_EVICT));
     }
 

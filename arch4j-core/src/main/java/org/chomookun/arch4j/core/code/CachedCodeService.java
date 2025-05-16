@@ -6,10 +6,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.code.model.Code;
-import org.chomookun.arch4j.core.security.SecurityChannels;
-import org.chomookun.arch4j.core.user.UserChannels;
-import org.chomookun.arch4j.core.user.UserService;
-import org.chomookun.arch4j.core.user.model.User;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.Message;
@@ -38,7 +34,7 @@ public class CachedCodeService implements MessageListener {
     private final CodeService codeService;
 
     @PostConstruct
-    public void init() {
+    public void initialize() {
         container.addMessageListener(this, ChannelTopic.of(CodeChannels.CODE_EVICT));
     }
 

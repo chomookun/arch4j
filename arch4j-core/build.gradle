@@ -132,7 +132,13 @@ dependencies {
     // awssdk
     api 'software.amazon.awssdk:s3'
 
-    api 'ognl:ognl:3.2.21'
+    // pdf, excel
+    api 'technology.tabula:tabula'
+    api 'org.apache.pdfbox:pdfbox'
+    api 'org.apache.poi:poi-ooxml'
+    api 'org.apache.logging.log4j:log4j-api:2.20.0'
+    api 'org.apache.logging.log4j:log4j-to-slf4j:2.20.0'
+
 }
 
 jar {

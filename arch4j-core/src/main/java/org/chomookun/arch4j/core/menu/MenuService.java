@@ -10,7 +10,6 @@ import org.chomookun.arch4j.core.menu.model.MenuRole;
 import org.chomookun.arch4j.core.menu.repository.MenuRepository;
 import org.chomookun.arch4j.core.menu.entity.MenuRoleEntity;
 import org.chomookun.arch4j.core.menu.model.Menu;
-import org.chomookun.arch4j.core.message.MessageChannels;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -63,32 +62,34 @@ public class MenuService {
             menuEntity = menuRepository.findById(menu.getMenuId()).orElseThrow();
         }
         menuEntity.setSystemUpdatedAt(LocalDateTime.now()); // disable dirty checking
-        menuEntity.setParentMenuId(menu.getParentMenuId());
         menuEntity.setName(menu.getName());
+        menuEntity.setParentMenuId(menu.getParentMenuId());
         menuEntity.setLink(menu.getLink());
         menuEntity.setTarget(menu.getTarget());
         menuEntity.setIcon(menu.getIcon());
         menuEntity.setSort(menu.getSort());
         menuEntity.setNote(menu.getNote());
-        menuEntity.getMenuRoleEntities().clear();
-        // view roles
+        menuEntity.setEnabled(menu.isEnabled());
+
+        // menu roles
+        menuEntity.getRoles().clear();
         menu.getViewRoles().forEach(viewRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
                     .menuId(menuEntity.getMenuId())
                     .roleId(viewRole.getRoleId())
                     .type(MenuRole.Type.VIEW)
                     .build();
-            menuEntity.getMenuRoleEntities().add(menuRoleEntity);
+            menuEntity.getRoles().add(menuRoleEntity);
         });
-        // link roles
         menu.getLinkRoles().forEach(linkRole -> {
             MenuRoleEntity menuRoleEntity = MenuRoleEntity.builder()
                     .menuId(menuEntity.getMenuId())
                     .roleId(linkRole.getRoleId())
                     .type(MenuRole.Type.LINK)
                     .build();
-            menuEntity.getMenuRoleEntities().add(menuRoleEntity);
+            menuEntity.getRoles().add(menuRoleEntity);
         });
+
         // saves and returns
         MenuEntity savedMenu = menuRepository.saveAndFlush(menuEntity);
         entityManager.refresh(savedMenu);

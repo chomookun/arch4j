@@ -1,9 +1,14 @@
 package org.chomookun.arch4j.core.template.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseModel;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nModelSupport;
 import org.chomookun.arch4j.core.template.entity.TemplateEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

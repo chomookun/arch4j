@@ -272,6 +272,7 @@
                             <img data-duice-bind="menu" data-duice-property="icon" class="icon"
                                  th:src="@{/static/image/icon-null.svg}" alt=""/>
                             <span data-duice-bind="menu" data-duice-property="name"></span>
+                            <i data-duice-bind="menu" data-duice-if="return menu.systemRequired;" class="tag-system-required"></i>
                         </div>
                     </div>
                     <div data-duice-bind="menuSearch"
@@ -306,7 +307,7 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.menu.Menu.name}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.menu.Menu.name}" class="font-weight--bold"></span><i class="tag-important"></i><i class="tag-i18n"></i>
                                 <input type="text" data-duice-bind="menu" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
@@ -367,6 +368,13 @@
                             <span data-th-text="#{core.menu.Menu.note}" class="font-weight--bold tag-optional"></span>
                             <label class="display--flex">
                                 <textarea data-duice-bind="menu" data-duice-property="note" class="width--100"></textarea>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span data-th-text="#{core.menu.Menu.enabled}" class="font-weight--bold"></span>
+                                <br/>
+                                <input type="checkbox" data-duice-bind="menu" data-duice-property="enabled"/>
                             </label>
                         </div>
                         <div class="grid-column--span-12">

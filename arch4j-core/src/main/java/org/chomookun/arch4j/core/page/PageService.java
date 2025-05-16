@@ -30,6 +30,11 @@ public class PageService {
 
     private final ApplicationContext applicationContext;
 
+    /**
+     * Saves page
+     * @param page page
+     * @return saved page
+     */
     @Transactional
     public Page savePage(Page page) {
         PageEntity pageEntity = Optional.ofNullable(page.getPageId())

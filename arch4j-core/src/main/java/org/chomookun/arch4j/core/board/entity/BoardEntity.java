@@ -4,9 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.board.model.Board;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.i18n.I18nGetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nEntitySupport;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 
@@ -21,7 +19,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI18nEntity> {
+public class BoardEntity extends BaseEntity implements I18nEntitySupport<BoardI18nEntity> {
 
     @Id
     @Column(name = "board_id", length = 64)
@@ -72,48 +70,7 @@ public class BoardEntity extends BaseEntity implements I18nSupportEntity<BoardI1
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "board_id", updatable = false)
     @Builder.Default
-    private List<BoardI18nEntity> boardI18nEntities = new ArrayList<>();
-
-    @Override
-    public List<BoardI18nEntity> provideI18nEntities() {
-        return this.boardI18nEntities;
-    }
-
-    @Override
-    public BoardI18nEntity provideNewI18nEntity(String language) {
-        return BoardI18nEntity.builder()
-                .boardId(this.boardId)
-                .language(language)
-                .build();
-    }
-
-    public void setBoardName(String name) {
-        I18nSetter.of(this, this.boardName)
-                .whenDefault(() -> this.boardName = name)
-                .whenI18n(i18nEntity -> i18nEntity.setBoardName(name))
-                .set();
-    }
-
-    public String getBoardName() {
-        return I18nGetter.of(this, this.boardName)
-                .whenDefault(() -> this.boardName)
-                .whenI18n(BoardI18nEntity::getBoardName)
-                .get();
-    }
-
-    public void setMessage(String message) {
-        I18nSetter.of(this, this.message)
-                .whenDefault(() -> this.message = message)
-                .whenI18n(i18nEntity -> i18nEntity.setMessage(message))
-                .set();
-    }
-
-    public String getMessage() {
-        return I18nGetter.of(this, this.message)
-                .whenDefault(() -> this.message)
-                .whenI18n(BoardI18nEntity::getMessage)
-                .get();
-    }
+    private List<BoardI18nEntity> i18ns = new ArrayList<>();
 
     @Converter(autoApply = true)
     public static class MessageFormatConverter extends GenericEnumConverter<Board.MessageFormat> {}

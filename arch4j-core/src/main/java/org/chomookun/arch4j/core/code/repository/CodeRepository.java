@@ -1,8 +1,11 @@
 package org.chomookun.arch4j.core.code.repository;
 
-import org.chomookun.arch4j.core.code.entity.CodeEntity_;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import org.chomookun.arch4j.core.code.entity.*;
+import org.chomookun.arch4j.core.code.model.CodeItemI18n;
 import org.chomookun.arch4j.core.code.model.CodeSearch;
-import org.chomookun.arch4j.core.code.entity.CodeEntity;
+import org.chomookun.arch4j.core.common.i18n.I18nUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,9 +31,20 @@ public interface CodeRepository extends JpaRepository<CodeEntity,String>, JpaSpe
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(CodeEntity_.CODE_ID), '%' + codeSearch.getCodeId() + '%'));
         }
+        // exists subquery
         if(codeSearch.getName() != null) {
-            specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get(CodeEntity_.NAME), '%' + codeSearch.getName() + '%'));
+            specification = specification.and((root, query, criteriaBuilder) -> {
+                String locale = I18nUtils.getCurrentLocale();
+                Subquery<Integer> subquery = query.subquery(Integer.class);
+                Root<CodeI18nEntity> subRoot = subquery.from(CodeI18nEntity.class);
+                subquery.select(criteriaBuilder.literal(1))
+                        .where(
+                                criteriaBuilder.equal(subRoot.get(CodeI18nEntity_.CODE_ID), root.get("codeId")),
+                                criteriaBuilder.equal(subRoot.get(CodeI18nEntity_.LOCALE), locale),
+                                criteriaBuilder.like(subRoot.get(CodeI18nEntity_.NAME), "%" + codeSearch.getName() + "%")
+                        );
+                return criteriaBuilder.exists(subquery);
+            });
         }
         // sort
         Sort sort = pageable.getSort()

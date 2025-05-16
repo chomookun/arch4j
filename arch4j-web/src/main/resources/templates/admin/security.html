@@ -506,9 +506,8 @@
                                     <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (roleSearch._page * roleSearch._size) + status.count;"></span>
                                 </td>
                                 <td>
-                                    <span data-duice-bind="role" data-duice-property="roleId"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', role.systemRequired);"
-                                          class="code"></span>
+                                    <span data-duice-bind="role" data-duice-property="roleId" class="code"></span>
+                                    <i class="tag-system-required" data-duice-bind="role" data-duice-if="return role.systemRequired;"></i>
                                 </td>
                                 <td>
                                     <span data-duice-bind="role" data-duice-property="name"></span>
@@ -581,13 +580,13 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.security.Role.roleId}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.security.Role.roleId}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="role" data-duice-property="roleId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.security.Role.name}" class="font-weight--bold"></span>
+                                <span data-th-text="#{core.security.Role.name}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="role" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
@@ -645,10 +644,8 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <span data-duice-bind="authority"
-                                                  data-duice-property="authorityId"
-                                                  data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                                                  class="code"></span>
+                                            <span data-duice-bind="authority" data-duice-property="authorityId" class="code"></span>
+                                            <i class="tag-system-required" data-duice-bind="authority" data-duice-if="return authority.systemRequired;"></i>
                                         </td>
                                         <td>
                                             <span data-duice-bind="authority" data-duice-property="name"></span>
@@ -769,9 +766,8 @@
                                     <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (authoritySearch._page * authoritySearch._size) + status.count"></span>
                                 </td>
                                 <td>
-                                    <span data-duice-bind="authority" data-duice-property="authorityId"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                                          class="code"></span>
+                                    <span data-duice-bind="authority" data-duice-property="authorityId" class="code"></span>
+                                    <i class="tag-system-required" data-duice-bind="authority" data-duice-if="return authority.systemRequired;"></i>
                                 </td>
                                 <td>
                                     <span data-duice-bind="authority" data-duice-property="name"></span>
@@ -831,13 +827,13 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.security.Authority.authorityId}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.security.Authority.authorityId}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="authority" data-duice-property="authorityId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.security.Authority.name}" class="font-weight--bold"></span>
+                                <span data-th-text="#{core.security.Authority.name}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="authority" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
@@ -1078,10 +1074,8 @@
                             </button>
                         </td>
                         <td>
-                        <span data-duice-bind="authority"
-                              data-duice-property="authorityId"
-                              data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                              class="code"></span>
+                            <span data-duice-bind="authority" data-duice-property="authorityId" class="code"></span>
+                            <i class="tag-system-required" data-duice-bind="authority" data-duice-if="return authority.systemRequired;"></i>
                         </td>
                         <td>
                             <span data-duice-bind="authority" data-duice-property="name"></span>
@@ -1142,10 +1136,8 @@
                             </button>
                         </td>
                         <td>
-                        <span data-duice-bind="authority"
-                              data-duice-property="authorityId"
-                              data-duice-execute="this.classList.toggle('tag-system-required', authority.systemRequired);"
-                              class="code"></span>
+                            <span data-duice-bind="authority" data-duice-property="authorityId" class="code"></span>
+                            <i class="tag-system-required" data-duice-bind="authority" data-duice-if="return authority.systemRequired;"></i>
                         </td>
                         <td>
                             <span data-duice-bind="authority" data-duice-property="name"></span>

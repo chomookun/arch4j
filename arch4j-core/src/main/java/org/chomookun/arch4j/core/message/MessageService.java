@@ -4,7 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.ValidationUtil;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nUtils;
 import org.chomookun.arch4j.core.message.entity.MessageEntity;
+import org.chomookun.arch4j.core.message.entity.MessageI18nEntity;
 import org.chomookun.arch4j.core.message.repository.MessageRepository;
 import org.chomookun.arch4j.core.message.model.Message;
 import org.chomookun.arch4j.core.message.model.MessageSearch;
@@ -62,7 +64,8 @@ public class MessageService {
         messageEntity.setName(message.getName());
         messageEntity.setValue(message.getValue());
         messageEntity.setNote(message.getNote());
-        // save
+
+        // saves and returns
         MessageEntity savedMessageEntity = messageRepository.saveAndFlush(messageEntity);
         entityManager.refresh(savedMessageEntity);
         evictCache(savedMessageEntity.getMessageId());

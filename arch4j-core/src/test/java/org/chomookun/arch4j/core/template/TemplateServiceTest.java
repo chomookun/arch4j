@@ -42,9 +42,9 @@ class TemplateServiceTest extends CoreTestSupport {
                 .templateId("test")
                 .name("test template")
                 .format(Template.Format.TEXT)
-                .subject("test subject")
-                .content("test content")
                 .build();
+        templateEntity.setSubject("test subject");
+        templateEntity.setContent("test content");
         entityManager.persist(templateEntity);
         entityManager.flush();
         entityManager.clear();
@@ -64,9 +64,9 @@ class TemplateServiceTest extends CoreTestSupport {
                 .templateId("test")
                 .name("test template")
                 .format(Template.Format.TEXT)
-                .subject("test subject")
-                .content("test content")
                 .build();
+        templateEntity.setSubject("test subject");
+        templateEntity.setContent("test content");
         entityManager.persist(templateEntity);
         entityManager.flush();
         entityManager.clear();
@@ -83,9 +83,9 @@ class TemplateServiceTest extends CoreTestSupport {
                 .templateId("test")
                 .name("test template")
                 .format(Template.Format.TEXT)
-                .subject("test subject")
-                .content("test content")
                 .build();
+        templateEntity.setSubject("test subject");
+        templateEntity.setContent("test content");
         entityManager.persist(templateEntity);
         entityManager.flush();
         entityManager.clear();

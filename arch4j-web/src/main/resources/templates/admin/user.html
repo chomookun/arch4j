@@ -371,8 +371,8 @@
                                          th:src="@{/static/image/icon-null.svg}" class="icon" alt="icon"/>
                                     <span data-duice-bind="user"
                                           data-duice-property="username"
-                                          data-duice-execute="this.classList.toggle('tag-system-required', user.systemRequired);"
                                           class="code"></span>
+                                    <i class="tag-system-required" data-duice-bind="user" data-duice-if="return user.systemRequired;"></i>
                                 </td>
                                 <td>
                                     <span data-duice-bind="user" data-duice-property="name"></span>

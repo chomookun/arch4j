@@ -8,7 +8,6 @@ import org.chomookun.arch4j.core.code.entity.CodeItemEntity;
 import org.chomookun.arch4j.core.code.repository.CodeRepository;
 import org.chomookun.arch4j.core.code.model.Code;
 import org.chomookun.arch4j.core.code.model.CodeSearch;
-import org.chomookun.arch4j.core.user.UserChannels;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +60,7 @@ public class CodeService {
                     .build());
         codeEntity.setName(code.getName());
         codeEntity.setNote(code.getNote());
+
         // code item (insert/update)
         AtomicInteger sort = new AtomicInteger();
         code.getItems().forEach(codeItem -> {
@@ -79,10 +79,12 @@ public class CodeService {
             codeItemEntity.setSort(sort.getAndIncrement());
             codeItemEntity.setEnabled(codeItem.isEnabled());
         });
+
         // code item (remove)
         codeEntity.getItemEntities().removeIf(codeItemEntity ->
                 code.getItems().stream()
                         .noneMatch(codeItem -> codeItem.getItemId().equals(codeItemEntity.getItemId())));
+
         // save
         CodeEntity savedCodeEntity = codeRepository.saveAndFlush(codeEntity);
         entityManager.refresh(savedCodeEntity);

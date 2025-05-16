@@ -5,9 +5,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
-import org.chomookun.arch4j.core.common.i18n.I18nGetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
+import org.chomookun.arch4j.core.common.i18n.I18nSupport;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nEntitySupport;
 import org.chomookun.arch4j.core.template.model.Template;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TemplateEntity extends BaseEntity implements I18nSupportEntity<TemplateI18nEntity> {
+public class TemplateEntity extends BaseEntity implements I18nSupport<TemplateI18nEntity> {
 
     @Id
     @Column(name = "template_id", length = 32)
@@ -33,12 +32,37 @@ public class TemplateEntity extends BaseEntity implements I18nSupportEntity<Temp
     @Convert(converter = FormatConverter.class)
     private Template.Format format;
 
-    @Column(name = "subject", length = 1024)
-    private String subject;
+    /**
+     * Sets template localized subject
+     * @param subject subject
+     */
+    public void setSubject(String subject) {
+        i18nSet(i18n -> i18n.setSubject(subject));
+    }
 
-    @Column(name = "content", length = Integer.MAX_VALUE)
-    @Lob
-    private String content;
+    /**
+     * Gets localized value of subject
+     * @return localized subject
+     */
+    public String getSubject() {
+        return i18nGet(TemplateI18nEntity::getSubject);
+    }
+
+    /**
+     * Sets template localized content value
+     * @param content content
+     */
+    public void setContent(String content) {
+        i18nSet(i18n -> i18n.setContent(content));
+    }
+
+    /**
+     * Gets localized value of content
+     * @return localized content
+     */
+    public String getContent() {
+        return i18nGet(TemplateI18nEntity::getContent);
+    }
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "template_id", updatable = false)
@@ -46,44 +70,11 @@ public class TemplateEntity extends BaseEntity implements I18nSupportEntity<Temp
     private List<TemplateI18nEntity> i18ns = new ArrayList<>();
 
     @Override
-    public List<TemplateI18nEntity> provideI18nEntities() {
-        return this.i18ns;
-    }
-
-    @Override
-    public TemplateI18nEntity provideNewI18nEntity(String language) {
+    public TemplateI18nEntity provideNewI18n(String locale) {
         return TemplateI18nEntity.builder()
                 .templateId(this.templateId)
-                .language(language)
+                .locale(locale)
                 .build();
-    }
-
-    public void setSubject(String subject) {
-        I18nSetter.of(this, this.subject)
-                .whenDefault(() -> this.subject = subject)
-                .whenI18n(emailLanguageEntity -> emailLanguageEntity.setSubject(subject))
-                .set();
-    }
-
-    public String getSubject() {
-        return I18nGetter.of(this, this.subject)
-                .whenDefault(() -> this.subject)
-                .whenI18n(TemplateI18nEntity::getSubject)
-                .get();
-    }
-
-    public void setContent(String content) {
-        I18nSetter.of(this, this.content)
-                .whenDefault(() -> this.content = content)
-                .whenI18n(emailLanguageEntity -> emailLanguageEntity.setContent(content))
-                .set();
-    }
-
-    public String getContent() {
-        return I18nGetter.of(this, this.content)
-                .whenDefault(() -> this.content)
-                .whenI18n(TemplateI18nEntity::getContent)
-                .get();
     }
 
     @Converter(autoApply = true)

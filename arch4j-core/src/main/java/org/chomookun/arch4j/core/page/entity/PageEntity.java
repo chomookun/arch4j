@@ -3,10 +3,8 @@ package org.chomookun.arch4j.core.page.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
-import org.chomookun.arch4j.core.common.i18n.I18nGetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSetter;
-import org.chomookun.arch4j.core.common.i18n.I18nSupportEntity;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
+import org.chomookun.arch4j.core.common.i18n.test1.I18nEntitySupport;
 import org.chomookun.arch4j.core.page.model.Page;
 
 import jakarta.persistence.*;
@@ -20,7 +18,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18nEntity> {
+public class PageEntity extends BaseEntity implements I18nEntitySupport<PageI18nEntity> {
 
     @Id
     @Column(name = "page_id", length = 32)
@@ -45,34 +43,7 @@ public class PageEntity extends BaseEntity implements I18nSupportEntity<PageI18n
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "page_id", updatable = false)
     @Builder.Default
-    private List<PageI18nEntity> pageI18ns = new ArrayList<>();
-
-    @Override
-    public List<PageI18nEntity> provideI18nEntities() {
-        return this.pageI18ns;
-    }
-
-    @Override
-    public PageI18nEntity provideNewI18nEntity(String language) {
-        return PageI18nEntity.builder()
-                .pageId(pageId)
-                .language(language)
-                .build();
-    }
-
-    public void setContent(String content) {
-        I18nSetter.of(this, this.content)
-                .whenDefault(() -> this.content = content)
-                .whenI18n(pageLanguageEntity -> pageLanguageEntity.setContent(content))
-                .set();
-    }
-
-    public String getContent() {
-        return I18nGetter.of(this, this.content)
-                .whenDefault(() -> this.content)
-                .whenI18n(PageI18nEntity::getContent)
-                .get();
-    }
+    private List<PageI18nEntity> i18ns = new ArrayList<>();
 
     @Converter(autoApply = true)
     public static class ContentFormatConverter extends GenericEnumConverter<Page.ContentFormat> {}
