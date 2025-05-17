@@ -37,7 +37,7 @@ public class CachedMessageService implements MessageListener {
 
     @PostConstruct
     public void init() {
-        container.addMessageListener(this, ChannelTopic.of(MessageChannels.MESSAGE_EVICT));
+        container.addMessageListener(this, MessageChannels.MESSAGE_EVICT_CHANNEL);
     }
 
     public Optional<Message> getMessage(String messageId) {

@@ -33,22 +33,39 @@ public class CachedRoleService implements MessageListener {
 
     private final RoleService roleService;
 
+    /**
+     * Initializes
+     */
     @PostConstruct
-    public void init() {
-        container.addMessageListener(this, ChannelTopic.of(SecurityChannels.ROLE_EVICT));
-        container.addMessageListener(this, ChannelTopic.of(SecurityChannels.AUTHORITY_EVICT));
+    private void initialize() {
+        container.addMessageListener(this, SecurityChannels.ROLE_EVICT_CHANNEL);
+        container.addMessageListener(this, SecurityChannels.AUTHORITY_EVICT_CHANNEL);
     }
 
+    /**
+     * Gets roles
+     * @return roles
+     */
     public List<Role> getRoles() {
         return cache.get("*", key -> roleService.getRoles());
     }
 
+    /**
+     * Gets role
+     * @param roleId role id
+     * @return role
+     */
     public Optional<Role> getRole(String roleId) {
         return getRoles().stream()
                 .filter(role -> role.getRoleId().equals(roleId))
                 .findFirst();
     }
 
+    /**
+     * On message
+     * @param message message
+     * @param pattern pattern
+     */
     @Override
     public void onMessage(@NotNull Message message, byte[] pattern) {
         log.info("Evicting cached roles - {}", message);

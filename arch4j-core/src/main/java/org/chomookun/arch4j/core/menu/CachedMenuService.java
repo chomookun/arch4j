@@ -34,7 +34,7 @@ public class CachedMenuService implements MessageListener {
 
     @PostConstruct
     public void initialize() {
-        container.addMessageListener(this, ChannelTopic.of(MenuChannels.MENU_EVICT));
+        container.addMessageListener(this, MenuChannels.MENU_EVICT_CHANNEL);
     }
 
     public List<Menu> getMenus() {

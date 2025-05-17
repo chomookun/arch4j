@@ -35,7 +35,7 @@ public class CachedCodeService implements MessageListener {
 
     @PostConstruct
     public void initialize() {
-        container.addMessageListener(this, ChannelTopic.of(CodeChannels.CODE_EVICT));
+        container.addMessageListener(this, CodeChannels.CODE_EVICT_CHANNEL);
     }
 
     public Optional<Code> getCode(String codeId) {

@@ -3,6 +3,7 @@ package org.chomookun.arch4j.core.common.data.converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.chomookun.arch4j.core.common.support.ObjectMapperHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Converter
-@Component
 public class MapConverter implements AttributeConverter<Map<String, Object>, String> {
-
-    private static ObjectMapper objectMapper;
-
-    @Autowired
-    public void setObjectMapper(ObjectMapper bean) {
-        objectMapper = bean;
-    }
 
     @Override
     public String convertToDatabaseColumn(Map<String, Object> attribute) {
@@ -29,6 +22,7 @@ public class MapConverter implements AttributeConverter<Map<String, Object>, Str
             return null;
         }
         try {
+            ObjectMapper objectMapper = ObjectMapperHolder.getObject();
             return objectMapper.writeValueAsString(attribute);
         } catch (JsonProcessingException e) {
             return null;
@@ -41,6 +35,7 @@ public class MapConverter implements AttributeConverter<Map<String, Object>, Str
             return new HashMap<>();
         }
         try {
+            ObjectMapper objectMapper = ObjectMapperHolder.getObject();
             return objectMapper.readValue(dbData, new TypeReference<>() {});
         } catch (IOException e) {
             return new HashMap<>();
