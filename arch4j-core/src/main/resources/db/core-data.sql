@@ -60,6 +60,8 @@ values
     ('DEVELOPER','admin'),
     ('DEVELOPER','admin.common'),
     ('DEVELOPER','admin.monitor'),
+    ('DEVELOPER','admin.user'),
+    ('DEVELOPER','admin.security'),
     ('DEVELOPER','admin.menu'),
     ('DEVELOPER','admin.message'),
     ('DEVELOPER','admin.variable'),

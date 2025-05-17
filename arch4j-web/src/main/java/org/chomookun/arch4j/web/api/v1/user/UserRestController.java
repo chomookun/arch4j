@@ -41,7 +41,7 @@ public class UserRestController {
     @PutMapping("{userId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> modifyUser(@PathVariable("userId")String userId, @RequestBody UserRequest userRequest) {
-        String currentUserId = SecurityUtils.getCurrentUserId();
+        String currentUserId = SecurityUtils.getCurrentUserId().orElse(null);
         if(!userId.equals(currentUserId)) {
             throw new AccessDeniedException("Not login user");
         }
@@ -60,7 +60,7 @@ public class UserRestController {
             @PathVariable("userId")String id,
             @RequestBody ChangePasswordRequest changePasswordRequest
     ) {
-        String currentUserId = SecurityUtils.getCurrentUserId();
+        String currentUserId = SecurityUtils.getCurrentUserId().orElse(null);
         if(!id.equals(currentUserId)) {
             throw new AccessDeniedException("Not login user");
         }

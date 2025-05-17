@@ -39,8 +39,11 @@ public class SecurityService {
      * @param userId user id
      * @return user details impl
      */
-    public UserDetailsImpl getUserDetails(String userId) {
-        User user = cachedUserService.getUser(userId).orElseThrow();
+    public Optional<UserDetailsImpl> getUserDetails(String userId) {
+        User user = cachedUserService.getUser(userId).orElse(null);
+        if (user == null) {
+            return Optional.empty();
+        }
 
         // user details
         UserDetailsImpl userDetails =  UserDetailsImpl.builder()
@@ -50,6 +53,9 @@ public class SecurityService {
                 .name(user.getName())
                 .admin(user.isAdmin())
                 .build();
+
+        // sets authorities
+        userDetails.setAuthorities(getUserGrantedAuthorities(userId));
 
         // checks disabled
         if(user.getStatus() == User.Status.CLOSED) {
@@ -77,11 +83,11 @@ public class SecurityService {
         }
 
         // returns
-        return userDetails;
+        return Optional.of(userDetails);
     }
 
     public void grantAuthentication(HttpServletRequest request, String userId) {
-        UserDetailsImpl userDetails = getUserDetails(userId);
+        UserDetailsImpl userDetails = getUserDetails(userId).orElseThrow();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, List.of());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         HttpSession session = request.getSession(true);
@@ -116,7 +122,6 @@ public class SecurityService {
                     authenticatedAuthorities
             ));
         }
-        System.out.println("granted authorities" + securityContext.getAuthentication().getAuthorities());
     }
 
     private Collection<GrantedAuthority> getUserGrantedAuthorities(String userId) {

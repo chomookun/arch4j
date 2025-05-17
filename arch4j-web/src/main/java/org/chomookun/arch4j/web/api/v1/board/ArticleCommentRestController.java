@@ -45,7 +45,7 @@ public class ArticleCommentRestController {
             @RequestBody CommentRequest commentRequest
     ) {
         Comment comment = Comment.builder()
-                .userId(SecurityUtils.getCurrentUserId())
+                .userId(SecurityUtils.getCurrentUserId().orElse(null))
                 .parentCommentId(commentRequest.getParentCommentId())
                 .content(commentRequest.getContent())
                 .build();
@@ -112,7 +112,7 @@ public class ArticleCommentRestController {
 
     private boolean isMyComment(CommentResponse commentResponse) {
         if (commentResponse.getUserId() != null) {
-            return Objects.equals(commentResponse.getUserId(), SecurityUtils.getCurrentUserId());
+            return Objects.equals(commentResponse.getUserId(), SecurityUtils.getCurrentUserId().orElse(null));
         }
         return false;
     }

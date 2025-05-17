@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.CoreProperties;
 import org.chomookun.arch4j.core.security.SecurityProperties;
 import org.chomookun.arch4j.core.security.SecurityUtils;
+import org.chomookun.arch4j.core.user.CachedUserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,8 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
+import java.security.Security;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,8 @@ public class WebControllerAdvice {
     private final WebProperties webProperties;
 
     private final SecurityProperties securityProperties;
+
+    private final CachedUserService cachedUserService;
 
     /**
      * check if the request is rest controller
@@ -118,7 +123,8 @@ public class WebControllerAdvice {
         if (isRestControllerBeanType(request)) {
             return null;
         }
-        return SecurityUtils.getCurrentUser()
+        return SecurityUtils.getCurrentUserId()
+                .flatMap(cachedUserService::getUser)
                 .orElse(new User());
     }
 
