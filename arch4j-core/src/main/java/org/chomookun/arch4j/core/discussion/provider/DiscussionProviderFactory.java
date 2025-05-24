@@ -11,11 +11,11 @@ import java.util.Properties;
 public class DiscussionProviderFactory {
 
     public static DiscussionProvider getDiscussionProvider(Discussion discussion) {
-        DiscussionProviderDefinition discussionProviderDefinition = DiscussionProviderDefinitionRegistry.getDiscussionProviderDefinition(discussion.getDiscussionProviderId()).orElseThrow();
+        DiscussionProviderDefinition discussionProviderDefinition = DiscussionProviderDefinitionRegistry.getDiscussionProviderDefinition(discussion.getProviderType()).orElseThrow();
         try {
             Class<? extends DiscussionProvider> clientType = discussionProviderDefinition.getClassType().asSubclass(DiscussionProvider.class);
             Constructor<? extends DiscussionProvider> constructor = clientType.getConstructor(Properties.class);
-            Properties config = loadPropertiesFromString(discussion.getDiscussionProviderConfig());
+            Properties config = loadPropertiesFromString(discussion.getProviderProperties());
             return constructor.newInstance(config);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("Discussion provider constructor not found: " + discussion.getDiscussionId(), e);

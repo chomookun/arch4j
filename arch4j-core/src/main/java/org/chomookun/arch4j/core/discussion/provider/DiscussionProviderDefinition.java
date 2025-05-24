@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Lazy(false)
 public class DiscussionProviderDefinition {
 
-    public String getDiscussionProviderId() {
+    public String getProviderType() {
         return "default";
     }
 
@@ -15,12 +15,13 @@ public class DiscussionProviderDefinition {
         return "Default";
     }
 
-    String getConfigTemplate() {
-        return "";
-    }
-
     public Class<? extends DiscussionProvider> getClassType() {
         return DiscussionProvider.class;
     }
+
+    public String getPropertiesTemplate() {
+        return "";
+    }
+
 
 }

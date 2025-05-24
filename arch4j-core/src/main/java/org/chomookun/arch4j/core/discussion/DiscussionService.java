@@ -31,8 +31,8 @@ public class DiscussionService {
             discussionEntity = discussionRepository.findById(discussion.getDiscussionId()).orElseThrow();
         }
         discussionEntity.setName(discussion.getName());
-        discussionEntity.setDiscussionProviderId(discussion.getDiscussionProviderId());
-        discussionEntity.setDiscussionProviderConfig(discussion.getDiscussionProviderConfig());
+        discussionEntity.setProviderType(discussion.getProviderType());
+        discussionEntity.setProviderProperties(discussion.getProviderProperties());
         DiscussionEntity savedDiscussionEntity = discussionRepository.saveAndFlush(discussionEntity);
         return Discussion.from(savedDiscussionEntity);
     }

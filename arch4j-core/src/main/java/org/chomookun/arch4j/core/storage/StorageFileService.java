@@ -103,6 +103,12 @@ public class StorageFileService {
         storageFileRepository.flush();
     }
 
+    /**
+     * Gets storage files
+     * @param storageFileSearch storage file search
+     * @param pageable pageable
+     * @return page of sotrage file
+     */
     public Page<StorageFile> getStorageFiles(StorageFileSearch storageFileSearch, Pageable pageable) {
         Page<StorageFileEntity> storageFileEntityPage = storageFileRepository.findAll(storageFileSearch, pageable);
         List<StorageFile> storageFiles = storageFileEntityPage.getContent().stream()
@@ -112,12 +118,23 @@ public class StorageFileService {
         return new PageImpl<>(storageFiles, pageable, total);
     }
 
+    /**
+     * Gets storage files
+     * @param targetType target type
+     * @param targetId target id
+     * @return
+     */
     public List<StorageFile> getStorageFiles(String targetType, String targetId) {
         return storageFileRepository.findAllByTarget(targetType, targetId).stream()
                 .map(StorageFile::from)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets storage file
+     * @param fileId file id
+     * @return storage file
+     */
     public Optional<StorageFile> getStorageFile(String fileId) {
         return storageFileRepository.findById(fileId)
                 .map(StorageFile::from);

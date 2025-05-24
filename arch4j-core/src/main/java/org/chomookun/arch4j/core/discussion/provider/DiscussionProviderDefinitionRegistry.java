@@ -29,7 +29,7 @@ public class DiscussionProviderDefinitionRegistry implements BeanPostProcessor {
 
     public static Optional<DiscussionProviderDefinition> getDiscussionProviderDefinition(String type) {
         return discussionProviderDefinitions.stream()
-                .filter(item -> Objects.equals(item.getDiscussionProviderId(), type))
+                .filter(item -> Objects.equals(item.getProviderType(), type))
                 .findFirst();
     }
 

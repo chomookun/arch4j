@@ -44,10 +44,10 @@
             }
             let url = new URL(`${location.pathname}/get-codes`, location.origin);
             if (codeSearch.key && codeSearch.value) {
-                url.searchParams.append(codeSearch.key, codeSearch.value);
+                url.searchParams.set(codeSearch.key, codeSearch.value);
             }
-            url.searchParams.append('_page', codeSearch._page);
-            url.searchParams.append('_size', codeSearch._size);
+            url.searchParams.set('_page', codeSearch._page);
+            url.searchParams.set('_size', codeSearch._size);
             codes.length = 0;
             codeSearch._status = 'loading';
             _fetch(url)
@@ -83,6 +83,14 @@
                     duice.ObjectProxy.setDisabledAll(code, false);
                     duice.ObjectProxy.setReadonly(code, 'codeId', true);
                     code._new = false;
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('code-detail')?.scrollIntoView({ behavior: 'smooth' });
+                        if (location.hash !== '#code-detail') {
+                            history.pushState(null, '', '#code-detail');
+                        }
+                    }
                 });
         }
 
@@ -229,14 +237,14 @@
     <!-- ================================== -->
 
     <!-- ================================== -->
-    <!-- start: code content                -->
+    <!-- start: code-content                -->
     <!-- ================================== -->
-    <div id="codeContent" class="display--grid grid-template-columns--12fr gap--1em">
+    <div id="code-content" class="display--grid grid-template-columns--12fr gap--1em">
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
-            <!-- start: code list                   -->
+            <!-- start: code-list                   -->
             <!-- ================================== -->
-            <div id="codeList" class="panel">
+            <div id="code-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -244,21 +252,21 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1rem">
-                        <div class="display--flex gap--1px">
-                            <div class="display--flex flex-wrap--nowrap gap--1px">
-                                <label>
-                                    <select data-duice-bind="codeSearch" data-duice-property="key">
+                    <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1px">
+                        <div class="display--flex gap--1px s__width--100">
+                            <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                                <label class="flex--1">
+                                    <select data-duice-bind="codeSearch" data-duice-property="key" class="s__width--100">
                                         <option value="codeId" th:text="#{core.code.Code.codeId}"></option>
                                         <option value="name" th:text="#{core.code.Code.name}"></option>
                                     </select>
                                 </label>
-                                <label>
-                                    <input type="text" data-duice-bind="codeSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                <label class="flex--2">
+                                    <input type="text" data-duice-bind="codeSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}" class="s__width--100"/>
                                 </label>
                             </div>
                         </div>
-                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                        <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
                             <button class="button" type="submit" onclick="getCodes();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -269,60 +277,62 @@
                             </button>
                         </div>
                     </form>
-                    <table class="table width--100">
-                        <colgroup>
-                            <col style="width:5rem;"/>
-                            <col/>
-                            <col/>
-                            <col/>
-                        </colgroup>
-                        <thead>
-                        <tr>
-                            <th data-th-text="#{web.global.no}"></th>
-                            <th data-th-text="#{core.code.Code.codeId}"></th>
-                            <th>
-                                <span data-th-text="#{core.code.Code.name}"></span><i class="tag-i18n"></i>
-                            </th>
-                            <th data-th-text="#{core.code.Code.items}"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr data-duice-bind="codes"
-                            data-duice-foreach="code,status"
-                            data-duice-selected-item-class="selected"
-                            data-duice-execute="this.dataset.codeId=code.codeId;"
-                            onclick="getCode(this.dataset.codeId);"
-                            class="cursor--pointer">
-                            <td class="text-align--center">
-                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (codeSearch._page * codeSearch._size) + status.count" class="number"></span>
-                            </td>
-                            <td>
-                                <span data-duice-bind="code" data-duice-property="codeId" class="code"></span>
-                                <i data-duice-bind="code" data-duice-if="return code.systemRequired" class="tag-system-required"></i>
-                            </td>
-                            <td>
-                                <span data-duice-bind="code" data-duice-property="name"></span>
-                            </td>
-                            <td class="text-align--center">
-                                <span data-duice-bind="code" data-duice-property="items.length" class="number badge border-radius--50"></span>
-                            </td>
-                        </tr>
-                        <tr data-duice-bind="codeSearch"
-                            data-duice-if="return codeSearch._status === 'loading';" hidden>
-                            <td colspan="100%" class="text-align--center">
-                                <span class="loading"></span>
-                            </td>
-                        </tr>
-                        <tr data-duice-bind="codeSearch"
-                            data-duice-if="return codeSearch._status === 'empty';" hidden>
-                            <td colspan="100%" class="text-align--center">
-                                <span data-th-text="#{web.global.itemNotFound(#{core.code.Code})}"></span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <div class="display--flex justify-content--space-between">
-                        <div>
+                    <div class="overflow--scroll box">
+                        <table class="table width--100 border--none">
+                            <colgroup>
+                                <col style="width:5rem;"/>
+                                <col/>
+                                <col/>
+                                <col/>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th data-th-text="#{web.global.no}"></th>
+                                <th data-th-text="#{core.code.Code.codeId}"></th>
+                                <th>
+                                    <span data-th-text="#{core.code.Code.name}"></span><i class="tag-i18n"></i>
+                                </th>
+                                <th data-th-text="#{core.code.Code.items}"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr data-duice-bind="codes"
+                                data-duice-foreach="code,status"
+                                data-duice-selected-item-class="selected"
+                                data-duice-execute="this.dataset.codeId=code.codeId;"
+                                onclick="getCode(this.dataset.codeId);"
+                                class="cursor--pointer">
+                                <td class="text-align--center">
+                                    <span data-duice-bind="status" data-duice-execute="this.innerHTML = (codeSearch._page * codeSearch._size) + status.count" class="number"></span>
+                                </td>
+                                <td>
+                                    <span data-duice-bind="code" data-duice-property="codeId" class="code"></span>
+                                    <i data-duice-bind="code" data-duice-if="return code.systemRequired" class="tag-system-required"></i>
+                                </td>
+                                <td>
+                                    <span data-duice-bind="code" data-duice-property="name"></span>
+                                </td>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="code" data-duice-property="items.length" class="number"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="codeSearch"
+                                data-duice-if="return codeSearch._status === 'loading';" hidden>
+                                <td colspan="100%" class="text-align--center">
+                                    <span class="loading"></span>
+                                </td>
+                            </tr>
+                            <tr data-duice-bind="codeSearch"
+                                data-duice-if="return codeSearch._status === 'empty';" hidden>
+                                <td colspan="100%" class="text-align--center">
+                                    <span data-th-text="#{web.global.itemNotFound(#{core.code.Code})}"></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="display--flex justify-content--space-between gap--1rem">
+                        <div class="white-space--nowrap">
                             <span data-th-text="#{web.global.total}"></span>
                             <span data-duice-bind="codeSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
@@ -344,14 +354,14 @@
                 </div>
             </div>
             <!-- ================================== -->
-            <!-- end: code list                     -->
+            <!-- end: code-list                     -->
             <!-- ================================== -->
         </div>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
-            <!-- start: code detail                 -->
+            <!-- start: code-detail                 -->
             <!-- ================================== -->
-            <div id="codeDetail" class="panel">
+            <div id="code-detail" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
@@ -464,12 +474,12 @@
                 </div>
             </div>
             <!-- ================================== -->
-            <!-- end: code detail                   -->
+            <!-- end: code-detail                   -->
             <!-- ================================== -->
         </div>
     </div>
     <!-- ================================== -->
-    <!-- end: code content                  -->
+    <!-- end: code-content                  -->
     <!-- ================================== -->
 
 </main>

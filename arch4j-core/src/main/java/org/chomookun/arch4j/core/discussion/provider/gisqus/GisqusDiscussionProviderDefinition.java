@@ -9,15 +9,23 @@ import org.springframework.stereotype.Component;
 @Lazy(false)
 public class GisqusDiscussionProviderDefinition extends DiscussionProviderDefinition {
 
-    public String getDiscussionProviderId() {
+    @Override
+    public String getProviderType() {
         return "gisqus";
     }
 
+    @Override
     public String getName() {
         return "Gisqus";
     }
 
-    String getConfigTemplate() {
+    @Override
+    public Class<? extends DiscussionProvider> getClassType() {
+        return GisqusDiscussionProvider.class;
+    }
+
+    @Override
+    public String getPropertiesTemplate() {
         return """
         repo=[user/repo]
         repo-id=[repo id]
@@ -26,10 +34,6 @@ public class GisqusDiscussionProviderDefinition extends DiscussionProviderDefini
         theme-light=light
         theme-dart=dark
         """;
-    }
-
-    public Class<? extends DiscussionProvider> getClassType() {
-        return GisqusDiscussionProvider.class;
     }
 
 }

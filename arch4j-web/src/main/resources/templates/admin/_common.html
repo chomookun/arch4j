@@ -1,16 +1,16 @@
 <!-- ====================================== -->
-<!-- start: select role dialog              -->
+<!-- start: select-role-dialog              -->
 <!-- ====================================== -->
-<th:block th:fragment="_selectRoleDialog">
-<dialog id="_selectRoleDialog" class="dialog">
+<th:block th:fragment="_select-role-dialog">
+<dialog id="_select-role-dialog" class="dialog">
     <style th:inline="css">
-        #_selectRoleDialog {
+        #_select-role-dialog {
             width: 800px;
         }
     </style>
     <script th:inline="javascript">
         const _selectRoleDialog = (() => {
-            const dialog = new duice.Dialog(document.getElementById('_selectRoleDialog'));
+            const dialog = new duice.Dialog(document.getElementById('_select-role-dialog'));
             const option = {
                 disabledRoleIds: []
             }
@@ -30,10 +30,10 @@
              * @param disabledIds
              * @returns {*}
              */
-            function open({disabledRoleIds}) {
+            async function open({disabledRoleIds}) {
                 option.disabledRoleIds = disabledRoleIds || [];
                 duice.ArrayProxy.clear(this.selectedRoles);
-                getRoles(0);
+                await getRoles(0);
                 return dialog.open();
             }
 
@@ -316,5 +316,5 @@
 </dialog>
 </th:block>
 <!-- ====================================== -->
-<!-- end: select role dialog                -->
+<!-- end: select-role-dialog                -->
 <!-- ====================================== -->

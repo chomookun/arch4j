@@ -40,16 +40,15 @@ public class SecurityUtils {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         if(securityContext != null) {
             Authentication authentication = securityContext.getAuthentication();
-            if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-                userId = principal.getUserId();
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetailsImpl userDetails) {
+                userId = userDetails.getUserId();
             }
         }
         return Optional.ofNullable(userId);
     }
 
     public static Optional<UserDetailsImpl> getCurrentUserDetails() {
-        UserDetailsImpl userDetails = null;
         String userId = getCurrentUserId().orElse(null);
         if (userId != null) {
             return securityService.getUserDetails(userId);

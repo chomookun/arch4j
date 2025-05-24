@@ -17,19 +17,25 @@ import java.util.List;
 @Repository
 public interface StorageFileRepository extends JpaRepository<StorageFileEntity, String>, JpaSpecificationExecutor<StorageFileEntity> {
 
-    default Page<StorageFileEntity> findAll(StorageFileSearch storageObjectSearch, Pageable pageable) {
+    /**
+     * Finds all by storage file search
+     * @param storageFileSearch storage file search
+     * @param pageable pageable
+     * @return page of storage files
+     */
+    default Page<StorageFileEntity> findAll(StorageFileSearch storageFileSearch, Pageable pageable) {
         Specification<StorageFileEntity> specification = Specification.where(null);
-        if (storageObjectSearch.getTargetType() != null) {
+        if (storageFileSearch.getTargetType() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get(StorageFileEntity_.targetType), "%" + storageObjectSearch.getTargetType() + "%"));
+                    criteriaBuilder.like(root.get(StorageFileEntity_.targetType), "%" + storageFileSearch.getTargetType() + "%"));
         }
-        if (storageObjectSearch.getTargetId() != null) {
+        if (storageFileSearch.getTargetId() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get(StorageFileEntity_.targetId), "%" + storageObjectSearch.getTargetId() + "%"));
+                    criteriaBuilder.like(root.get(StorageFileEntity_.targetId), "%" + storageFileSearch.getTargetId() + "%"));
         }
-        if (storageObjectSearch.getFilename() != null) {
+        if (storageFileSearch.getFilename() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(root.get(StorageFileEntity_.filename), "%" + storageObjectSearch.getFilename() + "%"));
+                    criteriaBuilder.like(root.get(StorageFileEntity_.filename), "%" + storageFileSearch.getFilename() + "%"));
         }
         Sort sort = pageable.getSort()
                 .and(Sort.by(StorageFileEntity_.CREATED_AT).descending());
@@ -39,6 +45,12 @@ public interface StorageFileRepository extends JpaRepository<StorageFileEntity, 
         return findAll(specification, finalPageable);
     }
 
+    /**
+     * Finds by target
+     * @param targetType target type
+     * @param targetId target id
+     * @return list of storage file
+     */
     default List<StorageFileEntity> findAllByTarget(String targetType, String targetId) {
         Specification<StorageFileEntity> specification = Specification.where(null);
         specification = specification.and((root, query, criteriaBuilder) ->

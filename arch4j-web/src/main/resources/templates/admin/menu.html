@@ -54,6 +54,14 @@
                     if (data.parentMenuId) {
                         getParentMenu(menu.parentMenuId);
                     }
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('menu-detail')?.scrollIntoView({behavior:'smooth'});
+                        if (location.hash !== '#menu-detail') {
+                            history.pushState(null, '', '#menu-detail');
+                        }
+                    }
                 });
         }
 
@@ -76,7 +84,7 @@
         function getParentMenu(parentMenuId) {
             if (parentMenuId) {
                 let url = new URL(`${location.pathname}/get-menu`, location.origin);
-                url.searchParams.append('menuId', parentMenuId);
+                url.searchParams.set('menuId', parentMenuId);
                 _fetch(url)
                     .then(response => response.json())
                     .then(data => {
@@ -242,14 +250,14 @@
     <!-- ================================== -->
 
     <!-- ================================== -->
-    <!-- start: menu content                -->
+    <!-- start: menu-content                -->
     <!-- ================================== -->
-    <div id="menuContent" class="display--grid grid-template-columns--12fr gap--1em">
+    <div id="menu-content" class="display--grid grid-template-columns--12fr gap--1em">
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
             <!-- start: menu list                   -->
             <!-- ================================== -->
-            <div id="menuList" class="panel">
+            <div id="menu-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -289,14 +297,14 @@
                 </div>
             </div>
             <!-- ================================== -->
-            <!-- end: menu list                     -->
+            <!-- end: menu-list                     -->
             <!-- ================================== -->
         </div>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
-            <!-- start: menu detail                 -->
+            <!-- start: menu-detail                 -->
             <!-- ================================== -->
-            <div id="menuDetail" class="panel">
+            <div id="menu-detail" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
@@ -536,26 +544,26 @@
                 </div>
             </div>
             <!-- ================================== -->
-            <!-- end: menu detail                   -->
+            <!-- end: menu-detail                   -->
             <!-- ================================== -->
         </div>
     </div>
     <!-- ================================== -->
-    <!-- end: menu content                  -->
+    <!-- end: menu-content                  -->
     <!-- ================================== -->
 
     <!-- ================================== -->
-    <!-- start: select Menu Dialog          -->
+    <!-- start: select-menu-dialog          -->
     <!-- ================================== -->
-    <dialog id="selectMenuDialog">
+    <dialog id="select-menu-dialog">
         <style>
-            #selectMenuDialog {
+            #select-menu-dialog {
                 min-width: 300px;
             }
         </style>
         <script th:inline="javascript">
             const selectMenuDialog = (() => {
-                const dialog = new duice.Dialog(document.getElementById('selectMenuDialog'));
+                const dialog = new duice.Dialog(document.getElementById('select-menu-dialog'));
                 let disabledMenuIds = [];
                 const menus = new duice.ArrayProxy([]);
 
@@ -568,7 +576,7 @@
                     if(disableMenuIds) {
                         disabledMenuIds.push(...disableMenuIds);
                     }
-                    getMenus();
+                    await getMenus();
                     return dialog.open();
                 }
 
@@ -628,7 +636,7 @@
                     if(menu.parentMenuId) {
                         this.style.marginLeft='1rem';
                     }
-                ">
+                    ">
                         <div>
                             <a href="#" data-duice-bind="menu" data-duice-execute="
                         this.dataset.menuId = menu.menuId;
@@ -647,9 +655,9 @@
         </div>
     </dialog>
     <!-- ================================== -->
-    <!-- end: menuSelectDialog              -->
+    <!-- end: menu-select-dialog            -->
     <!-- ================================== -->
 
-    <th:block th:include="admin/_common.html :: _selectRoleDialog"/>
+    <th:block th:include="admin/_common.html :: _select-role-dialog"/>
 
 </main>

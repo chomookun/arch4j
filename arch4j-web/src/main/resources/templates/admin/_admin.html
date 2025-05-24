@@ -283,7 +283,7 @@
             </span>
         </div>
         <div id="_header-menuButton">
-            <img onclick="_openMenu();" th:src="@{/static/image/icon-menu.svg}" class="icon link" alt="menu"/>
+            <img onclick="_openMenu();" th:src="@{/static/image/icon-menu.svg}" class="icon font-size--large link" alt="menu"/>
         </div>
         <ul id="_header-menu">
             <li sec:authorize="!isAuthenticated()">
@@ -294,7 +294,7 @@
             </li>
             <li sec:authorize="isAuthenticated()">
                 <span>
-                    <img class="icon font-size--large border-radius--50" th:src="${_user.icon} == null ? @{/static/image/icon-user.svg} : ${_user.icon}" alt="icon"/>
+                    <img class="icon border-radius--50" th:src="${_user.icon} == null ? @{/static/image/icon-user.svg} : ${_user.icon}" alt="icon"/>
                     <span data-th-text="${_user.name}" class="font-weight--bold"></span>
                 </span>
             </li>
@@ -369,6 +369,12 @@
                 </a>
             </li>
             <li>
+                <a th:href="@{/admin/storage}" th:classappend="!${#authorization.expression('hasAuthority(''admin.storage'')')}?'locked'">
+                    <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
+                    <span data-th-text="#{web.admin.storage}"></span>
+                </a>
+            </li>
+            <li>
                 <a th:href="@{/admin/template}" th:classappend="!${#authorization.expression('hasAuthority(''admin.template'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-template.svg}" alt="template"/>
                     <span data-th-text="#{web.admin.template}"></span>
@@ -396,12 +402,6 @@
                 <a th:href="@{/admin/batch}" th:classappend="!${#authorization.expression('hasAuthority(''admin.batch'')')}?'locked'">
                     <img class="icon" th:src="@{/static/image/icon-batch.svg}" alt="batch"/>
                     <span data-th-text="#{web.admin.batch}"></span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/admin/storage}" th:classappend="!${#authorization.expression('hasAuthority(''admin.storage'')')}?'locked'">
-                    <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
-                    <span data-th-text="#{web.admin.storage}"></span>
                 </a>
             </li>
             <li>

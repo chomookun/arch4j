@@ -3,10 +3,13 @@ package org.chomookun.arch4j.web.view.git;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.chomookun.arch4j.core.execution.ExecutionService;
+import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.arch4j.core.git.GitProperties;
 import org.chomookun.arch4j.core.git.GitService;
 import org.chomookun.arch4j.core.git.client.GitClient;
 import org.chomookun.arch4j.core.git.model.Git;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,27 +33,36 @@ public class GitScheduler {
 
     private final GitProperties gitProperties;
 
+    private final ExecutionService executionService;
+
     @Scheduled(initialDelay = 1_000, fixedDelay = 60_000)
     public void synchronizeGits() {
-        List<Git> gits = gitService.getGits();
-        for(Git git : gits) {
-            try {
-                synchronizeGit(git);
-            } catch(Throwable t) {
-                log.warn(t.getMessage(), t);
-            }
-        }
-
-        // delete data not existing
-        getExistingGitLocalDirectories().forEach(gitLocalDirectory -> {
-            if(gits.stream().noneMatch(git -> gitClient.getDirectoryName(git).equals(gitLocalDirectory.getName()))) {
+        try {
+            List<Git> gits = gitService.getGits();
+            for(Git git : gits) {
+                Execution execution = executionService.start(String.format("git:%s", git.getGitId()));
                 try {
-                    FileUtils.deleteDirectory(gitLocalDirectory);
-                } catch (IOException e) {
-                    log.warn(e.getMessage(), e);
+                    synchronizeGit(git);
+                    executionService.success(execution);
+                } catch(Throwable t) {
+                    log.warn(t.getMessage());
+                    executionService.fail(execution, t);
                 }
             }
-        });
+
+            // delete data not existing
+            getExistingGitLocalDirectories().forEach(gitLocalDirectory -> {
+                if(gits.stream().noneMatch(git -> gitClient.getDirectoryName(git).equals(gitLocalDirectory.getName()))) {
+                    try {
+                        FileUtils.deleteDirectory(gitLocalDirectory);
+                    } catch (IOException e) {
+                        log.warn(e.getMessage(), e);
+                    }
+                }
+            });
+        } catch (Throwable t) {
+            log.warn(t.getMessage());
+        }
     }
 
     private void synchronizeGit(Git git) throws Exception {

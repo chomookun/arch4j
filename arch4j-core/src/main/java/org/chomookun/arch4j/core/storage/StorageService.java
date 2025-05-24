@@ -26,8 +26,8 @@ public class StorageService {
                         .storageId(storage.getStorageId())
                         .build());
         storageEntity.setName(storage.getName());
-        storageEntity.setStorageClientId(storage.getStorageClientId());
-        storageEntity.setStorageClientConfig(storage.getStorageClientConfig());
+        storageEntity.setClientType(storage.getClientType());
+        storageEntity.setClientProperties(storage.getClientProperties());
         StorageEntity savedStorageEntity = storageRepository.saveAndFlush(storageEntity);
         return Storage.from(savedStorageEntity);
     }

@@ -14,14 +14,14 @@ import java.util.Properties;
 public class StorageClientFactory {
 
     public static StorageClient getStorageClient(Storage storage) {
-        StorageClientDefinition storageClientDefinition = StorageClientDefinitionRegistry.getStorageClientDefinition(storage.getStorageClientId()).orElseThrow();
+        StorageClientDefinition storageClientDefinition = StorageClientDefinitionRegistry.getStorageClientDefinition(storage.getClientType()).orElseThrow();
         try {
             Class<? extends StorageClient> clientType = storageClientDefinition.getClassType().asSubclass(StorageClient.class);
             Constructor<? extends StorageClient> constructor = clientType.getConstructor(Properties.class);
-            Properties config = loadPropertiesFromString(storage.getStorageClientConfig());
+            Properties config = loadPropertiesFromString(storage.getClientProperties());
             return constructor.newInstance(config);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Storage client constructor not found: " + storage.getStorageClientId(), e);
+            throw new IllegalArgumentException("Storage client constructor not found: " + storage.getClientType(), e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

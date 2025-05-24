@@ -18,16 +18,16 @@ public class Discussion extends BaseModel {
     @NotBlank
     private String name;
 
-    private String discussionProviderId;
+    private String providerType;
 
-    private String discussionProviderConfig;
+    private String providerProperties;
 
     public static Discussion from(DiscussionEntity discussionEntity) {
         return Discussion.builder()
                 .discussionId(discussionEntity.getDiscussionId())
                 .name(discussionEntity.getName())
-                .discussionProviderId(discussionEntity.getDiscussionProviderId())
-                .discussionProviderConfig(discussionEntity.getDiscussionProviderConfig())
+                .providerType(discussionEntity.getProviderType())
+                .providerProperties(discussionEntity.getProviderProperties())
                 .build();
     }
 

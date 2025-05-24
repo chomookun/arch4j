@@ -176,7 +176,7 @@
                     </div>
                 </form>
                 <div class="box overflow--auto">
-                    <table class="table width--100 border--none">
+                    <table class="table responsive width--100 border--none">
                         <colgroup>
                             <col style="width:5rem;"/>
                             <col style="width:20rem;"/>
@@ -208,10 +208,12 @@
                         <tbody>
                         <tr data-duice-bind="examples" data-duice-foreach="example,status"
                             data-duice-selected-item-class="selected">
-                            <td class="text-align--center">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="No"></div>
                                 <span data-duice-bind="status" data-duice-execute="this.innerHTML = (exampleSearch._page * exampleSearch._size) + status.count;" class="number"></span>
                             </td>
                             <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.name}"></div>
                                 <a data-duice-bind="example"
                                    data-duice-execute="this.dataset.exampleId=example.exampleId;"
                                    href="javascript:void(0);"
@@ -220,27 +222,34 @@
                                     <span data-duice-bind="example" data-duice-property="name"></span>
                                 </a>
                             </td>
-                            <td class="text-align--right">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.number}"></div>
                                 <span data-duice-bind="example" data-duice-property="number" class="number"></span>
                             </td>
-                            <td class="text-align--right">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.decimalNumber}"></div>
                                 <span data-duice-bind="example" data-duice-property="decimalNumber" data-duice-format="number(4)" class="number"></span>
                             </td>
-                            <td class="text-align--center">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.dateTime}"></div>
                                 <span data-duice-bind="example" data-duice-property="dateTime" data-duice-format="date('yyyy-MM-dd HH:mm:ss')" class="date"></span>
                             </td>
-                            <td class="text-align--center">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.date}"></div>
                                 <span data-duice-bind="example" data-duice-property="date" data-duice-format="date('yyyy-MM-dd')" class="date"></span>
                             </td>
-                            <td class="text-align--center">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.time}"></div>
                                 <span data-duice-bind="example" data-duice-property="time" class="date"></span>
                             </td>
-                            <td class="text-align--center">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.enabled}"></div>
                                 <label>
                                     <input type="checkbox" data-duice-bind="example" data-duice-property="enabled"/>
                                 </label>
                             </td>
                             <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.type}"></div>
                                 <label>
                                     <select data-duice-bind="example" data-duice-property="type" class="code" style="min-width:7rem;">
                                         <option>-</option>
@@ -251,6 +260,7 @@
                                 </label>
                             </td>
                             <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.ExampleItem}"></div>
                                 <label>
                                     <select data-duice-bind="example"
                                             data-duice-property="code"
@@ -262,7 +272,8 @@
                                     </select>
                                 </label>
                             </td>
-                            <td class="text-align--center">
+                            <td>
+                                <div class="responsive-th" hidden data-th-text="#{core.example.Example.name}"></div>
                                 <span data-duice-bind="example"
                                       data-duice-execute="this.innerHTML=example.exampleItems?.length;"
                                       class="number badge border-radius--50"></span>

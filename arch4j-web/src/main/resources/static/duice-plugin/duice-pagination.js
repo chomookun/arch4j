@@ -1,5 +1,5 @@
 /*!
- * duice-pagination - v0.3.0
+ * duice-pagination - v0.3.2
  * git: https://gitbub.com/chomookun/duice-plugin
  * website: https://duice-plugin.chomookun.org
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -48,51 +48,57 @@ this.duice.plugin.Pagination = (function (exports, duice) {
             let startPageIndex = Math.floor(page / this.pageNumberSize) * this.pageNumberSize;
             let endPageIndex = Math.min(startPageIndex + (this.pageNumberSize - 1), totalPage - 1);
             endPageIndex = Math.max(endPageIndex, 0);
-            // template
-            let pagination = document.createElement('ul');
-            pagination.classList.add(`${duice.Configuration.getNamespace()}-pagination`);
             // prev
-            let prev = document.createElement('li');
+            let prev = document.createElement('span');
             prev.innerHTML = this.prevContent;
-            prev.classList.add(`${duice.Configuration.getNamespace()}-pagination__item-prev`);
+            prev.classList.add(`${duice.Configuration.getNamespace()}-pagination__prev`);
             prev.dataset.page = String(Math.max(startPageIndex - this.pageNumberSize, 0));
             prev.addEventListener('click', () => {
                 this.onclick.call(prev);
             });
             if (page < this.pageNumberSize) {
-                prev.classList.add(`${duice.Configuration.getNamespace()}-pagination__item--disable`);
+                prev.classList.add(`${duice.Configuration.getNamespace()}-pagination__prev--disable`);
             }
-            pagination.appendChild(prev);
             // pages
+            let pageable = document.createElement('ul');
+            pageable.classList.add(`${duice.Configuration.getNamespace()}-pagination-pageable`);
             for (let index = startPageIndex; index <= endPageIndex; index++) {
                 let item = document.createElement('li');
                 item.appendChild(document.createTextNode(String(index + 1)));
                 item.dataset.page = String(index);
-                item.classList.add(`${duice.Configuration.getNamespace()}-pagination__item-page`);
+                item.classList.add(`${duice.Configuration.getNamespace()}-pagination__pageable-item`);
                 if (index === page) {
-                    item.classList.add(`${duice.Configuration.getNamespace()}-pagination__item--active`);
+                    item.classList.add(`${duice.Configuration.getNamespace()}-pagination__pageable-item--active`);
                 }
                 item.addEventListener('click', () => {
                     this.onclick.call(item);
                 });
-                pagination.appendChild(item);
+                pageable.appendChild(item);
             }
             // next
-            let next = document.createElement('li');
+            let next = document.createElement('span');
             next.innerHTML = this.nextContent;
-            next.classList.add(`${duice.Configuration.getNamespace()}-pagination__item-next`);
+            next.classList.add(`${duice.Configuration.getNamespace()}-pagination__next`);
             next.dataset.page = String(Math.min(endPageIndex + 1, totalPage));
             next.addEventListener('click', () => {
                 this.onclick.call(next);
             });
             if (endPageIndex >= (totalPage - 1)) {
-                next.classList.add(`${duice.Configuration.getNamespace()}-pagination__item--disable`);
+                next.classList.add(`${duice.Configuration.getNamespace()}-pagination__next--disable`);
             }
-            pagination.appendChild(next);
-            // returns
+            // appends to container
             this.getHtmlElement().innerHTML = '';
             this.getHtmlElement().appendChild(this.createStyle());
-            this.getHtmlElement().appendChild(pagination);
+            this.getHtmlElement().appendChild(prev);
+            this.getHtmlElement().appendChild(pageable);
+            this.getHtmlElement().appendChild(next);
+            // moves to current page
+            const activeItem = this.getHtmlElement().querySelector('.duice-pagination__pageable-item--active');
+            activeItem === null || activeItem === void 0 ? void 0 : activeItem.scrollIntoView({
+                behavior: 'instant',
+                inline: 'center',
+                block: 'nearest'
+            });
         }
         /**
          * Updates element
@@ -108,32 +114,40 @@ this.duice.plugin.Pagination = (function (exports, duice) {
             let style = document.createElement('style');
             style.innerHTML = `
             ${duice.Configuration.getNamespace()}-pagination {
-                display: inline-block;
+                display: inline-flex;
+                gap: 0.5em;
+                overflow: hidden;
             }
-            .${duice.Configuration.getNamespace()}-pagination {
+      
+            .${duice.Configuration.getNamespace()}-pagination__prev {
+                cursor: pointer;
+            }
+            .${duice.Configuration.getNamespace()}-pagination__prev--disable {
+                pointer-events: none;
+            }
+            .${duice.Configuration.getNamespace()}-pagination__next {
+                cursor: pointer;
+            }
+            .${duice.Configuration.getNamespace()}-pagination__next--disable {
+                pointer-events: none;
+            }
+            .${duice.Configuration.getNamespace()}-pagination-pageable {
                 list-style: none;
                 display: flex;
+                gap: 0.5em;
                 padding-left: 0;
                 margin: 0;
+                overflow-x: scroll;
             }
-            .${duice.Configuration.getNamespace()}-pagination__item-page {
+            .${duice.Configuration.getNamespace()}-pagination__pageable-item {
                 cursor: pointer;
-                padding: 0 0.5em;
-            }
-            .${duice.Configuration.getNamespace()}-pagination__item-prev {
-                cursor: pointer;
-                padding: 0 0.5em;
-            }
-            .${duice.Configuration.getNamespace()}-pagination__item-next {
-                cursor: pointer;
-                padding: 0 0.5em;
-            }
-            .${duice.Configuration.getNamespace()}-pagination__item--active {
+            } 
+            .${duice.Configuration.getNamespace()}-pagination__pageable-item--active {
                 font-weight: bold;
                 text-decoration: underline;
                 pointer-events: none;
             }
-            .${duice.Configuration.getNamespace()}-pagination__item--disable {
+            .${duice.Configuration.getNamespace()}-pagination__pageable-item--disable {
                 pointer-events: none;
             }
         `;

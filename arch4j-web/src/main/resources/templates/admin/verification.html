@@ -125,6 +125,14 @@
                     duice.ObjectProxy.setDisabledAll(verifier, false);
                     duice.ObjectProxy.setReadonly(verifier, 'verifierId', true);
                     verifier._new = false;
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('verifier-detail')?.scrollIntoView({ behavior: 'smooth' });
+                        if (location.hash !== '#verifier-detail') {
+                            history.pushState(null, '', '#verifier-detail');
+                        }
+                    }
                 });
         }
 
@@ -235,14 +243,14 @@
         _initialize(() => {
             const tabFolder = new duice.TabFolder();
             const verificationTabItem = new duice.TabItem(
-                document.getElementById('verificationTabButton'),
-                document.getElementById('verificationTabContent'),
+                document.getElementById('verification-tab-button'),
+                document.getElementById('verification-tab-content'),
                 () => {
                     getVerifications();
                 });
             const verifierTabItem = new duice.TabItem(
-                document.getElementById('verifierTabButton'),
-                document.getElementById('verifierTabContent'),
+                document.getElementById('verifier-tab-button'),
+                document.getElementById('verifier-tab-content'),
                 () => {
                     getVerifiers();
                 });
@@ -267,11 +275,11 @@
     <!-- start: tab index                       -->
     <!-- ====================================== -->
     <div id="tabIndex" class="tab">
-        <span id="verificationTabButton" class="tab-item">
+        <span id="verification-tab-button" class="tab-item">
             <img class="icon" src="/static/image/icon-verification.svg" alt=""/>
             <span data-th-text="#{core.verification.Verification}"></span>
         </span>
-        <span id="verifierTabButton" class="tab-item">
+        <span id="verifier-tab-button" class="tab-item">
             <img class="icon" src="/static/image/icon-config.svg" alt=""/>
             <span data-th-text="#{core.verification.Verifier}"></span>
         </span>
@@ -281,11 +289,11 @@
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: verification tab content        -->
+    <!-- start: verification-tab-content        -->
     <!-- ====================================== -->
-    <div id="verificationTabContent">
+    <div id="verification-tab-content">
         <!-- ================================== -->
-        <!-- start: verification challenges     -->
+        <!-- start: verification                -->
         <!-- ================================== -->
         <div class="panel">
             <div class="panel-title">
@@ -295,23 +303,23 @@
                 </h2>
             </div>
             <div class="panel-content">
-                <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
-                    <div class="display--flex gap--1px">
-                        <label>
-                            <select data-duice-bind="verificationSearch" data-duice-property="verifierId">
-                                <option value="" data-th-text="|#{core.verification.Verifier}...|"></option>
-                                <option data-th-each="verifier : ${verifiers}"
-                                        th:value="${verifier.verifierId}"
-                                        th:text="${verifier.name}"></option>
-                            </select>
-                        </label>
+                <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1px">
+                    <div class="display--flex flex-wrap--wrap gap--1px s__width--100">
+                        <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                            <label class="flex--1">
+                                <select data-duice-bind="verificationSearch" data-duice-property="verifierId" class="s__width--100">
+                                    <option value="" data-th-text="|#{core.verification.Verifier}...|"></option>
+                                    <option data-th-each="verifier : ${verifiers}"
+                                            th:value="${verifier.verifierId}"
+                                            th:text="${verifier.name}"></option>
+                                </select>
+                            </label>
+                            <label class="flex--2">
+                                <input type="text" data-duice-bind="verificationSearch" data-duice-property="principal" th:placeholder="#{core.verification.Verification.principal}" class="s__width--100"/>
+                            </label>
+                        </div>
                     </div>
-                    <div class="display--flex flex-wrap--wrap gap--1px">
-                        <label>
-                            <input type="text" data-duice-bind="verificationSearch" data-duice-property="principal" th:placeholder="#{core.verification.Verification.principal}"/>
-                        </label>
-                    </div>
-                    <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
+                    <div class="display--flex gap--1px justify-content--end s__width--100 s__justify-content--start">
                         <button class="button" type="submit" onclick="getVerifications(0);">
                             <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                             <span data-th-text="#{web.global.search}"></span>
@@ -467,22 +475,22 @@
             </div>
         </div>
         <!-- ================================== -->
-        <!-- end: verification challenges       -->
+        <!-- end: verification                  -->
         <!-- ================================== -->
     </div>
     <!-- ====================================== -->
-    <!-- end: verification tab content          -->
+    <!-- end: verification-tab-content          -->
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: verifier tab content            -->
+    <!-- start: verifier-tab-content            -->
     <!-- ====================================== -->
-    <div id="verifierTabContent" class="display--grid grid-template-columns--12fr gap--1em" hidden>
+    <div id="verifier-tab-content" class="display--grid grid-template-columns--12fr gap--1em" hidden>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
-            <!-- start: verifier list                   -->
+            <!-- start: verifier-list                   -->
             <!-- ====================================== -->
-            <div id="verificationList" class="panel">
+            <div id="verifier-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -490,21 +498,21 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1rem">
-                        <div class="display--flex gap--1px">
-                            <div class="display--flex flex-wrap--nowrap gap--1px">
-                                <label>
-                                    <select data-duice-bind="verifierSearch" data-duice-property="key">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1px">
+                        <div class="display--flex gap--1px s__width--100">
+                            <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                                <label class="flex--1">
+                                    <select data-duice-bind="verifierSearch" data-duice-property="key" class="s__width--100">
                                         <option value="verifierId" th:text="#{core.verification.Verifier.verifierId}"></option>
                                         <option value="name" th:text="#{core.verification.Verifier.name}"></option>
                                     </select>
                                 </label>
-                                <label>
-                                    <input type="text" data-duice-bind="verifierSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                <label class="flex--2">
+                                    <input type="text" data-duice-bind="verifierSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}" class="s__width--100"/>
                                 </label>
                             </div>
                         </div>
-                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                        <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
                             <button class="button" type="submit" onclick="getVerifiers(0);">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -578,14 +586,14 @@
                 </div>
             </div>
             <!-- ====================================== -->
-            <!-- end: verifier list                     -->
+            <!-- end: verifier-list                     -->
             <!-- ====================================== -->
         </div>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
-            <!-- start: verifier detail                 -->
+            <!-- start: verifier-detail                 -->
             <!-- ====================================== -->
-            <div id="verifierDetail" class="panel">
+            <div id="verifier-detail" class="panel">
                 <div id="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
@@ -596,13 +604,13 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.verification.Verifier.verifierId}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.verification.Verifier.verifierId}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="verifier" data-duice-property="verifierId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.verification.Verifier.name}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.verification.Verifier.name}" class="font-weight--bold"></span>
                                 <input type="text" data-duice-bind="verifier" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
@@ -679,12 +687,12 @@
                 </div>
             </div>
             <!-- ====================================== -->
-            <!-- end: verifier detail                   -->
+            <!-- end: verifier-detail                   -->
             <!-- ====================================== -->
         </div>
     </div>
     <!-- ====================================== -->
-    <!-- end: verifier tab content              -->
+    <!-- end: verifier-tab-content              -->
     <!-- ====================================== -->
 
     <!-- ====================================== -->

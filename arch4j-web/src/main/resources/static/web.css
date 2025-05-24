@@ -14,8 +14,18 @@
     --web-background-color--red: orangered;
     --web-background-color--green: mediumseagreen;
     --web-background-color--blue: deepskyblue;
-    --web-badge-line-height: 2.0em;
-    --web-badge-border-radius: 0.5em;
+    /* table */
+    --web-table-border: var(--duice-table-border);
+    --web-table-thead-background: var(--duice-table-thead-background);
+    --web-table-thead-border: var(--duice-table-thead-border);
+    --web-table-tbody-background: var(--duice-table-tbody-background);
+    --web-table-tbody-border: var(--duice-table-tbody-border);
+    --web-table-tbody-hover-background: var(--duice-table-tbody-hover-background);
+    --web-table-tfoot-background: var(--duice-table-tfoot-background);
+    --web-table-tfoot-border: var(--duice-table-tfoot-border);
+    /* badge */
+    --web-badge-line-height: 2.0rem;
+    --web-badge-border-radius: 0.25rem;
     --web-badge-padding: 0.0em 0.75em;
     --web-badge-background-color: #aaa;
     --web-badge-font-color: #fff;
@@ -119,6 +129,43 @@ html {
 }
 .table > tbody > .selected{
     background-color: var(--duice-table-tbody-hover-background);
+}
+
+/* table responsive */
+@media screen and (max-width: 1023px) {
+    table.responsive thead {
+        display: none;
+    }
+    table.responsive tbody {
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    table.responsive tbody tr {
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    table.responsive td {
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        align-items: center;
+        border-right: none;
+    }
+    table.responsive tr:not(:first-child) td:first-child {
+        border-top: var(--web-table-thead-border);
+    }
+    table.responsive td > .responsive-th[hidden] {
+        display: block !important;
+        width:25%;
+        background-color: var(--web-table-thead-background);
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        margin-right: 0.5rem;
+        border-right: var(--web-table-tbody-border);
+        font-weight: bold;
+    }
 }
 
 /* icon */

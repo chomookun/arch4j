@@ -544,3 +544,12 @@ const _initialize = (function() {
         window.addEventListener('pageshow', handler);
     };
 })();
+
+/**
+ * Checks if the browser is mobile
+ * @returns {boolean}
+ * @private
+ */
+const _isMobileBrowser = function() {
+    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}

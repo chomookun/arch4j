@@ -100,19 +100,19 @@
         </div>
         <div class="panel-content">
             <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
-                <div class="display--flex flex-wrap--wrap gap--1px">
-                    <div class="display--flex flex-wrap--nowrap gap--1px">
-                        <label>
-                            <select data-duice-bind="executionSearch" data-duice-property="key">
+                <div class="display--flex flex-wrap--wrap gap--1px s__width--100">
+                    <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                        <label class="flex--1">
+                            <select data-duice-bind="executionSearch" data-duice-property="key" class="s__width--100">
                                 <option value="taskName" th:text="#{core.execution.Execution.taskName}"></option>
                             </select>
                         </label>
-                        <label>
-                            <input type="text" data-duice-bind="executionSearch" data-duice-property="value"/>
+                        <label class="flex--2">
+                            <input type="text" data-duice-bind="executionSearch" data-duice-property="value" class="s__width--100"/>
                         </label>
                     </div>
                 </div>
-                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
+                <div class="flex--1 display--flex gap--1px justify-content--end s__width--100 s__justify-content--start">
                     <button class="button" type="submit" onclick="getExecutions(0);">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
@@ -178,59 +178,79 @@
                     <tbody>
                     <tr data-duice-bind="executions" data-duice-foreach="execution,status" class="text-align--center">
                         <td>
-                            <span data-duice-bind="status"
-                                  data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"
-                                  class="number">
-                            </span>
+                            <div class="text-align--center">
+                                <span data-duice-bind="status"
+                                      data-duice-execute="this.innerHTML = executionSearch._total - (executionSearch._page * executionSearch._size + status.index);"
+                                      class="number">
+                                </span>
+                            </div>
                         </td>
                         <td>
-                            <span class="code" data-duice-bind="execution" data-duice-property="taskName"></span>
+                            <div>
+                                <span class="code" data-duice-bind="execution" data-duice-property="taskName"></span>
+                            </div>
                         </td>
                         <td>
-                            <span class="code badge"
-                                  data-duice-bind="execution"
-                                  data-duice-property="status"
-                                  data-duice-execute="markStatus(this, execution.status);"></span>
+                            <div class="text-align--center">
+                                <span class="code badge"
+                                      data-duice-bind="execution"
+                                      data-duice-property="status"
+                                      data-duice-execute="markStatus(this, execution.status);"></span>
+                            </div>
                         </td>
                         <td>
-                            <span class="date" data-duice-bind="execution" data-duice-property="startedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                            <div class="text-align--center white-space--nowrap">
+                                <span class="date" data-duice-bind="execution" data-duice-property="startedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                            </div>
                         </td>
                         <td>
-                            <span class="date" data-duice-bind="execution" data-duice-property="endedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                            <div class="text-align--center white-space--nowrap">
+                                <span class="date" data-duice-bind="execution" data-duice-property="endedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                            </div>
                         </td>
                         <td>
-                            <span class="number" data-duice-bind="execution" data-duice-property="totalCount" data-duice-format="number()"></span>
+                            <div class="text-align--right">
+                                <span class="number" data-duice-bind="execution" data-duice-property="totalCount" data-duice-format="number()"></span>
+                            </div>
                         </td>
                         <td>
-                            <span class="number" data-duice-bind="execution" data-duice-property="successCount" data-duice-format="number()"></span>
+                            <div class="text-align--right">
+                                <span class="number" data-duice-bind="execution" data-duice-property="successCount" data-duice-format="number()"></span>
+                            </div>
                         </td>
                         <td>
-                            <span class="number" data-duice-bind="execution" data-duice-property="failCount" data-duice-format="number()"></span>
+                            <div class="text-align--right">
+                                <span class="number" data-duice-bind="execution" data-duice-property="failCount" data-duice-format="number()"></span>
+                            </div>
                         </td>
                         <td>
-                        <span class="number"
-                              data-duice-bind="execution"
-                              data-duice-execute="
-                              if (execution.duration) {
-                                this.innerHTML = luxon.Duration
-                                    .fromISO(execution.duration)
-                                    .toFormat('hh:mm:ss');
-                              }"></span>
+                            <div class="text-align--right">
+                                <span class="number"
+                                      data-duice-bind="execution"
+                                      data-duice-execute="
+                                      if (execution.duration) {
+                                        this.innerHTML = luxon.Duration
+                                            .fromISO(execution.duration)
+                                            .toFormat('hh:mm:ss');
+                                      }"></span>
+                            </div>
                         </td>
                         <td>
                             <label class="display--flex">
-                            <textarea class="width--100 height--100 code font-size--smaller"
-                                      data-duice-bind="execution"
-                                      data-duice-property="message"
-                                      readonly></textarea>
+                                <textarea class="width--100 height--100 code font-size--smaller"
+                                          data-duice-bind="execution"
+                                          data-duice-property="message"
+                                          readonly></textarea>
                             </label>
                         </td>
                         <td>
-                            <button class="button" type="button"
-                                data-duice-bind="execution" data-duice-execute="this.dataset.executionId = execution.executionId;"
-                                onclick="openExecutionDialog(this.dataset.executionId);">
-                                <span data-th-text="#{web.global.detail}"></span>
-                            </button>
+                            <div class="display--flex gap--1px">
+                                <button class="button" type="button"
+                                        data-duice-bind="execution" data-duice-execute="this.dataset.executionId = execution.executionId;"
+                                        onclick="openExecutionDialog(this.dataset.executionId);">
+                                    <span data-th-text="#{web.global.detail}"></span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr data-duice-bind="executions" data-duice-if="return executions.length < 1;" hidden>

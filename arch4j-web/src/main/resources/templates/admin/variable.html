@@ -81,6 +81,14 @@
                     duice.ObjectProxy.setDisabledAll(variable, false);
                     duice.ObjectProxy.setReadonly(variable, 'variableId', true);
                     variable._new = false;
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('variable-detail')?.scrollIntoView({ behavior: 'smooth' });
+                        if (location.hash !== '#variable-detail') {
+                            history.pushState(null, '', '#variable-detail');
+                        }
+                    }
                 });
         }
 
@@ -110,9 +118,9 @@
                 return false;
             }
             // check duplicated id
-            let url = new URL(/*[[@{/admin/variables/get-variable}]]*/'', document.location.origin);
-            url.searchParams.append('variableId', variableId);
-            let response = await _fetch(url, {}, true);
+            let url = new URL(`${location.pathname}/get-variable`, location.origin);
+            url.searchParams.set('variableId', variableId);
+            let response = await _fetch(url, {_suppressAlert:true});
             if (response.ok) {
                 let variable = await response.json();
                 if (variables) {
@@ -199,14 +207,14 @@
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: variable content                -->
+    <!-- start: variable-content                -->
     <!-- ====================================== -->
-    <div id="variableContent" class="display--grid grid-template-columns--12fr gap--1rem">
+    <div id="variable-content" class="display--grid grid-template-columns--12fr gap--1rem">
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
-            <!-- start: variable list                   -->
+            <!-- start: variable-list                   -->
             <!-- ====================================== -->
-            <div id="variableList" class="panel">
+            <div id="variable-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -214,21 +222,21 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1rem">
-                        <div class="display--flex gap--1px">
-                            <div class="display--flex flex-wrap--nowrap gap--1px">
-                                <label>
-                                    <select data-duice-bind="variableSearch" data-duice-property="key">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1px">
+                        <div class="display--flex gap--1px s__width--100">
+                            <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                                <label class="flex--1">
+                                    <select data-duice-bind="variableSearch" data-duice-property="key" class="s__width--100">
                                         <option value="variableId" th:text="#{core.variable.Variable.variableId}"></option>
                                         <option value="name" th:text="#{core.variable.Variable.name}"></option>
                                     </select>
                                 </label>
-                                <label>
-                                    <input type="text" data-duice-bind="variableSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                <label class="flex--2">
+                                    <input type="text" data-duice-bind="variableSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}" class="s__width--100"/>
                                 </label>
                             </div>
                         </div>
-                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                        <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
                             <button class="button" type="submit" onclick="getVariables();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -259,15 +267,19 @@
                             data-duice-execute="this.dataset.variableId=variable.variableId;"
                             onclick="getVariable(this.dataset.variableId);"
                             class="cursor--pointer">
-                            <td class="text-align--center">
-                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (variableSearch._page * variableSearch._size) + status.count" class="number"></span>
+                            <td>
+                                <div class="text-align--center">
+                                    <span data-duice-bind="status" data-duice-execute="this.innerHTML = (variableSearch._page * variableSearch._size) + status.count" class="number"></span>
+                                </div>
                             </td>
                             <td>
-                                <span data-duice-bind="variable" data-duice-property="variableId" class="code"></span>
-                                <i data-duice-bind="variable" data-duice-if="return variable.systemRequired;" class="tag-system-required"></i>
+                                <div class="white-space--nowrap">
+                                    <span data-duice-bind="variable" data-duice-property="variableId" class="code"></span>
+                                    <i data-duice-bind="variable" data-duice-if="return variable.systemRequired;" class="tag-system-required"></i>
+                                </div>
                             </td>
                             <td>
-                                <span data-duice-bind="variable" data-duice-property="name"></span>
+                                <div data-duice-bind="variable" data-duice-property="name" class="text-truncate"></div>
                             </td>
                         </tr>
                         <tr data-duice-bind="variableSearch"
@@ -284,8 +296,8 @@
                         </tr>
                         </tbody>
                     </table>
-                    <div class="display--flex justify-content--space-between">
-                        <div>
+                    <div class="display--flex justify-content--space-between gap--1rem">
+                        <div class="white-space--nowrap">
                             <span data-th-text="#{web.global.total}"></span>
                             <span data-duice-bind="variableSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
@@ -307,14 +319,14 @@
                 </div>
             </div>
             <!-- ====================================== -->
-            <!-- end: variable list                     -->
+            <!-- end: variable-list                     -->
             <!-- ====================================== -->
         </div>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
-            <!-- start: variable detail                 -->
+            <!-- start: variable-detail                 -->
             <!-- ====================================== -->
-            <div class="panel">
+            <div id="variable-detail" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
@@ -331,7 +343,7 @@
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.variable.Variable.name}" class="font-weight--bold"></span><i class="tag-important"></i>
+                                <span data-th-text="#{core.variable.Variable.name}" class="font-weight--bold"></span>
                                 <input type="text" data-duice-bind="variable" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
@@ -383,12 +395,12 @@
                 </div>
             </div>
             <!-- ====================================== -->
-            <!-- end: variable detail                   -->
+            <!-- end: variable-detail                   -->
             <!-- ====================================== -->
         </div>
     </div>
     <!-- ====================================== -->
-    <!-- end: variable content                  -->
+    <!-- end: variable-content                  -->
     <!-- ====================================== -->
 
 </main>

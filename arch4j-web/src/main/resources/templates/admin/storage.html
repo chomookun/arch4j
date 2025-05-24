@@ -5,22 +5,19 @@
       layout:decorate="admin/_admin.html">
 <main layout:fragment="_main">
     <script th:inline="javascript">
-        // storages
-        const storageSearch = new duice.ObjectProxy({
-            key: 'storageId',
-            value: null,
-            _page: 0,
-            _size: 20,
-            _total: 0
+        const storageClientDefinitions = new duice.ArrayProxy(/*[[${storageClientDefinitions}]]*/[]);
+
+        // storage resource
+        const storageResourceSearch = new duice.ObjectProxy({
+            storageId: null,
         });
-        const storages = new duice.ArrayProxy([]);
-        duice.ArrayProxy.setReadonlyAll(storages, true);
         const storageResourceInfo = new duice.ObjectProxy({
             resourceId: null,
             parentStorageResource: null,
             childStorageResources: []
         });
-        const storageClientDefinitions = new duice.ArrayProxy(/*[[${storageClientDefinitions}]]*/[]);
+
+        // storage file
         const storageFileSearch = new duice.ObjectProxy({
             targetType: null,
             targetId: null,
@@ -31,46 +28,48 @@
         });
         const storageFiles = new duice.ArrayProxy([]);
 
-        function getStorages(page) {
-            if(page) {
-                storageSearch._page = page;
-            }
-            let url = new URL(`${window.location.pathname}/get-storages`, document.location.origin);
-            if (storageSearch.key && storageSearch.value) {
-                url.searchParams.append(storageSearch.key, storageSearch.value);
-            }
-            url.searchParams.append('_page', storageSearch._page);
-            url.searchParams.append('_size', storageSearch._size);
-            _fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    duice.ArrayProxy.clear(storages);
-                    duice.ArrayProxy.assign(storages, data.content);
-                    storageSearch._total = data['totalElements'];
-                });
-        }
-
-        function resetStorages() {
-            duice.ObjectProxy.reset(storageSearch);
-            getStorages();
-        }
-
-        function getStorage(storageId) {
-            storageDialog.open({storageId: storageId}).then(result => {
-                if (result) {
-                    getStorages();
+        // storage
+        const storageSearch = new duice.ObjectProxy({
+            key: 'storageId',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _total: 0
+        });
+        const storages = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(storages, true);
+        const storage = new duice.ObjectProxy({});
+        duice.ObjectProxy.setDisabledAll(storage, true);
+        duice.ObjectProxy.onPropertyChanging(storage, async event => {
+            if (event.getProperty() === 'storageId') {
+                if (!await validateStorageId(event.getValue())) {
+                    duice.ObjectProxy.focus(storage, 'storageId');
+                    return false;
                 }
-            });
-        }
-
-        function createStorage() {
-            storageDialog.open({storageId: null}).then(result => {
-                if (result) {
-                    getStorages();
+            }
+            if (event.getProperty() === 'clientType') {
+                if (!storage._new) {
+                    if (!await _confirm(/*[[#{web.global.changeItemConfirm(#{core.storage.Storage.clientType})}]]*/'')) {
+                        return false;
+                    }
                 }
-            });
-        }
+            }
+            return true;
+        });
+        duice.ObjectProxy.onPropertyChanged(storage, async event => {
+            if(event.getProperty() === 'clientType') {
+                let clientType = event.getValue();
+                storage.clientProperties = storageClientDefinitions
+                    .find(it => it['clientType'] === clientType)
+                    ?.propertiesTemplate;
+            }
+        });
 
+        /**
+         * Gets storage resource info
+         * @param storageId storage id
+         * @param resourceId resource id
+         */
         function getStorageResourceInfo(storageId, resourceId) {
             let url = new URL(`${location.pathname}/get-storage-resource-info`, location.origin);
             url.searchParams.set('storageId', storageId);
@@ -80,13 +79,27 @@
                 .then(data => {
                     duice.ObjectProxy.clear(storageResourceInfo);
                     duice.ObjectProxy.assign(storageResourceInfo, data);
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('storage-resource')?.scrollIntoView({ behavior: 'smooth' });
+                        if (location.hash !== '#storage-resource') {
+                            history.pushState(null, null, '#storage-resource');
+                        }
+                    }
                 });
         }
 
+        /**
+         * Refreshes storage resource info
+         */
         function refreshStorageResourceInfo() {
             getStorageResourceInfo(storageResourceInfo.storageId, storageResourceInfo.resourceId);
         }
 
+        /**
+         * Creates storage resource folder
+         */
         function createStorageResourceFolder() {
             _prompt(/*[[#{web.global.enterItem(#{web.global.folder} + ' ' + #{web.global.name})}]]*/'').then(name => {
                 if (name) {
@@ -102,6 +115,9 @@
             });
         }
 
+        /**
+         * Uploads storage resources
+         */
         function uploadStorageResources() {
             let input = document.createElement('input');
             input.setAttribute('type', 'file');
@@ -129,12 +145,18 @@
             input.click();
         }
 
+        /**
+         * Selects all child resources
+         */
         function selectAllChildResources() {
             storageResourceInfo.childStorageResources.forEach(item => {
                 item._selected = !item._selected;
             });
         }
 
+        /**
+         * Deletes storage resources
+         */
         async function deleteStorageResources() {
             let selectedStorageResources =storageResourceInfo.childStorageResources.filter(item => item._selected);
             if (selectedStorageResources.length === 0) {
@@ -157,6 +179,10 @@
             refreshStorageResourceInfo();
         }
 
+        /**
+         * Downloads storage resource
+         * @param resourceId resource id
+         */
         function downloadStorageResource(resourceId) {
             let url = new URL(`${location.pathname}/download-storage-resource`, location.origin);
             url.searchParams.set('storageId', storageResourceInfo.storageId);
@@ -166,6 +192,10 @@
             link.click();
         }
 
+        /**
+         * Gets storage files
+         * @param page page
+         */
         function getStorageFiles(page) {
             if(Number.isFinite(parseInt(page))) {
                 storageFileSearch._page = page;
@@ -191,11 +221,17 @@
                 });
         }
 
+        /**
+         * Resets storage files
+         */
         function resetStorageFiles() {
             duice.ObjectProxy.reset(storageFileSearch);
             getStorageFiles();
         }
 
+        /**
+         * Uploads storage file
+         */
         function uploadStorageFile() {
             uploadStorageFileDialog.open().then(result => {
                 if (result) {
@@ -204,6 +240,10 @@
             });
         }
 
+        /**
+         * Downloads storage file
+         * @param fileId
+         */
         function downloadStorageFile(fileId) {
             let url = new URL(`${location.pathname}/download-storage-file`, location.origin);
             url.searchParams.set('fileId', fileId);
@@ -212,19 +252,25 @@
             link.click();
         }
 
+        /**
+         * Checks all storage files
+         */
         function checkAllStorageFiles() {
             storageFiles.forEach(item => {
                 item._selected = !item._selected;
             });
         }
 
+        /**
+         * Deletes checked storage files
+         */
         async function deleteCheckedStorageFiles() {
             if (!storageFiles.some(it => it._selected)) {
                 await _alert(/*[[#{web.global.itemNotSelected(#{core.storage.StorageFile})}]]*/'');
                 return;
             }
             if (!await _confirm(/*[[#{web.global.deleteItemConfirm(#{core.storage.StorageFile})}]]*/'')) {
-                return false;
+                return;
             }
             let url = new URL(`${location.pathname}/delete-storage-file`, location.origin);
             let checkedStorageFiles = storageFiles.filter(item => item._selected);
@@ -236,21 +282,186 @@
             getStorageFiles();
         }
 
+        /**
+         * Gets storages
+         * @param page page
+         */
+        function getStorages(page) {
+            if(page) {
+                storageSearch._page = page;
+            }
+            let url = new URL(`${window.location.pathname}/get-storages`, document.location.origin);
+            if (storageSearch.key && storageSearch.value) {
+                url.searchParams.append(storageSearch.key, storageSearch.value);
+            }
+            url.searchParams.append('_page', storageSearch._page);
+            url.searchParams.append('_size', storageSearch._size);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ArrayProxy.clear(storages);
+                    duice.ArrayProxy.assign(storages, data.content);
+                    storageSearch._total = data['totalElements'];
+                });
+        }
+
+        /**
+         * Resets storages
+         */
+        function resetStorages() {
+            duice.ObjectProxy.reset(storageSearch);
+            getStorages();
+        }
+
+        function getStorage(storageId) {
+            const url = new URL(`${location.pathname}/get-storage`, location.origin);
+            url.searchParams.set('storageId', storageId);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ObjectProxy.assign(storage, data);
+                    duice.ObjectProxy.setDisabledAll(storage, false);
+                    duice.ObjectProxy.setReadonly(storage, 'storageId', true);
+                    storage._new = false;
+                    scrollToStorageDetail();
+                });
+        }
+
+        function scrollToStorageDetail() {
+            if (_isMobileBrowser()) {
+                document.getElementById('storage-detail')?.scrollIntoView({ behavior: 'smooth' });
+                if (location.hash !== '#storage-detail') {
+                    history.pushState(null, null, '#storage-detail');
+                }
+            }
+        }
+
+        /**
+         * Creates storage
+         */
+        function createStorage() {
+            duice.ObjectProxy.clear(storage);
+            duice.ObjectProxy.assign(storage, {
+                _new: true
+            });
+            duice.ObjectProxy.setDisabledAll(storage, false);
+            duice.ObjectProxy.setReadonlyAll(storage, false);
+            scrollToStorageDetail();
+            duice.ObjectProxy.focus(storage, 'storageId');
+        }
+
+        /**
+         * Validates storage id
+         * @param storageId storage id
+         * @returns {Promise<boolean>}
+         */
+        async function validateStorageId(storageId) {
+            // check blank
+            if (!storageId) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.storageId})}]]*/'');
+                duice.ObjectProxy.focus(storage, 'storageId');
+                return false;
+            }
+            // check duplicated id
+            let url = new URL(`${window.location.pathname}/get-storage`, document.location.origin);
+            url.searchParams.set('storageId', storageId);
+            let response = await _fetch(url, {_suppressAlert:true});
+            if (response.ok) {
+                let storage = await response.json();
+                if (storage) {
+                    await _alert(/*[[#{web.global.itemAlreadyExist(#{core.storage.Storage.storageId})}]]*/'');
+                    return false;
+                }
+            }
+            // return true
+            return true;
+        }
+
+        /**
+         * Saves storage
+         */
+        async function saveStorage() {
+            // validates
+            if (!storage.storageId) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.storageId})}]]*/'');
+                duice.ObjectProxy.focus(storage, 'storageId');
+                return;
+            }
+            if (!storage.storageId) {
+                if (!await validateStorageId(storage.storageId)) {
+                    return;
+                }
+            }
+            if (!storage.name) {
+                await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.name})}]]*/'');
+                duice.ObjectProxy.focus(storage, 'name');
+                return;
+            }
+            _confirm(/*[[#{web.global.saveItemConfirm(#{core.storage.Storage})}]]*/'').then(result => {
+                if (result) {
+                    let url = new URL(`${location.pathname}/save-storage`, location.origin);
+                    _fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(storage)
+                    }).then(response => response.json())
+                        .then(data => {
+                            _alert(/*[[#{web.global.saveItemComplete(#{core.storage.Storage})}]]*/'').then(() => {
+                                getStorages();
+                                getStorage(data.storageId);
+                            });
+                    });
+                }
+            });
+        }
+
+        /**
+         * Deletes storage
+         */
+        function deleteStorage() {
+            _confirm(/*[[#{web.global.deleteItemConfirm(#{core.storage.Storage})}]]*/'').then(result => {
+                if (result) {
+                    let url = new URL(`${location.pathname}/delete-storage`, location.origin);
+                    url.searchParams.set('storageId', storage.storageId);
+                    _fetch(url, {
+                        method: 'DELETE'
+                    }).then(response => {
+                        if (response.ok) {
+                            _alert(/*[[#{web.global.deleteItemComplete(#{core.storage.Storage})}]]*/'').then(() => {
+                                getStorages();
+                                duice.ObjectProxy.clear(storage);
+                            });
+                        }
+                    })
+                }
+            });
+        }
+
         // Initializes
-        document.addEventListener('DOMContentLoaded',()=> {
+        _initialize(() => {
+            // gets storages
+            getStorages();
+
             let tabFolder = new duice.TabFolder();
             tabFolder.addItem(new duice.TabItem(
-                document.getElementById('storageTabButton'),
-                document.getElementById('storageTabContent'),
+                document.getElementById('storage-resource-tab-button'),
+                document.getElementById('storage-resource-tab-content'),
                 () => {
-                    getStorages();
+                    getStorageFiles();
                 }
             ));
             tabFolder.addItem(new duice.TabItem(
-                document.getElementById('storageFileTabButton'),
-                document.getElementById('storageFileTabContent'),
+                document.getElementById('storage-file-tab-button'),
+                document.getElementById('storage-file-tab-content'),
                 () => {
                     getStorageFiles();
+                }
+            ));
+            tabFolder.addItem(new duice.TabItem(
+                document.getElementById('storage-tab-button'),
+                document.getElementById('storage-tab-content'),
+                () => {
+                    getStorages();
                 }
             ));
             tabFolder.setActive(0);
@@ -273,29 +484,359 @@
     <!-- ====================================== -->
     <!-- start: tab index                       -->
     <!-- ====================================== -->
-    <div id="tabIndex" class="tab">
-        <span id="storageTabButton" class="tab-item">
-            <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
-            <span data-th-text="#{core.storage.Storage}"></span>
+    <div class="tab">
+        <span id="storage-resource-tab-button" class="tab-item">
+            <img class="icon" th:src="@{/static/image/icon-file.svg}" alt="storageResource"/>
+            <span data-th-text="#{core.storage.StorageResource}"></span>
         </span>
-        <span id="storageFileTabButton" class="tab-item">
+        <span id="storage-file-tab-button" class="tab-item">
             <img class="icon" th:src="@{/static/image/icon-file.svg}" alt="storageFile"/>
             <span data-th-text="#{core.storage.StorageFile}"></span>
+        </span>
+        <span id="storage-tab-button" class="tab-item">
+            <img class="icon" th:src="@{/static/image/icon-storage.svg}" alt="storage"/>
+            <span data-th-text="#{core.storage.Storage}"></span>
         </span>
     </div>
     <!-- ====================================== -->
     <!-- end: tab index                         -->
     <!-- ====================================== -->
 
-    <!-- ================================== -->
-    <!-- start: storage content             -->
-    <!-- ================================== -->
-    <div id="storageTabContent" class="display--grid grid-template-columns--12fr gap--1rem">
-        <div id="storageList" class="grid-column--span-5 s__grid-column--span-12">
+    <!-- ====================================== -->
+    <!-- start: strategy-resource-tab-content   -->
+    <!-- ====================================== -->
+    <div id="storage-resource-tab-content">
+        <!-- ====================================== -->
+        <!-- start: storage-resource-list           -->
+        <!-- ====================================== -->
+        <div id="storage-resource-list" class="panel">
+            <div class="panel-title">
+                <h2>
+                    <img class="icon" th:src="@{/static/image/icon-file.svg}" alt="list"/>
+                    <span data-th-text="#{core.storage.StorageResource}"></span>
+                </h2>
+            </div>
+            <div class="panel-content">
+                <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1px">
+                    <div class="display--flex align-items--center flex-wrap--nowrap gap--d5em s__width--100">
+                        <label class="s__width--100">
+                            <select data-duice-bind="storageResourceSearch"
+                                    data-duice-property="storageId"
+                                    data-duice-option="storages"
+                                    data-duice-option-value-property="storageId"
+                                    data-duice-option-text-property="name"
+                                    onchange="getStorageResourceInfo(this.value, null);"
+                                    style="min-width:15rem;"
+                                    class="s__width--100">
+                                <option value="" th:text="|#{core.storage.Storage}...|"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
+                        <button type="button" class="button"
+                                data-duice-bind="storageResourceInfo"
+                                data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
+                                onclick="refreshStorageResourceInfo();">
+                            <img class="icon" th:src="@{/static/image/icon-refresh.svg}" alt="refresh"/>
+                            <span data-th-text="#{web.global.refresh}"></span>
+                        </button>
+                    </div>
+                </form>
+                <div>
+                    <div class="display--flex justify-content--space-between">
+                        <div>
+                            <label>
+                                <input type="checkbox" onclick="selectAllChildResources();"
+                                       data-duice-bind="storageResourceInfo.childStorageResources"
+                                       data-duice-execute="this.checked = storageResourceInfo._checkAll;"/>
+                            </label>
+                            <span class="link code"
+                                  onclick="getStorageResourceInfo(storageResourceInfo.storageId, storageResourceInfo.parentStorageResource.resourceId);">
+                                ../
+                            </span>
+                        </div>
+                    </div>
+                    <div data-duice-bind="storageResourceInfo.childStorageResources" data-duice-foreach="childStorageResource,status">
+                        <div class="display--flex justify-content--space-between"
+                             data-duice-bind="childStorageResource"
+                             data-duice-if="return childStorageResource.type === 'FOLDER';" hidden>
+                            <div class="display--flex flex-wrap--nowrap align-items--center gap--1px width--100">
+                                <label>
+                                    <input type="checkbox"
+                                           data-duice-bind="childStorageResource"
+                                           data-duice-property="_selected"/>
+                                </label>
+                                <img th:src="@{/static/image/icon-storage-folder.svg}" alt="" class="icon"/>
+                                <div class="link code text-truncate"
+                                     data-duice-bind="childStorageResource"
+                                     data-duice-property="filename"
+                                     data-duice-execute="this.dataset.resourceId = childStorageResource.resourceId;"
+                                     onclick="getStorageResourceInfo(storageResourceInfo.storageId, this.dataset.resourceId);">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="display--flex flex-wrap--nowrap justify-content--space-between"
+                             data-duice-bind="childStorageResource"
+                             data-duice-if="return childStorageResource.type !== 'FOLDER';" hidden>
+                            <div class="display--flex flex-wrap--nowrap align-items--center gap--1px overflow--hidden">
+                                <label>
+                                    <input type="checkbox"
+                                           data-duice-bind="childStorageResource"
+                                           data-duice-property="_selected"/>
+                                </label>
+                                <img th:src="@{/static/image/icon-storage-file.svg}" alt="" class="icon font-size--larger"/>
+                                <div class="code text-truncate" data-duice-bind="childStorageResource" data-duice-property="filename"></div>
+                            </div>
+                            <div class="display--flex flex-wrap--nowrap align-items--center justify-content--end gap--d5rem">
+                                <div class="number font-size--smaller font-style--italic s__display--none"
+                                     data-duice-bind="childStorageResource"
+                                     data-duice-execute="this.innerHTML = `${_formatBytes(childStorageResource.size)}`;"></div>
+                                <div class="date font-size--smaller font-style--italic s__display--none"
+                                     data-duice-bind="childStorageResource"
+                                     data-duice-property="lastModified"
+                                     data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></div>
+                                <button class="button small"
+                                        data-duice-bind="childStorageResource"
+                                        data-duice-execute="this.dataset.resourceId = childStorageResource.resourceId;"
+                                        onclick="downloadStorageResource(this.dataset.resourceId);">
+                                    <img class="icon" th:src="@{/static/image/icon-download.svg}" alt=""/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="display--flex justify-content--end gap--1px">
+                    <button type="button" class="button"
+                            data-duice-bind="storageResourceInfo"
+                            data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
+                            onclick="createStorageResourceFolder();">
+                        <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="upload"/>
+                        <span data-th-text="#{web.global.folder}">Folder</span>
+                    </button>
+                    <button type="button" class="button"
+                            data-duice-bind="storageResourceInfo"
+                            data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
+                            onclick="uploadStorageResources();">
+                        <img class="icon" th:src="@{/static/image/icon-upload.svg}" alt="upload"/>
+                        <span data-th-text="#{web.global.upload}"></span>
+                    </button>
+                    <button type="button" class="button"
+                            data-duice-bind="storageResourceInfo"
+                            data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
+                            onclick="deleteStorageResources();">
+                        <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                        <span data-th-text="#{web.global.delete}"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- ====================================== -->
+        <!-- start: storage-resource-list           -->
+        <!-- ====================================== -->
+    </div>
+    <!-- ====================================== -->
+    <!-- end: strategy-resource-tab-content     -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: storage-file-tab-content        -->
+    <!-- ====================================== -->
+    <div id="storage-file-tab-content" hidden>
+        <!-- ====================================== -->
+        <!-- start: storage-file-list               -->
+        <!-- ====================================== -->
+        <div id="storage-file-list" class="panel">
+            <div class="panel-title">
+                <h2>
+                    <img class="icon" th:src="@{/static/image/icon-file.svg}" alt="list"/>
+                    <span data-th-text="#{core.storage.StorageFile}"></span>
+                </h2>
+            </div>
+            <div class="panel-content">
+                <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1px">
+                    <div class="display--flex flex-wrap--wrap gap--1px">
+                        <div class="s__width--100">
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="storageFileSearch"
+                                       data-duice-property="targetType"
+                                       th:placeholder="#{core.storage.StorageFile.targetType}"
+                                       class="s__width--100"
+                                       style="min-width:10rem;"/>
+                            </label>
+                        </div>
+                        <div class="s__width--100">
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="storageFileSearch"
+                                       data-duice-property="targetId"
+                                       th:placeholder="#{core.storage.StorageFile.targetId}"
+                                       class="s__width--100"
+                                       style="min-width:15rem;"/>
+                            </label>
+                        </div>
+                        <div class="s__width--100">
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="storageFileSearch"
+                                       data-duice-property="filename"
+                                       th:placeholder="#{core.storage.StorageFile.filename}"
+                                       class="s__width--100"
+                                       style="min-width:15rem;"/>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
+                        <button type="submit" class="button"
+                                onclick="getStorageFiles();">
+                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                            <span data-th-text="#{web.global.search}"></span>
+                        </button>
+                        <button class="button" type="button" onclick="resetStorageFiles();">
+                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                            <span data-th-text="#{web.global.reset}">Reset</span>
+                        </button>
+                    </div>
+                </form>
+                <div class="overflow--scroll box">
+                    <table class="table width--100 border--none">
+                        <thead>
+                        <tr>
+                            <th>
+                                <label>
+                                    <input type="checkbox" onclick="checkAllStorageFiles();"/>
+                                </label>
+                            </th>
+                            <th>No</th>
+                            <th data-th-text="#{core.storage.StorageFile.targetType}">Reference Type</th>
+                            <th data-th-text="#{core.storage.StorageFile.targetId}">Reference ID</th>
+                            <th data-th-text="#{core.storage.StorageFile.filename}">Filename</th>
+                            <th data-th-text="#{core.storage.StorageFile.size}">Size</th>
+                            <th data-th-text="#{core.storage.StorageFile.createdAt}">Created At</th>
+                            <th data-th-text="#{core.storage.Storage.storageId}">Storage ID</th>
+                            <th data-th-text="#{core.storage.StorageResource.resourceId}">Resource ID</th>
+                            <th>-</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-duice-bind="storageFiles"
+                            data-duice-foreach="storageFile,status">
+                            <td>
+                                <div class="text-align--center">
+                                    <label>
+                                        <input type="checkbox" data-duice-bind="storageFile" data-duice-property="_selected"/>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-align--center">
+                                    <span data-duice-bind="status"
+                                          data-duice-execute="this.innerHTML = storageFileSearch._total - (storageFileSearch._page * storageFileSearch._size + status.index);"
+                                          class="number">
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="white-space--nowrap">
+                                    <span class="code" data-duice-bind="storageFile" data-duice-property="targetType"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="white-space--nowrap">
+                                    <span class="code" data-duice-bind="storageFile" data-duice-property="targetId"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="white-space--nowrap">
+                                    <span class="code" data-duice-bind="storageFile" data-duice-property="filename"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-align--right white-space--nowrap">
+                                    <span class="number"
+                                          data-duice-bind="storageFile"
+                                          data-duice-execute="this.innerHTML = `${_formatBytes(storageFile.size)}`;" ></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="white-space--nowrap white-space--nowrap">
+                                    <span class="date" data-duice-bind="storageFile" data-duice-property="createdAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="white-space--nowrap">
+                                    <span class="code" data-duice-bind="storageFile" data-duice-property="storageId"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="white-space--nowrap">
+                                    <span class="code" data-duice-bind="storageFile" data-duice-property="resourceId"></span>
+                                </div>
+                            </td>
+                            <td class="text-align--center">
+                                <div class="text-align--center">
+                                    <button type="button" class="button small"
+                                            data-duice-bind="storageFile"
+                                            data-duice-execute="this.dataset.fileId = storageFile.fileId;"
+                                            onclick="downloadStorageFile(this.dataset.fileId);">
+                                        <img class="icon" th:src="@{/static/image/icon-download.svg}" alt="download"/>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="storageFileSearch" data-duice-if="return storageFileSearch._total === 0;">
+                            <td colspan="100%" class="text-align--center">
+                                <span data-th-text="#{web.global.itemNotFound(#{core.storage.StorageFile})}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="display--flex justify-content--space-between">
+                    <div>
+                        <span data-th-text="#{web.global.total}"></span>
+                        <span data-duice-bind="storageFileSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                        <span data-th-text="#{web.global.rows}"></span>
+                    </div>
+                    <duice-pagination
+                            data-duice-bind="storageFileSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-total-property="_total"
+                            data-duice-onclick="getStorageFiles(this.dataset.page);">
+                    </duice-pagination>
+                    <div class="display--flex justify-content--end gap--1px s__flex-direction--column-reverse">
+                        <button type="button" class="button"
+                                onclick="deleteCheckedStorageFiles();">
+                            <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                            <span data-th-text="#{web.global.delete}"></span>
+                        </button>
+                        <button type="button" class="button"
+                                onclick="uploadStorageFile();">
+                            <img class="icon" th:src="@{/static/image/icon-upload.svg}" alt="upload"/>
+                            <span data-th-text="#{web.global.upload}"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ====================================== -->
+        <!-- end: storage-file-list                 -->
+        <!-- ====================================== -->
+    </div>
+    <!-- ====================================== -->
+    <!-- end: storage-file-tab-content          -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: storage-tab-content             -->
+    <!-- ====================================== -->
+    <div id="storage-tab-content" class="display--grid grid-template-columns--12fr gap--1rem" hidden>
+        <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ================================== -->
-            <!-- start: storage list                -->
+            <!-- start: storage-list                -->
             <!-- ================================== -->
-            <div class="panel">
+            <div id="storage-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -303,20 +844,22 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between">
-                        <div class="display--flex flex-wrap--nowrap gap--1px">
-                            <label>
-                                <select data-duice-bind="storageSearch" data-duice-property="key">
-                                    <option value="storageId" th:text="#{core.storage.Storage.storageId}"></option>
-                                    <option value="name" th:text="#{core.storage.Storage.name}"></option>
-                                </select>
-                            </label>
-                            <label>
-                                <input type="text" data-duice-bind="storageSearch" data-duice-property="value"
-                                       th:placeholder="#{web.global.keyword}"/>
-                            </label>
+                    <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1px">
+                        <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                            <div class="display--flex gap--1px s__width--100">
+                                <label class="flex--1">
+                                    <select data-duice-bind="storageSearch" data-duice-property="key" class="s__width--100">
+                                        <option value="storageId" th:text="#{core.storage.Storage.storageId}"></option>
+                                        <option value="name" th:text="#{core.storage.Storage.name}"></option>
+                                    </select>
+                                </label>
+                                <label class="flex--2">
+                                    <input type="text" data-duice-bind="storageSearch" data-duice-property="value"
+                                           th:placeholder="#{web.global.keyword}" class="s__width--100"/>
+                                </label>
+                            </div>
                         </div>
-                        <div class="display--flex justify-content--end gap--1px">
+                        <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
                             <button class="button" type="submit" onclick="getStorages();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -332,14 +875,12 @@
                             <col style="width:5rem;"/>
                             <col/>
                             <col/>
-                            <col style="width:3rem;"/>
                         </colgroup>
                         <thead>
                         <tr>
                             <th>No</th>
                             <th data-th-text="#{core.storage.Storage.storageId}"></th>
                             <th data-th-text="#{core.storage.Storage.name}"></th>
-                            <th> - </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -347,34 +888,41 @@
                              data-duice-foreach="storage,status"
                              data-duice-selected-item-class="selected"
                              data-duice-execute="this.dataset.storageId = storage.storageId;"
-                             onclick="getStorageResourceInfo(this.dataset.storageId, null);"
+                             onclick="getStorage(this.dataset.storageId);"
                              class="cursor--pointer">
-                            <td class="text-align--center">
-                                <span data-duice-bind="status" data-duice-property="count" class="number"></span>
+                            <td>
+                                <div class="text-align--center">
+                                    <span data-duice-bind="status"
+                                          data-duice-execute="this.innerHTML = storageSearch._total - (storageSearch._page * storageSearch._size + status.index);"
+                                          class="number"></span>
+                                </div>
                             </td>
                             <td>
-                                <span data-duice-bind="storage" data-duice-property="storageId" class="code"></span>
+                                <div>
+                                    <span data-duice-bind="storage"
+                                          data-duice-property="storageId"
+                                          class="code"></span>
+                                </div>
                             </td>
                             <td>
-                                <span data-duice-bind="storage" data-duice-property="name"></span>
-                            </td>
-                            <td class="text-align--center">
-                                <button class="button small" data-duice-bind="storage"
-                                        data-duice-execute="this.dataset.storageId = storage.storageId;"
-                                        onclick="getStorage(this.dataset.storageId); event.stopPropagation();">
-                                    <img class="icon link" th:src="@{/static/image/icon-config.svg}" alt=""/>
-                                </button>
+                                <div>
+                                    <span data-duice-bind="storage"
+                                          data-duice-property="name"
+                                          class="white-space--nowrap"></span>
+                                </div>
                             </td>
                         </tr>
                         <tr data-duice-bind="storageSearch" data-duice-if="return storageSearch._total === 0;">
-                            <td colspan="100%" class="text-align--center">
-                                <span data-th-text="#{web.global.itemNotFound(#{core.storage.Storage})}"></span>
+                            <td colspan="100%">
+                                <div class="text-align--center">
+                                    <span data-th-text="#{web.global.itemNotFound(#{core.storage.Storage})}"></span>
+                                </div>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                     <div class="display--flex justify-content--space-between">
-                        <div>
+                        <div class="white-space--nowrap">
                             <span data-th-text="#{web.global.total}"></span>
                             <span data-duice-bind="storageSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
@@ -396,520 +944,103 @@
                 </div>
             </div>
             <!-- ================================== -->
-            <!-- end: storage list                  -->
+            <!-- end: storage-list                  -->
             <!-- ================================== -->
         </div>
-        <div class="grid-column--span-7 s__grid-column--span-12">
-
-            <div class="panel">
+        <div class="grid-column--span-6 s__grid-column--span-12">
+            <!-- ================================== -->
+            <!-- start: storage-detail              -->
+            <!-- ================================== -->
+            <div id="storage-detail" class="panel">
                 <div class="panel-title">
                     <h2>
-                        <img class="icon" th:src="@{/static/image/icon-storage-resource.svg}" alt=""/>
-                        <span data-th-text="#{core.storage.StorageResource}"></span>
+                        <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt=""/>
+                        <span data-th-text="|#{core.storage.Storage} #{web.global.detail}|"></span>
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <!-- ================================== -->
-                    <!-- start: storage resource            -->
-                    <!-- ================================== -->
-                    <div id="resourceTabContent">
-                        <div class="display--flex justify-content--space-between">
-                            <div>
-                                <label>
-                                    <input type="checkbox" onclick="selectAllChildResources();"
-                                        data-duice-bind="storageResourceInfo.childStorageResources"
-                                        data-duice-execute="this.checked = storageResourceInfo._checkAll;"/>
-                                </label>
-                                <span class="link code"
-                                      onclick="getStorageResourceInfo(storageResourceInfo.storageId, storageResourceInfo.parentStorageResource.resourceId);">
-                                    ../
-                                </span>
-                            </div>
-                            <div class="display--flex justify-content--end gap--1px">
-                                <button type="button" class="button small"
-                                        data-duice-bind="storageResourceInfo"
-                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
-                                        onclick="refreshStorageResourceInfo();">
-                                    <img class="icon" th:src="@{/static/image/icon-refresh.svg}" alt="refresh"/>
-                                    <span data-th-text="#{web.global.refresh}"></span>
-                                </button>
-                                <button type="button" class="button small"
-                                        data-duice-bind="storageResourceInfo"
-                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
-                                        onclick="createStorageResourceFolder();">
-                                    <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="upload"/>
-                                    <span data-th-text="#{web.global.folder}">Folder</span>
-                                </button>
-                                <button type="button" class="button small"
-                                        data-duice-bind="storageResourceInfo"
-                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
-                                        onclick="uploadStorageResources();">
-                                    <img class="icon" th:src="@{/static/image/icon-upload.svg}" alt="upload"/>
-                                    <span data-th-text="#{web.global.upload}"></span>
-                                </button>
-                                <button type="button" class="button small"
-                                        data-duice-bind="storageResourceInfo"
-                                        data-duice-execute="this.disabled = (storageResourceInfo.resourceId === null);"
-                                        onclick="deleteStorageResources();">
-                                    <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
-                                    <span data-th-text="#{web.global.delete}"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div data-duice-bind="storageResourceInfo.childStorageResources" data-duice-foreach="childStorageResource,status">
-                            <div class="display--flex justify-content--space-between"
-                                 data-duice-bind="childStorageResource"
-                                 data-duice-if="return childStorageResource.type === 'FOLDER';">
-                                <div>
-                                    <label>
-                                        <input type="checkbox"
-                                               data-duice-bind="childStorageResource"
-                                               data-duice-property="_selected"/>
-                                    </label>
-                                    <img th:src="@{/static/image/icon-storage-folder.svg}" alt="" class="icon"/>
-                                    <span class="link code"
-                                          data-duice-bind="childStorageResource"
-                                          data-duice-property="filename"
-                                          data-duice-execute="this.dataset.resourceId = childStorageResource.resourceId;"
-                                          onclick="getStorageResourceInfo(storageResourceInfo.storageId, this.dataset.resourceId);">
-                                    </span>
-                                </div>
-                                <div>
-                                </div>
-                            </div>
-                            <div class="display--flex justify-content--space-between"
-                                 data-duice-bind="childStorageResource"
-                                 data-duice-if="return childStorageResource.type !== 'FOLDER';">
-                                <div>
-                                    <label>
-                                        <input type="checkbox"
-                                               data-duice-bind="childStorageResource"
-                                               data-duice-property="_selected"/>
-                                    </label>
-                                    <img th:src="@{/static/image/icon-storage-file.svg}" alt="" class="icon font-size--larger"/>
-                                    <span class="code" data-duice-bind="childStorageResource" data-duice-property="filename"></span>
-                                </div>
-                                <div>
-                                    <span class="number font-size--smaller font-style--italic"
-                                          data-duice-bind="childStorageResource"
-                                          data-duice-execute="this.innerHTML = `${_formatBytes(childStorageResource.size)}`;"></span>
-                                    &nbsp;
-                                    <span class="date font-size--smaller font-style--italic"
-                                          data-duice-bind="childStorageResource"
-                                          data-duice-property="lastModified"
-                                          data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
-                                    &nbsp;
-                                    <button class="button small"
-                                            data-duice-bind="childStorageResource"
-                                            data-duice-execute="this.dataset.resourceId = childStorageResource.resourceId;"
-                                            onclick="downloadStorageResource(this.dataset.resourceId);">
-                                        <img class="icon" th:src="@{/static/image/icon-download.svg}" alt=""/>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ================================== -->
-                    <!-- end: storage resource              -->
-                    <!-- ================================== -->
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- ================================== -->
-    <!-- end: storage content               -->
-    <!-- ================================== -->
-
-    <!-- ================================== -->
-    <!-- start: storage files               -->
-    <!-- ================================== -->
-    <div id="storageFileTabContent">
-        <div class="panel">
-            <div class="panel-title">
-                <h2>
-                    <img class="icon" th:src="@{/static/image/icon-file.svg}" alt="list"/>
-                    <span data-th-text="#{core.storage.StorageFile}"></span>
-                </h2>
-            </div>
-            <div class="panel-content">
-                <form onsubmit="return false;" class="display--flex justify-content--space-between">
-                    <div class="display--flex gap--1px">
-                        <div>
+                    <form class="display--grid grid-template-columns--12fr gap--1rem">
+                        <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <input type="text"
-                                       data-duice-bind="storageFileSearch"
-                                       data-duice-property="targetType"
-                                       th:placeholder="#{core.storage.StorageFile.targetType}"
-                                       style="min-width:10rem;"/>
+                                <span data-th-text="#{core.storage.Storage.storageId}" class="font-weight--bold"></span><i class="tag-important"></i>
+                                <input type="text" data-duice-bind="storage" data-duice-property="storageId" class="width--100 code"/>
                             </label>
                         </div>
-                        <div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <input type="text"
-                                       data-duice-bind="storageFileSearch"
-                                       data-duice-property="targetId"
-                                       th:placeholder="#{core.storage.StorageFile.targetId}"
-                                       style="min-width:15rem;"/>
+                                <span data-th-text="#{core.storage.Storage.name}" class="font-weight--bold"></span>
+                                <input type="text" data-duice-bind="storage" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
-                        <div>
+                        <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <input type="text"
-                                       data-duice-bind="storageFileSearch"
-                                       data-duice-property="filename"
-                                       th:placeholder="#{core.storage.StorageFile.filename}"
-                                       style="min-width:15rem;"/>
+                                <span data-th-text="#{core.storage.Storage.storageClientId}" class="font-weight--bold"></span>
+                                <select data-duice-bind="storage" data-duice-property="clientType"
+                                        data-duice-option="storageClientDefinitions"
+                                        data-duice-option-value-property="clientType"
+                                        data-duice-option-text-property="name"
+                                        class="width--100">
+                                    <option data-th-text="|#{web.global.select}...|"></option>
+                                </select>
                             </label>
                         </div>
-                    </div>
-                    <div class="display--flex justify-content--end gap--1px">
-                        <button type="submit" class="button"
-                            onclick="getStorageFiles();">
-                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
-                            <span data-th-text="#{web.global.search}"></span>
-                        </button>
-                        <button class="button" type="button" onclick="resetStorageFiles();">
-                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
-                            <span data-th-text="#{web.global.reset}">Reset</span>
-                        </button>
-                    </div>
-                </form>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>
+                        <div class="grid-column--span-12">
                             <label>
-                                <input type="checkbox" onclick="checkAllStorageFiles();"/>
+                                <span data-th-text="#{core.storage.Storage.storageClientConfig}" class="font-weight--bold"></span>
+                                <duice-codemirror
+                                        class="code box"
+                                        style="height:15rem;"
+                                        data-duice-bind="storage"
+                                        data-duice-property="clientProperties"
+                                        data-duice-theme="dracula">
+                                </duice-codemirror>
                             </label>
-                        </th>
-                        <th>No</th>
-                        <th data-th-text="#{core.storage.StorageFile.targetType}">Reference Type</th>
-                        <th data-th-text="#{core.storage.StorageFile.targetId}">Reference ID</th>
-                        <th data-th-text="#{core.storage.StorageFile.filename}">Filename</th>
-                        <th data-th-text="#{core.storage.StorageFile.size}">Size</th>
-                        <th data-th-text="#{core.storage.StorageFile.createdAt}">Created At</th>
-                        <th data-th-text="#{core.storage.Storage.storageId}">Storage ID</th>
-                        <th data-th-text="#{core.storage.StorageResource.resourceId}">Resource ID</th>
-                        <th>-</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr data-duice-bind="storageFiles"
-                        data-duice-foreach="storageFile,status">
-                        <td class="text-align--center">
-                            <label>
-                                <input type="checkbox" data-duice-bind="storageFile" data-duice-property="_selected"/>
-                            </label>
-                        </td>
-                        <td class="text-align--center">
-                            <span data-duice-bind="status"
-                                  data-duice-execute="this.innerHTML = storageFileSearch._total - (storageFileSearch._page * storageFileSearch._size + status.index);"
-                                  class="number">
-                            </span>
-                        </td>
-                        <td>
-                            <span class="code" data-duice-bind="storageFile" data-duice-property="targetType"></span>
-                        </td>
-                        <td>
-                            <span class="code" data-duice-bind="storageFile" data-duice-property="targetId"></span>
-                        </td>
-                        <td>
-                            <span class="code" data-duice-bind="storageFile" data-duice-property="filename"></span>
-                        </td>
-                        <td class="text-align--right">
-                            <span class="number"
-                                  data-duice-bind="storageFile"
-                                  data-duice-execute="this.innerHTML = `${_formatBytes(storageFile.size)}`;" ></span>
-                        </td>
-                        <td class="text-align--center">
-                            <span class="date" data-duice-bind="storageFile" data-duice-property="createdAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
-                        </td>
-                        <td>
-                            <span class="code" data-duice-bind="storageFile" data-duice-property="storageId"></span>
-                        </td>
-                        <td>
-                            <span class="code" data-duice-bind="storageFile" data-duice-property="resourceId"></span>
-                        </td>
-                        <td class="text-align--center">
-                            <button type="button" class="button small"
-                                data-duice-bind="storageFile"
-                                data-duice-execute="this.dataset.fileId = storageFile.fileId;"
-                                onclick="downloadStorageFile(this.dataset.fileId);">
-                                <img class="icon" th:src="@{/static/image/icon-download.svg}" alt="download"/>
+                        </div>
+                    </form>
+                    <div class="display--flex justify-content--space-between">
+                        <div></div>
+                        <div class="display--flex justify-content--end gap--1px">
+                            <button class="button" type="button" onclick="deleteStorage();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.storage:edit'')')}?'locked'">
+                                <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
+                                <span data-th-text="#{web.global.delete}"></span>
                             </button>
-                        </td>
-                    </tr>
-                    <tr data-duice-bind="storageFileSearch" data-duice-if="return storageFileSearch._total === 0;">
-                        <td colspan="100%" class="text-align--center">
-                            <span data-th-text="#{web.global.itemNotFound(#{core.storage.StorageFile})}"></span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <div class="display--flex justify-content--space-between">
-                    <div>
-                        <span data-th-text="#{web.global.total}"></span>
-                        <span data-duice-bind="storageFileSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
-                        <span data-th-text="#{web.global.rows}"></span>
+                            <button class="button" type="button" onclick="saveStorage();"
+                                    th:classappend="!${#authorization.expression('hasAuthority(''admin.storage:edit'')')}?'locked'">
+                                <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
+                                <span data-th-text="#{web.global.save}"></span>
+                            </button>
+                        </div>
                     </div>
-                    <duice-pagination
-                            data-duice-bind="storageFileSearch"
-                            data-duice-size-property="_size"
-                            data-duice-page-property="_page"
-                            data-duice-total-property="_total"
-                            data-duice-onclick="getStorageFiles(this.dataset.page);">
-                    </duice-pagination>
-                    <div class="display--flex justify-content--end gap--1px">
-                        <button type="button" class="button"
-                                onclick="deleteCheckedStorageFiles();">
-                            <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
-                            <span data-th-text="#{web.global.delete}"></span>
-                        </button>
-                        <button type="button" class="button"
-                                onclick="uploadStorageFile();">
-                            <img class="icon" th:src="@{/static/image/icon-upload.svg}" alt="upload"/>
-                            <span data-th-text="#{web.global.upload}"></span>
-                        </button>
+                    <div class="text-align--right font-size--xx-small font-style--italic">
+                        Last Updated At
+                        <span data-duice-bind="storage" data-duice-property="systemUpdatedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
+                        By
+                        <span data-duice-bind="storage" data-duice-property="systemUpdatedBy"></span>
                     </div>
                 </div>
-
             </div>
+            <!-- ================================== -->
+            <!-- end: storage-detail                -->
+            <!-- ================================== -->
         </div>
     </div>
     <!-- ================================== -->
-    <!-- end: storage files                 -->
+    <!-- end: storage-tab-content           -->
     <!-- ================================== -->
 
     <!-- ====================================== -->
-    <!-- start: storage dialog                  -->
+    <!-- start: upload-storage-file-dialog      -->
     <!-- ====================================== -->
-    <dialog id="storageDialog" class="dialog">
+    <dialog id="upload-storage-file-dialog" class="dialog">
         <style th:inline="css">
-            #storageDialog {
-                width: 800px;
-            }
-        </style>
-        <script th:inline="javascript">
-            const storageDialog = (() => {
-                const dialog = new duice.Dialog(document.getElementById('storageDialog'));
-                const options = {
-                    storageId: null
-                };
-                const storage = new duice.ObjectProxy({
-                    storageId: null,
-                    name: null
-                });
-                duice.ObjectProxy.onPropertyChanging(storage, async (event) => {
-                    if (event.property === 'storageId') {
-                        if (!await validateStorageId(event.value)) {
-                            duice.ObjectProxy.focus(storage, 'storageId');
-                            return false;
-                        }
-                    }
-
-                });
-                duice.ObjectProxy.onPropertyChanged(storage, event => {
-                    if (event.property === 'storageClientId') {
-                        if (!storage.storageClientConfig) {
-                            let storageClientId = event.value;
-                            storage.storageClientConfig = storageClientDefinitions
-                                .find(item => item['storageClientId'] === storageClientId)
-                                ?.storageClientConfigTemplate;
-                        }
-                    }
-                });
-
-                function open({storageId}) {
-                    options.storageId = storageId;
-                    duice.ObjectProxy.clear(storage);
-                    if (options.storageId) {
-                        duice.ObjectProxy.setReadonly(storage, 'storageId', true);
-                        getStorage(options.storageId);
-                    } else {
-                        duice.ObjectProxy.setReadonly(storage, 'storageId', false);
-                    }
-                    return dialog.open();
-                }
-
-                function getStorage(storageId) {
-                    const url = new URL(`${location.pathname}/get-storage`, location.origin);
-                    url.searchParams.set('storageId', storageId);
-                    _fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            duice.ObjectProxy.assign(storage, data);
-                        });
-                }
-
-                async function validateStorageId(storageId) {
-                    // check blank
-                    if (!storageId) {
-                        await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.storageId})}]]*/'');
-                        duice.ObjectProxy.focus(storage, 'storageId');
-                        return false;
-                    }
-                    // check duplicated id
-                    let url = new URL(`${window.location.pathname}/get-storage`, document.location.origin);
-                    url.searchParams.append('storageId', storageId);
-                    let response = await _fetch(url, {}, true);
-                    if (response.ok) {
-                        let storage = await response.json();
-                        if (storage) {
-                            await _alert(/*[[#{web.global.itemAlreadyExist(#{core.storage.Storage.storageId})}]]*/'');
-                            return false;
-                        }
-                    }
-                    // return true
-                    return true;
-                }
-
-                async function saveStorage() {
-                    // validates
-                    if (!storage.storageId) {
-                        await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.storageId})}]]*/'');
-                        duice.ObjectProxy.focus(storage, 'storageId');
-                        return false;
-                    }
-                    if (!options.storageId) {
-                        if (!await validateStorageId(storage.storageId)) {
-                            return false;
-                        }
-                    }
-                    if (!storage.name) {
-                        await _alert(/*[[#{web.global.itemEmpty(#{core.storage.Storage.name})}]]*/'');
-                        duice.ObjectProxy.focus(storage, 'name');
-                        return false;
-                    }
-                    _confirm(/*[[#{web.global.saveItemConfirm(#{core.storage.Storage})}]]*/'').then(result => {
-                        if (result) {
-                            let url = new URL(`${location.pathname}/save-storage`, location.origin);
-                            _fetch(url, {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify(storage)
-                            }).then(response => {
-                                if (response.ok) {
-                                    _alert(/*[[#{web.global.saveItemComplete(#{core.storage.Storage})}]]*/'').then(() => {
-                                        dialog.close(true);
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-
-                function deleteStorage() {
-                    _confirm(/*[[#{web.global.deleteItemConfirm(#{core.storage.Storage})}]]*/'').then(result => {
-                        if (result) {
-                            let url = new URL(`${location.pathname}/delete-storage`, location.origin);
-                            url.searchParams.set('storageId', storage.storageId);
-                            _fetch(url, {
-                                method: 'DELETE'
-                            }).then(response => {
-                                if (response.ok) {
-                                    _alert(/*[[#{web.global.deleteItemComplete(#{core.storage.Storage})}]]*/'').then(() => {
-                                        dialog.close(true);
-                                    });
-                                }
-                            })
-                        }
-                    });
-                }
-
-                // returns
-                return {
-                    open,
-                    storage,
-                    saveStorage,
-                    deleteStorage
-                };
-            })();
-        </script>
-        <div class="dialog-title">
-            <h2>
-                <img class="icon" th:src="@{/static/image/icon-config.svg}" alt=""/>
-                <span data-th-text="|#{core.storage.Storage} #{web.global.config}|"></span>
-            </h2>
-        </div>
-        <div class="dialog-content">
-            <form class="display--grid grid-template-columns--12fr gap--1rem">
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <label>
-                        <span data-th-text="#{core.storage.Storage.storageId}" class="font-weight--bold tag-important"></span>
-                        <input type="text" data-duice-bind="storageDialog.storage" data-duice-property="storageId" class="width--100 code"/>
-                    </label>
-                </div>
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <label>
-                        <span data-th-text="#{core.storage.Storage.name}" class="font-weight--bold tag-important"></span>
-                        <input type="text" data-duice-bind="storageDialog.storage" data-duice-property="name" class="width--100"/>
-                    </label>
-                </div>
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <label>
-                        <span data-th-text="#{core.storage.Storage.storageClientId}" class="font-weight--bold"></span>
-                        <select data-duice-bind="storageDialog.storage" data-duice-property="storageClientId"
-                                data-duice-option="storageClientDefinitions"
-                                data-duice-option-value-property="storageClientId"
-                                data-duice-option-text-property="storageClientName"
-                                class="width--100">
-                            <option data-th-text="|#{web.global.select}...|"></option>
-                        </select>
-                    </label>
-                </div>
-                <div class="grid-column--span-12">
-                    <label>
-                        <span data-th-text="#{core.storage.Storage.storageClientConfig}" class="font-weight--bold"></span>
-                        <duice-codemirror
-                                class="code box"
-                                style="height:15rem;"
-                                data-duice-bind="storageDialog.storage"
-                                data-duice-property="storageClientConfig"
-                                data-duice-theme="dracula">
-                        </duice-codemirror>
-                    </label>
-                </div>
-            </form>
-            <div class="display--flex justify-content--space-between">
-                <div></div>
-                <div class="display--flex justify-content--end gap--1px">
-                    <button class="button" type="button" onclick="storageDialog.deleteStorage();"
-                            th:classappend="!${#authorization.expression('hasAuthority(''admin.storage:edit'')')}?'locked'">
-                        <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
-                        <span data-th-text="#{web.global.delete}"></span>
-                    </button>
-                    <button class="button" type="button" onclick="storageDialog.saveStorage();"
-                            th:classappend="!${#authorization.expression('hasAuthority(''admin.storage:edit'')')}?'locked'">
-                        <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
-                        <span data-th-text="#{web.global.save}"></span>
-                    </button>
-                </div>
-            </div>
-            <div class="text-align--right font-size--xx-small font-style--italic">
-                Last Updated At
-                <span data-duice-bind="storageDialog.storage" data-duice-property="systemUpdatedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
-                By
-                <span data-duice-bind="storageDialog.storage" data-duice-property="systemUpdatedBy"></span>
-            </div>
-        </div>
-    </dialog>
-    <!-- ====================================== -->
-    <!-- end: storage dialog                    -->
-    <!-- ====================================== -->
-
-    <!-- ====================================== -->
-    <!-- start: upload storage file dialog      -->
-    <!-- ====================================== -->
-    <dialog id="uploadStorageFileDialog" class="dialog">
-        <style th:inline="css">
-            #uploadStorageFileDialog {
-                min-width: 500px;
+            #upload-storage-file-dialog {
+                width: 500px;
             }
         </style>
         <script th:inline="javascript">
             const uploadStorageFileDialog = (() => {
-                const dialog = new duice.Dialog(document.getElementById('uploadStorageFileDialog'));
+                const dialog = new duice.Dialog(document.getElementById('upload-storage-file-dialog'));
                 const storages = new duice.ArrayProxy([]);
                 const storageFile = new duice.ObjectProxy({
                     storageId: null,
@@ -1003,7 +1134,7 @@
                             data-duice-files="uploadStorageFileDialog.files"
                             class="code font-size--smaller">
                     </duice-files>
-                </span>
+                </div>
                 <div class="grid-column--span-12">
                     <label>
                         <span data-th-text="#{core.storage.Storage}" class="font-weight--bold tag-important"></span>
@@ -1039,7 +1170,7 @@
         </div>
     </dialog>
     <!-- ====================================== -->
-    <!-- end: upload storage file dialog        -->
+    <!-- end: upload-storage-file-dialog        -->
     <!-- ====================================== -->
 
 </main>

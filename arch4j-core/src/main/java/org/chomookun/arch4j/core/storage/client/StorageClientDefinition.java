@@ -4,12 +4,12 @@ import org.springframework.beans.factory.Aware;
 
 public interface StorageClientDefinition extends Aware {
 
-    String getStorageClientId();
+    String getClientType();
 
     String getName();
 
-    String getConfigTemplate();
-
     Class<? extends StorageClient> getClassType();
+
+    String getPropertiesTemplate();
 
 }

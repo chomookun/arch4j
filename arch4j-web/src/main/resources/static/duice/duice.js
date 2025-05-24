@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.16
+ * duice - v0.3.24
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -2753,6 +2753,8 @@ var duice = (function (exports) {
          */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
+            this.readonly = false;
+            this.disabled = false;
             // Adds change event listener
             this.getHtmlElement().addEventListener('change', e => {
                 let element = this.getHtmlElement();
@@ -2794,18 +2796,34 @@ var duice = (function (exports) {
          * @param readonly readonly or not
          */
         setReadonly(readonly) {
+            this.readonly = readonly;
             this.getHtmlElement().readOnly = readonly;
+            // exceptional type (mobile browser does not support readonly)
+            let type = this.getHtmlElement().getAttribute('type');
+            if (['datetime-local', 'date', 'time'].includes(type)) {
+                if (this.readonly || this.disabled) {
+                    this.getHtmlElement().setAttribute('disabled', 'disabled');
+                }
+            }
         }
         /**
          * Sets disabled
          * @param disabled disabled or not
          */
         setDisabled(disabled) {
+            this.disabled = disabled;
             if (disabled) {
                 this.getHtmlElement().setAttribute('disabled', 'disabled');
             }
             else {
                 this.getHtmlElement().removeAttribute('disabled');
+            }
+            // exceptional type (mobile browser does not support readonly)
+            let type = this.getHtmlElement().getAttribute('type');
+            if (['datetime-local', 'date', 'time'].includes(type)) {
+                if (this.disabled || this.readonly) {
+                    this.getHtmlElement().setAttribute('disabled', 'disabled');
+                }
             }
         }
         /**
@@ -3328,7 +3346,7 @@ var duice = (function (exports) {
             this.dialogElement.style.right = '0';
             this.dialogElement.style.overflowX = 'hidden';
             this.dialogElement.style.boxSizing = 'border-box';
-            this.dialogElement.style.maxWidth = '100%';
+            this.dialogElement.style.maxWidth = '100vw';
             // header
             this.header = document.createElement('div');
             this.dialogElement.appendChild(this.header);
@@ -3361,6 +3379,7 @@ var duice = (function (exports) {
             // creates close button
             this.closeButton = document.createElement('span');
             this.closeButton.innerHTML = '&#10005;';
+            this.closeButton.style.display = 'block';
             this.closeButton.style.fontFamily = 'monospace';
             this.closeButton.style.fontSize = 'large';
             this.closeButton.style.marginLeft = '0.5rem';
@@ -3515,13 +3534,20 @@ var duice = (function (exports) {
             this.getDialogElement().style.padding = '1rem';
             this.getDialogElement().style.minWidth = '20rem';
             this.getDialogElement().style.textAlign = 'center';
-            // message pre
-            this.messagePre = document.createElement('pre');
-            this.messagePre.style.whiteSpace = 'pre-wrap';
-            this.messagePre.style.marginTop = '1rem';
-            this.messagePre.style.marginBottom = '1rem';
-            this.messagePre.innerHTML = message;
-            this.getDialogElement().appendChild(this.messagePre);
+            // message area
+            this.messageArea = document.createElement('pre');
+            this.messageArea.style.whiteSpace = 'pre-wrap';
+            this.messageArea.style.marginTop = '1rem';
+            this.messageArea.style.marginBottom = '1rem';
+            this.messageArea.innerHTML = message;
+            this.getDialogElement().appendChild(this.messageArea);
+            // button area
+            this.buttonArea = document.createElement('div');
+            this.buttonArea.style.display = 'inline-flex';
+            this.buttonArea.style.justifyContent = 'center';
+            this.buttonArea.style.gap = '1px';
+            this.buttonArea.style.paddingBottom = '0.5rem';
+            this.getDialogElement().appendChild(this.buttonArea);
             // confirm button
             this.confirmButton = document.createElement('button');
             this.confirmButton.appendChild(document.createTextNode('OK'));
@@ -3530,7 +3556,7 @@ var duice = (function (exports) {
             this.confirmButton.addEventListener('click', event => {
                 this.confirm();
             });
-            this.getDialogElement().appendChild(this.confirmButton);
+            this.buttonArea.appendChild(this.confirmButton);
         }
         /**
          * Overrides open
@@ -3569,13 +3595,20 @@ var duice = (function (exports) {
             this.getDialogElement().style.padding = '1rem';
             this.getDialogElement().style.minWidth = '20rem';
             this.getDialogElement().style.textAlign = 'center';
-            // message pre
-            this.messagePre = document.createElement('pre');
-            this.messagePre.style.whiteSpace = 'pre-wrap';
-            this.messagePre.style.marginTop = '1rem';
-            this.messagePre.style.marginBottom = '1rem';
-            this.messagePre.innerHTML = message;
-            this.getDialogElement().appendChild(this.messagePre);
+            // message area
+            this.messageArea = document.createElement('pre');
+            this.messageArea.style.whiteSpace = 'pre-wrap';
+            this.messageArea.style.marginTop = '1rem';
+            this.messageArea.style.marginBottom = '1rem';
+            this.messageArea.innerHTML = message;
+            this.getDialogElement().appendChild(this.messageArea);
+            // button area
+            this.buttonArea = document.createElement('div');
+            this.buttonArea.style.display = 'inline-flex';
+            this.buttonArea.style.justifyContent = 'center';
+            this.buttonArea.style.gap = '1px';
+            this.buttonArea.style.paddingBottom = '0.5rem';
+            this.getDialogElement().appendChild(this.buttonArea);
             // cancel button
             this.cancelButton = document.createElement('button');
             this.cancelButton.appendChild(document.createTextNode('Cancel'));
@@ -3584,9 +3617,7 @@ var duice = (function (exports) {
             this.cancelButton.addEventListener('click', event => {
                 this.cancel();
             });
-            this.getDialogElement().appendChild(this.cancelButton);
-            // divider
-            this.getDialogElement().appendChild(document.createTextNode(' '));
+            this.buttonArea.appendChild(this.cancelButton);
             // confirm button
             this.confirmButton = document.createElement('button');
             this.confirmButton.appendChild(document.createTextNode('OK'));
@@ -3595,7 +3626,7 @@ var duice = (function (exports) {
             this.confirmButton.addEventListener('click', event => {
                 this.confirm();
             });
-            this.getDialogElement().appendChild(this.confirmButton);
+            this.buttonArea.appendChild(this.confirmButton);
         }
         /**
          * Opens dialog
@@ -3643,13 +3674,13 @@ var duice = (function (exports) {
             this.getDialogElement().style.padding = '1rem';
             this.getDialogElement().style.minWidth = '20rem';
             this.getDialogElement().style.textAlign = 'center';
-            // message pre
-            this.messagePre = document.createElement('pre');
-            this.messagePre.style.whiteSpace = 'pre-wrap';
-            this.messagePre.style.marginTop = '1rem';
-            this.messagePre.style.marginBottom = '1rem';
-            this.messagePre.innerHTML = message;
-            this.getDialogElement().appendChild(this.messagePre);
+            // message area
+            this.messageArea = document.createElement('pre');
+            this.messageArea.style.whiteSpace = 'pre-wrap';
+            this.messageArea.style.marginTop = '1rem';
+            this.messageArea.style.marginBottom = '1rem';
+            this.messageArea.innerHTML = message;
+            this.getDialogElement().appendChild(this.messageArea);
             // prompt input
             this.promptInput = document.createElement('input');
             this.promptInput.style.textAlign = 'center';
@@ -3659,6 +3690,13 @@ var duice = (function (exports) {
                 this.promptInput.type = type;
             }
             this.getDialogElement().appendChild(this.promptInput);
+            // button area
+            this.buttonArea = document.createElement('div');
+            this.buttonArea.style.display = 'inline-flex';
+            this.buttonArea.style.justifyContent = 'center';
+            this.buttonArea.style.gap = '1px';
+            this.buttonArea.style.paddingBottom = '0.5rem';
+            this.getDialogElement().appendChild(this.buttonArea);
             // cancel button
             this.cancelButton = document.createElement('button');
             this.cancelButton.appendChild(document.createTextNode('Cancel'));
@@ -3667,9 +3705,7 @@ var duice = (function (exports) {
             this.cancelButton.addEventListener('click', event => {
                 this.cancel();
             });
-            this.getDialogElement().appendChild(this.cancelButton);
-            // divider
-            this.getDialogElement().appendChild(document.createTextNode(' '));
+            this.buttonArea.appendChild(this.cancelButton);
             // confirm button
             this.confirmButton = document.createElement('button');
             this.confirmButton.appendChild(document.createTextNode('OK'));
@@ -3678,7 +3714,7 @@ var duice = (function (exports) {
             this.confirmButton.addEventListener('click', event => {
                 this.confirm(this.promptInput.value);
             });
-            this.getDialogElement().appendChild(this.confirmButton);
+            this.buttonArea.appendChild(this.confirmButton);
         }
         /**
          * Overrides open

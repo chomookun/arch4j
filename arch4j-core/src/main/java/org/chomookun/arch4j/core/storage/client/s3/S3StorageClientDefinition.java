@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 public class S3StorageClientDefinition implements StorageClientDefinition {
 
     @Override
-    public String getStorageClientId() {
+    public String getClientType() {
         return "S3";
     }
 
@@ -22,15 +22,15 @@ public class S3StorageClientDefinition implements StorageClientDefinition {
     }
 
     @Override
-    public String getConfigTemplate() {
-        StringJoiner template = new StringJoiner("\n");
-        template.add("bucket=[bucket]");
-        return template.toString();
+    public Class<? extends StorageClient> getClassType() {
+        return S3StorageClient.class;
     }
 
     @Override
-    public Class<? extends StorageClient> getClassType() {
-        return S3StorageClient.class;
+    public String getPropertiesTemplate() {
+        StringJoiner template = new StringJoiner("\n");
+        template.add("bucket=[bucket]");
+        return template.toString();
     }
 
 }

@@ -10,6 +10,7 @@ import org.chomookun.arch4j.core.security.model.UserDetailsImpl;
 import org.chomookun.arch4j.core.user.CachedUserService;
 import org.chomookun.arch4j.core.user.model.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -110,17 +111,28 @@ public class SecurityService {
                     UUID.randomUUID().toString(),
                     anonymousAuthenticationToken.getPrincipal(),
                     anonymousAuthorities));
+            return;
         }
 
         // creates and updates user details
-        if(authentication instanceof UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
+        if(authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
             Collection<GrantedAuthority> authenticatedAuthorities = getUserGrantedAuthorities(userDetails.getUserId());
-            securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    authenticatedAuthorities
-            ));
+            Authentication newAuthentication;
+            // remember me token
+            if (authentication instanceof RememberMeAuthenticationToken) {
+                newAuthentication = new RememberMeAuthenticationToken(
+                        securityProperties.getSigningKey(),
+                        userDetails,
+                        authenticatedAuthorities
+                );
+            } else {
+                newAuthentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        authenticatedAuthorities
+                );
+            }
+            securityContext.setAuthentication(newAuthentication);
         }
     }
 

@@ -253,7 +253,7 @@ values
 
 -- core_storage
 insert into `core_storage`
-    (`storage_id`,`system_required`,`name`,`storage_client_id`,`storage_client_config`)
+    (`storage_id`,`system_required`,`name`,`client_type`,`client_properties`)
 values
     ('web', null,'Web Storage','LOCAL','location=${user.home}/.arch4j/board'),
     ('batch', null,'Batch Storage','LOCAL','location=${user.home}/.arch4j/batch'),
@@ -261,7 +261,7 @@ values
 
 -- core_discussion
 insert into `core_discussion`
-    (`discussion_id`,`name`,`discussion_provider_id`,`discussion_provider_config`)
+    (`discussion_id`,`name`,`provider_type`,`provider_properties`)
 values
     ('e355926fdadc41f49bf93afe76af1496','Default','default',''),
     ('7eddf209186d487ab58e30a090944d79','Gisqus','gisqus',

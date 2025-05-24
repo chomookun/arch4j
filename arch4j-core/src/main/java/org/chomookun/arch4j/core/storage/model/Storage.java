@@ -20,16 +20,16 @@ public class Storage extends BaseModel {
     @NotBlank
     private String name;
 
-    private String storageClientId;
+    private String clientType;
 
-    private String storageClientConfig;
+    private String clientProperties;
 
     public static Storage from(StorageEntity storageEntity) {
         return Storage.builder()
                 .storageId(storageEntity.getStorageId())
                 .name(storageEntity.getName())
-                .storageClientId(storageEntity.getStorageClientId())
-                .storageClientConfig(storageEntity.getStorageClientConfig())
+                .clientType(storageEntity.getClientType())
+                .clientProperties(storageEntity.getClientProperties())
                 .build();
     }
 

@@ -82,6 +82,14 @@
                     duice.ObjectProxy.setDisabledAll(template, false);
                     duice.ObjectProxy.setReadonly(template, 'templateId', true);
                     template._new = false;
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('template-detail')?.scrollIntoView({behavior: 'smooth'});
+                        if (location.hash !== '#template-detail') {
+                            history.pushState(null, null, '#tempalte-detail');
+                        }
+                    }
                 });
         }
 
@@ -202,14 +210,14 @@
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: template content                   -->
+    <!-- start: template-content                -->
     <!-- ====================================== -->
-    <div id="templateContent" class="display--grid grid-template-columns--12fr gap--1rem">
+    <div id="template-content" class="display--grid grid-template-columns--12fr gap--1rem">
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
-            <!-- start: template list                      -->
+            <!-- start: template-list                   -->
             <!-- ====================================== -->
-            <div id="templateList" class="panel">
+            <div id="template-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -217,21 +225,21 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1rem">
-                        <div class="display--flex gap--1px">
-                            <div class="display--flex flex-wrap--nowrap gap--1px">
-                                <label>
-                                    <select data-duice-bind="templateSearch" data-duice-property="key">
+                    <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1px">
+                        <div class="display--flex gap--1px s__width--100">
+                            <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                                <label class="flex--1">
+                                    <select data-duice-bind="templateSearch" data-duice-property="key" class="s__width--100">
                                         <option value="templateId" th:text="#{core.template.Template.templateId}"></option>
                                         <option value="name" th:text="#{core.template.Template.name}"></option>
                                     </select>
                                 </label>
-                                <label>
-                                    <input type="text" data-duice-bind="templateSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                <label class="flex--2">
+                                    <input type="text" data-duice-bind="templateSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}" class="s__width--100"/>
                                 </label>
                             </div>
                         </div>
-                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                        <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
                             <button class="button" type="submit" onclick="getTemplates();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -262,17 +270,17 @@
                             data-duice-execute="this.dataset.templateId=template.templateId;"
                             onclick="getTemplate(this.dataset.templateId);"
                             class="cursor--pointer">
-                            <td class="text-align--center">
-                                <span data-duice-bind="status" data-duice-execute="this.innerHTML = (templateSearch._page * templateSearch._size) + status.count;" class="number"></span>
+                            <td>
+                                <div data-duice-bind="status" data-duice-execute="this.innerHTML = (templateSearch._page * templateSearch._size) + status.count;" class="number text-align--center"></div>
                             </td>
                             <td>
-                                <span data-duice-bind="template"
-                                      data-duice-property="templateId"
-                                      data-duice-execute="this.classList.toggle('tag-system-required', template.systemRequired);"
-                                      class="code"></span>
+                                <div class="white-space--nowrap">
+                                    <span data-duice-bind="template" data-duice-property="templateId" class="code"></span>
+                                    <i class="tag-system-required" data-duice-bind="template" data-duice-if="return template.systemRequired;"></i>
+                                </div>
                             </td>
                             <td>
-                                <span data-duice-bind="template" data-duice-property="name"></span>
+                                <div data-duice-bind="template" data-duice-property="name" class="white-space--nowrap"></div>
                             </td>
                         </tr>
                         <tr data-duice-bind="templateSearch" data-duice-if="return templateSearch._status === 'loading';" hidden>
@@ -310,14 +318,14 @@
                 </div>
             </div>
             <!-- ====================================== -->
-            <!-- end: template list                        -->
+            <!-- end: template-list                     -->
             <!-- ====================================== -->
         </div>
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
-            <!-- start: template detail                    -->
+            <!-- start: template-detail                 -->
             <!-- ====================================== -->
-            <div class="panel">
+            <div id="template-detail" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
@@ -328,17 +336,17 @@
                     <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                            <span data-th-text="#{core.template.Template.templateId}" class="font-weight--bold tag-important"></span>
+                            <span data-th-text="#{core.template.Template.templateId}" class="font-weight--bold"></span><i class="tag-important"></i>
                                 <input type="text" data-duice-bind="template" data-duice-property="templateId" class="width--100 code"/>
                             </label>
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span data-th-text="#{core.template.Template.name}" class="font-weight--bold tag-important"></span>
+                                <span data-th-text="#{core.template.Template.name}" class="font-weight--bold"></span>
                                 <input type="text" data-duice-bind="template" data-duice-property="name" class="width--100"/>
                             </label>
                         </div>
-                        <div class="grid-column--span-6">
+                        <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
                                 <span class="font-weight--bold" data-th-text="#{core.template.Template.format}"></span>
                                 <select data-duice-bind="template" data-duice-property="format" class="width--100">
@@ -395,12 +403,12 @@
                 </div>
             </div>
             <!-- ====================================== -->
-            <!-- end: template detail                      -->
+            <!-- end: template-detail                   -->
             <!-- ====================================== -->
         </div>
     </div>
     <!-- ====================================== -->
-    <!-- end: template content                     -->
+    <!-- end: template-content                  -->
     <!-- ====================================== -->
 
 </main>

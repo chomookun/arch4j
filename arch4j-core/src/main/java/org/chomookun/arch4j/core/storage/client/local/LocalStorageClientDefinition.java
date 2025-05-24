@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 public class LocalStorageClientDefinition implements StorageClientDefinition {
 
     @Override
-    public String getStorageClientId() {
+    public String getClientType() {
         return "LOCAL";
     }
 
@@ -22,15 +22,15 @@ public class LocalStorageClientDefinition implements StorageClientDefinition {
     }
 
     @Override
-    public String getConfigTemplate() {
-        StringJoiner template = new StringJoiner("\n");
-        template.add("location=[root directory]");
-        return template.toString();
+    public Class<? extends StorageClient> getClassType() {
+        return LocalStorageClient.class;
     }
 
     @Override
-    public Class<? extends StorageClient> getClassType() {
-        return LocalStorageClient.class;
+    public String getPropertiesTemplate() {
+        StringJoiner template = new StringJoiner("\n");
+        template.add("location=[root directory]");
+        return template.toString();
     }
 
 }

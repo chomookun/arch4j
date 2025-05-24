@@ -87,7 +87,7 @@
          * @param userId user id
          */
         function getUser(userId) {
-            let url = new URL(`${window.location.pathname}/get-user`, window.location.origin);
+            let url = new URL(`${location.pathname}/get-user`, location.origin);
             url.searchParams.append('userId', userId);
             _fetch(url)
                 .then(response => response.json())
@@ -96,6 +96,14 @@
                     duice.ObjectProxy.setDisabledAll(user, false);
                     duice.ObjectProxy.setReadonly(user, 'username', true);
                     user._new = false;
+
+                    // mobile browser
+                    if (_isMobileBrowser()) {
+                        document.getElementById('user-detail')?.scrollIntoView({ behavior: 'smooth' });
+                        if (location.hash !== '#user-detail') {
+                            history.pushState(null, '', '#user-detail');
+                        }
+                    }
                 });
         }
 
@@ -284,14 +292,14 @@
     <!-- ====================================== -->
 
     <!-- ====================================== -->
-    <!-- start: userTabContent                  -->
+    <!-- start: user-tab-content                -->
     <!-- ====================================== -->
-    <div id="userTabContent" class="display--grid grid-template-columns--12fr gap--1rem">
+    <div id="user-tab-content" class="display--grid grid-template-columns--12fr gap--1rem">
         <div class="grid-column--span-6 s__grid-column--span-12">
             <!-- ====================================== -->
             <!-- start: user list                       -->
             <!-- ====================================== -->
-            <div id="userList" class="panel">
+            <div id="user-list" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -299,34 +307,36 @@
                     </h2>
                 </div>
                 <div class="panel-content">
-                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap">
-                        <div class="display--flex flex-wrap--wrap gap--1px">
-                            <div class="display--flex flex-wrap--nowrap gap--1px">
-                                <label>
-                                    <select data-duice-bind="userSearch" data-duice-property="key">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1px">
+                        <div class="display--flex flex-wrap--wrap gap--1px s__width--100">
+                            <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                                <label class="flex--1">
+                                    <select data-duice-bind="userSearch" data-duice-property="key" class="s__width--100">
                                         <option value="name" th:text="#{core.user.User.name}"></option>
                                         <option value="username" th:text="#{core.user.User.username}"></option>
                                     </select>
                                 </label>
-                                <label>
-                                    <input type="text" data-duice-bind="userSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                                <label class="flex--2">
+                                    <input type="text" data-duice-bind="userSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}" class="s__width--100"/>
                                 </label>
                             </div>
-                            <label>
-                                <select data-duice-bind="userSearch" data-duice-property="status">
-                                    <option value data-th-text="|#{core.user.User.status}...|"></option>
-                                    <option th:each="userStatus:${userStatuses}" th:value="${userStatus}"
-                                            th:text="${userStatus}"></option>
-                                </select>
-                            </label>
-                            <div>
+                            <div class="s__width--100">
+                                <label>
+                                    <select data-duice-bind="userSearch" data-duice-property="status" class="s__width--100">
+                                        <option value data-th-text="|#{core.user.User.status}...|"></option>
+                                        <option th:each="userStatus:${userStatuses}" th:value="${userStatus}"
+                                                th:text="${userStatus}"></option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="s__width--100">
                                 <label>
                                     <input type="checkbox" data-duice-bind="userSearch" data-duice-property="admin"/>
                                     <span data-th-text="#{core.user.User.admin}"></span>
                                 </label>
                             </div>
                         </div>
-                        <div class="flex--1 display--flex justify-content--end gap--1px">
+                        <div class="display--flex justify-content--end gap--1px s__width--100 s__justify-content--start">
                             <button class="button" type="submit" onclick="getUsers();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                                 <span data-th-text="#{web.global.search}">Search</span>
@@ -341,11 +351,11 @@
                         <table class="table width--100 border--none">
                             <colgroup>
                                 <col/>
+                                <col style="min-width:12rem;"/>
+                                <col style="min-width:10rem;"/>
+                                <col style="min-width:7rem;"/>
                                 <col/>
                                 <col/>
-                                <col style="width:7rem;"/>
-                                <col style="width:7rem;"/>
-                                <col style="width:7rem;"/>
                             </colgroup>
                             <thead>
                             <tr>
@@ -363,37 +373,43 @@
                                 data-duice-foreach="user,status"
                                 data-duice-selected-item-class="selected" data-duice-execute="this.dataset.userId=user.userId;"
                                 onclick="getUser(this.dataset.userId);">
-                                <td class="text-align--center">
-                                    <span class="number" data-duice-bind="status" data-duice-execute="this.innerHTML = (userSearch._page * userSearch._size) + status.count"></span>
+                                <td>
+                                    <div class="text-align--center number"
+                                         data-duice-bind="status"
+                                         data-duice-execute="this.innerHTML = (userSearch._page * userSearch._size) + status.count">
+                                    </div>
                                 </td>
                                 <td>
-                                    <img data-duice-bind="user" data-duice-property="icon"
-                                         th:src="@{/static/image/icon-null.svg}" class="icon" alt="icon"/>
-                                    <span data-duice-bind="user"
-                                          data-duice-property="username"
-                                          class="code"></span>
-                                    <i class="tag-system-required" data-duice-bind="user" data-duice-if="return user.systemRequired;"></i>
+                                    <div class="display--flex flex-wrap--nowrap align-items--center">
+                                        <img data-duice-bind="user" data-duice-property="icon"
+                                             th:src="@{/static/image/icon-null.svg}" class="icon" alt="icon"/>
+                                        <span data-duice-bind="user"
+                                              data-duice-property="username"
+                                              class="code text-truncate"></span>
+                                        <i class="tag-system-required" data-duice-bind="user" data-duice-if="return user.systemRequired;"></i>
+                                    </div>
                                 </td>
                                 <td>
-                                    <span data-duice-bind="user" data-duice-property="name"></span>
+                                    <div data-duice-bind="user" data-duice-property="name"></div>
                                 </td>
                                 <td>
-                                    <label>
-                                        <select class="width--100 code" data-duice-bind="user" data-duice-property="status">
-                                            <option th:each="userStatus:${userStatuses}" th:value="${userStatus}"
-                                                    th:text="${userStatus}"></option>
-                                        </select>
-                                    </label>
+                                    <div class="text-align--center">
+                                        <span class="code" data-duice-bind="user" data-duice-property="status"></span>
+                                    </div>
                                 </td>
-                                <td class="text-align--center">
-                                    <label>
-                                        <input type="checkbox" data-duice-bind="user" data-duice-property="admin" onclick="return false;"/>
-                                    </label>
+                                <td>
+                                    <div class="text-align--center">
+                                        <label>
+                                            <input type="checkbox" data-duice-bind="user" data-duice-property="admin" onclick="return false;"/>
+                                        </label>
+                                    </div>
                                 </td>
-                                <td class="text-align--center">
-                                    <span class="badge border-radius--1em"
-                                          data-duice-bind="user"
-                                          data-duice-execute="this.innerHTML=user.roles.length;"></span>
+                                <td>
+                                    <div class="text-align--center">
+                                        <span class="number"
+                                              data-duice-bind="user"
+                                              data-duice-execute="this.innerHTML=user.roles.length;"></span>
+                                    </div>
                                 </td>
                             </tr>
                             <tr data-duice-bind="userSearch" data-duice-if="return userSearch._status === 'loading';" class="text-align--center" hidden>
@@ -409,8 +425,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="display--flex justify-content--space-between">
-                        <div>
+                    <div class="display--flex justify-content--space-between gap--1rem">
+                        <div class="white-space--nowrap">
                             <span data-th-text="#{web.global.total}"></span>
                             <span data-duice-bind="userSearch" data-duice-property="_total"
                                   data-duice-format="number(0)"></span>
@@ -440,7 +456,7 @@
             <!-- ====================================== -->
             <!-- start: user detail                     -->
             <!-- ====================================== -->
-            <div id="userDetail" class="panel">
+            <div id="user-detail" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="open"/>
@@ -629,7 +645,7 @@
                         </div>
                     </form>
                     <div class="display--flex justify-content--space-between">
-                        <div class="display--flex gap--1px">
+                        <div class="display--flex gap--1px s__flex-direction--column">
                             <button class="button" type="button" onclick="changeUserPassword();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''admin.user:edit'')')}?'locked'"
                                     data-duice-bind="user"
@@ -676,21 +692,21 @@
         </div>
     </div>
     <!-- ====================================== -->
-    <!-- end: userTabContent                    -->
+    <!-- end: user-tab-content                  -->
     <!-- ====================================== -->
 
     <!-- ====================================== -->
     <!-- start: password change dialog          -->
     <!-- ====================================== -->
-    <dialog id="changeUserPasswordDialog" class="dialog">
+    <dialog id="change-user-password-dialog" class="dialog">
         <style>
-            #changeUserPasswordDialog {
+            #change-user-password-dialog {
                 width: 300px;
             }
         </style>
         <script th:inline="javascript">
             const changeUserPasswordDialog = (() => {
-                const dialog =  new duice.Dialog(document.getElementById('changeUserPasswordDialog'));
+                const dialog =  new duice.Dialog(document.getElementById('change-user-password-dialog'));
                 const data = new duice.ObjectProxy({
                     userId: null,
                     password: null,
@@ -920,6 +936,6 @@
     <!-- end: generate totp qr code dialog      -->
     <!-- ====================================== -->
 
-    <th:block th:include="admin/_common.html :: _selectRoleDialog"/>
+    <th:block th:include="admin/_common.html :: _select-role-dialog"/>
 
 </main>

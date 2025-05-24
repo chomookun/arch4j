@@ -24,10 +24,10 @@ public class DiscussionEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "discussion_provider_id", length = 32)
-    private String discussionProviderId;
+    @Column(name = "provider_type", length = 32)
+    private String providerType;
 
-    @Column(name = "discussion_provider_config", length = Integer.MAX_VALUE)
-    private String discussionProviderConfig;
+    @Column(name = "provider_properties", length = Integer.MAX_VALUE)
+    private String providerProperties;
 
 }
