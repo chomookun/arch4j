@@ -172,7 +172,7 @@ img {
 /* input */
 input {
   box-sizing: border-box;
-  height: fit-content;
+  height: auto;
   -webkit-border-radius: unset;
   border: var(--duice-input-border);
   vertical-align: bottom;
