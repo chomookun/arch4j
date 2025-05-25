@@ -87,6 +87,11 @@ public class SecurityService {
         return Optional.of(userDetails);
     }
 
+    /**
+     * Grants authentication
+     * @param request request
+     * @param userId user id
+     */
     public void grantAuthentication(HttpServletRequest request, String userId) {
         UserDetailsImpl userDetails = getUserDetails(userId).orElseThrow();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, List.of());
@@ -95,11 +100,18 @@ public class SecurityService {
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
     }
 
+    /**
+     * Revokes authentication
+     * @param request request
+     */
     public void revokeAuthentication(HttpServletRequest request) {
         SecurityContextHolder.clearContext();
         request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
     }
 
+    /**
+     * Applies granted authorities
+     */
     public void applyGrantedAuthorities() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -136,6 +148,11 @@ public class SecurityService {
         }
     }
 
+    /**
+     * gets user granted authorities
+     * @param userId user id
+     * @return user granted authorities
+     */
     private Collection<GrantedAuthority> getUserGrantedAuthorities(String userId) {
         final User user = cachedUserService.getUser(userId).orElseThrow();
         final List<Role> roles = cachedRoleService.getRoles();

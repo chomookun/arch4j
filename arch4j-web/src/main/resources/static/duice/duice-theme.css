@@ -172,7 +172,7 @@ img {
 /* input */
 input {
   box-sizing: border-box;
-  height: var(--duice-form-element-height);
+  height: fit-content;
   -webkit-border-radius: unset;
   border: var(--duice-input-border);
   vertical-align: bottom;
@@ -227,7 +227,7 @@ select {
   -moz-appearance: none;
   -webkit-border-radius: unset;
   box-sizing: border-box;
-  height: var(--duice-form-element-height);
+  height: fit-content;
   border: var(--duice-select-border);
   vertical-align: bottom;
   padding-left: 0.5em;
@@ -256,7 +256,7 @@ select:disabled {
 /* button */
 button {
   box-sizing: border-box;
-  height: var(--duice-form-element-height);
+  height: fit-content;
   min-width: var(--duice-form-element-height);
   display: inline-flex;
   gap: calc(var(--duice-form-element-height) / 4 / 2);
