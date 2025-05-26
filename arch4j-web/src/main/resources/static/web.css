@@ -24,9 +24,8 @@
     --web-table-tfoot-background: var(--duice-table-tfoot-background);
     --web-table-tfoot-border: var(--duice-table-tfoot-border);
     /* badge */
-    --web-badge-line-height: 2.0rem;
-    --web-badge-border-radius: 0.25rem;
-    --web-badge-padding: 0.0em 0.75em;
+    --web-badge-border-radius: 2em;
+    --web-badge-padding: 0 1em;
     --web-badge-background-color: #aaa;
     --web-badge-font-color: #fff;
     --web-dark-mode-icon: url("data:image/svg+xml;base64,PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KDTwhLS0gVXBsb2FkZWQgdG86IFNWRyBSZXBvLCB3d3cuc3ZncmVwby5jb20sIFRyYW5zZm9ybWVkIGJ5OiBTVkcgUmVwbyBNaXhlciBUb29scyAtLT4KPHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9Ii0wLjUgMCAxNyAxNyIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjbGFzcz0ic2ktZ2x5cGggc2ktZ2x5cGgtbW9vbi1zdGFyIiBmaWxsPSIjZmNmY2ZjIiBzdHJva2U9IiNmY2ZjZmMiPgoNPGcgaWQ9IlNWR1JlcG9fYmdDYXJyaWVyIiBzdHJva2Utd2lkdGg9IjAiLz4KDTxnIGlkPSJTVkdSZXBvX3RyYWNlckNhcnJpZXIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgoNPGcgaWQ9IlNWR1JlcG9faWNvbkNhcnJpZXIiPiA8dGl0bGU+MTE0MzwvdGl0bGU+IDxkZWZzPiA8L2RlZnM+IDxnIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAwMDAwMCwgMS4wMDAwMDApIiBmaWxsPSIjM2I1MDgxIj4gPHBhdGggZD0iTTEwLjcwNSwxMi4yNzQgQzYuOTAxLDEyLjI3NCAzLjgxOCw5LjE4OSAzLjgxOCw1LjM4NiBDMy44MTgsMy4yNDIgNC43OTgsMS4zMjcgNi4zMzQsMC4wNjUgQzIuNzQ4LDAuODkyIDAuMDcyLDQuMDk5IDAuMDcyLDcuOTM2IEMwLjA3MiwxMi40MDEgMy42OTEsMTYuMDIxIDguMTU2LDE2LjAyMSBDMTEuOTk0LDE2LjAyMSAxNS4xOTksMTMuMzQ1IDE2LjAyNyw5Ljc1OCBDMTQuNzY0LDExLjI5NSAxMi44NSwxMi4yNzQgMTAuNzA1LDEyLjI3NCBMMTAuNzA1LDEyLjI3NCBaIiBjbGFzcz0ic2ktZ2x5cGgtZmlsbCI+IDwvcGF0aD4gPHBhdGggZD0iTTEyLjcxOSwwLjAyMSBMMTMuNzQ0LDIuMjI0IEwxNi4wMzcsMi41NzYgTDE0LjM3OSw0LjI5MSBMMTQuNzcsNi43MTEgTDEyLjcxOSw1LjU2OCBMMTAuNjY4LDYuNzExIEwxMS4wNTksNC4yOTEgTDkuMzk4LDIuNTc2IEwxMS42OTIsMi4yMjQgTDEyLjcxOSwwLjAyMSBaIiBjbGFzcz0ic2ktZ2x5cGgtZmlsbCI+IDwvcGF0aD4gPC9nPiA8L2c+IDwvZz4KDTwvc3ZnPg==");
@@ -227,11 +226,10 @@ html {
 .badge {
     display: inline-block;
     text-align: center;
-    font-size: smaller;
+    font-size: xx-small;
     font-weight: 600;
     white-space: nowrap;
     vertical-align: baseline;
-    line-height: var(--web-badge-line-height);
     border-radius: var(--web-badge-border-radius);
     padding: var(--web-badge-padding);
     background-color: var(--web-badge-background-color);
