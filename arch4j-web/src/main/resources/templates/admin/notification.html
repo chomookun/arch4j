@@ -382,6 +382,7 @@
                             <col style="width:15rem;"/>
                             <col/>
                             <col style="width:15rem;"/>
+                            <col style="width:8rem;"/>
                             <col style="width:12rem;"/>
                             <col style="width:12rem;"/>
                             <col style="width:10rem;"/>
@@ -392,6 +393,7 @@
                             <th data-th-text="#{core.notification.Notification.notifierName}"></th>
                             <th data-th-text="#{core.notification.Notification.subject}"></th>
                             <th data-th-text="#{core.notification.Notification.receiver}"></th>
+                            <th data-th-text="#{core.notification.Notification.suppressed}"></th>
                             <th data-th-text="#{core.notification.Notification.submittedAt}"></th>
                             <th data-th-text="#{core.notification.Notification.sentAt}"></th>
                             <th data-th-text="#{core.notification.Notification.status}"></th>
@@ -410,6 +412,13 @@
                             </td>
                             <td>
                                 <span data-duice-bind="notification" data-duice-property="receiver" class="code"></span>
+                            </td>
+                            <td>
+                                <div class="text-align--center">
+                                    <label>
+                                        <input type="checkbox" data-duice-bind="notification" data-duice-property="suppressed"></input>
+                                    </label>
+                                </div>
                             </td>
                             <td class="text-align--center">
                                 <span data-duice-bind="notification" data-duice-property="submittedAt" data-duice-format="date('yyyy-MM-dd HH:mm:ss')"></span>
@@ -803,7 +812,8 @@
                     notifierId: null,
                     subject: null,
                     content: null,
-                    receiver: null
+                    receiver: null,
+                    suppressed: false
                 });
                 const notifiers = new duice.ArrayProxy([]);
 
@@ -899,6 +909,12 @@
                     <label>
                         <span data-th-text="#{core.notification.Notification.receiver}"></span>
                         <input type="text" data-duice-bind="sendNotificationDialog.data" data-duice-property="receiver" class="width--100"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <label>
+                        <span data-th-text="#{core.notification.Notification.suppressed}"></span>
+                        <input type="checkbox" data-duice-bind="sendNotificationDialog.data" data-duice-property="suppressed"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">

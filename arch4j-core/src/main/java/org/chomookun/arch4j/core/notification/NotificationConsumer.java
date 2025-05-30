@@ -1,5 +1,7 @@
 package org.chomookun.arch4j.core.notification;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Lazy(false)
@@ -33,6 +36,11 @@ public class NotificationConsumer {
     private final NotificationRepository notificationRepository;
 
     private final PlatformTransactionManager transactionManager;
+
+    private final Cache<String, Notification> sentSuppressedNotifications = Caffeine.newBuilder()
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .maximumSize(10_000)
+            .build();
 
     /**
      * Initializes the consumer thread
@@ -56,6 +64,7 @@ public class NotificationConsumer {
                 .subject(notification.getSubject())
                 .content(notification.getContent())
                 .receiver(notification.getReceiver())
+                .suppressed(notification.isSuppressed())
                 .submittedAt(Instant.now())
                 .status(Notification.Status.SUBMITTED)
                 .build();
@@ -84,10 +93,25 @@ public class NotificationConsumer {
                 Notification notification = queue.take();
                 notification.setSentAt(Instant.now());
                 try {
+                    // check if notification is suppressed
+                    if (notification.isSuppressed()) {
+                        Notification suppressedNotification = sentSuppressedNotifications.getIfPresent(notification.getSuppressedKey());
+                        if (suppressedNotification != null) {
+                            notification.setStatus(Notification.Status.SUPPRESSED);
+                            log.debug("Notification suppressed: {}", notification);
+                            continue; // skip sending this notification and continue to the next one
+                        }
+                    }
+                    // get notifier and send notification
                     Notifier notifier = notifierService.getNotifier(notification.getNotifierId()).orElseThrow();
                     NotifierClient notifierClient = NotifierClientFactory.getNotificationClient(notifier);
                     notifierClient.sendMessage(notification.getSubject(), notification.getContent(), notification.getReceiver(), notification.getOption());
                     notification.setStatus(Notification.Status.COMPLETED);
+
+                    // puts suppressed notification into cache
+                    if (notification.isSuppressed()) {
+                        sentSuppressedNotifications.put(notification.getSuppressedKey(), notification);
+                    }
                 } catch (Throwable t) {
                     log.warn(t.getMessage());
                     notification.setStatus(Notification.Status.FAILED);

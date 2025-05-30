@@ -711,7 +711,7 @@ port=25
 username=987a77fac40349
 password=cfad266492f5fa
     '),
-    ('slack','N','Slack','SLACK','url=https://hooks.slack.com/services/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
+    ('slack','N','Slack','SLACK','url=https://hooks.slack.com/services/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
     ');
 
 -- core_verifier

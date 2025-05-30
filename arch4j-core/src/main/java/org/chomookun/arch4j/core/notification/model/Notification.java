@@ -3,7 +3,11 @@ package org.chomookun.arch4j.core.notification.model;
 import lombok.*;
 import org.chomookun.arch4j.core.notification.entity.NotificationEntity;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.Map;
 
 @Builder
@@ -24,6 +28,8 @@ public class Notification {
 
     private String receiver;
 
+    private boolean suppressed;
+
     private Map<String, Object> option;
 
     private Instant submittedAt;
@@ -34,10 +40,28 @@ public class Notification {
 
     private String errorMessage;
 
+    public String getSuppressedKey() {
+        String rawKey = String.join(":",
+                this.notifierId,
+                this.subject,
+                this.content,
+                this.receiver
+        );
+        MessageDigest md5;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] digest = md5.digest(rawKey.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public enum Status {
         SUBMITTED,
         COMPLETED,
-        FAILED
+        FAILED,
+        SUPPRESSED
     }
 
     public static Notification from(NotificationEntity notificationEntity) {
@@ -46,6 +70,7 @@ public class Notification {
                 .notifierId(notificationEntity.getNotifierId())
                 .notifierName(notificationEntity.getNotifierName())
                 .receiver(notificationEntity.getReceiver())
+                .suppressed(notificationEntity.isSuppressed())
                 .subject(notificationEntity.getSubject())
                 .content(notificationEntity.getContent())
                 .submittedAt(notificationEntity.getSubmittedAt())

@@ -56,7 +56,7 @@ public class NotificationController {
     @PostMapping("send-notification")
     @ResponseBody
     public void sendNotification(@RequestBody Notification notification) throws JsonProcessingException {
-        notificationService.sendNotification(notification.getNotifierId(), notification.getSubject(), notification.getContent(), notification.getReceiver());
+        notificationService.sendNotification(notification.getNotifierId(), notification.getSubject(), notification.getContent(), notification.getReceiver(), notification.isSuppressed());
     }
 
     @GetMapping("get-notifiers")

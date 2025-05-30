@@ -7,6 +7,7 @@ import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -42,17 +43,39 @@ public class SlackNotifierClient extends NotifierClient {
         }};
         blocks.add(block);
         payload.put("blocks", blocks);
-        // call
         RequestEntity<Map<String,Object>> requestEntity = RequestEntity
                 .post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payload);
-        // response
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-        if (!responseEntity.getStatusCode().is2xxSuccessful() && !responseEntity.getStatusCode().is3xxRedirection()) {
-            throw new RuntimeException(responseEntity.getStatusCode() + "-" + responseEntity.getBody());
+
+        // calls webhook
+        int maxRetries = 3;
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                // response
+                ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+                log.debug("Slack API response: {}", responseEntity.getBody());
+                // breaks if successful
+                break;
+            } catch (HttpClientErrorException.TooManyRequests e) {
+                log.warn("Slack API rate limit exceeded. Response: {}", e.getMessage());
+                // checks Retry-After header
+                Integer retryAfter = Optional.ofNullable(Objects.requireNonNull(e.getResponseHeaders()).getFirst("Retry-After"))
+                        .map(Integer::parseInt)
+                        .orElse(null);
+                // if Retry-After header is present, waits for the specified time
+                if (retryAfter != null) {
+                    try {
+                        Thread.sleep(retryAfter * 1000L);
+                        continue;
+                    } catch (Exception ignored) {}
+                }
+                // else throws exception
+                else {
+                    throw e;
+                }
+            }
         }
-        log.debug("== response:{}", responseEntity);
     }
 
 }

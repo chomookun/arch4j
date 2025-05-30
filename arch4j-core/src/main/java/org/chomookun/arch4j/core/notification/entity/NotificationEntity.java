@@ -3,6 +3,7 @@ package org.chomookun.arch4j.core.notification.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 import org.chomookun.arch4j.core.notification.model.Notification;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
 import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
@@ -37,6 +38,10 @@ public class NotificationEntity extends BaseEntity {
 
     @Column(name = "receiver")
     private String receiver;
+
+    @Column(name = "suppressed", length = 1)
+    @Convert(converter = BooleanConverter.class)
+    private boolean suppressed;
 
     @Column(name = "submitted_at")
     private Instant submittedAt;

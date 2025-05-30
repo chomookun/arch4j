@@ -34,9 +34,10 @@ public class NotificationService {
      * @param subject subject
      * @param content content
      * @param receiver receiver
+     * @param suppressed whether the notification is suppressed
      * @return notification
      */
-    public Notification sendNotification(Notifier notifier, String subject, String content, String receiver) {
+    public Notification sendNotification(Notifier notifier, String subject, String content, String receiver, boolean suppressed) {
         Notification notification = Notification.builder()
                 .notificationId(IdGenerator.uuid())
                 .notifierId(notifier.getNotifierId())
@@ -44,6 +45,7 @@ public class NotificationService {
                 .subject(subject)
                 .content(content)
                 .receiver(receiver)
+                .suppressed(suppressed)
                 .build();
         notificationConsumer.addNotification(notification);
         return notification;
@@ -55,11 +57,12 @@ public class NotificationService {
      * @param receiver receiver
      * @param subject subject
      * @param content content
+     * @param suppressed whether the notification is suppressed
      * @return notification
      */
-    public Notification sendNotification(String notifierId, String subject, String content, String receiver) {
+    public Notification sendNotification(String notifierId, String subject, String content, String receiver, boolean suppressed) {
         Notifier notification = notifierService.getNotifier(notifierId).orElseThrow();
-        return sendNotification(notification, subject, content, receiver);
+        return sendNotification(notification, subject, content, receiver, suppressed);
     }
 
     /**
