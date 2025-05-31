@@ -39,9 +39,9 @@ public class NotificationEntity extends BaseEntity {
     @Column(name = "receiver")
     private String receiver;
 
-    @Column(name = "suppressed", length = 1)
+    @Column(name = "suppress", length = 1)
     @Convert(converter = BooleanConverter.class)
-    private boolean suppressed;
+    private boolean suppress;
 
     @Column(name = "submitted_at")
     private Instant submittedAt;

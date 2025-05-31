@@ -393,7 +393,7 @@
                             <th data-th-text="#{core.notification.Notification.notifierName}"></th>
                             <th data-th-text="#{core.notification.Notification.subject}"></th>
                             <th data-th-text="#{core.notification.Notification.receiver}"></th>
-                            <th data-th-text="#{core.notification.Notification.suppressed}"></th>
+                            <th data-th-text="#{core.notification.Notification.suppress}"></th>
                             <th data-th-text="#{core.notification.Notification.submittedAt}"></th>
                             <th data-th-text="#{core.notification.Notification.sentAt}"></th>
                             <th data-th-text="#{core.notification.Notification.status}"></th>
@@ -416,7 +416,7 @@
                             <td>
                                 <div class="text-align--center">
                                     <label>
-                                        <input type="checkbox" data-duice-bind="notification" data-duice-property="suppressed"></input>
+                                        <input type="checkbox" data-duice-bind="notification" data-duice-property="suppress"></input>
                                     </label>
                                 </div>
                             </td>
@@ -813,7 +813,7 @@
                     subject: null,
                     content: null,
                     receiver: null,
-                    suppressed: false
+                    suppress: false
                 });
                 const notifiers = new duice.ArrayProxy([]);
 
@@ -913,8 +913,8 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span data-th-text="#{core.notification.Notification.suppressed}"></span>
-                        <input type="checkbox" data-duice-bind="sendNotificationDialog.data" data-duice-property="suppressed"/>
+                        <span data-th-text="#{core.notification.Notification.suppress}"></span>
+                        <input type="checkbox" data-duice-bind="sendNotificationDialog.data" data-duice-property="suppress"/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">

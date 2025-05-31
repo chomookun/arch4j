@@ -28,7 +28,7 @@ public class Notification {
 
     private String receiver;
 
-    private boolean suppressed;
+    private boolean suppress;
 
     private Map<String, Object> option;
 
@@ -70,7 +70,7 @@ public class Notification {
                 .notifierId(notificationEntity.getNotifierId())
                 .notifierName(notificationEntity.getNotifierName())
                 .receiver(notificationEntity.getReceiver())
-                .suppressed(notificationEntity.isSuppressed())
+                .suppress(notificationEntity.isSuppress())
                 .subject(notificationEntity.getSubject())
                 .content(notificationEntity.getContent())
                 .submittedAt(notificationEntity.getSubmittedAt())

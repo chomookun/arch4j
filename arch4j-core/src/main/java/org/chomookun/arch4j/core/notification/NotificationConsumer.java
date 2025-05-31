@@ -64,7 +64,7 @@ public class NotificationConsumer {
                 .subject(notification.getSubject())
                 .content(notification.getContent())
                 .receiver(notification.getReceiver())
-                .suppressed(notification.isSuppressed())
+                .suppress(notification.isSuppress())
                 .submittedAt(Instant.now())
                 .status(Notification.Status.SUBMITTED)
                 .build();
@@ -94,7 +94,7 @@ public class NotificationConsumer {
                 notification.setSentAt(Instant.now());
                 try {
                     // check if notification is suppressed
-                    if (notification.isSuppressed()) {
+                    if (notification.isSuppress()) {
                         Notification suppressedNotification = sentSuppressedNotifications.getIfPresent(notification.getSuppressedKey());
                         if (suppressedNotification != null) {
                             notification.setStatus(Notification.Status.SUPPRESSED);
@@ -109,7 +109,7 @@ public class NotificationConsumer {
                     notification.setStatus(Notification.Status.COMPLETED);
 
                     // puts suppressed notification into cache
-                    if (notification.isSuppressed()) {
+                    if (notification.isSuppress()) {
                         sentSuppressedNotifications.put(notification.getSuppressedKey(), notification);
                     }
                 } catch (Throwable t) {
