@@ -1762,6 +1762,19 @@
   font-style: oblique !important;
 }
 
+/* text-decoration */
+.text-decoration--none {
+  text-decoration: none !important;
+}
+
+.text-decoration--underline {
+  text-decoration: underline !important;
+}
+
+.text-decoration--line-through {
+  text-decoration: line-through !important;
+}
+
 /* width */
 .width--5 {
   width: 5%;
@@ -4013,6 +4026,16 @@
   }
   .s__font-style--oblique {
     font-style: oblique !important;
+  }
+  /* text-decoration */
+  .s__text-decoration--none {
+    text-decoration: none !important;
+  }
+  .s__text-decoration--underline {
+    text-decoration: underline !important;
+  }
+  .s__text-decoration--line-through {
+    text-decoration: line-through !important;
   }
   /* width */
   .s__width--5 {
