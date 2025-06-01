@@ -712,6 +712,9 @@ username=987a77fac40349
 password=cfad266492f5fa
     '),
     ('slack','N','Slack','SLACK','url=https://hooks.slack.com/services/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
+    '),
+    ('telegram','N','Telegram','TELEGRAM','bot-token=7732026057:AAHHrnDMxjSyNvoyr-D0NLB6ngKoQbUYQag
+chat-id=7110294203
     ');
 
 -- core_verifier
