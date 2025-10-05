@@ -6,6 +6,7 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.0'
     id 'application'
+    id 'eclipse'
 }
 
 configurations {

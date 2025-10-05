@@ -5,6 +5,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.1'
     id 'maven-publish'
     id 'application'
+    id 'eclipse'
 }
 
 dependencies {
