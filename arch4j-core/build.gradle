@@ -4,6 +4,7 @@ plugins {
     id 'io.freefair.lombok' version '8.10'
     id 'org.springframework.boot' version '3.4.1'
     id 'maven-publish'
+    id 'eclipse'
 }
 
 dependencies {
