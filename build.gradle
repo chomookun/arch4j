@@ -86,15 +86,14 @@ allprojects {
     
     // supports eclipse plugin configuration
     plugins.withId("eclipse") {
-        plugins.withId("java") {
-    	    sourceSets.main.java.srcDirs += 'build/generated/sources/annotationProcessor/java/main'
-    	}
         eclipse {
             classpath {
                 file {
                     whenMerged {
                         def generatedDir = file('build/generated/sources/annotationProcessor/java/main')
-                        entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder(generatedDir.path, null))
+                        if (generatedDir.exists()) {
+                            entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder(generatedDir.path, null))
+                        }
                     }
                 }
             }
