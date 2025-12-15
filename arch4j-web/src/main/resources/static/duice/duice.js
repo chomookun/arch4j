@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.26
+ * duice - v0.3.27
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -329,9 +329,16 @@ var duice = (function (exports) {
          */
         notifyObservers(event) {
             if (this.notifyEnabled) {
-                this.observers.forEach(observer => {
-                    observer.update(this, event);
-                });
+                console.debug('Observer.notifyObserver - observers.length', this.observers.length);
+                for (let i = this.observers.length - 1; i >= 0; i--) {
+                    const observer = this.observers[i];
+                    if (observer.isAvailable()) {
+                        observer.update(this, event);
+                    }
+                    else {
+                        this.observers.splice(i, 1);
+                    }
+                }
             }
         }
     }
@@ -500,6 +507,12 @@ var duice = (function (exports) {
             this.eventDispatcher = new EventDispatcher();
             this.eventEnabled = true;
             this.target = target;
+        }
+        /**
+         * Checks available state
+         */
+        isAvailable() {
+            return true;
         }
         /**
          * Sets parent
@@ -1041,6 +1054,12 @@ var duice = (function (exports) {
             if (format) {
                 this.format = FormatFactory.getFormat(format);
             }
+        }
+        /**
+         * Checks available state
+         */
+        isAvailable() {
+            return document.contains(this.htmlElement);
         }
         /**
          * Gets property
@@ -2139,6 +2158,12 @@ var duice = (function (exports) {
             markInitialized(htmlElement);
         }
         /**
+         * Checks available state
+         */
+        isAvailable() {
+            return true;
+        }
+        /**
          * Renders
          */
         render() {
@@ -2486,6 +2511,12 @@ var duice = (function (exports) {
          */
         constructor(htmlElement, bindData, context) {
             super(htmlElement, bindData, context);
+        }
+        /**
+         * Checks available state
+         */
+        isAvailable() {
+            return document.contains(this.htmlElement);
         }
         /**
          * Renders element
