@@ -1,5 +1,5 @@
 /*!
- * duice - v0.3.27
+ * duice - v0.3.28
  * git: https://gitbub.com/chomookun/duice
  * website: https://duice.chomookun.com
  * Released under the LGPL(GNU Lesser General Public License version 3) License
@@ -2883,7 +2883,17 @@ var duice = (function (exports) {
             this.getHtmlElement().style.textAlign = 'right';
             // prevents invalid key press
             this.getHtmlElement().addEventListener('keypress', event => {
-                if (/[\d|\.|,]/.test(event.key) === false) {
+                const input = this.getHtmlElement();
+                const key = event.key;
+                // allows minus sign only at the first position
+                if (key === '-') {
+                    if (input.selectionStart !== 0) {
+                        event.preventDefault();
+                    }
+                    return;
+                }
+                // blocks characters other than digits, dots, and commas
+                if (/[\d.,]/.test(key) === false) {
                     event.preventDefault();
                 }
             });
