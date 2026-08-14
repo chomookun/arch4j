@@ -143,25 +143,20 @@ const _fetch = function(url, option) {
                     if (responseJson.redirect) {
                         console.log(`redirect to ${responseJson.redirectUri}`);
                         location.href = responseJson.redirectUri;
-                        return;
+                        return Promise.reject(new Error('Redirecting...'));
                     }
                     errorMessage = responseJson.message;
                 } else {
                     errorMessage = await clonedResponse.text();
                 }
-                // alert error message
-                if (!option['_suppressAlert']) {
-                    await _alert(errorMessage).then();
-                }
-                return response;
+                return Promise.reject(new Error(errorMessage));
             }
         })
         .catch(async (error)=> {
             // alert error message
-            if (!option['_suppressAlert']) {
+            if (!option['_suppressAlert'] && error.message !== 'Redirecting...') {
                 await _alert(error.message).then();
             }
-            console.error(error);
             // calls error interceptor
             _fetch.interceptors.error.forEach(interceptor => {
                 interceptor.call(error);
