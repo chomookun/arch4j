@@ -11,7 +11,7 @@ javaPlatform {
 dependencies {
 
     // spring boot dependencies
-    api enforcedPlatform("org.springframework.boot:spring-boot-dependencies:3.4.1")
+    api platform("org.springframework.boot:spring-boot-dependencies:3.4.1")
 
     // cloud platform dependencies
     api platform('software.amazon.awssdk:bom:2.31.20')
